@@ -4,6 +4,17 @@ export default function VerifyAccount({ email, loading, error, info, onVerify, o
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const inputsRef = useRef([]);
   const [localError, setLocalError] = useState('');
+  const [remaining, setRemaining] = useState(5 * 60); // seconds
+
+  // Countdown timer
+  useEffect(() => {
+    if (remaining <= 0) {
+      window.location.href = '/login';
+      return;
+    }
+    const id = setInterval(() => setRemaining(r => r - 1), 1000);
+    return () => clearInterval(id);
+  }, [remaining]);
 
   useEffect(() => {
     if (inputsRef.current[0]) inputsRef.current[0].focus();
@@ -80,7 +91,8 @@ export default function VerifyAccount({ email, loading, error, info, onVerify, o
   return (
     <div>
       <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">Verify your account</h1>
-      <p className="text-gray-500 text-sm mb-6 text-center">Enter the 6-digit code we sent to <span className="font-medium">{email}</span></p>
+      <p className="text-gray-500 text-sm mb-3 text-center">Enter the 6-digit code we sent to <span className="font-medium">{email}</span></p>
+  <div className="text-center text-lg text-gray-500 mb-4">Time remaining: <span className="font-medium text-gray-700">{String(Math.floor(remaining/60)).padStart(2,'0')}:{String(remaining%60).padStart(2,'0')}</span></div>
       {(error || localError || info) && (
         <div className="mb-4 space-y-2">
           {error && <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded px-3 py-2">{error}</div>}
@@ -123,7 +135,7 @@ export default function VerifyAccount({ email, loading, error, info, onVerify, o
         <button
           type="button"
           disabled={loading}
-          onClick={onResend}
+          onClick={() => { onResend(); setRemaining(5*60); }}
           className="text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50"
         >Resend</button>
       </div>

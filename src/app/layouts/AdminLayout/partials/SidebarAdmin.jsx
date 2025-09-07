@@ -14,7 +14,7 @@ import {
 
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
   const items = useMemo(() => ([
-    { to: '/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+    { to: '/admin/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
     { to: '/admin/users', label: 'Users', icon: <UserOutlined /> },
     { to: '/admin/courses', label: 'Courses', icon: <BookOutlined /> },
     { to: '/admin/schedule', label: 'Schedule', icon: <ScheduleOutlined /> },
@@ -34,7 +34,7 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
       )}
       <aside
         className={[
-          'flex flex-col bg-white border-r shadow-sm z-50',
+          'flex flex-col bg-white border-r border-r-gray-300 shadow-md z-50',
           'transition-all duration-300 ease-in-out',
           collapsed ? 'w-24' : 'w-56',
           'h-screen fixed md:sticky top-0 left-0',
@@ -43,7 +43,7 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
         aria-label="Sidebar navigation"
       >
         {/* Header / Brand */}
-        <div className="flex items-center justify-between h-14 px-3 border-b">
+        <div className="flex items-center justify-between h-14 px-3 border-b border-b-slate-300">
           <div className="flex items-center gap-2 overflow-hidden">
             <div className="flex items-center justify-center bg-blue-600 text-white font-bold rounded size-8 shrink-0 text-lg">
               A

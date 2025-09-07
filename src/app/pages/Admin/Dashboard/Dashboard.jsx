@@ -1,7 +1,10 @@
-import React from 'react'
+import React from 'react';
+import Overview from './partials/Overview';
 
 export default function Dashboard() {
   return (
-    <div>Dashboard</div>
-  )
+    <div className="p-6 space-y-6">
+      <Overview />
+    </div>
+  );
 }

@@ -11,12 +11,10 @@ import ForgotPassword from "../../pages/Auth/ForgotPassword/ForgotPassword";
 const MainRoutes = () => {
   return (
     <Routes>
-
-
       {/* 404 Not Found Route */}
       <Route path="*" element={<NotFound />} />
 
-
+      {/* Public/Learner Routes */}
       <Route element={<LearnersLayout />}>
         {/* Main Routes */}
         <Route path="/" element={<Home />} />
@@ -30,8 +28,8 @@ const MainRoutes = () => {
       </Route>
 
       {/* Admin Routes */}
-      <Route element={<AdminLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route path="dashboard" element={<Dashboard />} />
       </Route>
     </Routes>
   );
