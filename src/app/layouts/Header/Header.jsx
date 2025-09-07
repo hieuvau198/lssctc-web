@@ -44,7 +44,7 @@ export default function Header() {
         hidden ? '-translate-y-full' : 'translate-y-0'
       ].join(' ')}
     >
-      <div className="max-w-97/100 mx-auto px-4">
+      <div className="max-w-[88%] mx-auto px-4">
         <div className="flex items-center justify-between h-16 gap-4 relative">
           {/* Left cluster: hamburger + logo */}
           <div className="flex items-center gap-2">
