@@ -1,12 +1,12 @@
 import { Route, Routes } from "react-router";
-import Home from "../../pages/Home/Home";
+import AdminLayout from "../../layouts/AdminLayout/AdminLayout";
+import NotFound from "../../layouts/NotFound/NotFound";
+import TraineeLayout from "../../layouts/TraineeLayout/TraineeLayout";
+import Dashboard from "../../pages/Admin/Dashboard/Dashboard";
+import ForgotPassword from "../../pages/Auth/ForgotPassword/ForgotPassword";
 import Login from "../../pages/Auth/Login/Login";
 import Register from "../../pages/Auth/Register/Register";
-import NotFound from "../../layouts/NotFound/NotFound";
-import LearnersLayout from "../../layouts/LearnersLayout/LearnersLayout";
-import Dashboard from "../../pages/Admin/Dashboard/Dashboard";
-import AdminLayout from "../../layouts/AdminLayout/AdminLayout";
-import ForgotPassword from "../../pages/Auth/ForgotPassword/ForgotPassword";
+import Home from "../../pages/Home/Home";
 
 const MainRoutes = () => {
   return (
@@ -14,8 +14,8 @@ const MainRoutes = () => {
       {/* 404 Not Found Route */}
       <Route path="*" element={<NotFound />} />
 
-      {/* Public/Learner Routes */}
-      <Route element={<LearnersLayout />}>
+      {/* Public/Trainee Routes */}
+      <Route element={<TraineeLayout />}>
         {/* Main Routes */}
         <Route path="/" element={<Home />} />
         {/* <Route path="/about" element={<About />} />
