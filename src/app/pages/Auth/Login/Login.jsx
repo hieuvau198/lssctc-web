@@ -124,7 +124,7 @@ export default function Login() {
           </button>
         </form>
         {/* Divider */}
-        <div className="flex items-center gap-3 my-8">
+        {/* <div className="flex items-center gap-3 my-8">
           <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent flex-1" />
           <span className="text-xs uppercase tracking-wide text-gray-500">or</span>
           <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent flex-1" />
@@ -140,7 +140,7 @@ export default function Login() {
             <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.605 4.584 1.794l3.437-3.437C17.945 1.152 15.24 0 12 0 7.313 0 3.248 2.69 1.313 6.7l4.011 3.086C6.26 6.85 8.89 4.75 12 4.75Z"/>
           </svg>
           Continue with Google
-        </button>
+        </button> */}
         <p className="mt-8 text-center text-xs text-gray-400">By continuing you agree to our <a href="/terms" className="underline hover:text-blue-600">Terms</a> & <a href="/privacy" className="underline hover:text-blue-600">Privacy Policy</a>.</p>
       </div>
     </div>

@@ -56,9 +56,9 @@ export default function Header() {
               className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md border border-gray-300 text-gray-600 hover:text-blue-600 hover:border-blue-400 bg-white/70 backdrop-blur-sm transition"
             >
               {mobileOpen ? (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18" /><path d="M6 6l12 12" /></svg>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></svg>
               )}
             </button>
             <NavLink to="/" className="flex items-center gap-2 shrink-0 group">
@@ -80,13 +80,18 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-3">
-            <NavLink to="/login" className="text-sm font-medium text-blue-600 hover:text-blue-700">Sign in</NavLink>
             <NavLink
+              to="/login"
+              className="inline-flex items-center rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 shadow-sm transition-colors"
+            >
+              Sign in
+            </NavLink>
+            {/* <NavLink
               to="/register"
               className="inline-flex items-center rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 shadow-sm transition-colors"
             >
               Sign up
-            </NavLink>
+            </NavLink> */}
           </div>
 
           {/* Mobile panel */}
