@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Menu } from 'antd';
 import {
   TeamOutlined,
@@ -7,28 +7,16 @@ import {
 } from '@ant-design/icons';
 import InstructorTable from './partials/InstructorTable';
 import TraineeTable from './partials/TraineeTable';
-import SimulatorManagerTable from './partials/SimulatorManagerTable';
+import SimulatorManagerTable from './partials/SimulationManagerTable';
+
+const MENU_ITEMS = [
+  { key: 'instructor', icon: <UserOutlined />, label: 'Instructor' },
+  { key: 'trainee', icon: <TeamOutlined />, label: 'Trainee' },
+  { key: 'sim-manager', icon: <ExperimentOutlined />, label: 'Simulator Manager' },
+];
 
 export default function ManageUser() {
   const [activeKey, setActiveKey] = useState('instructor');
-
-  const items = useMemo(() => ([
-    {
-      key: 'instructor',
-      icon: <UserOutlined />,
-      label: 'Instructor',
-    },
-    {
-      key: 'trainee',
-      icon: <TeamOutlined />,
-      label: 'Trainee',
-    },
-    {
-      key: 'sim-manager',
-      icon: <ExperimentOutlined />,
-      label: 'Simulator Manager',
-    },
-  ]), []);
 
   return (
     <div className="max-w-[1380px] mx-auto">
@@ -43,7 +31,7 @@ export default function ManageUser() {
             mode="horizontal"
             selectedKeys={[activeKey]}
             onClick={(e) => setActiveKey(e.key)}
-            items={items}
+            items={MENU_ITEMS}
           />
         </div>
 

@@ -1,49 +1,51 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import QuizHeader from './partials/QuizHeader';
 import QuizProgress from './partials/QuizProgress';
 import QuizQuestion from './partials/QuizQuestion';
 import QuizSummary from './partials/QuizSummary';
 
+const QUESTIONS = [
+  {
+    id: 'q1',
+    text: 'What is the safe minimum distance from a power line for crane operations?',
+    options: [
+      { value: '1m', label: '1 meter' },
+      { value: '3m', label: '3 meters' },
+      { value: '10m', label: '10 meters' },
+      { value: '50m', label: '50 meters' },
+    ],
+    correct: '10m',
+    explanation: 'Regulations often require at least 10 meters depending on voltage and local code.',
+  },
+  {
+    id: 'q2',
+    text: 'Which factor most affects crane load capacity?',
+    options: [
+      { value: 'boom-angle', label: 'Boom angle' },
+      { value: 'paint-color', label: 'Paint color' },
+      { value: 'operator-age', label: 'Operator age' },
+      { value: 'radio-volume', label: 'Radio volume' },
+    ],
+    correct: 'boom-angle',
+    explanation: 'Load charts show capacity varies with boom angle, radius, and configuration.',
+  },
+  {
+    id: 'q3',
+    text: 'Before lifting, which check is essential?',
+    options: [
+      { value: 'rigging', label: 'Inspect rigging and load balance' },
+      { value: 'stickers', label: 'Check for new decals' },
+      { value: 'music', label: 'Ensure music playlist is set' },
+      { value: 'photos', label: 'Take promotional photos' },
+    ],
+    correct: 'rigging',
+    explanation: 'Rigging inspection ensures safe lifting and stability.',
+  },
+];
+
 export default function Quiz() {
   // Mock quiz data; replace later with API hook.
-  const questions = useMemo(() => ([
-    {
-      id: 'q1',
-      text: 'What is the safe minimum distance from a power line for crane operations?',
-      options: [
-        { value: '1m', label: '1 meter' },
-        { value: '3m', label: '3 meters' },
-        { value: '10m', label: '10 meters' },
-        { value: '50m', label: '50 meters' },
-      ],
-      correct: '10m',
-      explanation: 'Regulations often require at least 10 meters depending on voltage and local code.',
-    },
-    {
-      id: 'q2',
-      text: 'Which factor most affects crane load capacity?',
-      options: [
-        { value: 'boom-angle', label: 'Boom angle' },
-        { value: 'paint-color', label: 'Paint color' },
-        { value: 'operator-age', label: 'Operator age' },
-        { value: 'radio-volume', label: 'Radio volume' },
-      ],
-      correct: 'boom-angle',
-      explanation: 'Load charts show capacity varies with boom angle, radius, and configuration.',
-    },
-    {
-      id: 'q3',
-      text: 'Before lifting, which check is essential?',
-      options: [
-        { value: 'rigging', label: 'Inspect rigging and load balance' },
-        { value: 'stickers', label: 'Check for new decals' },
-        { value: 'music', label: 'Ensure music playlist is set' },
-        { value: 'photos', label: 'Take promotional photos' },
-      ],
-      correct: 'rigging',
-      explanation: 'Rigging inspection ensures safe lifting and stability.',
-    },
-  ]), []);
+  const questions = QUESTIONS;
 
   const totalTimeSec = 5 * 60; // 5 minutes
   const [timeLeft, setTimeLeft] = useState(totalTimeSec);
