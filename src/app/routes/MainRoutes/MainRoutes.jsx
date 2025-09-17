@@ -4,6 +4,7 @@ import NotFound from "../../layouts/NotFound/NotFound";
 import TraineeLayout from "../../layouts/TraineeLayout/TraineeLayout";
 import Dashboard from "../../pages/Admin/Dashboard/Dashboard";
 import ManageUser from "../../pages/Admin/ManageUser/ManageUser";
+import ManageCourse from "../../pages/Admin/ManageCourse/ManageCourse";
 import ForgotPassword from "../../pages/Auth/ForgotPassword/ForgotPassword";
 import Login from "../../pages/Auth/Login/Login";
 import Register from "../../pages/Auth/Register/Register";
@@ -34,8 +35,8 @@ const MainRoutes = () => {
       <Route path="/admin" element={<AdminLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="users" element={<ManageUser />} />
+        <Route path="courses" element={<ManageCourse />} />
       </Route>
-
       
     </Routes>
   );
