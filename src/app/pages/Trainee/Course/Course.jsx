@@ -1,6 +1,4 @@
-import React from 'react';
 import CourseCard from '../../../components/CourseCard/CourseCard';
-import CourseHeader from './partials/CourseHeader';
 
 export default function Course() {
   // Temporary mock data; replace with hook/API once backend schema is ready.
@@ -55,7 +53,26 @@ export default function Course() {
   return (
     <div className="min-h-[60vh] bg-white">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8 py-10">
-        <CourseHeader />
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+              Courses
+            </h1>
+            <p className="mt-1 text-slate-600 text-sm md:text-base">
+              Explore our training catalog and start your learning journey.
+            </p>
+          </div>
+
+          {/* Placeholder for future filters/search */}
+          <div className="hidden md:flex items-center gap-2">
+            <button className="px-3 py-1.5 text-sm bg-slate-100 text-slate-700 rounded-lg border border-slate-200 hover:bg-slate-50">
+              All Levels
+            </button>
+            <button className="px-3 py-1.5 text-sm bg-slate-100 text-slate-700 rounded-lg border border-slate-200 hover:bg-slate-50">
+              Duration
+            </button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {courses.map((c) => (
