@@ -18,6 +18,7 @@ import Home from "../../pages/Home/Home";
 import Course from "../../pages/Trainee/Course/Course";
 import Quiz from "../../pages/Trainee/Quiz/Quiz";
 import Program from "../../pages/Trainee/Program/Program";
+import AboutUs from "../../layouts/AboutUs/AboutUs";
 
 const MainRoutes = () => {
   return (
@@ -32,6 +33,7 @@ const MainRoutes = () => {
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/course" element={<Course />} />
         <Route path="/program" element={<Program />} />
+        <Route path="/about" element={<AboutUs />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
@@ -47,7 +49,7 @@ const MainRoutes = () => {
       </Route>
 
       {/* Simulator Manager Routes */}
-      <Route path="/simulator" element={<SimManagerLayout />}>
+      <Route path="/simulationManager" element={<SimManagerLayout />}>
         <Route path="dashboard" element={<SimDashboard />} />
         <Route path="scenarios" element={<Scenarios />} />
         <Route path="configs" element={<SimulatorConfigs />} />
