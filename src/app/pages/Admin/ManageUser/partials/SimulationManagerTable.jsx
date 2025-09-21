@@ -5,6 +5,7 @@ const COLUMNS = [
   { title: '#', dataIndex: 'idx', width: 60 },
   { title: 'Full name', dataIndex: 'fullName' },
   { title: 'Email', dataIndex: 'email' },
+  { title: 'Scenarios', dataIndex: 'scenarios', width: 110 },
   {
     title: 'Status',
     dataIndex: 'status',
@@ -15,15 +16,16 @@ const COLUMNS = [
   },
 ];
 
-const MOCK_DATA = Array.from({ length: 8 }).map((_, i) => ({
+const MOCK_DATA = Array.from({ length: 6 }).map((_, i) => ({
   key: i + 1,
   idx: i + 1,
-  fullName: `Instructor ${i + 1}`,
-  email: `inst${i + 1}@academy.test`,
-  status: i % 3 === 0 ? 'inactive' : 'active',
+  fullName: `Sim Manager ${i + 1}`,
+  email: `sim${i + 1}@academy.test`,
+  scenarios: Math.floor(Math.random() * 10),
+  status: i % 5 === 0 ? 'inactive' : 'active',
 }));
 
-export default function InstructorTable() {
+export default function SimulatorManagerTable() {
   const columns = COLUMNS;
   const data = MOCK_DATA;
 
