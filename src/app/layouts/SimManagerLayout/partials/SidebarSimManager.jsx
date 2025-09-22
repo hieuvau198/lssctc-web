@@ -12,11 +12,11 @@ import {
 } from '@ant-design/icons';
 
 const ITEMS = [
-  { to: '/simulator/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
-  { to: '/simulator/scenarios', label: 'Scenarios', icon: <ExperimentOutlined /> },
-  { to: '/simulator/configs', label: 'Simulator Configs', icon: <ControlOutlined /> },
-  { to: '/simulator/sessions', label: 'Sessions', icon: <ScheduleOutlined /> },
-  { to: '/simulator/settings', label: 'Settings', icon: <SettingOutlined /> },
+  { to: '/simulationManager/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+  { to: '/simulationManager/scenarios', label: 'Scenarios', icon: <ExperimentOutlined /> },
+  { to: '/simulationManager/configs', label: 'Simulator Configs', icon: <ControlOutlined /> },
+  { to: '/simulationManager/sessions', label: 'Sessions', icon: <ScheduleOutlined /> },
+  { to: '/simulationManager/settings', label: 'Settings', icon: <SettingOutlined /> },
 ];
 
 export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {

@@ -1,3 +1,5 @@
+// src\app\pages\SimManager\Dashboard\Dashboard.jsx
+
 import React from 'react';
 
 export default function SimDashboard() {

@@ -1,3 +1,5 @@
+// src\app\layouts\SimManagerLayout\SimManagerLayout.jsx
+
 import React, { useState, useCallback } from 'react';
 import { Outlet } from 'react-router';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';

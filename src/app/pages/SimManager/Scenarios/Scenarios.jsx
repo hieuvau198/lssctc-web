@@ -1,3 +1,5 @@
+// src\app\pages\SimManager\Scenarios\Scenarios.jsx
+
 import React from 'react';
 
 export default function Scenarios() {
