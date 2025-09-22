@@ -3,6 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { getComponents } from '../../../apis/SimulationManager/SimulationManagerComponentApi';
 import UpdateComponent from './partials/UpdateComponent';
+import { Typography, Card, Tag, Button, Modal, Pagination, Space, Skeleton, Alert, Tabs, Empty, Badge, Tooltip } from 'antd';
+import { CheckCircle2, Pencil } from 'lucide-react';
+
+const { Title, Paragraph, Text } = Typography;
 
 export default function SimSettings() {
   const [components, setComponents] = useState([]);
@@ -12,93 +16,134 @@ export default function SimSettings() {
   const [totalPages, setTotalPages] = useState(1);
   const [editing, setEditing] = useState(null); // component being edited
 
+  const pageSize = 5;
+
+  const loadData = async (p = page) => {
+    setLoading(true);
+    setErr(null);
+    try {
+      const res = await getComponents(p, pageSize);
+      setComponents(res.items || []);
+      setTotalPages(res.totalPages || 1);
+    } catch (e) {
+      setErr(e.message || 'Error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleUpdated = () => {
     setEditing(null);
-    // reload data
-    getComponents(page, 5)
-      .then(res => {
-        setComponents(res.items || []);
-        setTotalPages(res.totalPages || 1);
-      });
+    loadData();
   };
 
   useEffect(() => {
-    setLoading(true);
-    getComponents(page, 5) // 5 per page, change as you want
-      .then(res => {
-        setComponents(res.items || []);
-        setTotalPages(res.totalPages || 1);
-      })
-      .catch(e => setErr(e.message || 'Error'))
-      .finally(() => setLoading(false));
+    loadData(page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  return (
-    <div>
-      <h1 className="text-xl font-semibold text-slate-900 mb-4">Settings</h1>
-      <div className="p-4 rounded-lg border bg-white">
-        <div>Personal and workspace settings (mock)</div>
-        <div className="mt-8">
-          <h2 className="text-lg font-bold mb-3">Simulation Components</h2>
-          {loading && <div>Loading...</div>}
-          {err && <div className="text-red-500">{err}</div>}
-          <div className="grid grid-cols-1 gap-6">
-            {components.map(comp => (
-              <div key={comp.id} className="flex items-center gap-6 p-4 border rounded-xl bg-gray-50 shadow hover:shadow-lg transition-shadow">
-                <div className="w-40 h-40 rounded-xl overflow-hidden group flex-shrink-0">
-                  <img
-                    src={comp.imageUrl}
-                    alt={comp.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-125"
-                  />
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-lg">{comp.name}</div>
-                  <div className="text-gray-500">{comp.description}</div>
-                  <div className="text-xs text-gray-400 mt-1">ID: {comp.id}</div>
-                  <div className="text-xs mt-1">{comp.isActive ? 'Active' : 'Inactive'}</div>
-                </div>
-                <button
-                  onClick={() => setEditing(comp)}
-                  className="ml-2 px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600"
+  const items = [
+    {
+      key: 'components',
+      label: 'Components',
+      children: (
+        <div>
+          {err && (
+            <Alert className="mb-4" type="error" showIcon message="Failed to load" description={err} />
+          )}
+
+          {loading ? (
+            <div className="grid grid-cols-1 gap-4">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <Card key={idx} className="bg-white">
+                  <Skeleton active paragraph={{ rows: 2 }} avatar />
+                </Card>
+              ))}
+            </div>
+          ) : components.length === 0 ? (
+            <Empty description="No components found" className="bg-white rounded-lg py-10" />
+          ) : (
+            <div className="grid grid-cols-1 gap-6">
+              {components.map((comp) => (
+                <Card
+                  key={comp.id}
+                  className="overflow-hidden border-slate-200 hover:shadow-md transition"
+                  bodyStyle={{ padding: 16 }}
                 >
-                  Edit
-                </button>
-              </div>
-            ))}
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="w-full sm:w-40 h-40 rounded-lg overflow-hidden bg-slate-100">
+                      {comp.imageUrl ? (
+                        <img src={comp.imageUrl} alt={comp.name} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-400">No image</div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <Title level={4} className="!m-0">{comp.name}</Title>
+                          <Paragraph className="!mt-1 !mb-2 text-slate-600">{comp.description}</Paragraph>
+                          <Space size="small" wrap>
+                            <Text type="secondary">ID: {comp.id}</Text>
+                            {comp.isActive ? (
+                              <Tag color="blue">Active</Tag>
+                            ) : (
+                              <Tag color="red">Inactive</Tag>
+                            )}
+                          </Space>
+                        </div>
+                        <Tooltip title="Edit">
+                          <Button type="primary" icon={<Pencil className="w-4 h-4" />} onClick={() => setEditing(comp)}>
+                            Edit
+                          </Button>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          <div className="flex justify-center mt-6">
+            <Pagination
+              current={page}
+              pageSize={pageSize}
+              total={totalPages * pageSize}
+              onChange={(p) => setPage(p)}
+              showSizeChanger={false}
+            />
           </div>
 
-          {/* Show update form as overlay or modal */}
-          {editing && (
-            <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <Modal
+            title="Update Component"
+            open={!!editing}
+            onCancel={() => setEditing(null)}
+            footer={null}
+            width={820}
+            destroyOnClose
+          >
+            {editing && (
               <UpdateComponent
                 component={editing}
                 onUpdated={handleUpdated}
                 onCancel={() => setEditing(null)}
               />
-            </div>
-          )}
-          
-          {/* Paging controls */}
-          <div className="flex items-center justify-center gap-4 mt-6">
-            <button
-              className="px-3 py-1 rounded border disabled:opacity-50"
-              disabled={page === 1}
-              onClick={() => setPage(page - 1)}
-            >
-              Previous
-            </button>
-            <span>Page {page} of {totalPages}</span>
-            <button
-              className="px-3 py-1 rounded border disabled:opacity-50"
-              disabled={page === totalPages}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </button>
-          </div>
+            )}
+          </Modal>
         </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="max-w-[1380px] mx-auto px-4 py-6">
+      <div className="bg-white border rounded-xl p-6 mb-6">
+        <Title level={3} className="!mb-1">Settings</Title>
+        <Paragraph className="!mb-0 text-slate-600">Manage simulation manager preferences and components.</Paragraph>
       </div>
+
+      <Tabs defaultActiveKey="components" items={items} />
     </div>
   );
 }
