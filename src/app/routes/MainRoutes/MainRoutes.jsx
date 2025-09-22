@@ -19,6 +19,7 @@ import Course from "../../pages/Trainee/Course/Course";
 import Quiz from "../../pages/Trainee/Quiz/Quiz";
 import Program from "../../pages/Trainee/Program/Program";
 import AboutUs from "../../layouts/AboutUs/AboutUs";
+import CertificateForm from "../../pages/Trainee/Certificate/Certificate";
 
 const MainRoutes = () => {
   return (
@@ -34,6 +35,7 @@ const MainRoutes = () => {
         <Route path="/course" element={<Course />} />
         <Route path="/program" element={<Program />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/certificate" element={<CertificateForm />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />

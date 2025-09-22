@@ -1,9 +1,9 @@
 // src/app/pages/SimManager/Dashboard/partials/ActiveSimulationsTable.jsx
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Card, Table, Tag } from 'antd';
 
 export default function ActiveSimulationsTable({ rows = [], loading = false }) {
-  const columns = useMemo(() => [
+  const columns = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
     { title: 'Learners', dataIndex: 'learners', key: 'learners', width: 110 },
     { title: 'Instructor', dataIndex: 'instructor', key: 'instructor', width: 160 },
@@ -11,7 +11,7 @@ export default function ActiveSimulationsTable({ rows = [], loading = false }) {
     { title: 'Status', dataIndex: 'status', key: 'status', width: 120, render: (v) => (
       <Tag color={v === 'running' ? 'blue' : v === 'idle' ? 'default' : 'warning'}>{v}</Tag>
     ) },
-  ], []);
+  ];
 
   return (
     <Card className="border-slate-200 hover:shadow-md transition" title="Active Simulations">

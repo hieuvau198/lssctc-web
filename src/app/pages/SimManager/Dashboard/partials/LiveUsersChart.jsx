@@ -1,14 +1,14 @@
 // src/app/pages/SimManager/Dashboard/partials/LiveUsersChart.jsx
-import React, { useMemo } from 'react';
+import React from 'react';
 import Chart from 'react-apexcharts';
 import { Card } from 'antd';
 
 export default function LiveUsersChart({ data = [], categories = [], title = 'Live Users' }) {
-  const series = useMemo(() => [
+  const series = [
     { name: 'Users', data },
-  ], [data]);
+  ];
 
-  const options = useMemo(() => ({
+  const options = {
     chart: { id: 'live-users', toolbar: { show: false }, animations: { easing: 'easeinout', speed: 400 } },
     stroke: { curve: 'smooth', width: 3 },
     colors: ['#3b82f6'],
@@ -18,7 +18,7 @@ export default function LiveUsersChart({ data = [], categories = [], title = 'Li
     fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05, stops: [0, 90, 100] } },
     grid: { borderColor: '#e2e8f0' },
     tooltip: { theme: 'light' },
-  }), [categories]);
+  };
 
   return (
     <Card className="border-slate-200 hover:shadow-md transition" title={title}>

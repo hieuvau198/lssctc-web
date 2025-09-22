@@ -1,6 +1,6 @@
 // src\app\pages\SimManager\Dashboard\Dashboard.jsx
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import StatsOverview from './partials/StatsOverview';
 import LiveUsersChart from './partials/LiveUsersChart';
 import ActiveSimulationsTable from './partials/ActiveSimulationsTable';
