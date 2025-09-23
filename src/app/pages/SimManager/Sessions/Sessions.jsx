@@ -1,3 +1,5 @@
+// src\app\pages\SimManager\Sessions\Sessions.jsx
+
 import React from 'react';
 
 export default function Sessions() {
