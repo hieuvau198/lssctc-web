@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router';
+import Avt from './partials/Avt';
 
 export default function Header() {
   const [hidden, setHidden] = useState(false);
   const [atTop, setAtTop] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const lastScroll = useRef(0);
+  const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -27,6 +29,15 @@ export default function Header() {
     const close = () => setMobileOpen(false);
     window.addEventListener('hashchange', close);
     return () => window.removeEventListener('hashchange', close);
+  }, []);
+
+  // Check token in localStorage to toggle avatar
+  useEffect(() => {
+    const check = () => setHasToken(!!localStorage.getItem('token'));
+    check();
+    // listen to storage change from other tabs
+    window.addEventListener('storage', check);
+    return () => window.removeEventListener('storage', check);
   }, []);
 
   const linkBase = 'px-3 py-2 text-sm font-medium transition-colors';
@@ -79,18 +90,16 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-3">
-            <NavLink
-              to="/login"
-              className="inline-flex items-center rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 shadow-sm transition-colors"
-            >
-              Sign in
-            </NavLink>
-            {/* <NavLink
-              to="/register"
-              className="inline-flex items-center rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 shadow-sm transition-colors"
-            >
-              Sign up
-            </NavLink> */}
+            {hasToken ? (
+              <Avt onLogout={() => setHasToken(false)} />
+            ) : (
+              <NavLink
+                to="/login"
+                className="inline-flex items-center rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 shadow-sm transition-colors"
+              >
+                Sign in
+              </NavLink>
+            )}
           </div>
 
           {/* Mobile panel */}
