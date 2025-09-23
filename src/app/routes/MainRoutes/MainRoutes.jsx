@@ -20,6 +20,9 @@ import Quiz from "../../pages/Trainee/Quiz/Quiz";
 import Program from "../../pages/Trainee/Program/Program";
 import AboutUs from "../../layouts/AboutUs/AboutUs";
 import CertificateForm from "../../pages/Trainee/Certificate/Certificate";
+import CourseList from "../../pages/ProgramManager/Courses";
+import Courses from "../../pages/ProgramManager/Courses";
+import ProgramManagerLayout from "../../layouts/ProgramManagerLayout/ProgramManagerLayout";
 
 const MainRoutes = () => {
   return (
@@ -58,7 +61,11 @@ const MainRoutes = () => {
         <Route path="sessions" element={<Sessions />} />
         <Route path="settings" element={<SimSettings />} />
       </Route>
-      
+
+      {/* Program Manager Routes */}
+      <Route path="/programManager" element={<ProgramManagerLayout />}>
+        <Route path="courses" element={<Courses />} />
+      </Route>
     </Routes>
   );
 };
