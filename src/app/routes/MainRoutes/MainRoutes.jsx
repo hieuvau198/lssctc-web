@@ -23,6 +23,7 @@ import CertificateForm from "../../pages/Trainee/Certificate/Certificate";
 import CourseList from "../../pages/ProgramManager/Courses";
 import Courses from "../../pages/ProgramManager/Courses";
 import ProgramManagerLayout from "../../layouts/ProgramManagerLayout/ProgramManagerLayout";
+import Profile from "../../pages/Trainee/Profile/Profile";
 
 const MainRoutes = () => {
   return (
@@ -38,6 +39,7 @@ const MainRoutes = () => {
         <Route path="/course" element={<Course />} />
         <Route path="/program" element={<Program />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/certificate" element={<CertificateForm />} />
 
         {/* Auth Routes */}
