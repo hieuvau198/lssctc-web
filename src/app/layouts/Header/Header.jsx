@@ -30,7 +30,7 @@ export default function Header() {
   }, []);
 
   const linkBase = 'px-3 py-2 text-sm font-medium transition-colors';
-  const getLinkClass = ({ isActive }) => [
+  const   getLinkClass = ({ isActive }) => [
     linkBase,
     isActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'
   ].join(' ');
@@ -70,10 +70,9 @@ export default function Header() {
           {/* Center Nav */}
           <nav className="hidden md:flex items-center justify-center flex-1">
             <ul className="flex items-center gap-1">
-              <li><NavLink to="/courses" className={getLinkClass}>Courses</NavLink></li>
-              <li><NavLink to="/schedule" className={getLinkClass}>Schedule</NavLink></li>
+              <li><NavLink to="/" className={getLinkClass}>Home</NavLink></li>
+              <li><NavLink to="/course" className={getLinkClass}>Courses</NavLink></li>
               <li><NavLink to="/simulator" className={getLinkClass}>Simulator</NavLink></li>
-              <li><NavLink to="/assessments" className={getLinkClass}>Assessments</NavLink></li>
               <li><NavLink to="/about" className={getLinkClass}>About</NavLink></li>
             </ul>
           </nav>
@@ -104,9 +103,7 @@ export default function Header() {
           >
             <div className="flex flex-wrap justify-center gap-2 px-3 py-3">
               <NavLink onClick={() => setMobileOpen(false)} to="/courses" className={getLinkClass}>Courses</NavLink>
-              <NavLink onClick={() => setMobileOpen(false)} to="/schedule" className={getLinkClass}>Schedule</NavLink>
               <NavLink onClick={() => setMobileOpen(false)} to="/simulator" className={getLinkClass}>Simulator</NavLink>
-              <NavLink onClick={() => setMobileOpen(false)} to="/assessments" className={getLinkClass}>Assessments</NavLink>
               <NavLink onClick={() => setMobileOpen(false)} to="/about" className={getLinkClass}>About</NavLink>
             </div>
           </div>

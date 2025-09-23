@@ -1,0 +1,40 @@
+import React from 'react';
+import { Table, Tag } from 'antd';
+
+const COLUMNS = [
+  { title: '#', dataIndex: 'idx', width: 60 },
+  { title: 'Full name', dataIndex: 'fullName' },
+  { title: 'Email', dataIndex: 'email' },
+  { title: 'Scenarios', dataIndex: 'scenarios', width: 110 },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    render: (s) => (
+      <Tag color={s === 'active' ? 'green' : 'red'}>{s}</Tag>
+    ),
+    width: 120,
+  },
+];
+
+const MOCK_DATA = Array.from({ length: 6 }).map((_, i) => ({
+  key: i + 1,
+  idx: i + 1,
+  fullName: `Sim Manager ${i + 1}`,
+  email: `sim${i + 1}@academy.test`,
+  scenarios: Math.floor(Math.random() * 10),
+  status: i % 5 === 0 ? 'inactive' : 'active',
+}));
+
+export default function SimulatorManagerTable() {
+  const columns = COLUMNS;
+  const data = MOCK_DATA;
+
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={{ pageSize: 5 }}
+      rowKey="key"
+    />
+  );
+}
