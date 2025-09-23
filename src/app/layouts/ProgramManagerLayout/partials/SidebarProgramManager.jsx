@@ -17,6 +17,11 @@ const ITEMS = [
     label: "Courses",
     icon: <DashboardOutlined />,
   },
+  {
+    to: "/programManager/programs",
+    label: "Programs",
+    icon: <ExperimentOutlined />,
+  },
 ];
 
 export default function SidebarProgramManager({

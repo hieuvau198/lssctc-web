@@ -3,7 +3,7 @@ import { Input, Select, Button } from "antd";
 import {
   fetchCourseCategories,
   fetchCourseLevels,
-} from "../../../apis/ProgramManager/CourseApi";
+} from "../../../../apis/ProgramManager/CourseApi";
 
 const { Option } = Select;
 

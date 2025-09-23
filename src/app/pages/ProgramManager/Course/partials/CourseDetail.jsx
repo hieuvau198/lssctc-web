@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchCourseDetail } from "../../../apis/ProgramManager/CourseApi";
+import { fetchCourseDetail } from "../../../../apis/ProgramManager/CourseApi";
 import { Card, Spin, Alert, Button } from "antd";
 
 const CourseDetail = ({ id, onBack }) => {

@@ -3,7 +3,7 @@ import {
   fetchCourses,
   addCourse,
   updateCourse,
-} from "../../apis/ProgramManager/CourseApi";
+} from "../../../apis/ProgramManager/CourseApi";
 import { Spin, Alert, message } from "antd";
 import CourseDetail from "./partials/CourseDetail";
 import CreateCourse from "./partials/CreateCourse";

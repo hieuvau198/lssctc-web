@@ -20,10 +20,12 @@ import Quiz from "../../pages/Trainee/Quiz/Quiz";
 import Program from "../../pages/Trainee/Program/Program";
 import AboutUs from "../../layouts/AboutUs/AboutUs";
 import CertificateForm from "../../pages/Trainee/Certificate/Certificate";
-import CourseList from "../../pages/ProgramManager/Courses";
-import Courses from "../../pages/ProgramManager/Courses";
+import CourseList from "../../pages/ProgramManager/Course/Courses";
+import Courses from "../../pages/ProgramManager/Course/Courses";
 import ProgramManagerLayout from "../../layouts/ProgramManagerLayout/ProgramManagerLayout";
 import Profile from "../../pages/Trainee/Profile/Profile";
+import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
+import ProgramList from "../../pages/ProgramManager/Program/ProgramList";
 
 const MainRoutes = () => {
   return (
@@ -38,6 +40,7 @@ const MainRoutes = () => {
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/course" element={<Course />} />
         <Route path="/program" element={<Program />} />
+
         <Route path="/about" element={<AboutUs />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/certificate" element={<CertificateForm />} />
@@ -67,6 +70,7 @@ const MainRoutes = () => {
       {/* Program Manager Routes */}
       <Route path="/programManager" element={<ProgramManagerLayout />}>
         <Route path="courses" element={<Courses />} />
+        <Route path="programs" element={<ProgramList />} />
       </Route>
     </Routes>
   );

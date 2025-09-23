@@ -1,9 +1,10 @@
 import React from "react";
 import { Card } from "antd";
 
-const ProgramCard = ({ program }) => (
+const ProgramCard = ({ program, onClick }) => (
   <Card
     hoverable
+    onClick={onClick}
     cover={
       <img
         alt={program.name}
