@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Avatar, Typography, Divider, Button } from 'antd';
+import PageNav from '../../../components/PageNav/PageNav';
 
 const { Title, Text } = Typography;
 
@@ -37,6 +38,9 @@ export default function Profile() {
   return (
     <div className="max-w-[980px] mx-auto px-4 py-6 space-y-6">
       {/* Header */}
+      <div className="max-w-[980px] mx-auto px-0">
+  <PageNav nameMap={{ profile: 'Profile' }} />
+      </div>
       <div className="bg-white border rounded-xl p-6 flex items-start justify-between gap-3">
         <div>
           <Title level={3} className="!mb-1">Profile</Title>

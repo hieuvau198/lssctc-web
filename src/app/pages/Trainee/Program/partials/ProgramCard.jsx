@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "antd";
+import { Card, Tag } from "antd";
 
 const ProgramCard = ({ program, onClick }) => (
   <Card
@@ -39,15 +39,9 @@ const ProgramCard = ({ program, onClick }) => (
         </p>
         <p>
           <span className="font-medium">Status:</span>{" "}
-          <span
-            className={
-              program.isActive
-                ? "text-green-600 font-semibold"
-                : "text-gray-400"
-            }
-          >
+          <Tag color={program.isActive ? "green" : "red"}>
             {program.isActive ? "Active" : "Inactive"}
-          </span>
+          </Tag>
         </p>
       </div>
     </div>

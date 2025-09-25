@@ -4,7 +4,7 @@ import {
   addCourse,
   updateCourse,
 } from "../../../apis/ProgramManager/CourseApi";
-import { Spin, Alert, message } from "antd";
+import { Skeleton, Alert, message } from "antd";
 import CourseDetail from "./partials/CourseDetail";
 import CreateCourse from "./partials/CreateCourse";
 import EditCourse from "./partials/EditCourse";
@@ -121,8 +121,23 @@ const Courses = () => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
-        <Spin size="large" tip="Loading courses..." />
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6">Course Management</h2>
+        <div className="mb-6">
+          <Skeleton active paragraph={{ rows: 2 }} />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 9 }).map((_, idx) => (
+            <div key={idx} className="bg-white rounded-lg shadow">
+              <div className="w-full h-36 overflow-hidden rounded-t-lg">
+                <Skeleton.Image active className="!w-full !h-36" />
+              </div>
+              <div className="p-4">
+                <Skeleton active title paragraph={{ rows: 2 }} />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   if (error)

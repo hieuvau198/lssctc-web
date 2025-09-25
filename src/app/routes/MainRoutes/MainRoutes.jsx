@@ -26,6 +26,7 @@ import ProgramManagerLayout from "../../layouts/ProgramManagerLayout/ProgramMana
 import Profile from "../../pages/Trainee/Profile/Profile";
 import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
 import ProgramList from "../../pages/ProgramManager/Program/ProgramList";
+import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
 
 const MainRoutes = () => {
   return (
@@ -40,7 +41,8 @@ const MainRoutes = () => {
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/course" element={<Course />} />
         <Route path="/program" element={<Program />} />
-
+        <Route path="/program/:id" element={<ProgramDetail />} />
+        <Route path="/simulator" element={<SimulationPlatform />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/certificate" element={<CertificateForm />} />

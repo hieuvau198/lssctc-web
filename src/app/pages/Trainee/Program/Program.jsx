@@ -1,46 +1,74 @@
 import React, { useEffect, useState } from "react";
 import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
-import { Input, Spin, Alert, Empty } from "antd";
+import { Input, Skeleton, Alert, Empty, Pagination } from "antd";
 import ProgramCard from "./partials/ProgramCard";
-import ProgramDetail from "./partials/ProgramDetail";
+import { useNavigate } from "react-router";
 
 const { Search } = Input;
 
 const Program = () => {
   const [programs, setPrograms] = useState([]);
-  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedProgram, setSelectedProgram] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    let isCancelled = false;
     setLoading(true);
-    fetchPrograms()
+    fetchPrograms({
+      PageNumber: pageNumber,
+      PageSize: pageSize,
+      IsActive: true,
+      IsDeleted: false,
+      SearchTerm: searchValue || undefined,
+    })
       .then((data) => {
-        setPrograms(data.items);
-        setFiltered(data.items);
+        if (isCancelled) return;
+        const items = data?.items || data?.data || [];
+        setPrograms(items);
+        // Try to find total from common keys; fallback to items length
+        const t = data?.totalItems ?? data?.total ?? data?.totalCount ?? items.length ?? 0;
+        setTotal(typeof t === 'number' ? t : Number(t) || 0);
         setLoading(false);
       })
       .catch((err) => {
+        if (isCancelled) return;
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+    return () => {
+      isCancelled = true;
+    };
+  }, [pageNumber, pageSize, searchValue]);
 
+  // Optional: Reset to first page when searching
   useEffect(() => {
-    const val = searchValue.trim().toLowerCase();
-    if (!val) {
-      setFiltered(programs);
-      return;
-    }
-    setFiltered(programs.filter((p) => p.name.toLowerCase().includes(val)));
-  }, [searchValue, programs]);
+    setPageNumber(1);
+  }, [searchValue]);
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
-        <Spin size="large" tip="Loading programs..." />
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6">Programs</h2>
+        <div className="mb-8">
+          <Skeleton.Input active size="large" className="!w-full md:!w-1/2" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <div key={idx} className="bg-white rounded-lg shadow">
+              <div className="w-full h-40 overflow-hidden rounded-t-lg">
+                <Skeleton.Image active className="!w-full !h-40" />
+              </div>
+              <div className="p-4">
+                <Skeleton active title={{ width: '60%' }} paragraph={{ rows: 2 }} />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   if (error)
@@ -50,16 +78,8 @@ const Program = () => {
       </div>
     );
 
-  if (selectedProgram)
-    return (
-      <ProgramDetail
-        id={selectedProgram}
-        onBack={() => setSelectedProgram(null)}
-      />
-    );
-
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold mb-6">Programs</h2>
       <Search
         placeholder="Search programs by name"
@@ -69,18 +89,32 @@ const Program = () => {
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
       />
-      {filtered.length === 0 ? (
+      {programs.length === 0 ? (
         <Empty description="No programs found." className="mt-16" />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((program) => (
-            <ProgramCard
-              key={program.id}
-              program={program}
-              onClick={() => setSelectedProgram(program.id)}
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {programs.map((program) => (
+              <ProgramCard
+                key={program.id}
+                program={program}
+                onClick={() => navigate(`/program/${program.id}`)}
+              />
+            ))}
+          </div>
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              current={pageNumber}
+              pageSize={pageSize}
+              total={total}
+              showSizeChanger
+              onChange={(page, size) => {
+                setPageNumber(page);
+                setPageSize(size);
+              }}
             />
-          ))}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

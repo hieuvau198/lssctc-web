@@ -5,25 +5,25 @@
 const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
 
 export async function fetchPrograms({
-  pageNumber = 1,
-  pageSize = 10,
-  searchTerm = "",
-  isActive = true,
-  isDeleted = false,
-  minDurationHours = 0,
-  maxDurationHours = 100,
+  PageNumber = 1,
+  PageSize = 10,
+  IsActive = true,
+  IsDeleted = false,
+  SearchTerm,
+  MinDurationHours,
+  MaxDurationHours,
 } = {}) {
-  const params = new URLSearchParams({
-    PageNumber: pageNumber,
-    PageSize: pageSize,
-    SearchTerm: searchTerm,
-    IsActive: isActive,
-    IsDeleted: isDeleted,
-    MinDurationHours: minDurationHours,
-    MaxDurationHours: maxDurationHours,
+  const q = new URLSearchParams({
+    PageNumber: String(PageNumber),
+    PageSize: String(PageSize),
+    IsActive: String(IsActive),
+    IsDeleted: String(IsDeleted),
   });
+  if (SearchTerm) q.append('SearchTerm', SearchTerm);
+  if (MinDurationHours != null) q.append('MinDurationHours', String(MinDurationHours));
+  if (MaxDurationHours != null) q.append('MaxDurationHours', String(MaxDurationHours));
 
-  const response = await fetch(`${API_BASE_URL}/Programs?${params}`);
+  const response = await fetch(`${API_BASE_URL}/Programs?${q.toString()}`);
   if (!response.ok) {
     throw new Error("Failed to fetch programs");
   }

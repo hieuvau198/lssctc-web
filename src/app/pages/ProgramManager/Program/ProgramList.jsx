@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchPrograms } from "../../../apis/ProgramManager/ProgramManagerCourseApi";
-import { Input, Spin, Alert, Empty, Button } from "antd";
+import { Input, Skeleton, Alert, Empty, Button } from "antd";
 import ProgramCard from "./partials/ProgramCard";
 
 const { Search } = Input;
@@ -34,8 +34,30 @@ const ProgramList = () => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
-        <Spin size="large" tip="Loading programs..." />
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Program Management</h2>
+          <Skeleton.Button active className="!w-32" />
+        </div>
+        <div className="mb-8" style={{ maxWidth: 320 }}>
+          <Skeleton.Input active size="large" className="!w-full" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <div key={idx} className="bg-white rounded-lg shadow">
+              <div className="w-full h-40 overflow-hidden rounded-t-lg">
+                <Skeleton.Image active className="!w-full !h-40" />
+              </div>
+              <div className="p-4">
+                <Skeleton active title={{ width: '60%' }} paragraph={{ rows: 2 }} />
+                <div className="mt-3 flex gap-2">
+                  <Skeleton.Button active className="!w-20" />
+                  <Skeleton.Button active className="!w-20" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   if (error)

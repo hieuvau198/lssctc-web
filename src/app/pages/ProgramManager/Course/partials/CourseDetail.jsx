@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchCourseDetail } from "../../../../apis/ProgramManager/CourseApi";
-import { Card, Spin, Alert, Button } from "antd";
+import { Card, Skeleton, Alert, Button } from "antd";
 
 const CourseDetail = ({ id, onBack }) => {
   const [course, setCourse] = useState(null);
@@ -22,8 +22,11 @@ const CourseDetail = ({ id, onBack }) => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
-        <Spin size="large" tip="Loading course detail..." />
+      <div className="max-w-xl mx-auto px-4 py-8">
+        <Skeleton.Button active className="mb-4 !w-20" />
+        <Card cover={<Skeleton.Image active className="!w-full !h-56" />}> 
+          <Skeleton active title paragraph={{ rows: 6 }} />
+        </Card>
       </div>
     );
   if (error)
