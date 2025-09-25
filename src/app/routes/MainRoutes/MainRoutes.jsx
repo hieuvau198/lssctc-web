@@ -8,6 +8,7 @@ import ManageCourse from "../../pages/Admin/ManageCourse/ManageCourse";
 import SimManagerLayout from "../../layouts/SimManagerLayout/SimManagerLayout";
 import SimDashboard from "../../pages/SimManager/Dashboard/Dashboard";
 import Scenarios from "../../pages/SimManager/Scenarios/Scenarios";
+import PracticeDetail from "../../pages/SimManager/Scenarios/partials/PracticeDetail";
 import SimulatorConfigs from "../../pages/SimManager/SimulatorConfigs/SimulatorConfigs";
 import Sessions from "../../pages/SimManager/Sessions/Sessions";
 import SimSettings from "../../pages/SimManager/Settings/Settings";
@@ -52,6 +53,7 @@ const MainRoutes = () => {
       <Route path="/simulationManager" element={<SimManagerLayout />}>
         <Route path="dashboard" element={<SimDashboard />} />
         <Route path="scenarios" element={<Scenarios />} />
+        <Route path="scenarios/:id" element={<PracticeDetail />} />
         <Route path="configs" element={<SimulatorConfigs />} />
         <Route path="sessions" element={<Sessions />} />
         <Route path="settings" element={<SimSettings />} />
