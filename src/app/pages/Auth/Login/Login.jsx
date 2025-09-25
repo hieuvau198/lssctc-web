@@ -47,11 +47,6 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Placeholder for Google OAuth flow
-    alert('Google login not implemented yet');
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-blue-50 px-4 py-10 ">
       <div className="w-full max-w-md bg-white/90 backdrop-blur border border-blue-100 shadow-sm rounded-lg p-8">

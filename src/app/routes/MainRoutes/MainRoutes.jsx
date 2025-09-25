@@ -20,6 +20,14 @@ import Course from "../../pages/Trainee/Course/Course";
 import Quiz from "../../pages/Trainee/Quiz/Quiz";
 import Program from "../../pages/Trainee/Program/Program";
 import AboutUs from "../../layouts/AboutUs/AboutUs";
+import CertificateForm from "../../pages/Trainee/Certificate/Certificate";
+import CourseList from "../../pages/ProgramManager/Course/Courses";
+import Courses from "../../pages/ProgramManager/Course/Courses";
+import ProgramManagerLayout from "../../layouts/ProgramManagerLayout/ProgramManagerLayout";
+import Profile from "../../pages/Trainee/Profile/Profile";
+import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
+import ProgramList from "../../pages/ProgramManager/Program/ProgramList";
+import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
 
 const MainRoutes = () => {
   return (
@@ -34,7 +42,11 @@ const MainRoutes = () => {
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/course" element={<Course />} />
         <Route path="/program" element={<Program />} />
+        <Route path="/program/:id" element={<ProgramDetail />} />
+        <Route path="/simulator" element={<SimulationPlatform />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/certificate" element={<CertificateForm />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
@@ -58,7 +70,12 @@ const MainRoutes = () => {
         <Route path="sessions" element={<Sessions />} />
         <Route path="settings" element={<SimSettings />} />
       </Route>
-      
+
+      {/* Program Manager Routes */}
+      <Route path="/programManager" element={<ProgramManagerLayout />}>
+        <Route path="courses" element={<Courses />} />
+        <Route path="programs" element={<ProgramList />} />
+      </Route>
     </Routes>
   );
 };
