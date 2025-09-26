@@ -1,6 +1,7 @@
 import React from 'react';
-import { Breadcrumb, Skeleton } from 'antd';
+import { Breadcrumb, Skeleton, Tooltip } from 'antd';
 import { Link, useLocation } from 'react-router';
+import { Home } from 'lucide-react';
 
 /**
  * PageNav: Lightweight breadcrumb/navigation for page headers.
@@ -34,10 +35,26 @@ export default function PageNav({
       .join(' ');
   };
 
+  const rootCrumb = (
+    <Link
+      to={rootHref}
+      className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 leading-none align-middle"
+      aria-label={rootLabel || 'Home'}
+      style={{ lineHeight: '1.25rem' }}
+    >
+      <Tooltip title={rootLabel || 'Home'} placement="top">
+        <span className="inline-flex items-center justify-center h-5">
+          <Home className="w-4 h-4 align-middle" />
+        </span>
+      </Tooltip>
+      <span className="sr-only">{rootLabel || 'Home'}</span>
+    </Link>
+  );
+
   const builtItems = React.useMemo(() => {
     if (Array.isArray(items) && items.length) {
       return [
-        { key: 'root', title: <Link to={rootHref}>{rootLabel}</Link> },
+        { key: 'root', title: rootCrumb },
         ...items.map((it, idx) => ({
           key: it.href || `i-${idx}`,
           title: it.href ? <Link to={it.href}>{it.title}</Link> : <span className="text-slate-700">{it.title}</span>,
@@ -47,7 +64,7 @@ export default function PageNav({
 
     const pathnames = location.pathname.split('/').filter(Boolean);
     const built = [
-      { key: 'root', title: <Link to={rootHref}>{rootLabel}</Link> },
+      { key: 'root', title: rootCrumb },
       ...pathnames.map((seg, idx) => {
         const url = '/' + pathnames.slice(0, idx + 1).join('/');
         const isLast = idx === pathnames.length - 1;
@@ -69,7 +86,7 @@ export default function PageNav({
       }),
     ];
     return built;
-  }, [items, location.pathname, rootHref, rootLabel, hideIds, nameMap]);
+  }, [items, location.pathname, rootHref, rootLabel, hideIds, nameMap, rootCrumb]);
 
   return (
     <div className={["py-2", className].join(' ').trim()}>

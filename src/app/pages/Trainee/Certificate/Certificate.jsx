@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Card, Divider } from 'antd';
 import { Award, Download } from 'lucide-react';
+import PageNav from '../../../components/PageNav/PageNav';
 
 export default function CertificateView() {
 	const cert = {
@@ -23,6 +24,7 @@ export default function CertificateView() {
 
 	return (
 		<div className="max-w-[980px] mx-auto px-4 py-6">
+			<PageNav nameMap={{ certificate: 'Certificate' }} />
 			{/* Print CSS to only render certificate area */}
 			<style>{`
 				@media print {

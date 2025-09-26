@@ -1,4 +1,5 @@
 import CourseCard from '../../../components/CourseCard/CourseCard';
+import PageNav from '../../../components/PageNav/PageNav';
 
 export default function Course() {
   // Temporary mock data; replace with hook/API once backend schema is ready.
@@ -53,6 +54,7 @@ export default function Course() {
   return (
     <div className="min-h-[60vh] bg-white">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8 py-10">
+        <PageNav nameMap={{ course: 'Courses' }} />
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
