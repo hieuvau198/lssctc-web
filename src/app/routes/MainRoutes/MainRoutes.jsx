@@ -28,7 +28,8 @@ import Profile from "../../pages/Trainee/Profile/Profile";
 import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
 import ProgramList from "../../pages/ProgramManager/Program/ProgramList";
 import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
-
+import InstructorLayout from "../../layouts/InstructorLayout/InstructorLayout";
+import InstructorQuizzesPage from "../../pages/Instructor/Quiz/page";
 const MainRoutes = () => {
   return (
     <Routes>
@@ -76,6 +77,12 @@ const MainRoutes = () => {
         <Route path="courses" element={<Courses />} />
         <Route path="programs" element={<ProgramList />} />
       </Route>
+
+      {/* Instructor Routes */}
+      <Route path="/instructor" element={<InstructorLayout />}>
+        <Route path="quizzes" element={<InstructorQuizzesPage />} />
+      </Route>
+
     </Routes>
   );
 };
