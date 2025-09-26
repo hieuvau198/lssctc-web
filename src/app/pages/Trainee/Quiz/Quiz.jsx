@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PageNav from '../../../components/PageNav/PageNav';
 import QuizHeader from './partials/QuizHeader';
 import QuizProgress from './partials/QuizProgress';
 import QuizQuestion from './partials/QuizQuestion';
@@ -94,6 +95,7 @@ export default function Quiz() {
     return (
       <div className="min-h-[60vh] bg-white">
         <div className="mx-auto w-full max-w-[1160px] md:max-w-[1320px] px-4 sm:px-6 lg:px-8 py-10">
+          <PageNav nameMap={{ quiz: 'Quiz' }} />
           <QuizSummary questions={questions} answers={answers} onRestart={onRestart} />
         </div>
       </div>
@@ -105,6 +107,7 @@ export default function Quiz() {
   return (
     <div className="min-h-[60vh] bg-white">
       <div className="mx-auto w-full max-w-[1160px] md:max-w-[1320px] px-4 sm:px-6 lg:px-8 py-10">
+        <PageNav nameMap={{ quiz: 'Quiz' }} />
         <QuizHeader
           title="Safety Basics Quiz"
           timeLeftSec={timeLeft}
