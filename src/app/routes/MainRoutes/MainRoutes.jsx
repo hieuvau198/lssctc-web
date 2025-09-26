@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router";
+import { Route, Routes } from "react-router-dom";
 import AboutUs from "../../layouts/AboutUs/AboutUs";
 import AdminLayout from "../../layouts/AdminLayout/AdminLayout";
 import NotFound from "../../layouts/NotFound/NotFound";
@@ -13,7 +13,7 @@ import ForgotPassword from "../../pages/Auth/ForgotPassword/ForgotPassword";
 import Login from "../../pages/Auth/Login/Login";
 import Home from "../../pages/Home/Home";
 import Courses from "../../pages/ProgramManager/Course/Courses";
-import ProgramList from "../../pages/ProgramManager/Program/ProgramList";
+
 import SimDashboard from "../../pages/SimManager/Dashboard/Dashboard";
 import Scenarios from "../../pages/SimManager/Scenarios/Scenarios";
 import PracticeDetail from "../../pages/SimManager/Scenarios/partials/PracticeDetail";
@@ -34,13 +34,9 @@ import InstructorLayout from "../../layouts/InstructorLayout/InstructorLayout";
 import InstructorQuizzesPage from "../../pages/Instructor/Quiz/page";
 
 import LessonSessionPlaceholder from "../../modules/Session/LessonSessionPlaceholder";
-
-import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
 import ProgramEdit from "../../pages/ProgramManager/Program/partials/ProgramEdit";
 import ManagerProgramList from "../../pages/ProgramManager/Program/ManagerProgramList";
 import ManagerProgramDetail from "../../pages/ProgramManager/Program/partials/ManagerProgramDetail";
-
-
 
 const MainRoutes = () => {
   return (
@@ -104,7 +100,6 @@ const MainRoutes = () => {
       <Route path="/instructor" element={<InstructorLayout />}>
         <Route path="quizzes" element={<InstructorQuizzesPage />} />
       </Route>
-
     </Routes>
   );
 };
