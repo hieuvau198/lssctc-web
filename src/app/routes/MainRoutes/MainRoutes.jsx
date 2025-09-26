@@ -5,6 +5,7 @@ import NotFound from "../../layouts/NotFound/NotFound";
 import ProgramManagerLayout from "../../layouts/ProgramManagerLayout/ProgramManagerLayout";
 import SimManagerLayout from "../../layouts/SimManagerLayout/SimManagerLayout";
 import TraineeLayout from "../../layouts/TraineeLayout/TraineeLayout";
+import SessionLayout from "../../layouts/SessionLayout/SessionLayout";
 import Dashboard from "../../pages/Admin/Dashboard/Dashboard";
 import ManageCourse from "../../pages/Admin/ManageCourse/ManageCourse";
 import ManageUser from "../../pages/Admin/ManageUser/ManageUser";
@@ -27,6 +28,7 @@ import Program from "../../pages/Trainee/Program/Program";
 import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
 import Quiz from "../../pages/Trainee/Quiz/Quiz";
 import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
+import LessonSessionPlaceholder from "../../modules/Session/LessonSessionPlaceholder";
 
 const MainRoutes = () => {
   return (
@@ -66,7 +68,6 @@ const MainRoutes = () => {
         <Route path="scenarios" element={<Scenarios />} />
         <Route path="scenarios/:id" element={<PracticeDetail />} />
         <Route path="configs" element={<SimulatorConfigs />} />
-        <Route path="sessions" element={<Sessions />} />
         <Route path="settings" element={<SimSettings />} />
       </Route>
 
@@ -74,6 +75,15 @@ const MainRoutes = () => {
       <Route path="/programManager" element={<ProgramManagerLayout />}>
         <Route path="courses" element={<Courses />} />
         <Route path="programs" element={<ProgramList />} />
+      </Route>
+
+      {/* Learning Session (in-course) Routes */}
+      <Route
+        path="/learn"
+        element={<SessionLayout itemsLoading={false} items={[]} />}
+      >
+        <Route index element={<LessonSessionPlaceholder />} />
+        <Route path=":activityId" element={<LessonSessionPlaceholder />} />
       </Route>
     </Routes>
   );
