@@ -5,17 +5,43 @@ import {
   getPracticeById,
   updatePractice,
   deletePractice,
+  getPracticeStepsByPracticeId,
+  createPracticeStep,
+  updatePracticeStep,
+  deletePracticeStep
 } from '../../../../apis/SimulationManager/SimulationManagerPracticeApi';
+import CreateUpdateStep from "./CreateUpdateStep";
+
 
 export default function PracticeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // Practice info
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
+
+  // Steps
+  const [steps, setSteps] = useState([]);
+  const [stepsLoading, setStepsLoading] = useState(true);
+  const [stepsError, setStepsError] = useState(null);
+
+  // Step editing/creating state
+  const [showStepForm, setShowStepForm] = useState(false);
+  const [editingStep, setEditingStep] = useState(null);
+
+
+  // Load practice and steps
+  const loadSteps = () => {
+    setStepsLoading(true);
+    getPracticeStepsByPracticeId(id)
+      .then(setSteps)
+      .catch(() => setStepsError('Could not fetch practice steps'))
+      .finally(() => setStepsLoading(false));
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -23,13 +49,16 @@ export default function PracticeDetail() {
       .then((data) => {
         setForm(data);
         setLoading(false);
+        loadSteps();
       })
       .catch(() => {
         setError('Could not fetch practice');
         setLoading(false);
       });
+    // eslint-disable-next-line
   }, [id]);
 
+  // Practice update/delete
   const handleUpdate = () => {
     setUpdating(true);
     updatePractice(id, form)
@@ -56,6 +85,28 @@ export default function PracticeDetail() {
       });
   };
 
+  // Step create/update/delete handlers
+  const handleStepSubmit = (data) => {
+    const action = editingStep
+      ? updatePracticeStep(editingStep.id, data)
+      : createPracticeStep(data);
+
+    action.then(() => {
+      loadSteps();
+      setShowStepForm(false);
+      setEditingStep(null);
+    });
+  };
+
+  const handleStepDelete = (stepId) => {
+    deletePracticeStep(stepId).then(() => {
+      loadSteps();
+      setShowStepForm(false);
+      setEditingStep(null);
+    });
+  };
+
+  // UI logic
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   if (!form) return null;
@@ -139,6 +190,78 @@ export default function PracticeDetail() {
             Delete
           </button>
         </div>
+      </div>
+            {/* Steps section */}
+      <div className="mt-6">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-base font-semibold">Practice Steps</h3>
+          <button
+            className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+            onClick={() => {
+              setEditingStep(null);
+              setShowStepForm(true);
+            }}
+          >
+            Add Step
+          </button>
+        </div>
+
+        {showStepForm && (
+          <CreateUpdateStep
+            step={editingStep}
+            practiceId={id}
+            onSubmit={handleStepSubmit}
+            onDelete={handleStepDelete}
+            onCancel={() => {
+              setShowStepForm(false);
+              setEditingStep(null);
+            }}
+          />
+        )}
+
+        {stepsLoading ? (
+          <div>Loading steps...</div>
+        ) : stepsError ? (
+          <div className="text-red-500">{stepsError}</div>
+        ) : steps.length === 0 ? (
+          <div>No steps found for this practice.</div>
+        ) : (
+          <ol className="list-decimal pl-6 space-y-2">
+            {steps.map(step => (
+              <li key={step.id} className="bg-slate-50 border rounded p-2 flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                  <div className="font-semibold">{step.stepName}</div>
+                  {step.stepDescription && (
+                    <div className="text-xs text-slate-700 mb-1">{step.stepDescription}</div>
+                  )}
+                  {step.expectedResult && (
+                    <div className="text-xs text-slate-500">Expected: {step.expectedResult}</div>
+                  )}
+                  <div className="text-xs text-slate-400">Order: {step.stepOrder}</div>
+                </div>
+                <div className="mt-2 md:mt-0 flex gap-2">
+                  <button
+                    className="text-blue-600 hover:underline"
+                    onClick={() => {
+                      setEditingStep(step);
+                      setShowStepForm(true);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="text-red-500 hover:underline"
+                    onClick={() => {
+                      if (window.confirm("Delete this step?")) handleStepDelete(step.id);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
       </div>
     </div>
   );
