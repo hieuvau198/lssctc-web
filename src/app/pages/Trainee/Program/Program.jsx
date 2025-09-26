@@ -3,6 +3,7 @@ import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
 import { Input, Skeleton, Alert, Empty, Pagination } from "antd";
 import ProgramCard from "./partials/ProgramCard";
 import { useNavigate } from "react-router";
+import PageNav from "../../../components/PageNav/PageNav";
 
 const { Search } = Input;
 
@@ -10,6 +11,9 @@ const Program = () => {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // searchInput: current text user is typing (no fetch on each key)
+  // searchValue: committed term (Enter / search button) used to fetch
+  const [searchInput, setSearchInput] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -53,6 +57,7 @@ const Program = () => {
   if (loading)
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
+        <PageNav nameMap={{ program: 'Programs' }} />
         <h2 className="text-2xl font-bold mb-6">Programs</h2>
         <div className="mb-8">
           <Skeleton.Input active size="large" className="!w-full md:!w-1/2" />
@@ -80,14 +85,19 @@ const Program = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <PageNav nameMap={{ program: 'Programs' }} />
       <h2 className="text-2xl font-bold mb-6">Programs</h2>
       <Search
         placeholder="Search programs by name"
         allowClear
         size="large"
         className="mb-8"
-        value={searchValue}
-        onChange={(e) => setSearchValue(e.target.value)}
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        onSearch={(v) => {
+          setSearchValue(v.trim());
+        }}
+        enterButton
       />
       {programs.length === 0 ? (
         <Empty description="No programs found." className="mt-16" />

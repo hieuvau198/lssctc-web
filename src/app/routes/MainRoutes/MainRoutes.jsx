@@ -1,32 +1,31 @@
 import { Route, Routes } from "react-router";
+import AboutUs from "../../layouts/AboutUs/AboutUs";
 import AdminLayout from "../../layouts/AdminLayout/AdminLayout";
 import NotFound from "../../layouts/NotFound/NotFound";
+import ProgramManagerLayout from "../../layouts/ProgramManagerLayout/ProgramManagerLayout";
+import SimManagerLayout from "../../layouts/SimManagerLayout/SimManagerLayout";
 import TraineeLayout from "../../layouts/TraineeLayout/TraineeLayout";
 import Dashboard from "../../pages/Admin/Dashboard/Dashboard";
-import ManageUser from "../../pages/Admin/ManageUser/ManageUser";
 import ManageCourse from "../../pages/Admin/ManageCourse/ManageCourse";
-import SimManagerLayout from "../../layouts/SimManagerLayout/SimManagerLayout";
+import ManageUser from "../../pages/Admin/ManageUser/ManageUser";
+import ForgotPassword from "../../pages/Auth/ForgotPassword/ForgotPassword";
+import Login from "../../pages/Auth/Login/Login";
+import Home from "../../pages/Home/Home";
+import Courses from "../../pages/ProgramManager/Course/Courses";
+import ProgramList from "../../pages/ProgramManager/Program/ProgramList";
 import SimDashboard from "../../pages/SimManager/Dashboard/Dashboard";
 import Scenarios from "../../pages/SimManager/Scenarios/Scenarios";
 import PracticeDetail from "../../pages/SimManager/Scenarios/partials/PracticeDetail";
-import SimulatorConfigs from "../../pages/SimManager/SimulatorConfigs/SimulatorConfigs";
 import Sessions from "../../pages/SimManager/Sessions/Sessions";
 import SimSettings from "../../pages/SimManager/Settings/Settings";
-import ForgotPassword from "../../pages/Auth/ForgotPassword/ForgotPassword";
-import Login from "../../pages/Auth/Login/Login";
-import Register from "../../pages/Auth/Register/Register";
-import Home from "../../pages/Home/Home";
-import Course from "../../pages/Trainee/Course/Course";
-import Quiz from "../../pages/Trainee/Quiz/Quiz";
-import Program from "../../pages/Trainee/Program/Program";
-import AboutUs from "../../layouts/AboutUs/AboutUs";
+import SimulatorConfigs from "../../pages/SimManager/SimulatorConfigs/SimulatorConfigs";
 import CertificateForm from "../../pages/Trainee/Certificate/Certificate";
-import CourseList from "../../pages/ProgramManager/Course/Courses";
-import Courses from "../../pages/ProgramManager/Course/Courses";
-import ProgramManagerLayout from "../../layouts/ProgramManagerLayout/ProgramManagerLayout";
+import Course from "../../pages/Trainee/Course/Course";
+import CourseDetail from "../../pages/Trainee/Course/partials/CourseDetail";
 import Profile from "../../pages/Trainee/Profile/Profile";
+import Program from "../../pages/Trainee/Program/Program";
 import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
-import ProgramList from "../../pages/ProgramManager/Program/ProgramList";
+import Quiz from "../../pages/Trainee/Quiz/Quiz";
 import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
 
 const MainRoutes = () => {
@@ -34,6 +33,9 @@ const MainRoutes = () => {
     <Routes>
       {/* 404 Not Found Route */}
       <Route path="*" element={<NotFound />} />
+      <Route path="/login" element={<Login />} />
+      {/* <Route path="/register" element={<Register />} /> */}
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* Public/Trainee Routes */}
       <Route element={<TraineeLayout />}>
@@ -41,17 +43,14 @@ const MainRoutes = () => {
         <Route path="/" element={<Home />} />
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/course" element={<Course />} />
+        <Route path="/course/:id" element={<CourseDetail />} />
         <Route path="/program" element={<Program />} />
         <Route path="/program/:id" element={<ProgramDetail />} />
         <Route path="/simulator" element={<SimulationPlatform />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/certificate" element={<CertificateForm />} />
-
         {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        {/* <Route path="/register" element={<Register />} /> */}
-        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Route>
 
       {/* Admin Routes */}
