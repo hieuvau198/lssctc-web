@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Button } from "antd";
 
-const ProgramCard = ({ program, onEdit, onDelete }) => (
+const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
   <Card
     hoverable
     className="rounded-lg shadow flex flex-col h-full"
@@ -13,6 +13,7 @@ const ProgramCard = ({ program, onEdit, onDelete }) => (
       />
     }
     bodyStyle={{ display: "flex", flexDirection: "column", height: "100%" }}
+    onClick={onDetail}
   >
     <div style={{ flex: 1 }}>
       <Card.Meta
@@ -35,14 +36,27 @@ const ProgramCard = ({ program, onEdit, onDelete }) => (
       </span>
     </div>
     <div className="flex justify-end gap-2 mt-auto">
-      <Button type="link" onClick={onEdit}>
+      <Button
+        type="link"
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit();
+        }}
+      >
         Edit
       </Button>
-      <Button type="link" danger onClick={onDelete}>
+      <Button
+        type="link"
+        danger
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
+      >
         Delete
       </Button>
     </div>
   </Card>
 );
 
-export default ProgramCard;
+export default ManagerProgramCard;

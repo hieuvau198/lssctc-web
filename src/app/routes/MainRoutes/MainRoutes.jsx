@@ -26,9 +26,16 @@ import CourseDetail from "../../pages/Trainee/Course/partials/CourseDetail";
 import Profile from "../../pages/Trainee/Profile/Profile";
 import Program from "../../pages/Trainee/Program/Program";
 import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
+
 import Quiz from "../../pages/Trainee/Quiz/Quiz";
 import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
 import LessonSessionPlaceholder from "../../modules/Session/LessonSessionPlaceholder";
+
+import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
+import ProgramEdit from "../../pages/ProgramManager/Program/partials/ProgramEdit";
+import ManagerProgramList from "../../pages/ProgramManager/Program/ManagerProgramList";
+import ManagerProgramDetail from "../../pages/ProgramManager/Program/partials/ManagerProgramDetail";
+
 
 const MainRoutes = () => {
   return (
@@ -74,7 +81,9 @@ const MainRoutes = () => {
       {/* Program Manager Routes */}
       <Route path="/programManager" element={<ProgramManagerLayout />}>
         <Route path="courses" element={<Courses />} />
-        <Route path="programs" element={<ProgramList />} />
+        <Route path="programs" element={<ManagerProgramList />} />
+        <Route path="programs/:id" element={<ManagerProgramDetail />} />
+        <Route path="programs/:id/edit" element={<ProgramEdit />} />
       </Route>
 
       {/* Learning Session (in-course) Routes */}
