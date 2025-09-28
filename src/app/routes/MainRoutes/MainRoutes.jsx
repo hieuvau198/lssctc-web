@@ -24,7 +24,8 @@ import CertificateForm from "../../pages/Trainee/Certificate/Certificate";
 import Course from "../../pages/Trainee/Course/Course";
 import CourseDetail from "../../pages/Trainee/Course/partials/CourseDetail";
 import Profile from "../../pages/Trainee/Profile/Profile";
-
+import InstructorLayout from "../../layouts/InstructorLayout/InstructorLayout";
+import InstructorQuizzesPage from "../../pages/Instructor/Quiz/page";
 const MainRoutes = () => {
   return (
     <Routes>
@@ -84,6 +85,12 @@ const MainRoutes = () => {
       </Route>
 
       {/* Instructor Routes */}
+      <Route path="/instructor" element={<InstructorLayout />}>
+        <Route path="quizzes" element={<InstructorQuizzesPage />} />
+      </Route>
+
+
+       {/* Instructor Routes */}
       <Route path="/instructor" element={<InstructorLayout />}>
         <Route path="quizzes" element={<InstructorQuizzesPage />} />
       </Route>
