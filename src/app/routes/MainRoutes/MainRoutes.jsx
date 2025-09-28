@@ -24,19 +24,6 @@ import CertificateForm from "../../pages/Trainee/Certificate/Certificate";
 import Course from "../../pages/Trainee/Course/Course";
 import CourseDetail from "../../pages/Trainee/Course/partials/CourseDetail";
 import Profile from "../../pages/Trainee/Profile/Profile";
-import Program from "../../pages/Trainee/Program/Program";
-import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
-
-import Quiz from "../../pages/Trainee/Quiz/Quiz";
-import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
-
-import InstructorLayout from "../../layouts/InstructorLayout/InstructorLayout";
-import InstructorQuizzesPage from "../../pages/Instructor/Quiz/page";
-
-import LessonSessionPlaceholder from "../../modules/Session/LessonSessionPlaceholder";
-import ProgramEdit from "../../pages/ProgramManager/Program/partials/ProgramEdit";
-import ManagerProgramList from "../../pages/ProgramManager/Program/ManagerProgramList";
-import ManagerProgramDetail from "../../pages/ProgramManager/Program/partials/ManagerProgramDetail";
 
 const MainRoutes = () => {
   return (
@@ -100,7 +87,20 @@ const MainRoutes = () => {
       <Route path="/instructor" element={<InstructorLayout />}>
         <Route path="quizzes" element={<InstructorQuizzesPage />} />
       </Route>
+
+
+       {/* Instructor Routes */}
+      <Route path="/instructor" element={<InstructorLayout />}>
+        <Route path="quizzes" element={<InstructorQuizzesPage />} />
+      </Route>
     </Routes>
+
+    
+    
+    
+    
+           
+    
   );
 };
 export default MainRoutes;
