@@ -1,4 +1,4 @@
-// src/app/pages/SimManager/Practices/Practices.jsx
+// src\app\pages\SimManager\Practices\Practices.jsx
 import React, { useEffect, useState } from 'react';
 import { getPractices } from '../../../apis/SimulationManager/SimulationManagerPracticeApi';
 import { Link } from 'react-router-dom';

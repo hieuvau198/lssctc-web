@@ -1,4 +1,4 @@
-// src/app/pages/SimManager/Practices/PracticeDetail/CreateUpdateStep.jsx
+// src\app\pages\SimManager\Practices\PracticeDetail\PracticeStep\CreateUpdateStep.jsx
 import React, { useState, useEffect } from 'react';
 
 export default function CreateUpdateStep({
