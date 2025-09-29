@@ -11,6 +11,7 @@ const ManagerProgramList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchValue, setSearchValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [total, setTotal] = useState(0);
@@ -18,7 +19,7 @@ const ManagerProgramList = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetchPrograms({ pageNumber, pageSize, searchTerm: searchValue })
+    fetchPrograms({ pageNumber, pageSize, searchTerm })
       .then((data) => {
         setPrograms(data.items);
         setTotal(data.totalCount || 0);
@@ -28,7 +29,12 @@ const ManagerProgramList = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [pageNumber, pageSize, searchValue]);
+  }, [pageNumber, pageSize, searchTerm]);
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    setPageNumber(1);
+  };
 
   if (loading)
     return (
@@ -49,9 +55,7 @@ const ManagerProgramList = () => {
         <h2 className="text-2xl font-bold">Program Management</h2>
         <Button
           type="primary"
-          onClick={() => {
-            /* handle add */
-          }}
+          onClick={() => navigate("/programManager/programs/create")}
         >
           + Add Program
         </Button>
@@ -62,10 +66,8 @@ const ManagerProgramList = () => {
         size="large"
         className="mb-8"
         value={searchValue}
-        onChange={(e) => {
-          setSearchValue(e.target.value);
-          setPageNumber(1);
-        }}
+        onChange={(e) => setSearchValue(e.target.value)}
+        onSearch={handleSearch}
         style={{ maxWidth: 320 }}
       />
       {programs.length === 0 ? (

@@ -56,6 +56,12 @@ export async function updateProgramEntryRequirements(id, requirements) {
   return response.data;
 }
 
+// Create a new program
+export async function createProgram(payload) {
+  const response = await axios.post(`${API_BASE_URL}/Programs`, payload);
+  return response.data;
+}
+
 // Fetch list of courses with paging and filtering
 export async function fetchCourses(params = {}) {
   const searchParams = new URLSearchParams();

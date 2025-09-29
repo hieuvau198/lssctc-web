@@ -45,7 +45,7 @@ const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
       >
         Edit
       </Button>
-      <Button
+      {/* <Button
         type="link"
         danger
         onClick={(e) => {
@@ -54,7 +54,7 @@ const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
         }}
       >
         Delete
-      </Button>
+      </Button> */}
     </div>
   </Card>
 );
