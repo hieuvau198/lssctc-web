@@ -94,7 +94,7 @@ export default function Quiz() {
   if (submitted) {
     return (
       <div className="min-h-[60vh] bg-white">
-        <div className="mx-auto w-full max-w-[1160px] md:max-w-[1320px] px-4 sm:px-6 lg:px-8 py-10">
+  <div className="mx-auto w-full max-w-[1160px] md:max-w-[1320px] px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
           <PageNav nameMap={{ quiz: 'Quiz' }} />
           <QuizSummary questions={questions} answers={answers} onRestart={onRestart} />
         </div>
@@ -106,7 +106,7 @@ export default function Quiz() {
 
   return (
     <div className="min-h-[60vh] bg-white">
-      <div className="mx-auto w-full max-w-[1160px] md:max-w-[1320px] px-4 sm:px-6 lg:px-8 py-10">
+  <div className="mx-auto w-full max-w-[1160px] md:max-w-[1320px] px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <PageNav nameMap={{ quiz: 'Quiz' }} />
         <QuizHeader
           title="Safety Basics Quiz"
@@ -119,11 +119,11 @@ export default function Quiz() {
         <div className="flex flex-col gap-6">
           <QuizQuestion q={q} value={answers[index]} onChange={onSelect} index={index} />
 
-          <div className="flex items-center justify-between">
-            <div className="hidden md:block">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 md:justify-between">
+            <div className="order-2 md:order-1 hidden md:block">
               <QuizProgress answers={answers} currentIndex={index} onJump={jumpTo} />
             </div>
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center gap-2 md:ml-auto order-1 md:order-2">
               <button onClick={prevQ} disabled={index === 0} className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 bg-white disabled:opacity-50">Prev</button>
               {index < questions.length - 1 ? (
                 <button onClick={nextQ} className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700">Next</button>

@@ -42,12 +42,12 @@ export default function SimulationPlatform() {
   }, [downloadUrl]);
 
   return (
-    <div className="bg-white min-h-[60vh]">
-      <div className="mx-auto w-full max-w-[1160px] md:max-w-[1320px] px-4 sm:px-6 lg:px-8 py-10">
+    <div className="bg-white ">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <PageNav nameMap={{ simulator: 'Simulator' }} />
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">3D Simulation Platform</h1>
-          <p className="text-slate-600 max-w-2xl">Download and install the native 3D crane simulation client to practice operational scenarios with realistic physics and assessment tracking.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-2">3D Simulation Platform</h1>
+          <p className="text-slate-600 max-w-2xl text-sm sm:text-base">Download and install the native 3D crane simulation client to practice operational scenarios with realistic physics and assessment tracking.</p>
         </header>
 
         <div className="flex flex-col gap-6 mb-12">

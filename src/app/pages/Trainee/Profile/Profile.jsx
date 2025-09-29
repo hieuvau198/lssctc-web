@@ -10,7 +10,7 @@ export default function Profile() {
   try {
     const raw = localStorage.getItem('user');
     storedUser = raw ? JSON.parse(raw) : null;
-  } catch {}
+  } catch { }
 
   const [imgErr, setImgErr] = useState(false);
 
@@ -39,32 +39,40 @@ export default function Profile() {
     <div className="max-w-[980px] mx-auto px-4 py-6 space-y-6">
       {/* Header */}
       <div className="max-w-[980px] mx-auto px-0">
-  <PageNav nameMap={{ profile: 'Profile' }} />
+        <PageNav nameMap={{ profile: 'Profile' }} />
       </div>
-      <div className="bg-white border rounded-xl p-6 flex items-start justify-between gap-3">
-        <div>
-          <Title level={3} className="!mb-1">Profile</Title>
-          <Text type="secondary">Your personal information</Text>
+      <div className="bg-white border rounded-xl p-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <Title level={3} className="!mb-1 text-xl sm:!text-2xl">Profile</Title>
+          <Text type="secondary" className="text-sm sm:text-base">Your personal information</Text>
         </div>
-        <Button type="primary" href="/profile/edit">Update info</Button>
+        <div>
+          <Button type="primary" href="/profile/edit" className="w-full sm:w-auto">Update info</Button>
+        </div>
       </div>
 
       {/* Profile Card */}
       <Card className="border-slate-200">
-        <div className="flex items-start gap-6">
-          <Avatar
-            size={96}
-            src={avatarUrl || undefined}
-            onError={() => { setImgErr(true); return false; }}
-            className="bg-blue-600 select-none"
-          >
-            {initial}
-          </Avatar>
+        <div className="flex flex-col sm:flex-row items-start gap-6">
+          <div className="flex items-center sm:items-start gap-4 sm:gap-6">
+            <Avatar
+              size={96}
+              src={avatarUrl || undefined}
+              onError={() => { setImgErr(true); return false; }}
+              className="bg-blue-600 select-none"
+            >
+              {initial}
+            </Avatar>
+            <div className="sm:hidden">
+              <div className="text-lg font-semibold text-slate-800">{fullName}</div>
+              <div className="text-slate-600 text-sm">{email}</div>
+            </div>
+          </div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <div className="text-xl font-semibold text-slate-800">{fullName}</div>
-                <div className="text-slate-600">{email}</div>
+                <div className="hidden sm:block text-xl font-semibold text-slate-800">{fullName}</div>
+                <div className="hidden sm:block text-slate-600">{email}</div>
               </div>
             </div>
 
