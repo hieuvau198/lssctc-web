@@ -4,6 +4,7 @@ import {
   persistRememberedCredentials,
   clearRememberedCredentials,
 } from '../../../lib/crypto';
+import PageNav from '../../../components/PageNav/PageNav';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -47,14 +48,13 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Placeholder for Google OAuth flow
-    alert('Google login not implemented yet');
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-blue-50 px-4 py-10 ">
-      <div className="w-full max-w-md bg-white/90 backdrop-blur border border-blue-100 shadow-sm rounded-lg p-8">
+    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
+      <div className="max-w-7xl mx-auto px-4 pt-4">
+        <PageNav items={[{ title: 'Login' }]} className="pb-2" />
+      </div>
+      <div className="flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-md bg-white/90 backdrop-blur border border-blue-100 shadow-sm rounded-lg p-8">
         <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">Sign in</h1>
         <p className="text-gray-500 text-sm mb-6 text-center">Access your LSSCTC training</p>
         {error && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded px-3 py-2">{error}</div>}
@@ -115,7 +115,7 @@ export default function Login() {
             type="submit"
             disabled={loading}
             className={[
-              'w-full inline-flex items-center justify-center rounded-md font-medium text-sm h-11 px-4',
+              'w-full inline-flex items-center justify-center rounded-md font-medium text-sm h-11 px-4 text-white',
               'text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-colors',
               loading ? 'opacity-70 cursor-not-allowed' : ''
             ].join(' ')}
@@ -141,7 +141,8 @@ export default function Login() {
           </svg>
           Continue with Google
         </button> */}
-        <p className="mt-8 text-center text-xs text-gray-400">By continuing you agree to our <a href="/terms" className="underline hover:text-blue-600">Terms</a> & <a href="/privacy" className="underline hover:text-blue-600">Privacy Policy</a>.</p>
+          <p className="mt-8 text-center text-xs text-gray-400">By continuing you agree to our <a href="/terms" className="underline hover:text-blue-600">Terms</a> & <a href="/privacy" className="underline hover:text-blue-600">Privacy Policy</a>.</p>
+        </div>
       </div>
     </div>
   );

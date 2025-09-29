@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router';
 import { Tooltip } from 'antd';
 import { 
@@ -12,15 +12,16 @@ import {
   MenuUnfoldOutlined
 } from '@ant-design/icons';
 
+const ITEMS = [
+  { to: '/admin/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+  { to: '/admin/users', label: 'Users', icon: <UserOutlined /> },
+  { to: '/admin/courses', label: 'Courses', icon: <BookOutlined /> },
+  { to: '/admin/schedule', label: 'Schedule', icon: <ScheduleOutlined /> },
+  { to: '/admin/assessments', label: 'Assessments', icon: <ExperimentOutlined /> },
+  { to: '/admin/settings', label: 'Settings', icon: <SettingOutlined /> },
+];
+
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
-  const items = useMemo(() => ([
-    { to: '/admin/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
-    { to: '/admin/users', label: 'Users', icon: <UserOutlined /> },
-    { to: '/admin/courses', label: 'Courses', icon: <BookOutlined /> },
-    { to: '/admin/schedule', label: 'Schedule', icon: <ScheduleOutlined /> },
-    { to: '/admin/assessments', label: 'Assessments', icon: <ExperimentOutlined /> },
-    { to: '/admin/settings', label: 'Settings', icon: <SettingOutlined /> },
-  ]), []);
 
   return (
     <>
@@ -71,7 +72,7 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
         {/* Nav Items */}
         <nav className="flex-1 overflow-y-auto py-3">
           <ul className="space-y-1 px-2">
-            {items.map(item => (
+            {ITEMS.map(item => (
               <li key={item.to}>
                 <NavLink
                   to={item.to}
