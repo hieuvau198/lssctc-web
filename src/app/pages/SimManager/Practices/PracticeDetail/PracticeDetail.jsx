@@ -4,15 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   getPracticeById,
   updatePractice,
-  deletePractice,
-  getPracticeStepsByPracticeId,
-  createPracticeStep,
-  updatePracticeStep,
-  deletePracticeStep,
-  getPracticeStepComponents,
+  deletePractice
 } from "../../../../apis/SimulationManager/SimulationManagerPracticeApi";
-import CreateUpdateStep from "./PracticeStep/CreateUpdateStep";
-import PracticeStep from "./PracticeStep/PracticeStep";
 import PracticeSteps from "./PracticeStep/PracticeSteps";
 
 export default function PracticeDetail() {
@@ -26,29 +19,6 @@ export default function PracticeDetail() {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Steps
-  const [steps, setSteps] = useState([]);
-  const [stepsLoading, setStepsLoading] = useState(true);
-  const [stepsError, setStepsError] = useState(null);
-
-  // Step editing/creating state
-  const [showStepForm, setShowStepForm] = useState(false);
-  const [editingStep, setEditingStep] = useState(null);
-
-  // PracticeStepComponents
-  const [openStepId, setOpenStepId] = useState(null); // Which step is open
-  const [componentLoading, setComponentLoading] = useState(false);
-  const [stepComponents, setStepComponents] = useState({}); // stepId => components
-
-  // Load practice and steps
-  const loadSteps = () => {
-    setStepsLoading(true);
-    getPracticeStepsByPracticeId(id)
-      .then(setSteps)
-      .catch(() => setStepsError("Could not fetch practice steps"))
-      .finally(() => setStepsLoading(false));
-  };
-
   useEffect(() => {
     setLoading(true);
     getPracticeById(id)
@@ -60,10 +30,9 @@ export default function PracticeDetail() {
         setError("Could not fetch practice");
         setLoading(false);
       });
-    // eslint-disable-next-line
   }, [id]);
 
-  // Practice update/delete
+  // Practice update
   const handleUpdate = () => {
     setUpdating(true);
     updatePractice(id, form)
@@ -76,7 +45,7 @@ export default function PracticeDetail() {
         setUpdating(false);
       });
   };
-
+  // Practice delete
   const handleDelete = () => {
     if (!window.confirm("Delete this practice?")) return;
     setDeleting(true);
@@ -90,28 +59,9 @@ export default function PracticeDetail() {
       });
   };
 
-  // PracticeStepComponents handlers
-  const handleStepToggle = (stepId) => {
-    if (openStepId === stepId) {
-      setOpenStepId(null);
-      return;
-    }
-    setOpenStepId(stepId);
-    if (!stepComponents[stepId]) {
-      setComponentLoading(true);
-      getPracticeStepComponents(stepId)
-        .then((components) => {
-          setStepComponents((prev) => ({ ...prev, [stepId]: components }));
-          setComponentLoading(false);
-        })
-        .catch(() => {
-          setStepComponents((prev) => ({ ...prev, [stepId]: [] }));
-          setComponentLoading(false);
-        });
-    }
-  };
+  
 
-  // UI logic
+  // general render
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   if (!form) return null;

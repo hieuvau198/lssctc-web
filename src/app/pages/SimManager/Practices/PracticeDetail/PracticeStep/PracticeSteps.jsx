@@ -1,3 +1,4 @@
+// src\app\pages\SimManager\Practices\PracticeDetail\PracticeStep\PracticeSteps.jsx
 import React, { useEffect, useState } from "react";
 import {
   getPracticeStepsByPracticeId,
@@ -6,7 +7,7 @@ import {
   deletePracticeStep,
 } from '../../../../../apis/SimulationManager/SimulationManagerPracticeApi';
 import CreateUpdateStep from "./CreateUpdateStep";
-import PracticeStep from "./PracticeStep";
+import PracticeStepDetail from "./PracticeStepDetail/PracticeStepDetail";
 
 export default function PracticeSteps({ practiceId }) {
   const [steps, setSteps] = useState([]);
@@ -89,7 +90,7 @@ export default function PracticeSteps({ practiceId }) {
       ) : (
         <ol className="list-decimal pl-6 space-y-2">
           {steps.map((step) => (
-            <PracticeStep
+            <PracticeStepDetail
               key={step.id}
               step={step}
               onEdit={(step) => {

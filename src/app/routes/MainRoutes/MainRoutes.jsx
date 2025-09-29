@@ -36,6 +36,9 @@ import ManagerProgramList from "../../pages/ProgramManager/Program/ManagerProgra
 import ManagerProgramDetail from "../../pages/ProgramManager/Program/partials/ManagerProgramDetail";
 import ProgramCreate from "../../pages/ProgramManager/Program/partials/ProgramCreate";
 
+import PracticeStepDetail from "../../pages/SimManager/Practices/PracticeDetail/PracticeStep/PracticeStepDetail/PracticeStepDetail";
+
+
 const MainRoutes = () => {
   return (
     <Routes>
@@ -68,11 +71,12 @@ const MainRoutes = () => {
         <Route path="courses" element={<ManageCourse />} />
       </Route>
 
-      {/* Simulator Manager Routes */}
+      {/* Simulation Manager Routes */}
       <Route path="/simulationManager" element={<SimManagerLayout />}>
         <Route path="dashboard" element={<SimDashboard />} />
         <Route path="practices" element={<Practices />} />
         <Route path="practices/:id" element={<PracticeDetail />} />
+        <Route path="practices/:practiceId/steps/:stepId" element={<PracticeStepDetail />} />
         <Route path="configs" element={<SimulatorConfigs />} />
         <Route path="settings" element={<SimSettings />} />
       </Route>
