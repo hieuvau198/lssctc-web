@@ -8,7 +8,8 @@ import {
   getPracticeStepsByPracticeId,
   createPracticeStep,
   updatePracticeStep,
-  deletePracticeStep
+  deletePracticeStep,
+  getPracticeStepComponents 
 } from '../../../../apis/SimulationManager/SimulationManagerPracticeApi';
 import CreateUpdateStep from "./CreateUpdateStep";
 
@@ -32,6 +33,12 @@ export default function PracticeDetail() {
   // Step editing/creating state
   const [showStepForm, setShowStepForm] = useState(false);
   const [editingStep, setEditingStep] = useState(null);
+
+  // PracticeStepComponents
+  const [openStepId, setOpenStepId] = useState(null); // Which step is open
+  const [componentLoading, setComponentLoading] = useState(false);
+  const [stepComponents, setStepComponents] = useState({}); // stepId => components
+
 
 
   // Load practice and steps
@@ -105,6 +112,28 @@ export default function PracticeDetail() {
       setEditingStep(null);
     });
   };
+
+  // PracticeStepComponents handlers
+  const handleStepToggle = (stepId) => {
+  if (openStepId === stepId) {
+    setOpenStepId(null);
+    return;
+  }
+  setOpenStepId(stepId);
+  if (!stepComponents[stepId]) {
+    setComponentLoading(true);
+    getPracticeStepComponents(stepId)
+      .then((components) => {
+        setStepComponents((prev) => ({ ...prev, [stepId]: components }));
+        setComponentLoading(false);
+      })
+      .catch(() => {
+        setStepComponents((prev) => ({ ...prev, [stepId]: [] }));
+        setComponentLoading(false);
+      });
+  }
+};
+
 
   // UI logic
   if (loading) return <div>Loading...</div>;
@@ -227,40 +256,76 @@ export default function PracticeDetail() {
           <div>No steps found for this practice.</div>
         ) : (
           <ol className="list-decimal pl-6 space-y-2">
-            {steps.map(step => (
-              <li key={step.id} className="bg-slate-50 border rounded p-2 flex flex-col md:flex-row md:items-center md:justify-between">
-                <div>
-                  <div className="font-semibold">{step.stepName}</div>
-                  {step.stepDescription && (
-                    <div className="text-xs text-slate-700 mb-1">{step.stepDescription}</div>
+  {steps.map((step) => (
+    <li key={step.id} className="bg-slate-50 border rounded p-2 mb-2">
+      {/* Step header (dropdown toggle) */}
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={() => handleStepToggle(step.id)}
+      >
+        <span className="mr-2">{openStepId === step.id ? '▼' : '▶'}</span>
+        <span className="font-semibold">{step.stepName}</span>
+        <span className="text-xs text-slate-400 ml-4">Order: {step.stepOrder}</span>
+      </div>
+      {/* Step details (description, expected result, edit/delete) */}
+      <div className="ml-6 mt-1">
+        {step.stepDescription && (
+          <div className="text-xs text-slate-700 mb-1">{step.stepDescription}</div>
+        )}
+        {step.expectedResult && (
+          <div className="text-xs text-slate-500">Expected: {step.expectedResult}</div>
+        )}
+        <div className="mt-1 flex gap-2">
+          <button
+            className="text-blue-600 hover:underline"
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditingStep(step);
+              setShowStepForm(true);
+            }}
+          >
+            Edit
+          </button>
+          <button
+            className="text-red-500 hover:underline"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (window.confirm('Delete this step?')) handleStepDelete(step.id);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+      {/* Dropdown for components */}
+      {openStepId === step.id && (
+        <div className="mt-3 ml-8">
+          {componentLoading && !stepComponents[step.id] ? (
+            <div>Loading components...</div>
+          ) : stepComponents[step.id] && stepComponents[step.id].length > 0 ? (
+            <ul className="border-l-2 border-green-200 pl-4 space-y-1">
+              {stepComponents[step.id].map((comp) => (
+                <li key={comp.id} className="text-sm flex items-center gap-2">
+                  {comp.imageUrl && (
+                    <img src={comp.imageUrl} alt="" className="w-8 h-8 object-cover rounded" />
                   )}
-                  {step.expectedResult && (
-                    <div className="text-xs text-slate-500">Expected: {step.expectedResult}</div>
+                  <span className="font-medium">{comp.simulationComponentName}</span>
+                  {comp.description && (
+                    <span className="text-slate-500 ml-2">{comp.description}</span>
                   )}
-                  <div className="text-xs text-slate-400">Order: {step.stepOrder}</div>
-                </div>
-                <div className="mt-2 md:mt-0 flex gap-2">
-                  <button
-                    className="text-blue-600 hover:underline"
-                    onClick={() => {
-                      setEditingStep(step);
-                      setShowStepForm(true);
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="text-red-500 hover:underline"
-                    onClick={() => {
-                      if (window.confirm("Delete this step?")) handleStepDelete(step.id);
-                    }}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ol>
+                  <span className="text-xs text-slate-400 ml-2">Order: {comp.componentOrder}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="text-slate-400">No components assigned for this step.</div>
+          )}
+        </div>
+      )}
+    </li>
+  ))}
+</ol>
+
         )}
       </div>
     </div>

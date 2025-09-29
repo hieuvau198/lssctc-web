@@ -43,3 +43,22 @@ export const updatePracticeStep = (stepId, data) =>
 export const deletePracticeStep = (stepId) =>
   axios.delete(`${API_BASE}/PracticeSteps/${stepId}`).then(res => res.data);
 
+
+// --- PracticeStepComponent APIs --- //
+
+// Lấy list component theo practiceStepId
+export const getPracticeStepComponents = (practiceStepId) =>
+  axios.get(`${API_BASE}/PracticeStepComponents/${practiceStepId}`).then(res => res.data);
+
+// Tạo mới 1 component cho step
+export const createPracticeStepComponent = (data) =>
+  axios.post(`${API_BASE}/PracticeStepComponents`, data).then(res => res.data);
+
+// Update order hoặc info của 1 component (id là componentId)
+export const updatePracticeStepComponent = (id, data) =>
+  axios.put(`${API_BASE}/PracticeStepComponents/${id}`, data).then(res => res.data);
+
+// Xoá 1 component khỏi step
+export const deletePracticeStepComponent = (id) =>
+  axios.delete(`${API_BASE}/PracticeStepComponents/${id}`).then(res => res.data);
+
