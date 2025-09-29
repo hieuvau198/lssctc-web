@@ -1,9 +1,11 @@
 // src\app\pages\SimManager\Practices\PracticeDetail\PracticeStep\PracticeStepDetail\PracticeStepDetail.jsx
-
 import React, { useState } from 'react';
-import { 
-    getPracticeStepComponents
+import {
+  getPracticeStepComponents,
+  createPracticeStepComponent,
+  deletePracticeStepComponent,
 } from '../../../../../../apis/SimulationManager/SimulationManagerPracticeApi';
+import { getComponents } from '../../../../../../apis/SimulationManager/SimulationManagerComponentApi';
 
 export default function PracticeStepDetail({
   step,
@@ -15,23 +17,58 @@ export default function PracticeStepDetail({
   const [componentLoading, setComponentLoading] = useState(false);
   const [components, setComponents] = useState(null);
 
+  // For Add Component Modal
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [availableComponents, setAvailableComponents] = useState([]);
+  const [selectedComponentId, setSelectedComponentId] = useState('');
+
+  const fetchComponents = () => {
+    setComponentLoading(true);
+    getPracticeStepComponents(step.id)
+      .then((data) => setComponents(data))
+      .finally(() => setComponentLoading(false));
+  };
+
   const handleToggle = () => {
     if (!open && !components) {
-      setComponentLoading(true);
-      getPracticeStepComponents(step.id)
-        .then((data) => setComponents(data))
-        .finally(() => setComponentLoading(false));
+      fetchComponents();
     }
     setOpen((prev) => !prev);
+  };
+
+  const handleAddComponent = async () => {
+    setShowAddModal(true);
+    // Fetch available components (first page, 50 items, adjust as needed)
+    const data = await getComponents(1, 50);
+    setAvailableComponents(data.items || []);
+    setSelectedComponentId('');
+  };
+
+  const handleAddConfirm = async () => {
+    if (!selectedComponentId) return;
+    // Choose order: append to end, or ask user for order
+    const order =
+      (components?.length ? Math.max(...components.map((c) => c.componentOrder || 0)) + 1 : 1);
+    await createPracticeStepComponent({
+      practiceStepId: step.id,
+      simulationComponentId: Number(selectedComponentId),
+      componentOrder: order,
+    });
+    setShowAddModal(false);
+    fetchComponents();
+  };
+
+  const handleRemoveComponent = async (compId) => {
+    if (window.confirm('Remove this component from step?')) {
+      await deletePracticeStepComponent(compId);
+      fetchComponents();
+    }
   };
 
   return (
     <li className="bg-slate-50 border p-2 mb-2">
       {/* Step header (dropdown toggle) */}
-      <div
-        className="flex items-center cursor-pointer"
-        onClick={handleToggle}
-      >
+      <div className="flex items-center cursor-pointer" onClick={handleToggle}>
         <span className="mr-2">{open ? '▼' : '▶'}</span>
         <span className="font-semibold">{step.stepName}</span>
         <span className="text-xs text-slate-400 ml-4">Order: {step.stepOrder}</span>
@@ -62,8 +99,18 @@ export default function PracticeStepDetail({
           >
             Delete
           </button>
+          <button
+            className="text-green-600 hover:underline"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddComponent();
+            }}
+          >
+            + Add Component
+          </button>
         </div>
       </div>
+
       {/* Dropdown for components */}
       {open && (
         <div className="mt-3 ml-8">
@@ -74,21 +121,77 @@ export default function PracticeStepDetail({
               {components.map((comp) => (
                 <li key={comp.id} className="text-sm flex items-center gap-2">
                   {comp.imageUrl && (
-                    <img src={comp.imageUrl} alt="" className="w-8 h-8 object-cover rounded" />
+                    <img
+                      src={comp.imageUrl}
+                      alt=""
+                      className="w-8 h-8 object-cover rounded"
+                    />
                   )}
-                  <span className="font-medium">{comp.simulationComponentName}</span>
+                  <span className="font-medium">
+                    {comp.simulationComponentName}
+                  </span>
                   {comp.description && (
                     <span className="text-slate-500 ml-2">{comp.description}</span>
                   )}
-                  <span className="text-xs text-slate-400 ml-2">Order: {comp.componentOrder}</span>
+                  <span className="text-xs text-slate-400 ml-2">
+                    Order: {comp.componentOrder}
+                  </span>
+                  <button
+                    className="ml-2 text-red-400 hover:underline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveComponent(comp.id);
+                    }}
+                  >
+                    Remove
+                  </button>
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="text-slate-400">No components assigned for this step.</div>
+            <div className="text-slate-400">
+              No components assigned for this step.
+            </div>
           )}
+        </div>
+      )}
+
+      {/* Modal/Select for add component */}
+      {showAddModal && (
+        <div className="fixed top-0 left-0 w-full h-full z-50 bg-black/40 flex items-center justify-center">
+          <div className="bg-white p-5 rounded shadow-lg min-w-[320px]">
+            <h3 className="text-lg mb-2 font-semibold">Assign a Component</h3>
+            <select
+              className="border p-2 w-full"
+              value={selectedComponentId}
+              onChange={(e) => setSelectedComponentId(e.target.value)}
+            >
+              <option value="">Select Component...</option>
+              {availableComponents.map((comp) => (
+                <option key={comp.id} value={comp.id}>
+                  {comp.name}
+                </option>
+              ))}
+            </select>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                className="bg-slate-200 px-4 py-1 rounded"
+                onClick={() => setShowAddModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-blue-600 text-white px-4 py-1 rounded"
+                onClick={handleAddConfirm}
+                disabled={!selectedComponentId}
+              >
+                Add
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </li>
   );
 }
+
