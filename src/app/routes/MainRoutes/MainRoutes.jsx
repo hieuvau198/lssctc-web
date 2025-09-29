@@ -34,7 +34,7 @@ import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/Simulatio
 import ProgramEdit from "../../pages/ProgramManager/Program/partials/ProgramEdit";
 import ManagerProgramList from "../../pages/ProgramManager/Program/ManagerProgramList";
 import ManagerProgramDetail from "../../pages/ProgramManager/Program/partials/ManagerProgramDetail";
-
+import ProgramCreate from "../../pages/ProgramManager/Program/partials/ProgramCreate";
 
 const MainRoutes = () => {
   return (
@@ -81,6 +81,7 @@ const MainRoutes = () => {
       <Route path="/programManager" element={<ProgramManagerLayout />}>
         <Route path="courses" element={<Courses />} />
         <Route path="programs" element={<ManagerProgramList />} />
+        <Route path="programs/create" element={<ProgramCreate />} />
         <Route path="programs/:id" element={<ManagerProgramDetail />} />
         <Route path="programs/:id/edit" element={<ProgramEdit />} />
       </Route>

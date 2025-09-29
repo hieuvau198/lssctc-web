@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Input,
-  Button,
-  Spin,
-  Alert,
-  Switch,
-  Form,
-  message,
-  Pagination,
-  Modal,
-} from "antd";
+import { Form, Button, Spin, Alert, message } from "antd";
 import {
   fetchProgramDetail,
   updateProgramBasic,
@@ -18,6 +8,9 @@ import {
   updateProgramEntryRequirements,
   fetchCourses,
 } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
+import ProgramBasicForm from "./ProgramBasicForm";
+import ProgramCoursesForm from "./ProgramCoursesForm";
+import ProgramEntryRequirementsForm from "./ProgramEntryRequirementsForm";
 
 const ProgramEdit = () => {
   const { id } = useParams();
@@ -50,9 +43,9 @@ const ProgramEdit = () => {
       .then((data) => {
         setProgram(data);
         setProgramCourses(
-          (data.courses || []).map((c) => ({
+          (data.courses || []).map((c, idx) => ({
             courseId: c.coursesId || c.id,
-            order: c.courseOrder || 1,
+            order: idx + 1,
             name: c.name,
           }))
         );
@@ -110,15 +103,12 @@ const ProgramEdit = () => {
 
   // Remove course from program
   const handleRemoveCourse = (courseId) => {
-    setProgramCourses(programCourses.filter((c) => c.courseId !== courseId));
-  };
-
-  // Change course order
-  const handleOrderChange = (courseId, order) => {
+    const filtered = programCourses.filter((c) => c.courseId !== courseId);
     setProgramCourses(
-      programCourses.map((c) =>
-        c.courseId === courseId ? { ...c, order: Number(order) } : c
-      )
+      filtered.map((c, idx) => ({
+        ...c,
+        order: idx + 1,
+      }))
     );
   };
 
@@ -153,17 +143,26 @@ const ProgramEdit = () => {
         isActive: values.isActive,
       });
 
-      // 2. Update courses
+      // 2. Update courses (always use latest order)
       try {
         await updateProgramCourses(
           id,
-          programCourses.map((c) => ({
+          programCourses.map((c, idx) => ({
             courseId: c.courseId,
-            order: c.order,
+            order: idx + 1,
           }))
         );
       } catch (err) {
         setCoursesError(err.message);
+        // Re-fetch program detail to reset programCourses to backend state
+        const data = await fetchProgramDetail(id);
+        setProgramCourses(
+          (data.courses || []).map((c, idx) => ({
+            courseId: c.coursesId || c.id,
+            order: idx + 1,
+            name: c.name,
+          }))
+        );
         setSaving(false);
         return;
       }
@@ -173,14 +172,14 @@ const ProgramEdit = () => {
       const updated = await fetchProgramDetail(id);
       setProgram(updated);
       setEntryRequirements(
-        (updated.prerequisites || []).map((p) => ({
+        (updated.entryRequirements || []).map((p) => ({
           name: p.name,
           description: p.description,
           documentUrl: p.documentUrl || "",
         }))
       );
       message.success("Program updated!");
-      // navigate(-1);
+      navigate(-1);
     } catch (err) {
       message.error(err.message || "Update failed");
     } finally {
@@ -195,166 +194,29 @@ const ProgramEdit = () => {
     <div className="max-w-3xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Edit Program</h1>
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{ required: true }]}
-        >
-          <Input.TextArea rows={3} />
-        </Form.Item>
-        <Form.Item label="Image URL" name="imageUrl">
-          <Input />
-        </Form.Item>
-        <Form.Item label="Active" name="isActive" valuePropName="checked">
-          <Switch />
-        </Form.Item>
-
-        {/* Courses in program */}
-        <div className="mb-6">
-          <h2 className="font-semibold mb-2">Courses in Program</h2>
-          {programCourses.length === 0 && (
-            <div className="text-gray-500 mb-2">No courses added.</div>
-          )}
-          {programCourses.map((c, idx) => (
-            <div key={c.courseId} className="flex items-center gap-2 mb-2">
-              <span className="w-6 text-right">{idx + 1}.</span>
-              <span className="flex-1">{c.name}</span>
-              <Input
-                type="number"
-                min={1}
-                value={c.order}
-                onChange={(e) => handleOrderChange(c.courseId, e.target.value)}
-                style={{ width: 60 }}
-              />
-              <Button
-                danger
-                size="small"
-                onClick={() => handleRemoveCourse(c.courseId)}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
-          {coursesError && (
-            <Alert
-              type="error"
-              message={coursesError}
-              className="mb-2"
-              showIcon
-            />
-          )}
-        </div>
-
-        {/* Course selection */}
-        <div className="mb-6">
-          <h2 className="font-semibold mb-2">Add Course</h2>
-          <Input.Search
-            placeholder="Search courses"
-            value={courseSearch}
-            onChange={(e) => {
-              setCourseSearch(e.target.value);
-              setCoursePage(1);
-            }}
-            style={{ maxWidth: 300, marginBottom: 8 }}
-            allowClear
-          />
-          <div className="border rounded p-2 bg-gray-50">
-            {courseLoading ? (
-              <Spin />
-            ) : (
-              courseList.map((course) => (
-                <div
-                  key={course.id}
-                  className="flex items-center justify-between py-1 border-b last:border-b-0"
-                >
-                  <span>
-                    {course.name}{" "}
-                    <span className="text-xs text-gray-500">
-                      ({course.categoryName} - {course.levelName})
-                    </span>
-                  </span>
-                  <Button
-                    size="small"
-                    onClick={() => handleAddCourse(course)}
-                    disabled={programCourses.some(
-                      (c) => c.courseId === course.id
-                    )}
-                  >
-                    Add
-                  </Button>
-                </div>
-              ))
-            )}
-            <div className="flex justify-center mt-2">
-              <Pagination
-                current={coursePage}
-                pageSize={coursePageSize}
-                total={courseTotal}
-                onChange={(page, size) => {
-                  setCoursePage(page);
-                  setCoursePageSize(size);
-                }}
-                showSizeChanger
-                pageSizeOptions={["5", "10", "20"]}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Entry Requirements */}
-        <div className="mb-6">
-          <h2 className="font-semibold mb-2">Entry Requirements</h2>
-          {entryRequirements.map((pre, idx) => (
-            <div key={idx} className="flex gap-2 mb-2">
-              <Input
-                placeholder="Name"
-                value={pre.name}
-                onChange={(e) =>
-                  handleEntryRequirementChange(idx, "name", e.target.value)
-                }
-                style={{ width: 120 }}
-              />
-              <Input
-                placeholder="Description"
-                value={pre.description}
-                onChange={(e) =>
-                  handleEntryRequirementChange(
-                    idx,
-                    "description",
-                    e.target.value
-                  )
-                }
-                style={{ flex: 1 }}
-              />
-              <Input
-                placeholder="Document URL"
-                value={pre.documentUrl}
-                onChange={(e) =>
-                  handleEntryRequirementChange(
-                    idx,
-                    "documentUrl",
-                    e.target.value
-                  )
-                }
-                style={{ width: 180 }}
-              />
-              <Button
-                danger
-                size="small"
-                onClick={() => handleRemoveEntryRequirement(idx)}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
-          <Button size="small" onClick={handleAddEntryRequirement}>
-            + Add Entry Requirement
-          </Button>
-        </div>
-
+        <ProgramBasicForm form={form} loading={loading} />
+        <ProgramCoursesForm
+          programCourses={programCourses}
+          setProgramCourses={setProgramCourses}
+          handleRemoveCourse={handleRemoveCourse}
+          coursesError={coursesError}
+          courseSearch={courseSearch}
+          setCourseSearch={setCourseSearch}
+          courseList={courseList}
+          courseLoading={courseLoading}
+          handleAddCourse={handleAddCourse}
+          coursePage={coursePage}
+          setCoursePage={setCoursePage}
+          coursePageSize={coursePageSize}
+          setCoursePageSize={setCoursePageSize}
+          courseTotal={courseTotal}
+        />
+        <ProgramEntryRequirementsForm
+          entryRequirements={entryRequirements}
+          handleEntryRequirementChange={handleEntryRequirementChange}
+          handleRemoveEntryRequirement={handleRemoveEntryRequirement}
+          handleAddEntryRequirement={handleAddEntryRequirement}
+        />
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={saving}>
             Update Program
