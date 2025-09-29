@@ -13,7 +13,7 @@ import ForgotPassword from "../../pages/Auth/ForgotPassword/ForgotPassword";
 import Login from "../../pages/Auth/Login/Login";
 import Home from "../../pages/Home/Home";
 import Courses from "../../pages/ProgramManager/Course/Courses";
-import ProgramList from "../../pages/ProgramManager/Program/ProgramList";
+import ProgramList from "../../pages/ProgramManager/Program/ManagerProgramList";
 import SimDashboard from "../../pages/SimManager/Dashboard/Dashboard";
 import Scenarios from "../../pages/SimManager/Scenarios/Scenarios";
 import PracticeDetail from "../../pages/SimManager/Scenarios/partials/PracticeDetail";
@@ -28,7 +28,6 @@ import Program from "../../pages/Trainee/Program/Program";
 import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
 
 import Quiz from "../../pages/Trainee/Quiz/Quiz";
-import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
 import LessonSessionPlaceholder from "../../modules/Session/LessonSessionPlaceholder";
 
 import SimulationPlatform from "../../pages/Trainee/SimulationPlatform/SimulationPlatform";
