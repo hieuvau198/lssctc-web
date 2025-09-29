@@ -1,11 +1,11 @@
-// src\app\pages\SimManager\Practices\PracticeDetail\PracticeStep\PracticeStep.jsx
+// src\app\pages\SimManager\Practices\PracticeDetail\PracticeStep\PracticeStepDetail\PracticeStepDetail.jsx
 
 import React, { useState } from 'react';
 import { 
     getPracticeStepComponents
-} from '../../../../../apis/SimulationManager/SimulationManagerPracticeApi';
+} from '../../../../../../apis/SimulationManager/SimulationManagerPracticeApi';
 
-export default function PracticeStep({
+export default function PracticeStepDetail({
   step,
   onEdit,
   onDelete,
