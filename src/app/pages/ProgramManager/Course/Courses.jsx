@@ -1,3 +1,5 @@
+// src\app\pages\ProgramManager\Course\Courses.jsx
+
 import React, { useEffect, useState } from "react";
 import { fetchCourses, addCourse, updateCourse, fetchCourseDetail } from "../../../apis/ProgramManager/CourseApi";
 import { Skeleton, Alert, message, Drawer, Button } from "antd";
