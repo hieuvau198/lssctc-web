@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  fetchCourses,
-  addCourse,
-  updateCourse,
-} from "../../../apis/ProgramManager/CourseApi";
-import { Skeleton, Alert, message } from "antd";
-import CourseDetail from "./partials/CourseDetail";
-import CreateCourse from "./partials/CreateCourse";
-import EditCourse from "./partials/EditCourse";
+import { fetchCourses, addCourse, updateCourse, fetchCourseDetail } from "../../../apis/ProgramManager/CourseApi";
+import { Skeleton, Alert, message, Drawer, Button } from "antd";
 import CourseFilters from "./partials/CourseFilters";
 import CourseList from "./partials/CourseList";
+import CreateCourse from "./partials/CreateCourse";
+import EditCourse from "./partials/EditCourse";
+import CourseDetail from "./partials/CourseDetail";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -20,14 +16,11 @@ const Courses = () => {
   const [categoryId, setCategoryId] = useState(undefined);
   const [levelId, setLevelId] = useState(undefined);
   const [isActive, setIsActive] = useState(undefined);
-  const [selectedCourse, setSelectedCourse] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [adding, setAdding] = useState(false);
-
-  // Edit modal state
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editingCourse, setEditingCourse] = useState(null);
-  const [updating, setUpdating] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [mode, setMode] = useState(null); // 'view' | 'create' | 'edit'
+  const [currentCourse, setCurrentCourse] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   // Fetch data when filters change (including search)
   useEffect(() => {
@@ -83,40 +76,83 @@ const Courses = () => {
       });
   }, []);
 
-  const handleAddCourse = async (values) => {
-    setAdding(true);
+  const openView = (course) => {
+    setMode('view');
+    setCurrentCourse(course);
+    setDrawerOpen(true);
+  };
+
+  const openCreate = () => {
+    setMode('create');
+    setCurrentCourse(null);
+    setDrawerOpen(true);
+  };
+
+  const openEdit = async () => {
+    if (!currentCourse) return;
+    setEditLoading(true);
+    try {
+      const detail = await fetchCourseDetail(currentCourse.id);
+      // Normalize possible backend casing / alternative field names
+      const normalized = {
+        ...detail,
+        price: detail.price ?? detail.Price ?? detail.coursePrice,
+        durationHours: detail.durationHours ?? detail.DurationHours ?? detail.duration ?? detail.Duration,
+        imageUrl: detail.imageUrl ?? detail.ImageUrl ?? detail.ImageURL,
+        isActive: (detail.isActive ?? detail.IsActive ?? detail.active) ?? false,
+        courseCodeName: detail.courseCodeName ?? detail.courseCode ?? detail.code ?? '',
+      };
+      setCurrentCourse(normalized);
+      setMode('edit');
+    } catch (err) {
+      message.error(err.message || 'Failed to load course detail');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleCreate = async (values) => {
+    setSubmitting(true);
     try {
       await addCourse(values);
-      message.success("Course added successfully!");
-      setModalOpen(false);
-      // Refresh data
-      fetchCourses().then((data) => setCourses(data.items));
+      message.success('Course created');
+      const data = await fetchCourses();
+      setCourses(data.items);
+      setFiltered(data.items);
+      // Attempt to set currentCourse to newly created (simple heuristic by name match)
+      const created = data.items.find(c => c.name === values.name && c.courseCodeName === values.courseCodeName);
+      setCurrentCourse(created || null);
+      setMode('view');
     } catch (err) {
-      message.error(err.message || "Failed to add course");
+      message.error(err.message || 'Create failed');
     } finally {
-      setAdding(false);
+      setSubmitting(false);
     }
   };
 
-  const handleEditCourse = (course) => {
-    setEditingCourse(course);
-    setEditModalOpen(true);
-  };
-
-  const handleUpdateCourse = async (values) => {
-    setUpdating(true);
+  const handleUpdate = async (values) => {
+    if (!currentCourse) return;
+    setSubmitting(true);
     try {
-      await updateCourse(editingCourse.id, values);
-      message.success("Course updated successfully!");
-      setEditModalOpen(false);
-      setEditingCourse(null);
-      // Refresh data
-      fetchCourses().then((data) => setCourses(data.items));
+      await updateCourse(currentCourse.id, values);
+      message.success('Course updated');
+      const data = await fetchCourses();
+      setCourses(data.items);
+      setFiltered(data.items);
+      const updated = data.items.find(c => c.id === currentCourse.id);
+      setCurrentCourse(updated || null);
+      setMode('view');
     } catch (err) {
-      message.error(err.message || "Failed to update course");
+      message.error(err.message || 'Update failed');
     } finally {
-      setUpdating(false);
+      setSubmitting(false);
     }
+  };
+
+  const closeDrawer = () => {
+    setDrawerOpen(false);
+    setMode(null);
+    setCurrentCourse(null);
   };
 
   if (loading)
@@ -126,7 +162,7 @@ const Courses = () => {
         <div className="mb-6">
           <Skeleton active paragraph={{ rows: 2 }} />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 9 }).map((_, idx) => (
             <div key={idx} className="bg-white rounded-lg shadow">
               <div className="w-full h-36 overflow-hidden rounded-t-lg">
@@ -147,14 +183,6 @@ const Courses = () => {
       </div>
     );
 
-  if (selectedCourse)
-    return (
-      <CourseDetail
-        id={selectedCourse}
-        onBack={() => setSelectedCourse(null)}
-      />
-    );
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold mb-6">Course Management</h2>
@@ -167,29 +195,60 @@ const Courses = () => {
         setLevelId={setLevelId}
         isActive={isActive}
         setIsActive={setIsActive}
-        onAddCourse={() => setModalOpen(true)}
+        onAddCourse={openCreate}
       />
-      <CourseList
-        courses={filtered}
-        onView={setSelectedCourse}
-        onEdit={handleEditCourse}
-      />
-      <CreateCourse
-        open={modalOpen}
-        onCancel={() => setModalOpen(false)}
-        onCreate={handleAddCourse}
-        confirmLoading={adding}
-      />
-      <EditCourse
-        open={editModalOpen}
-        onCancel={() => {
-          setEditModalOpen(false);
-          setEditingCourse(null);
-        }}
-        onUpdate={handleUpdateCourse}
-        confirmLoading={updating}
-        course={editingCourse}
-      />
+      <CourseList courses={filtered} onSelect={openView} />
+
+      <Drawer
+        open={drawerOpen}
+        onClose={closeDrawer}
+        width={720}
+        title={
+          mode === 'create'
+            ? 'Add Course'
+            : mode === 'edit'
+            ? 'Edit Course'
+            : currentCourse?.name || 'Course Detail'
+        }
+        extra={
+          mode === 'view' && currentCourse ? (
+            <Button type="primary" onClick={openEdit}>
+              Edit
+            </Button>
+          ) : null
+        }
+      >
+        {mode === 'view' && currentCourse && (
+          <CourseDetail embedded course={currentCourse} />
+        )}
+        {mode === 'create' && (
+          <CreateCourse
+            embedded
+            open
+            onCancel={closeDrawer}
+            onCreate={handleCreate}
+            confirmLoading={submitting}
+          />
+        )}
+        {mode === 'edit' && (
+          editLoading ? (
+            <div className="space-y-4">
+              <Skeleton active title paragraph={{ rows: 6 }} />
+            </div>
+          ) : (
+            currentCourse && (
+              <EditCourse
+                embedded
+                open
+                course={currentCourse}
+                onCancel={() => setMode('view')}
+                onUpdate={handleUpdate}
+                confirmLoading={submitting}
+              />
+            )
+          )
+        )}
+      </Drawer>
     </div>
   );
 };

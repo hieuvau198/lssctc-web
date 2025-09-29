@@ -62,7 +62,7 @@ const Program = () => {
         <div className="mb-8">
           <Skeleton.Input active size="large" className="!w-full md:!w-1/2" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 6 }).map((_, idx) => (
             <div key={idx} className="bg-white rounded-lg shadow">
               <div className="w-full h-40 overflow-hidden rounded-t-lg">
@@ -103,7 +103,7 @@ const Program = () => {
         <Empty description="No programs found." className="mt-16" />
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {programs.map((program) => (
               <ProgramCard
                 key={program.id}
