@@ -1,4 +1,4 @@
-// src/app/pages/SimManager/Scenarios/PracticeDetail.jsx
+// src/app/pages/SimManager/Practices/PracticeDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -84,7 +84,7 @@ export default function PracticeDetail() {
     setDeleting(true);
     deletePractice(id)
       .then(() => {
-        navigate('/sim-manager/scenarios');
+        navigate('/sim-manager/practices');
       })
       .catch(() => {
         alert('Delete failed');

@@ -1,9 +1,9 @@
-// src/app/pages/SimManager/Scenarios/Scenarios.jsx
+// src/app/pages/SimManager/Practices/Practices.jsx
 import React, { useEffect, useState } from 'react';
 import { getPractices } from '../../../apis/SimulationManager/SimulationManagerPracticeApi';
 import { Link } from 'react-router-dom';
 
-export default function Scenarios() {
+export default function Practices() {
   const [practices, setPractices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,7 +34,6 @@ export default function Scenarios() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-slate-900 mb-4">Scenarios</h1>
       <div className="p-4 rounded-lg border bg-white">
         <table className="min-w-full text-sm">
           <thead>
@@ -53,7 +52,7 @@ export default function Scenarios() {
                 <td className="px-2 py-1">{p.isActive ? 'Active' : 'Inactive'}</td>
                 <td className="px-2 py-1">
                   <Link
-                    to={`../scenarios/${p.id}`}
+                    to={`../practices/${p.id}`}
                     className="text-blue-600 hover:underline"
                   >
                     View

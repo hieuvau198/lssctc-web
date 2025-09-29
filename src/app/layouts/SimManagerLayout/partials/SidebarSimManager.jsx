@@ -13,7 +13,7 @@ import {
 
 const ITEMS = [
   { to: '/simulationManager/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
-  { to: '/simulationManager/scenarios', label: 'Scenarios', icon: <ExperimentOutlined /> },
+  { to: '/simulationManager/practices', label: 'Practices', icon: <ExperimentOutlined /> },
   { to: '/simulationManager/configs', label: 'Simulator Configs', icon: <ControlOutlined /> },
   { to: '/simulationManager/sessions', label: 'Sessions', icon: <ScheduleOutlined /> },
   { to: '/simulationManager/settings', label: 'Settings', icon: <SettingOutlined /> },
