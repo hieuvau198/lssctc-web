@@ -36,11 +36,9 @@ export default function Profile() {
     : 'U';
 
   return (
-    <div className="max-w-[980px] mx-auto px-4 py-6 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
       {/* Header */}
-      <div className="max-w-[980px] mx-auto px-0">
-        <PageNav nameMap={{ profile: 'Profile' }} />
-      </div>
+      <PageNav nameMap={{ profile: 'Profile' }} />
       <div className="bg-white border rounded-xl p-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
           <Title level={3} className="!mb-1 text-xl sm:!text-2xl">Profile</Title>

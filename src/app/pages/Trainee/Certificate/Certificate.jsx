@@ -23,9 +23,8 @@ export default function CertificateView() {
 	};
 
 	return (
-		<div className="max-w-[980px] mx-auto px-4 py-6">
+		<div className="max-w-7xl mx-auto px-4 py-6 min-h-screen flex flex-col">
 			<PageNav nameMap={{ certificate: 'Certificate' }} />
-			{/* Print CSS to only render certificate area */}
 			<style>{`
 				@media print {
 					@page { size: A4 landscape; margin: 12mm; }
@@ -47,7 +46,8 @@ export default function CertificateView() {
 				</div>
 			</div>
 
-			<Card className="border-slate-200 print-area">
+			<div className="flex-1 w-full flex items-center justify-center">
+				<Card className="justify-center border-slate-200 max-w-[980px] w-full print-area">
 				<div className="border-2 border-slate-200 rounded-2xl p-10 bg-white relative overflow-hidden">
 					<div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-50 rounded-full" />
 					<div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-50 rounded-full" />
@@ -91,7 +91,8 @@ export default function CertificateView() {
 						</div>
 					</div>
 				</div>
-			</Card>
+				</Card>
+			</div>
 		</div>
 	);
 }
