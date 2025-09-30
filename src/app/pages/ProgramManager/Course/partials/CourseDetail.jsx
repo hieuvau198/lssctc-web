@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { fetchCourseDetail } from "../../../../apis/ProgramManager/CourseApi";
-import { Card, Skeleton, Alert, Button } from "antd";
+import { Card, Skeleton, Alert, Button, Tag } from "antd";
 
 const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) => {
   const [course, setCourse] = useState(null);
@@ -44,14 +44,20 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
   if (embedded) {
     return (
       <div className="space-y-4">
-        <img alt={course.name} src={course.imageUrl} className="object-cover h-48 w-full rounded" />
+        <div className="w-full h-3/4 rounded overflow-hidden flex items-center justify-center">
+          <img
+            alt={course.name}
+            src={course.imageUrl}
+            className="h-3/4 w-3/4 object-cover rounded object-center"
+          />
+        </div>
         <div className="text-sm space-y-2">
           <p><span className="font-medium">Description:</span> {course.description}</p>
           <p><span className="font-medium">Category:</span> {course.categoryName}</p>
             <p><span className="font-medium">Level:</span> {course.levelName}</p>
             <p><span className="font-medium">Duration:</span> {course.durationHours}h</p>
             <p><span className="font-medium">Code:</span> {course.courseCodeName || '-'} </p>
-            <p><span className="font-medium">Status:</span> {course.isActive ? 'Active' : 'Inactive'}</p>
+            <p><span className="font-medium">Status:</span> <Tag color={course.isActive ? 'green' : 'red'} className="ml-1 m-0">{course.isActive ? 'Active' : 'Inactive'}</Tag></p>
             <p><span className="font-medium">Price:</span> ${course.price}</p>
         </div>
       </div>
@@ -63,13 +69,21 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
       <Button className="mb-4" onClick={onBack}>Back</Button>
       <Card
         title={course.name}
-        cover={<img alt={course.name} src={course.imageUrl} className="object-cover h-56 w-full" />}
+        cover={
+          <div className="w-full h-56 overflow-hidden flex items-center justify-center bg-slate-100">
+            <img
+              alt={course.name}
+              src={course.imageUrl}
+              className="max-h-full max-w-full object-cover object-center"
+            />
+          </div>
+        }
       >
         <p><span className="font-medium">Description:</span> {course.description}</p>
         <p><span className="font-medium">Category:</span> {course.categoryName}</p>
         <p><span className="font-medium">Level:</span> {course.levelName}</p>
         <p><span className="font-medium">Duration:</span> {course.durationHours} hours</p>
-        <p><span className="font-medium">Status:</span> <span className={course.isActive ? "text-green-600 font-semibold" : "text-gray-400"}>{course.isActive ? "Active" : "Inactive"}</span></p>
+  <p><span className="font-medium">Status:</span> <Tag color={course.isActive ? 'green' : 'red'} className="ml-1 m-0">{course.isActive ? 'Active' : 'Inactive'}</Tag></p>
         <p><span className="font-medium">Price:</span> ${course.price}</p>
       </Card>
     </div>
