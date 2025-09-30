@@ -95,7 +95,7 @@ export default function MyProgram() {
 					</div>
 
 					{loading && (
-						<div className="space-y-4">
+						<div className="space-y-6 gap-4">
 							{Array.from({ length: 3 }).map((_, i) => (
 								<Card key={i} className="rounded-xl shadow-sm">
 									<Skeleton active paragraph={{ rows: 2 }} />

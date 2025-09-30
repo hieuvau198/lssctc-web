@@ -18,9 +18,9 @@ export default function Avt({ onLogout }) {
   } catch {}
 
   const items = [
-    { key: 'profile', label: <NavLink to="/profile">Profile</NavLink> },
-    { key: 'my-program', label: <NavLink to="/my-program">My Program</NavLink> },
-    { key: 'certificate', label: <NavLink to="/certificate">Accomplishments</NavLink> },
+    { key: 'profile', label: <NavLink to="/profile" target="_top">Profile</NavLink> },
+    { key: 'my-program', label: <NavLink to="/my-program" target="_top">My Program</NavLink> },
+    { key: 'certificate', label: <NavLink to="/certificate" target="_top">Accomplishments</NavLink> },
     { type: 'divider' },
     { key: 'logout', label: <span className="text-red-600">Logout</span> },
   ];
