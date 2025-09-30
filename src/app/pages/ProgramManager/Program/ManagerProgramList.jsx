@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Input, Spin, Alert, Empty, Pagination, Button } from "antd";
-import { fetchPrograms } from "../../../apis/ProgramManager/ProgramManagerCourseApi";
+import {
+  Input,
+  Spin,
+  Alert,
+  Empty,
+  Pagination,
+  Button,
+  Modal,
+  message,
+} from "antd";
+import {
+  fetchPrograms,
+  deleteProgram,
+} from "../../../apis/ProgramManager/ProgramManagerCourseApi";
 import ManagerProgramCard from "./partials/ManagerProgramCard";
 import { useNavigate } from "react-router-dom";
 
@@ -15,6 +27,7 @@ const ManagerProgramList = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [total, setTotal] = useState(0);
+  const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +47,25 @@ const ManagerProgramList = () => {
   const handleSearch = (value) => {
     setSearchTerm(value);
     setPageNumber(1);
+  };
+
+  const handleDelete = async (id) => {
+    setDeletingId(id);
+    try {
+      await deleteProgram(id);
+      message.success("Program deleted successfully");
+      // Refresh list
+      fetchPrograms({ pageNumber, pageSize, searchTerm }).then((data) => {
+        setPrograms(data.items);
+        setTotal(data.totalCount || 0);
+      });
+    } catch (err) {
+      message.error(
+        err?.response?.data?.message || err?.message || "Delete failed"
+      );
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   if (loading)
@@ -85,9 +117,7 @@ const ManagerProgramList = () => {
                 onDetail={() =>
                   navigate(`/programManager/programs/${program.id}`)
                 }
-                onDelete={() => {
-                  /* handle delete */
-                }}
+                onDelete={() => handleDelete(program.id)}
               />
             ))}
           </div>

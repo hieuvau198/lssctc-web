@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Button } from "antd";
+import { Card, Button, Popconfirm } from "antd";
 
 const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
   <Card
@@ -37,7 +37,7 @@ const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
     </div>
     <div className="flex justify-end gap-2 mt-auto">
       <Button
-        type="link"
+        type="default"
         onClick={(e) => {
           e.stopPropagation();
           onEdit();
@@ -45,16 +45,21 @@ const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
       >
         Edit
       </Button>
-      {/* <Button
-        type="link"
-        danger
-        onClick={(e) => {
+      <Popconfirm
+        title={`Are you sure you want to delete "${program.name}"?`}
+        okText="Delete"
+        okType="danger"
+        cancelText="Cancel"
+        onConfirm={(e) => {
           e.stopPropagation();
-          onDelete();
+          onDelete && onDelete();
         }}
+        onCancel={(e) => e.stopPropagation()}
       >
-        Delete
-      </Button> */}
+        <Button type="default" danger onClick={(e) => e.stopPropagation()}>
+          Delete
+        </Button>
+      </Popconfirm>
     </div>
   </Card>
 );
