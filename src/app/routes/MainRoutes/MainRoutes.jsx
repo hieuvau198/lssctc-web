@@ -26,6 +26,7 @@ import CourseDetail from "../../pages/Trainee/Course/partials/CourseDetail";
 import Profile from "../../pages/Trainee/Profile/Profile";
 import Program from "../../pages/Trainee/Program/Program";
 import ProgramDetail from "../../pages/Trainee/Program/partials/ProgramDetail";
+import MyProgram from "../../pages/Trainee/MyProgram/MyProgram";
 
 import Quiz from "../../pages/Trainee/Quiz/Quiz";
 import LessonSessionPlaceholder from "../../modules/Session/LessonSessionPlaceholder";
@@ -62,6 +63,7 @@ const MainRoutes = () => {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/certificate" element={<CertificateForm />} />
+  <Route path="/my-program" element={<MyProgram />} />
         {/* Auth Routes */}
       </Route>
 

@@ -1,7 +1,7 @@
 // src\app\pages\ProgramManager\Course\Courses.jsx
 
 import React, { useEffect, useState } from "react";
-import { fetchCourses, addCourse, updateCourse, fetchCourseDetail } from "../../../apis/ProgramManager/CourseApi";
+import { fetchCourses, addCourse, updateCourse, fetchCourseDetail, fetchCourseCategories, fetchCourseLevels } from "../../../apis/ProgramManager/CourseApi";
 import { Skeleton, Alert, message, Drawer, Button } from "antd";
 import CourseFilters from "./partials/CourseFilters";
 import CourseList from "./partials/CourseList";
@@ -23,6 +23,36 @@ const Courses = () => {
   const [currentCourse, setCurrentCourse] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [levels, setLevels] = useState([]);
+  const [metaLoading, setMetaLoading] = useState(false);
+
+  // Fetch categories & levels once
+  useEffect(() => {
+    let mounted = true;
+    setMetaLoading(true);
+    Promise.allSettled([fetchCourseCategories(), fetchCourseLevels()])
+      .then(([catRes, lvlRes]) => {
+        if (!mounted) return;
+        if (catRes.status === 'fulfilled') {
+          // Normalize to array of { value, label }
+            const mapped = (Array.isArray(catRes.value) ? catRes.value : []).map(c => ({
+              value: c.id ?? c.Id ?? c.categoryId ?? c.CategoryId,
+              label: c.name ?? c.Name ?? c.categoryName ?? c.CategoryName,
+            })).filter(c => c.value !== undefined && c.label);
+            setCategories(mapped);
+        }
+        if (lvlRes.status === 'fulfilled') {
+            const mapped = (Array.isArray(lvlRes.value) ? lvlRes.value : []).map(l => ({
+              value: l.id ?? l.Id ?? l.levelId ?? l.LevelId,
+              label: l.name ?? l.Name ?? l.levelName ?? l.LevelName,
+            })).filter(l => l.value !== undefined && l.label);
+            setLevels(mapped);
+        }
+      })
+      .finally(() => mounted && setMetaLoading(false));
+    return () => { mounted = false; };
+  }, []);
 
   // Fetch data when filters change (including search)
   useEffect(() => {
@@ -230,6 +260,8 @@ const Courses = () => {
             onCancel={closeDrawer}
             onCreate={handleCreate}
             confirmLoading={submitting}
+            categories={categories}
+            levels={levels}
           />
         )}
         {mode === 'edit' && (
@@ -246,6 +278,8 @@ const Courses = () => {
                 onCancel={() => setMode('view')}
                 onUpdate={handleUpdate}
                 confirmLoading={submitting}
+                categories={categories}
+                levels={levels}
               />
             )
           )

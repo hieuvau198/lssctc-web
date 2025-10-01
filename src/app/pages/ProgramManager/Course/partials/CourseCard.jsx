@@ -18,8 +18,8 @@ const CourseCard = ({ course, onSelect }) => {
           <h3 className="font-semibold text-slate-900 line-clamp-2 flex-1">
             {course.name}
           </h3>
-          <Tag color={course.isActive ? "green" : "default"} className="m-0">
-            {course.isActive ? "Active" : "Inactive"}
+          <Tag color={course.isActive ? 'green' : 'red'} className="m-0">
+            {course.isActive ? 'Active' : 'Inactive'}
           </Tag>
         </div>
         <p className="text-xs text-slate-600 line-clamp-2 mb-2">
