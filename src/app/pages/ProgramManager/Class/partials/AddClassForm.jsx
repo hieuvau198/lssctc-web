@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Form,
@@ -8,8 +8,10 @@ import {
   Button,
   Alert,
   Space,
+  Select,
 } from "antd";
 import { createClass } from "../../../../apis/ProgramManager/ClassApi";
+import { fetchCourses } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
 import dayjs from "dayjs";
 
 /**
@@ -36,6 +38,25 @@ const AddClassForm = ({
   const [form] = Form.useForm();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+
+  // Fetch courses for selection
+  useEffect(() => {
+    if (open) {
+      setLoadingCourses(true);
+      fetchCourses({ pageNumber: 1, pageSize: 100 })
+        .then((data) => {
+          setCourses(data.items || []);
+        })
+        .catch((err) => {
+          console.error('Failed to fetch courses:', err);
+        })
+        .finally(() => {
+          setLoadingCourses(false);
+        });
+    }
+  }, [open]);
 
   const handleFinish = async (values) => {
     if (embedded && onCreate) {
@@ -54,7 +75,7 @@ const AddClassForm = ({
         startDate: values.startDate.toISOString(),
         endDate: values.endDate.toISOString(),
         capacity: values.capacity,
-        programCourseId,
+        programCourseId: values.courseId || programCourseId, // Send programCourseId field with courseId value
         description: values.description,
       });
       form.resetFields();
@@ -82,8 +103,34 @@ const AddClassForm = ({
           capacity: 10,
           startDate: dayjs(),
           endDate: dayjs().add(1, "month"),
+          courseId: programCourseId, // Set default courseId if programCourseId is provided
         }}
       >
+        {/* Course Selection - only show if not in program context */}
+        {!programCourseId && (
+          <Form.Item
+            label="Course"
+            name="courseId"
+            rules={[{ required: true, message: "Please select a course" }]}
+          >
+            <Select
+              placeholder="Select a course"
+              loading={loadingCourses}
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }
+            >
+              {courses.map((course) => (
+                <Select.Option key={course.id} value={course.id}>
+                  {course.name} ({course.courseCodeName})
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        )}
+        
         <Form.Item
           label="Class Code"
           name="classCode"

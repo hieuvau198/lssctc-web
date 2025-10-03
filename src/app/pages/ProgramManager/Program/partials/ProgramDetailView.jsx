@@ -1,5 +1,6 @@
 import React from "react";
 import { Tag, Divider, Card, Empty, Skeleton } from "antd";
+import ManagerCourseCard from "./ManagerCourseCard";
 
 const ProgramDetailView = ({ program, loading }) => {
   if (loading) {
@@ -48,21 +49,16 @@ const ProgramDetailView = ({ program, loading }) => {
       <div>
         <Divider orientation="left">Courses</Divider>
         {program.courses && program.courses.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {program.courses
               .sort((a, b) => (a.courseOrder || 0) - (b.courseOrder || 0))
               .map((course) => (
-                <Card key={course.id} size="small" className="border-slate-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <span className="text-sm font-medium">{course.name}</span>
-                      <div className="text-xs text-slate-500 mt-1">
-                        {course.description}
-                      </div>
-                    </div>
-                    <Tag>{course.courseOrder || 1}</Tag>
-                  </div>
-                </Card>
+                <ManagerCourseCard
+                  key={course.id}
+                  courseId={course.coursesId || course.id}
+                  order={course.courseOrder || 1}
+                  programCourseId={course.programCourseId || course.id}
+                />
               ))}
           </div>
         ) : (
