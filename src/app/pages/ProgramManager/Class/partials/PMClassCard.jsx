@@ -1,35 +1,84 @@
 import React from "react";
+import { Card, Tag, Button, Tooltip, Popconfirm } from "antd";
+import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 /**
  * @param {Object} props
  * @param {Object} props.classItem
  * @param {Function} props.onDetail
+ * @param {Function} props.onEdit
+ * @param {Function} props.onDelete
+ * @param {string|number} props.deletingId
  */
-const PMClassCard = ({ classItem, onDetail }) => (
-  <div
-    className="border rounded-lg p-4 shadow hover:shadow-lg transition bg-white cursor-pointer"
-    onClick={() => onDetail && onDetail(classItem.id)}
-    title="View class detail"
+const PMClassCard = ({ classItem, onDetail, onEdit, onDelete, deletingId }) => (
+  <Card
+    hoverable
+    className="rounded-lg shadow flex flex-col h-full"
+    actions={[
+      <Tooltip title="View Details" key="view">
+        <Button
+          type="text"
+          icon={<EyeOutlined />}
+          onClick={() => onDetail && onDetail(classItem)}
+        />
+      </Tooltip>,
+      <Tooltip title="Edit Class" key="edit">
+        <Button
+          type="text"
+          icon={<EditOutlined />}
+          onClick={() => onEdit && onEdit(classItem)}
+        />
+      </Tooltip>,
+      <Tooltip title="Delete Class" key="delete">
+        <Popconfirm
+          title="Delete class?"
+          description="Are you sure you want to delete this class?"
+          onConfirm={() => onDelete && onDelete(classItem.id)}
+          okButtonProps={{ loading: deletingId === classItem.id }}
+        >
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            loading={deletingId === classItem.id}
+          />
+        </Popconfirm>
+      </Tooltip>,
+    ]}
   >
-    <div className="flex justify-between items-center mb-2">
-      <h3 className="font-bold text-lg">{classItem.name}</h3>
-      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-        {classItem.status === "1" ? "Active" : "Inactive"}
-      </span>
+    <div className="flex-1 flex flex-col">
+      <div className="flex justify-between items-center mb-2">
+        <h3 
+          className="font-bold text-lg cursor-pointer hover:text-blue-600"
+          onClick={() => onDetail && onDetail(classItem)}
+          title="View class detail"
+        >
+          {classItem.name}
+        </h3>
+        <Tag color={classItem.status === "1" ? "green" : "red"} className="m-0">
+          {classItem.status === "1" ? "Active" : "Inactive"}
+        </Tag>
+      </div>
+      <div className="text-sm text-gray-600 mb-2">
+        <div className="flex flex-wrap gap-2">
+          <span>Start: {classItem.startDate?.slice(0, 10)}</span>
+          <span>•</span>
+          <span>End: {classItem.endDate?.slice(0, 10)}</span>
+        </div>
+      </div>
+      <div className="text-sm mb-2">
+        <div className="flex flex-wrap gap-4">
+          <span><span className="font-medium">Capacity:</span> {classItem.capacity}</span>
+          <span><span className="font-medium">Code:</span> {classItem.classCode?.name || classItem.classCode || "-"}</span>
+        </div>
+      </div>
+      {classItem.description && (
+        <div className="text-sm text-gray-500 line-clamp-2 mt-auto">
+          {classItem.description}
+        </div>
+      )}
     </div>
-    <div className="text-sm text-gray-600 mb-1">
-      <span>Start: {classItem.startDate?.slice(0, 10)}</span>
-      {" | "}
-      <span>End: {classItem.endDate?.slice(0, 10)}</span>
-    </div>
-    <div className="text-sm mb-1">
-      <span>Capacity: {classItem.capacity}</span>
-    </div>
-    <div className="text-sm mb-1">
-      <span>Class Code: {classItem.classCode?.name}</span>
-    </div>
-    <div className="text-sm text-gray-500">{classItem.description}</div>
-  </div>
+  </Card>
 );
 
 export default PMClassCard;

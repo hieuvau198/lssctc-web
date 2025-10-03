@@ -1,16 +1,3 @@
-/**
- * AC: Class Detail Page
- * - [x] Fetch class detail by id using fetchClassDetail from ClassApi.js
- * - [x] Show basic info: name, dates, capacity, code, description, status
- * - [x] Show instructor info (only one)
- * - [x] Show member list (trainee)
- * - [x] Loading & error state
- * - [x] TailwindCSS only, no new dependencies
- * - [x] Responsive, accessible, clean UI
- */
-
-// filepath: d:\FPT_Uni\Semester_9\SEP\Frontend\lssctc-web\src\app\pages\ProgramManager\Class\partials\PMClassDetail.jsx
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Spin, Alert, Button } from "antd";
@@ -153,7 +140,7 @@ const PMClassDetail = () => {
         {members.length === 0 ? (
           <div className="text-gray-500">No members.</div>
         ) : (
-          <div className="overflow-x-auto rounded border">
+          <div className="overflow-x-auto rounded border max-h-[360px] overflow-y-auto">
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="bg-gray-100">

@@ -7,6 +7,7 @@ import {
   DatePicker,
   Button,
   Alert,
+  Space,
 } from "antd";
 import { createClass } from "../../../../apis/ProgramManager/ClassApi";
 import dayjs from "dayjs";
@@ -15,15 +16,35 @@ import dayjs from "dayjs";
  * @param {Object} props
  * @param {boolean} props.open
  * @param {Function} props.onClose
+ * @param {Function} props.onCancel
+ * @param {Function} props.onCreate
+ * @param {boolean} props.confirmLoading
+ * @param {boolean} props.embedded
  * @param {number|string} props.programCourseId
  * @param {Function} props.onCreated
  */
-const AddClassForm = ({ open, onClose, programCourseId, onCreated }) => {
+const AddClassForm = ({ 
+  open, 
+  onClose, 
+  onCancel, 
+  onCreate, 
+  confirmLoading, 
+  embedded = false, 
+  programCourseId, 
+  onCreated 
+}) => {
   const [form] = Form.useForm();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
   const handleFinish = async (values) => {
+    if (embedded && onCreate) {
+      // Use the parent's handler
+      onCreate(values);
+      return;
+    }
+
+    // Original modal logic
     setSaving(true);
     setError(null);
     try {
@@ -48,14 +69,8 @@ const AddClassForm = ({ open, onClose, programCourseId, onCreated }) => {
     }
   };
 
-  return (
-    <Modal
-      open={open}
-      title="Add Class"
-      onCancel={onClose}
-      footer={null}
-      destroyOnClose
-    >
+  const formContent = (
+    <>
       {error && (
         <Alert type="error" message={error} showIcon className="mb-2" />
       )}
@@ -115,11 +130,34 @@ const AddClassForm = ({ open, onClose, programCourseId, onCreated }) => {
           <Input.TextArea rows={2} placeholder="Description" />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={saving} block>
-            Add Class
-          </Button>
+          <Space>
+            <Button onClick={onCancel || onClose}>Cancel</Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={embedded ? confirmLoading : saving}
+            >
+              {embedded ? "Create Class" : "Add Class"}
+            </Button>
+          </Space>
         </Form.Item>
       </Form>
+    </>
+  );
+
+  if (embedded) {
+    return formContent;
+  }
+
+  return (
+    <Modal
+      open={open}
+      title="Add Class"
+      onCancel={onClose}
+      footer={null}
+      destroyOnClose
+    >
+      {formContent}
     </Modal>
   );
 };

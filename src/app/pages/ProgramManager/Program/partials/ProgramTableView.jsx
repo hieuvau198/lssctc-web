@@ -131,7 +131,7 @@ const ProgramTableView = ({
       columns={tableColumns}
       dataSource={programs}
       rowKey="id"
-      scroll={{ x: 360 }}
+      scroll={{ x: 360, y: 360 }}
       pagination={{
         current: pageNumber,
         pageSize: pageSize,

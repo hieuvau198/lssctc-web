@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {
   Input,
-  Spin,
   Alert,
   Empty,
   Button,
   message,
   Form,
+  Skeleton,
+  Card,
 } from "antd";
 import {
   AppstoreOutlined,
@@ -206,8 +207,38 @@ const ManagerProgramList = () => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
-        <Spin size="large" tip="Loading programs..." />
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between mb-6">
+          <Skeleton.Button style={{ width: 200, height: 32 }} active />
+        </div>
+
+        {/* Search and Controls Skeleton */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+          <Skeleton.Input style={{ width: 320, height: 40 }} active />
+          <div className="flex gap-2">
+            <Skeleton.Button style={{ width: 120, height: 40 }} active />
+            <Skeleton.Button style={{ width: 80, height: 40 }} active />
+          </div>
+        </div>
+
+        {/* Content Skeleton - Default to table view skeleton */}
+        <div className="bg-white rounded-lg shadow p-6">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="flex items-center gap-4 p-4 border-b border-slate-100 last:border-b-0">
+              <Skeleton.Avatar size={48} shape="square" active />
+              <div className="flex-1">
+                <Skeleton.Input style={{ width: '60%', height: 20, marginBottom: 8 }} active />
+                <Skeleton.Input style={{ width: '40%', height: 16 }} active />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton.Button size="small" active />
+                <Skeleton.Button size="small" active />
+                <Skeleton.Button size="small" active />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   if (error)

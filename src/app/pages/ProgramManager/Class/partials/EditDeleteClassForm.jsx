@@ -8,6 +8,7 @@ import {
   Button,
   Alert,
   Popconfirm,
+  Space,
 } from "antd";
 import dayjs from "dayjs";
 import {
@@ -19,6 +20,10 @@ import {
  * @param {Object} props
  * @param {boolean} props.open
  * @param {Function} props.onClose
+ * @param {Function} props.onCancel
+ * @param {Function} props.onUpdate
+ * @param {boolean} props.confirmLoading
+ * @param {boolean} props.embedded
  * @param {Object} props.classItem
  * @param {Function} props.onUpdated
  * @param {Function} props.onDeleted
@@ -26,6 +31,10 @@ import {
 const EditDeleteClassForm = ({
   open,
   onClose,
+  onCancel,
+  onUpdate,
+  confirmLoading,
+  embedded = false,
   classItem,
   onUpdated,
   onDeleted,
@@ -37,6 +46,13 @@ const EditDeleteClassForm = ({
   const [deleteError, setDeleteError] = useState(null);
 
   const handleFinish = async (values) => {
+    if (embedded && onUpdate) {
+      // Use the parent's handler
+      onUpdate(values);
+      return;
+    }
+
+    // Original modal logic
     setSaving(true);
     setError(null);
     try {
@@ -75,14 +91,8 @@ const EditDeleteClassForm = ({
     }
   };
 
-  return (
-    <Modal
-      open={open}
-      title="Edit Class"
-      onCancel={onClose}
-      footer={null}
-      destroyOnClose
-    >
+  const formContent = (
+    <>
       {error && (
         <Alert type="error" message={error} showIcon className="mb-2" />
       )}
@@ -91,12 +101,12 @@ const EditDeleteClassForm = ({
         layout="vertical"
         onFinish={handleFinish}
         initialValues={{
-          name: classItem.name,
-          startDate: dayjs(classItem.startDate),
-          endDate: dayjs(classItem.endDate),
-          capacity: classItem.capacity,
-          description: classItem.description,
-          classCode: classItem.classCode?.name || "",
+          name: classItem?.name,
+          startDate: classItem?.startDate ? dayjs(classItem.startDate) : null,
+          endDate: classItem?.endDate ? dayjs(classItem.endDate) : null,
+          capacity: classItem?.capacity,
+          description: classItem?.description,
+          classCode: classItem?.classCode?.name || classItem?.classCode || "",
         }}
       >
         <Form.Item
@@ -145,26 +155,51 @@ const EditDeleteClassForm = ({
           <Input.TextArea rows={2} placeholder="Description" />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={saving} block>
-            Update Class
-          </Button>
+          <Space>
+            <Button onClick={onCancel || onClose}>Cancel</Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={embedded ? confirmLoading : saving}
+            >
+              Update Class
+            </Button>
+          </Space>
         </Form.Item>
       </Form>
-      <div className="mt-4">
-        {deleteError && (
-          <Alert type="error" message={deleteError} showIcon className="mb-2" />
-        )}
-        <Popconfirm
-          title="Are you sure to delete this class?"
-          onConfirm={handleDelete}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Button danger loading={deleting} block>
-            Delete Class
-          </Button>
-        </Popconfirm>
-      </div>
+      {!embedded && (
+        <div className="mt-4">
+          {deleteError && (
+            <Alert type="error" message={deleteError} showIcon className="mb-2" />
+          )}
+          <Popconfirm
+            title="Are you sure to delete this class?"
+            onConfirm={handleDelete}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button danger loading={deleting} block>
+              Delete Class
+            </Button>
+          </Popconfirm>
+        </div>
+      )}
+    </>
+  );
+
+  if (embedded) {
+    return formContent;
+  }
+
+  return (
+    <Modal
+      open={open}
+      title="Edit Class"
+      onCancel={onClose}
+      footer={null}
+      destroyOnClose
+    >
+      {formContent}
     </Modal>
   );
 };
