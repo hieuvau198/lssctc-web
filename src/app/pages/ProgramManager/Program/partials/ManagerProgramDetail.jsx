@@ -91,6 +91,7 @@ const ManagerProgramDetail = () => {
                 key={course.id}
                 courseId={course.coursesId || course.id}
                 order={course.courseOrder}
+                programCourseId={course.programCourseId || course.id}
               />
             ))}
         </div>

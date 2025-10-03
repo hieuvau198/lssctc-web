@@ -38,7 +38,8 @@ import ManagerProgramDetail from "../../pages/ProgramManager/Program/partials/Ma
 import ProgramCreate from "../../pages/ProgramManager/Program/partials/ProgramCreate";
 
 import PracticeStepDetail from "../../pages/SimManager/Practices/PracticeDetail/PracticeStep/PracticeStepDetail/PracticeStepDetail";
-
+import PMClasses from "../../pages/ProgramManager/Class/PMClasses";
+import PMClassDetail from "../../pages/ProgramManager/Class/partials/PMClassDetail";
 
 const MainRoutes = () => {
   return (
@@ -78,7 +79,10 @@ const MainRoutes = () => {
         <Route path="dashboard" element={<SimDashboard />} />
         <Route path="practices" element={<Practices />} />
         <Route path="practices/:id" element={<PracticeDetail />} />
-        <Route path="practices/:practiceId/steps/:stepId" element={<PracticeStepDetail />} />
+        <Route
+          path="practices/:practiceId/steps/:stepId"
+          element={<PracticeStepDetail />}
+        />
         <Route path="configs" element={<SimulatorConfigs />} />
         <Route path="settings" element={<SimSettings />} />
       </Route>
@@ -90,6 +94,9 @@ const MainRoutes = () => {
         <Route path="programs/create" element={<ProgramCreate />} />
         <Route path="programs/:id" element={<ManagerProgramDetail />} />
         <Route path="programs/:id/edit" element={<ProgramEdit />} />
+        {/* Classes */}
+        <Route path="classes" element={<PMClasses />} />
+        <Route path="classes/:id" element={<PMClassDetail />} />
       </Route>
 
       {/* Learning Session (in-course) Routes */}

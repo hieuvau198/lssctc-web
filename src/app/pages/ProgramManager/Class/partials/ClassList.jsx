@@ -1,12 +1,12 @@
 import React from "react";
 import { Empty, Pagination, Table, Tag, Button, Space, Tooltip, Popconfirm } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import CourseCard from "./CourseCard";
+import PMClassCard from "./PMClassCard";
 
 // Table View Component
-const CourseTableView = ({ 
-  courses, 
-  pageNumber, 
+const ClassTableView = ({ 
+  classes, 
+  page, 
   pageSize, 
   total, 
   onPageChange, 
@@ -19,33 +19,16 @@ const CourseTableView = ({
     {
       title: "#",
       key: "index",
-      width: 40,
+      width: 60,
       fixed: "left",
       render: (_, __, index) => (
         <span className="font-medium text-gray-600">
-          {(pageNumber - 1) * pageSize + index + 1}
+          {(page - 1) * pageSize + index + 1}
         </span>
       ),
     },
     {
-      title: "Image",
-      dataIndex: "imageUrl",
-      key: "imageUrl",
-      width: 80,
-      fixed: "left",
-      render: (imageUrl, record) => (
-        <div className="w-12 h-12 overflow-hidden rounded cursor-pointer">
-          <img
-            src={imageUrl}
-            alt={record.name}
-            className="w-full h-full object-cover"
-            onClick={() => onView(record)}
-          />
-        </div>
-      ),
-    },
-    {
-      title: "Course Name",
+      title: "Class Name",
       dataIndex: "name",
       key: "name",
       width: 200,
@@ -59,32 +42,26 @@ const CourseTableView = ({
       ),
     },
     {
-      title: "Category",
-      dataIndex: "categoryName",
-      key: "categoryName",
+      title: "Class Code",
+      dataIndex: "classCode",
+      key: "classCode",
       width: 120,
+      render: (classCode) => classCode?.name || classCode || "-",
     },
     {
-      title: "Level",
-      dataIndex: "levelName",
-      key: "levelName",
-      width: 80,
-    },
-    {
-      title: "Duration",
-      dataIndex: "durationHours",
-      key: "durationHours",
+      title: "Capacity",
+      dataIndex: "capacity",
+      key: "capacity",
       width: 100,
-      render: (hours) => <span>{hours}h</span>,
     },
     {
       title: "Status",
-      dataIndex: "isActive",
-      key: "isActive",
+      dataIndex: "status",
+      key: "status",
       width: 100,
-      render: (isActive) => (
-        <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "Active" : "Inactive"}
+      render: (status) => (
+        <Tag color={status === "1" ? "green" : "red"}>
+          {status === "1" ? "Active" : "Inactive"}
         </Tag>
       ),
     },
@@ -103,7 +80,7 @@ const CourseTableView = ({
               onClick={() => onView(record)}
             />
           </Tooltip>
-          <Tooltip title="Edit Course">
+          <Tooltip title="Edit Class">
             <Button
               type="text"
               size="small"
@@ -111,10 +88,10 @@ const CourseTableView = ({
               onClick={() => onEdit(record)}
             />
           </Tooltip>
-          <Tooltip title="Delete Course">
+          <Tooltip title="Delete Class">
             <Popconfirm
-              title="Delete course?"
-              description="Are you sure you want to delete this course?"
+              title="Delete class?"
+              description="Are you sure you want to delete this class?"
               onConfirm={() => onDelete(record.id)}
               okButtonProps={{ loading: deletingId === record.id }}
             >
@@ -135,18 +112,18 @@ const CourseTableView = ({
   return (
     <Table
       columns={tableColumns}
-      dataSource={courses}
+      dataSource={classes}
       rowKey="id"
       scroll={{ x: 360, y: 360 }}
       pagination={{
-        current: pageNumber,
+        current: page,
         pageSize: pageSize,
         total: total,
         onChange: onPageChange,
         showSizeChanger: true,
-        pageSizeOptions: ["10", "20", "50"],
+        pageSizeOptions: ["5", "10", "20", "50"],
         showTotal: (total, range) =>
-          `${range[0]}-${range[1]} of ${total} courses`,
+          `${range[0]}-${range[1]} of ${total} classes`,
       }}
       className="bg-white rounded-lg shadow"
     />
@@ -154,9 +131,9 @@ const CourseTableView = ({
 };
 
 // Card View Component  
-const CourseCardView = ({ 
-  courses, 
-  pageNumber, 
+const ClassCardView = ({ 
+  classes, 
+  page, 
   pageSize, 
   total, 
   onPageChange, 
@@ -167,12 +144,12 @@ const CourseCardView = ({
 }) => {
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {courses.map((course) => (
-          <CourseCard 
-            key={course.id} 
-            course={course} 
-            onSelect={onView}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {classes.map((classItem) => (
+          <PMClassCard 
+            key={classItem.id} 
+            classItem={classItem} 
+            onDetail={onView}
             onEdit={onEdit}
             onDelete={onDelete}
             deletingId={deletingId}
@@ -181,14 +158,14 @@ const CourseCardView = ({
       </div>
       <div className="flex justify-center mt-8">
         <Pagination
-          current={pageNumber}
+          current={page}
           pageSize={pageSize}
           total={total}
           onChange={onPageChange}
           showSizeChanger={true}
-          pageSizeOptions={["10", "20", "50"]}
+          pageSizeOptions={["5", "10", "20", "50"]}
           showTotal={(total, range) =>
-            `${range[0]}-${range[1]} of ${total} courses`
+            `${range[0]}-${range[1]} of ${total} classes`
           }
         />
       </div>
@@ -196,32 +173,32 @@ const CourseCardView = ({
   );
 };
 
-// Main CourseList component
-const CourseList = ({ 
-  courses, 
-  viewMode = "card",
-  pageNumber = 1, 
-  pageSize = 12, 
+// Main ClassList component
+const ClassList = ({ 
+  classes, 
+  viewMode = "table",
+  page = 1, 
+  pageSize = 10, 
   total = 0, 
   onPageChange,
-  onSelect, 
+  onView, 
   onEdit,
   onDelete,
   deletingId
 }) => {
-  if (courses.length === 0) {
-    return <Empty description="No courses found." className="mt-16" />;
+  if (classes.length === 0) {
+    return <Empty description="No classes found." className="mt-16" />;
   }
 
   if (viewMode === "table") {
     return (
-      <CourseTableView
-        courses={courses}
-        pageNumber={pageNumber}
+      <ClassTableView
+        classes={classes}
+        page={page}
         pageSize={pageSize}
         total={total}
         onPageChange={onPageChange}
-        onView={onSelect}
+        onView={onView}
         onEdit={onEdit}
         onDelete={onDelete}
         deletingId={deletingId}
@@ -230,13 +207,13 @@ const CourseList = ({
   }
 
   return (
-    <CourseCardView
-      courses={courses}
-      pageNumber={pageNumber}
+    <ClassCardView
+      classes={classes}
+      page={page}
       pageSize={pageSize}
       total={total}
       onPageChange={onPageChange}
-      onView={onSelect}
+      onView={onView}
       onEdit={onEdit}
       onDelete={onDelete}
       deletingId={deletingId}
@@ -244,4 +221,4 @@ const CourseList = ({
   );
 };
 
-export default CourseList;
+export default ClassList;

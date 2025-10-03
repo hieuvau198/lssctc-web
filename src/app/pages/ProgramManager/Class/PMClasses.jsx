@@ -1,40 +1,46 @@
 import React, { useEffect, useState } from "react";
 import {
-  Input,
+  Pagination,
   Alert,
   Empty,
   Button,
   message,
   Form,
   Skeleton,
-  Card,
+  Input,
+  Drawer,
+  Space,
+  Popconfirm,
 } from "antd";
 import {
   AppstoreOutlined,
   UnorderedListOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import {
-  fetchPrograms,
-  deleteProgram,
-  fetchProgramDetail,
-  createProgram,
-  updateProgramBasic,
-} from "../../../apis/ProgramManager/ProgramManagerCourseApi";
-import ProgramTableView from "./partials/ProgramTableView";
-import ProgramCardView from "./partials/ProgramCardView";
-import ProgramDrawer from "./partials/ProgramDrawer";
+  fetchClasses,
+  fetchClassDetail,
+  createClass,
+  updateClass,
+  deleteClass,
+} from "../../../apis/ProgramManager/ClassApi";
+import ClassList from "./partials/ClassList";
+import ClassDetailView from "./partials/ClassDetailView";
+import PMClassCard from "./partials/PMClassCard";
+import AddClassForm from "./partials/AddClassForm";
+import EditDeleteClassForm from "./partials/EditDeleteClassForm";
 
 const { Search } = Input;
 
-const ManagerProgramList = () => {
-  const [programs, setPrograms] = useState([]);
+const PMClasses = () => {
+  const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [deletingId, setDeletingId] = useState(null);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
@@ -42,50 +48,63 @@ const ManagerProgramList = () => {
   // Drawer states
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState(null); // 'view' | 'create' | 'edit'
-  const [currentProgram, setCurrentProgram] = useState(null);
+  const [currentClass, setCurrentClass] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   
   // Forms
   const [createForm] = Form.useForm();
   const [editForm] = Form.useForm();
+  
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
-    fetchPrograms({ pageNumber, pageSize, searchTerm })
+    const params = {
+      page,
+      pageSize,
+    };
+    
+    // Add search term if available
+    if (searchTerm) {
+      params.searchTerm = searchTerm;
+    }
+
+    fetchClasses(params)
       .then((data) => {
-        setPrograms(data.items);
+        setClasses(data.items || []);
         setTotal(data.totalCount || 0);
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        setError(err.message || "Failed to fetch classes");
         setLoading(false);
       });
-  }, [pageNumber, pageSize, searchTerm]);
+  }, [page, pageSize, searchTerm]);
 
   const handleSearch = (value) => {
     setSearchTerm(value);
-    setPageNumber(1);
+    setPage(1);
   };
 
-  const handlePageChange = (page, size) => {
-    setPageNumber(page);
-    setPageSize(size);
+  const handlePageChange = (newPage, newPageSize) => {
+    setPage(newPage);
+    setPageSize(newPageSize);
   };
 
   const handleDelete = async (id) => {
     setDeletingId(id);
     try {
-      await deleteProgram(id);
-      message.success("Program deleted successfully");
+      await deleteClass(id);
+      message.success("Class deleted successfully");
       // Refresh list
-      fetchPrograms({ pageNumber, pageSize, searchTerm }).then((data) => {
-        setPrograms(data.items);
-        setTotal(data.totalCount || 0);
-      });
-      // Close drawer if current program is deleted
-      if (currentProgram?.id === id) {
+      const params = { page, pageSize };
+      if (searchTerm) params.searchTerm = searchTerm;
+      const data = await fetchClasses(params);
+      setClasses(data.items || []);
+      setTotal(data.totalCount || 0);
+      // Close drawer if current class is deleted
+      if (currentClass?.id === id) {
         closeDrawer();
       }
     } catch (err) {
@@ -100,43 +119,44 @@ const ManagerProgramList = () => {
   // Drawer handlers
   const openCreate = () => {
     setDrawerMode('create');
-    setCurrentProgram(null);
+    setCurrentClass(null);
     createForm.resetFields();
     setDrawerOpen(true);
   };
 
-  const openView = async (program) => {
+  const openView = async (classItem) => {
     setDrawerMode('view');
-    setCurrentProgram(program);
+    setCurrentClass(classItem);
     setDrawerOpen(true);
     setDetailLoading(true);
     try {
-      const detail = await fetchProgramDetail(program.id);
-      setCurrentProgram(detail);
+      const detail = await fetchClassDetail(classItem.id);
+      setCurrentClass(detail);
     } catch (err) {
-      message.error(err.message || 'Failed to load program detail');
+      message.error(err.message || 'Failed to load class detail');
     } finally {
       setDetailLoading(false);
     }
   };
 
-  const openEdit = async (program) => {
+  const openEdit = async (classItem) => {
     setDrawerMode('edit');
-    setCurrentProgram(program);
+    setCurrentClass(classItem);
     setDrawerOpen(true);
     setDetailLoading(true);
     try {
-      const detail = await fetchProgramDetail(program.id);
-      setCurrentProgram(detail);
+      const detail = await fetchClassDetail(classItem.id);
+      setCurrentClass(detail);
       editForm.setFieldsValue({
         name: detail.name,
+        startDate: detail.startDate,
+        endDate: detail.endDate,
+        capacity: detail.capacity,
+        classCode: detail.classCode?.name || detail.classCode,
         description: detail.description,
-        durationHours: detail.durationHours,
-        imageUrl: detail.imageUrl,
-        isActive: detail.isActive,
       });
     } catch (err) {
-      message.error(err.message || 'Failed to load program detail');
+      message.error(err.message || 'Failed to load class detail');
     } finally {
       setDetailLoading(false);
     }
@@ -144,13 +164,14 @@ const ManagerProgramList = () => {
 
   const switchToEdit = () => {
     setDrawerMode('edit');
-    if (currentProgram) {
+    if (currentClass) {
       editForm.setFieldsValue({
-        name: currentProgram.name,
-        description: currentProgram.description,
-        durationHours: currentProgram.durationHours,
-        imageUrl: currentProgram.imageUrl,
-        isActive: currentProgram.isActive,
+        name: currentClass.name,
+        startDate: currentClass.startDate,
+        endDate: currentClass.endDate,
+        capacity: currentClass.capacity,
+        classCode: currentClass.classCode?.name || currentClass.classCode,
+        description: currentClass.description,
       });
     }
   };
@@ -162,7 +183,7 @@ const ManagerProgramList = () => {
   const closeDrawer = () => {
     setDrawerOpen(false);
     setDrawerMode(null);
-    setCurrentProgram(null);
+    setCurrentClass(null);
     createForm.resetFields();
     editForm.resetFields();
   };
@@ -170,11 +191,13 @@ const ManagerProgramList = () => {
   const handleCreate = async (values) => {
     setSubmitting(true);
     try {
-      await createProgram(values);
-      message.success('Program created successfully');
+      await createClass(values);
+      message.success('Class created successfully');
       // Refresh list
-      const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
-      setPrograms(data.items);
+      const params = { page, pageSize };
+      if (searchTerm) params.searchTerm = searchTerm;
+      const data = await fetchClasses(params);
+      setClasses(data.items || []);
       setTotal(data.totalCount || 0);
       closeDrawer();
     } catch (err) {
@@ -185,18 +208,20 @@ const ManagerProgramList = () => {
   };
 
   const handleUpdate = async (values) => {
-    if (!currentProgram) return;
+    if (!currentClass) return;
     setSubmitting(true);
     try {
-      await updateProgramBasic(currentProgram.id, values);
-      message.success('Program updated successfully');
+      await updateClass(currentClass.id, values);
+      message.success('Class updated successfully');
       // Refresh list
-      const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
-      setPrograms(data.items);
+      const params = { page, pageSize };
+      if (searchTerm) params.searchTerm = searchTerm;
+      const data = await fetchClasses(params);
+      setClasses(data.items || []);
       setTotal(data.totalCount || 0);
-      // Update current program
-      const updated = data.items.find(p => p.id === currentProgram.id);
-      setCurrentProgram(updated || null);
+      // Update current class
+      const updated = data.items.find(c => c.id === currentClass.id);
+      setCurrentClass(updated || null);
       setDrawerMode('view');
     } catch (err) {
       message.error(err.message || 'Update failed');
@@ -222,7 +247,7 @@ const ManagerProgramList = () => {
           </div>
         </div>
 
-        {/* Content Skeleton - Default to table view skeleton */}
+        {/* Content Skeleton - Table format */}
         <div className="bg-white rounded-lg shadow p-6">
           {Array.from({ length: 5 }).map((_, index) => (
             <div key={index} className="flex items-center gap-4 p-4 border-b border-slate-100 last:border-b-0">
@@ -252,22 +277,22 @@ const ManagerProgramList = () => {
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Program Management</h2>
+        <h2 className="text-2xl font-bold">Class Management</h2>
       </div>
 
       {/* Search and Controls */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
         <Input.Search
-          placeholder="Search programs..."
+          placeholder="Search classes..."
           allowClear
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           onSearch={handleSearch}
-          className="w-1/3"
+          className="w-full md:w-80"
         />
         <div className="flex gap-2">
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-            Add Program
+            Add Class
           </Button>
           <Button.Group>
             <Button
@@ -285,57 +310,88 @@ const ManagerProgramList = () => {
       </div>
 
       {/* Content */}
-      {programs.length === 0 ? (
-        <Empty description="No programs found." className="mt-16" />
+      {classes.length === 0 ? (
+        <Empty description="No classes found." className="mt-16" />
       ) : (
-        <>
-          {viewMode === "table" ? (
-            <ProgramTableView
-              programs={programs}
-              pageNumber={pageNumber}
-              pageSize={pageSize}
-              total={total}
-              onPageChange={handlePageChange}
-              onView={openView}
-              onEdit={openEdit}
-              onDelete={handleDelete}
-              deletingId={deletingId}
-            />
-          ) : (
-            <ProgramCardView
-              programs={programs}
-              pageNumber={pageNumber}
-              pageSize={pageSize}
-              total={total}
-              onPageChange={handlePageChange}
-              onView={openView}
-              onEdit={openEdit}
-              onDelete={handleDelete}
-              deletingId={deletingId}
-            />
-          )}
-        </>
+        <ClassList 
+          classes={classes}
+          viewMode={viewMode}
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={handlePageChange}
+          onView={openView}
+          onEdit={openEdit}
+          onDelete={handleDelete}
+          deletingId={deletingId}
+        />
       )}
 
       {/* Drawer */}
-      <ProgramDrawer
+      <Drawer
         open={drawerOpen}
-        mode={drawerMode}
-        currentProgram={currentProgram}
-        createForm={createForm}
-        editForm={editForm}
-        submitting={submitting}
-        detailLoading={detailLoading}
-        deletingId={deletingId}
         onClose={closeDrawer}
-        onCreate={handleCreate}
-        onUpdate={handleUpdate}
-        onDelete={handleDelete}
-        onSwitchToEdit={switchToEdit}
-        onSwitchToView={switchToView}
-      />
+        width={720}
+        title={
+          drawerMode === 'create'
+            ? 'Create Class'
+            : drawerMode === 'edit'
+            ? 'Edit Class'
+            : currentClass?.name || 'Class Detail'
+        }
+        extra={
+          drawerMode === 'view' && currentClass ? (
+            <Space>
+              <Button onClick={switchToEdit}>Edit</Button>
+              <Popconfirm
+                title="Delete class?"
+                description="Are you sure you want to delete this class?"
+                onConfirm={() => handleDelete(currentClass.id)}
+                okButtonProps={{ loading: deletingId === currentClass.id }}
+              >
+                <Button danger loading={deletingId === currentClass.id}>
+                  Delete
+                </Button>
+              </Popconfirm>
+            </Space>
+          ) : null
+        }
+      >
+        {drawerMode === 'view' && currentClass && (
+          detailLoading ? (
+            <Skeleton active paragraph={{ rows: 8 }} />
+          ) : (
+            <ClassDetailView classItem={currentClass} />
+          )
+        )}
+        {drawerMode === 'create' && (
+          <AddClassForm
+            embedded
+            open
+            onCancel={closeDrawer}
+            onCreate={handleCreate}
+            confirmLoading={submitting}
+          />
+        )}
+        {drawerMode === 'edit' && (
+          detailLoading ? (
+            <Skeleton active paragraph={{ rows: 6 }} />
+          ) : (
+            currentClass && (
+              <EditDeleteClassForm
+                embedded
+                open
+                classItem={currentClass}
+                onCancel={switchToView}
+                onUpdate={handleUpdate}
+                confirmLoading={submitting}
+              />
+            )
+          )
+        )}
+      </Drawer>
     </div>
   );
 };
 
-export default ManagerProgramList;
+export default PMClasses;
