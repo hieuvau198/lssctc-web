@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, Tag, Progress, Divider } from 'antd';
 import { Clock, DollarSign, User, Award } from 'lucide-react';
 
@@ -7,8 +8,9 @@ export default function CourseModules({ mockClassCourses }) {
 		<Card title="Course Modules" className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
 			<div className="space-y-5">
 				{mockClassCourses.map((course, index) => (
-					<div key={course.id} className="flex items-start justify-between p-5 border border-slate-200 rounded-lg bg-slate-50/30 hover:bg-slate-50 transition-all duration-300 shadow-sm hover:shadow-md">
-						<div className="flex-1">
+					<Link key={course.id} to={`/learn/${course.id}`} className="block">
+						<div className="flex items-start justify-between p-5 border border-slate-200 rounded-lg bg-slate-50/30 hover:bg-slate-50 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer">
+							<div className="flex-1">
 							<div className="flex items-start gap-3">
 								<div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-xs font-semibold">
 									{course.code.split('-')[0]}
@@ -63,7 +65,8 @@ export default function CourseModules({ mockClassCourses }) {
 								</div>
 							</div>
 						</div>
-					</div>
+						</div>
+					</Link>
 				))}
 			</div>
 
