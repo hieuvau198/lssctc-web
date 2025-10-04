@@ -1,7 +1,7 @@
 import React from 'react';
 import { Skeleton, Alert } from 'antd';
 import { BookOpen } from 'lucide-react';
-import PageNav from '../../components/PageNav/PageNav';
+import PageNav from '../../../components/PageNav/PageNav';
 
 /**
  * Temporary placeholder for session lesson/activity content.
