@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Button, Progress } from 'antd';
 import { BookOpen, CheckCircle2, Clock } from 'lucide-react';
 
-export default function ReadingContent({ title, duration, completed = false }) {
+export default function ReadingContent({ title, duration, completed = false, contentHtml }) {
 	return (
 		<div className="max-w-4xl mx-auto">
 			<Card className="mb-6">
@@ -27,34 +27,7 @@ export default function ReadingContent({ title, duration, completed = false }) {
 					</div>
 				</div>
 				
-				<div className="prose max-w-none">
-					<h2>Introduction</h2>
-					<p className="text-slate-700 leading-relaxed">
-						This document covers essential safety protocols and operating procedures for crane operations. 
-						Understanding these principles is crucial for safe and effective crane operation in various industrial settings.
-					</p>
-					
-					<h3>Key Safety Considerations</h3>
-					<ul className="text-slate-700">
-						<li>Always perform pre-operation inspections</li>
-						<li>Maintain proper communication with ground personnel</li>
-						<li>Understand load weight limits and capacity charts</li>
-						<li>Be aware of environmental conditions (wind, obstacles)</li>
-						<li>Follow proper rigging procedures</li>
-					</ul>
-					
-					<h3>Operating Procedures</h3>
-					<p className="text-slate-700 leading-relaxed">
-						Before beginning any lifting operation, operators must ensure all safety protocols are in place 
-						and all personnel are properly positioned. The work area should be clearly marked and secured.
-					</p>
-					
-					<h3>Emergency Procedures</h3>
-					<p className="text-slate-700 leading-relaxed">
-						In case of emergency, operators should immediately stop all operations and follow established 
-						emergency protocols. Communication with supervision and emergency services should be prioritized.
-					</p>
-				</div>
+				<div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: contentHtml || '' }} />
 				
 				{!completed && (
 					<div className="mt-6 pt-6 border-t">

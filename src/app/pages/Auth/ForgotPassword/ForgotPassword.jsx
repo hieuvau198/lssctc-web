@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Input, Button, Alert } from 'antd';
 import VerifyAccount from './partials/VerifyAccount';
 import ChangePassword from './partials/ChangePassword';
 import PageNav from '../../../components/PageNav/PageNav';
+import { useNavigate } from 'react-router';
 
 export default function ForgotPassword() {
   const [stage, setStage] = useState('request'); // 'request' | 'verify' | 'success'
@@ -9,6 +11,7 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
+  const nav = useNavigate();
 
   const handleRequest = async (e) => {
     e.preventDefault();
@@ -75,35 +78,43 @@ export default function ForgotPassword() {
           <>
             <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">Forgot password</h1>
             <p className="text-gray-500 text-sm mb-6 text-center">Enter your email to receive a verification code</p>
-            {error && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded px-3 py-2">{error}</div>}
+            {error && (
+              <Alert
+                message={error}
+                type="error"
+                showIcon
+                className="mb-4"
+              />
+            )}
             <form onSubmit={handleRequest} className="space-y-5">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
+                <Input
                   id="email"
                   type="email"
-                  autoComplete="email"
-                  required
+                  size="large"
+                  placeholder="your-email@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-3 py-2 text-sm outline-none transition"
-                  placeholder="your-email@gmail.com"
+                  disabled={loading}
+                  autoComplete="email"
+                  required
                 />
               </div>
-              <button
-                type="submit"
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                loading={loading}
                 disabled={loading}
-                className={[
-                  'w-full inline-flex items-center justify-center rounded-md font-medium text-sm h-11 px-4',
-                  'text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-colors',
-                  loading ? 'opacity-70 cursor-not-allowed' : ''
-                ].join(' ')}
+                className="w-full h-11"
+                style={{ backgroundColor: '#2563eb', borderColor: '#2563eb' }}
               >
                 {loading ? 'Sending code…' : 'Send verification code'}
-              </button>
+              </Button>
             </form>
             <div className="mt-6 text-center text-sm text-gray-600">
-              Remembered your password? <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium">Sign in</a>
+              Remembered your password? <span onClick={() => nav('/auth/login')} className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer">Sign in</span>
             </div>
           </>
         )}

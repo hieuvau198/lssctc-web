@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Input, Button, Alert } from 'antd';
 
 export default function VerifyAccount({ email, loading, error, info, onVerify, onResend, onBack }) {
   const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -95,49 +96,55 @@ export default function VerifyAccount({ email, loading, error, info, onVerify, o
   <div className="text-center text-lg text-gray-500 mb-4">Time remaining: <span className="font-medium text-gray-700">{String(Math.floor(remaining/60)).padStart(2,'0')}:{String(remaining%60).padStart(2,'0')}</span></div>
       {(error || localError || info) && (
         <div className="mb-4 space-y-2">
-          {error && <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded px-3 py-2">{error}</div>}
-          {localError && <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded px-3 py-2">{localError}</div>}
-          {info && <div className="text-sm text-blue-700 bg-blue-50 border border-blue-100 rounded px-3 py-2 text-center">{info}</div>}
+          {error && <Alert message={error} type="error" showIcon />}
+          {localError && <Alert message={localError} type="error" showIcon />}
+          {info && <Alert message={info} type="info" showIcon />}
         </div>
       )}
       <form onSubmit={submit} className="space-y-6">
         <div className="flex justify-between gap-2">
           {code.map((digit, i) => (
-            <input
+            <Input
               key={i}
               ref={(el) => inputsRef.current[i] = el}
               type="text"
               inputMode="numeric"
               maxLength={1}
+              size="large"
               value={digit}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
               onPaste={i === 0 ? handlePaste : undefined}
-              className="w-12 h-14 text-center text-lg font-semibold rounded-md border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition tracking-wider"
+              disabled={loading}
+              className="w-12 h-14 text-center text-lg font-semibold tracking-wider"
+              style={{ textAlign: 'center', fontSize: '18px', fontWeight: '600' }}
               aria-label={`Digit ${i + 1}`}
             />
           ))}
         </div>
-        <button
-          type="submit"
+        <Button
+          type="primary"
+          htmlType="submit"
+          size="large"
+          loading={loading}
           disabled={loading}
-          className={[
-            'w-full inline-flex items-center justify-center rounded-md font-medium text-sm h-11 px-4',
-            'text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-colors',
-            loading ? 'opacity-70 cursor-not-allowed' : ''
-          ].join(' ')}
+          className="w-full h-11"
+          style={{ backgroundColor: '#2563eb', borderColor: '#2563eb' }}
         >
           {loading ? 'Verifying…' : 'Verify code'}
-        </button>
+        </Button>
       </form>
       <div className="mt-6 text-center text-sm text-gray-600">
         Didn't get a code?{' '}
-        <button
-          type="button"
+        <Button
+          type="link"
+          size="small"
           disabled={loading}
           onClick={() => { onResend(); setRemaining(5*60); }}
-          className="text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50"
-        >Resend</button>
+          className="p-0 h-auto font-medium text-blue-600 hover:text-blue-700"
+        >
+          Resend
+        </Button>
       </div>
     </div>
   );

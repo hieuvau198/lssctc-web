@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Button, Progress } from 'antd';
 import { Settings, CheckCircle2, Clock, Play } from 'lucide-react';
 
-export default function PracticeContent({ title, duration, completed = false }) {
+export default function PracticeContent({ title, duration, completed = false, description }) {
 	return (
 		<div className="max-w-4xl mx-auto">
 			<Card className="mb-6">
@@ -11,7 +11,7 @@ export default function PracticeContent({ title, duration, completed = false }) 
 						<Settings className="w-8 h-8 text-orange-600" />
 					</div>
 					<h1 className="text-2xl font-bold text-slate-900 mb-2">{title}</h1>
-					<p className="text-slate-600">Interactive practice session to reinforce your learning</p>
+					<p className="text-slate-600">{description || 'Interactive practice session to reinforce your learning'}</p>
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
