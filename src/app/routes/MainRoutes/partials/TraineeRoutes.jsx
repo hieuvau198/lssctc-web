@@ -28,7 +28,6 @@ export default function TraineeRoutes() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/certificate" element={<CertificateView />} />
-          <Route path="/my-class" element={<MyClasses />} />
           <Route path="/my-classes" element={<MyClasses />} />
           <Route path="/my-classes/:id" element={<MyClassDetail />} />
         </Route>

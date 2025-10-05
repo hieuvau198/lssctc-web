@@ -112,12 +112,14 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
 
   const handleItemClick = (item) => {
     if (item.isHeader) return; // Don't navigate on section headers
-    
-    if (onSelectItem) {
-      onSelectItem(item);
-    } else {
-      navigate(item.href || `./${item.id}`);
-    }
+
+    // Optional callback
+    if (onSelectItem) onSelectItem(item);
+
+    // Always navigate to keep URL in sync
+    const target = item.href 
+      || (item.sectionId ? `/learn/${courseId}/${item.sectionId}/${item.id}` : `/learn/${courseId}/${item.id}`);
+    navigate(target);
   };
 
   return (
@@ -131,7 +133,7 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
             <button
               type="button"
               onClick={() => toggleSection(group.section.id)}
-              className="w-full flex items-center justify-between px-3 py-3 text-left hover:bg-blue-300 rounded-lg transition-colors duration-200 group"
+              className="w-full flex items-center justify-between px-3 py-3 text-left hover:bg-blue-300 rounded-lg transition-colors duration-200 group cursor-pointer"
             >
               <h3 className="text-base font-bold text-slate-900 group-hover:text-black">
                 {group.section.title}
@@ -150,7 +152,7 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
             
             {/* Section Partitions - Collapsible */}
             {isExpanded && (
-              <div className="mt-2 space-y-1 ml-2">
+              <div className="mt-2 space-y-1">
                 {group.partitions.map((partition) => {
                   const isActive = partition.id === activeId;
                   
@@ -166,9 +168,9 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
                         type="button"
                         onClick={() => handleItemClick(partition)}
                         className={[
-                          'w-full text-left px-3 py-3 rounded-lg transition-all duration-200 flex items-start gap-3 group',
+                          'w-full text-left px-3 py-3 rounded-none transition-all duration-200 flex items-start gap-3 group cursor-pointer',
                           isActive
-                            ? 'bg-blue-50 border border-blue-200 ml-2'
+                            ? 'bg-blue-50 border border-blue-200'
                             : 'hover:bg-blue-100 border border-transparent hover:border-blue-200'
                         ].join(' ')}
                       >

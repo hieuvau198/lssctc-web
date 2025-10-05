@@ -2,15 +2,25 @@ import React from 'react';
 import { Card, Button, Progress } from 'antd';
 import { Play, CheckCircle2, Clock } from 'lucide-react';
 
-export default function VideoContent({ title, duration, completed = false }) {
+export default function VideoContent({ title, duration, completed = false, videoUrl }) {
 	return (
 		<div className="max-w-4xl mx-auto">
 			<Card className="mb-6">
-				<div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center mb-4">
-					<div className="text-center text-white">
-						<Play className="w-16 h-16 mx-auto mb-4" />
-						<p className="text-lg font-semibold">{title}</p>
-						<p className="text-slate-300">Click to play video</p>
+				<div className="mb-4">
+					<div className="aspect-video bg-black rounded-lg overflow-hidden">
+						{videoUrl ? (
+							<video src={videoUrl} controls className="w-full h-full" preload="metadata">
+								Your browser does not support the video tag.
+							</video>
+						) : (
+							<div className="h-full w-full flex items-center justify-center text-white bg-slate-900">
+								<div className="text-center">
+									<Play className="w-16 h-16 mx-auto mb-4" />
+									<p className="text-lg font-semibold">{title}</p>
+									<p className="text-slate-300">No video URL provided</p>
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 				

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Tag, Progress } from 'antd';
 import { Clock, DollarSign, User, Award } from 'lucide-react';
+import { getFirstPartitionPath } from '../../../../mock/lessonPartitions';
 
 export default function CourseModules({ mockClassCourses }) {
 	return (
@@ -33,8 +34,10 @@ export default function CourseModules({ mockClassCourses }) {
 			</div>
 
 			<div className="space-y-5">
-				{mockClassCourses.map((course, index) => (
-					<Link key={course.id} to={`/learn/${course.id}`} className="block">
+				{mockClassCourses.map((course, index) => {
+					const deepLink = getFirstPartitionPath(course.id) || `/learn/${course.id}`;
+					return (
+					<Link key={course.id} to={deepLink} className="block">
 						<div className="flex items-start justify-between p-5 border border-slate-200 rounded-lg bg-slate-50/30 hover:bg-slate-50 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer">
 							<div className="flex-1">
 							<div className="flex items-start gap-3">
@@ -93,7 +96,8 @@ export default function CourseModules({ mockClassCourses }) {
 						</div>
 						</div>
 					</Link>
-				))}
+					);
+				})}
 			</div>
 		</Card>
 	);

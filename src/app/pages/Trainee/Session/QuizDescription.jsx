@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Button, Alert } from 'antd';
 import { FileText, Clock, HelpCircle, CheckCircle2 } from 'lucide-react';
 
-export default function QuizDescription({ title, duration, completed = false, questionCount = 10, passingScore = 80 }) {
+export default function QuizDescription({ title, duration, completed = false, questionCount = 10, passingScore = 80, description }) {
 	return (
 		<div className="max-w-4xl mx-auto">
 			<Card className="mb-6">
@@ -11,7 +11,7 @@ export default function QuizDescription({ title, duration, completed = false, qu
 						<HelpCircle className="w-8 h-8 text-blue-600" />
 					</div>
 					<h1 className="text-2xl font-bold text-slate-900 mb-2">{title}</h1>
-					<p className="text-slate-600">Test your knowledge with this comprehensive quiz</p>
+					<p className="text-slate-600">{description || 'Test your knowledge with this comprehensive quiz'}</p>
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
