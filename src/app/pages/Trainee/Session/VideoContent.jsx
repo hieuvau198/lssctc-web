@@ -7,6 +7,9 @@ export default function VideoContent({ title, duration, completed = false, video
 		<div className="max-w-4xl mx-auto">
 			<Card className="mb-6">
 				<div className="mb-4">
+					<div className="flex items-center gap-2 mb-3">
+						<h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+					</div>
 					<div className="aspect-video bg-black rounded-lg overflow-hidden">
 						{videoUrl ? (
 							<video src={videoUrl} controls className="w-full h-full" preload="metadata">
@@ -37,24 +40,8 @@ export default function VideoContent({ title, duration, completed = false, video
 						</div>
 					)}
 				</div>
-				
-				{!completed && (
-					<div className="mt-4">
-						<Button type="primary" size="large" icon={<Play className="w-4 h-4" />}>
-							Start Video
-						</Button>
-					</div>
-				)}
 			</Card>
 			
-			{completed && (
-				<Card title="Video Progress">
-					<Progress percent={100} status="success" />
-					<p className="text-sm text-slate-600 mt-2">
-						You have completed this video lesson.
-					</p>
-				</Card>
-			)}
 		</div>
 	);
 }

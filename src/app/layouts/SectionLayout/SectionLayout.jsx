@@ -1,8 +1,8 @@
 import React from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
 import ScrollTop from '../../components/ScrollTop/ScrollTop';
-import { Alert, Skeleton, Tooltip } from 'antd';
-import { CheckCircle2 } from 'lucide-react';
+import { Alert, Skeleton, Tooltip, Button } from 'antd';
+import { CheckCircle2, ArrowLeft } from 'lucide-react';
 import './SectionLayout.css';
 
 export default function SectionLayout({
@@ -25,13 +25,25 @@ export default function SectionLayout({
     <div className="h-screen flex flex-col bg-white">
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-72 border-r border-slate-200 bg-slate-50/60 flex flex-col">
+        <aside className="w-80 border-r border-slate-200 bg-slate-50/60 flex flex-col">
           <div className="px-4 py-4 border-b">
-            <Tooltip title={courseTitle} placement="topLeft">
-              <h2 className="text-sm font-semibold tracking-wide text-slate-700 uppercase truncate">
-                {courseTitle}
-              </h2>
-            </Tooltip>
+            <div className="flex items-center gap-2">
+              <Tooltip title="Back to class" placement="top">
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  aria-label="Exit to class"
+                  onClick={() => navigate(`/my-classes/${courseId}`)}
+                  icon={<ArrowLeft className="w-4 h-4" />}
+                />
+              </Tooltip>
+              <Tooltip title={courseTitle} placement="topLeft">
+                <h2 className="text-sm font-semibold tracking-wide text-slate-700 uppercase truncate flex-1">
+                  {courseTitle}
+                </h2>
+              </Tooltip>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {error && (
