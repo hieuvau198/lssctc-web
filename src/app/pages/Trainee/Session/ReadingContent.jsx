@@ -1,6 +1,5 @@
-import React from 'react';
-import { Card, Button, Progress } from 'antd';
-import { BookOpen, CheckCircle2, Clock } from 'lucide-react';
+import { Button, Card, Progress } from 'antd';
+import { CheckCircle2, Clock } from 'lucide-react';
 
 export default function ReadingContent({ title, duration, completed = false, contentHtml }) {
 	return (
@@ -8,7 +7,6 @@ export default function ReadingContent({ title, duration, completed = false, con
 			<Card className="mb-6">
 				<div className="mb-4">
 					<div className="flex items-center gap-2 mb-4">
-						<BookOpen className="w-5 h-5 text-blue-600" />
 						<h1 className="text-2xl font-bold text-slate-900">{title}</h1>
 					</div>
 					

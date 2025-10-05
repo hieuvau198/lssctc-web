@@ -8,6 +8,7 @@ import {
   persistRememberedCredentials,
 } from '../../../lib/crypto';
 import { useNavigate } from 'react-router';
+import Cookies from 'js-cookie';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -42,8 +43,21 @@ export default function Login() {
     try {
       // TODO: call real login API via http('/api/auth/login')
       await new Promise(r => setTimeout(r, 1000)); // simulate
+      // Simulate token received from API
+      const token = 'demo-token';
+
       persistCredentials(email, password);
+      // Persist token in cookies
+      Cookies.set('token', token, {
+        // if remember me is checked, persist for 7 days; otherwise session cookie
+        ...(remember ? { expires: 7 } : {}),
+        sameSite: 'lax',
+        secure: window.location.protocol === 'https:',
+        path: '/',
+      });
       // redirect or set auth context
+      // Example redirect to home or previous page
+      // nav('/');
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {

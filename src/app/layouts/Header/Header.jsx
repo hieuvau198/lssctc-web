@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router";
+import Cookies from 'js-cookie';
 import Avt from "./partials/Avt";
 
 export default function Header() {
@@ -31,13 +32,17 @@ export default function Header() {
     return () => window.removeEventListener("hashchange", close);
   }, []);
 
-  // Check token in localStorage to toggle avatar
+  // Check token in Cookies to toggle avatar
   useEffect(() => {
-    const check = () => setHasToken(!!localStorage.getItem("token"));
+    const check = () => setHasToken(!!Cookies.get('token'));
     check();
-    // listen to storage change from other tabs
-    window.addEventListener("storage", check);
-    return () => window.removeEventListener("storage", check);
+    // Re-check when tab gains focus or visibility changes since cookies have no event
+    window.addEventListener('focus', check);
+    document.addEventListener('visibilitychange', check);
+    return () => {
+      window.removeEventListener('focus', check);
+      document.removeEventListener('visibilitychange', check);
+    };
   }, []);
 
   const linkBase = "px-3 py-2 text-sm font-medium transition-colors";
@@ -142,7 +147,7 @@ export default function Header() {
           {/* Auth Buttons */}
           <div className="flex items-center gap-3">
             {hasToken ? (
-              <Avt onLogout={() => setHasToken(false)} />
+              <Avt onLogout={() => { Cookies.remove('token', { path: '/' }); setHasToken(false); }} />
             ) : (
               <NavLink
                 to="auth/login"
