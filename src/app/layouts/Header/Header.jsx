@@ -149,12 +149,12 @@ export default function Header() {
             {hasToken ? (
               <Avt onLogout={() => { Cookies.remove('token', { path: '/' }); setHasToken(false); }} />
             ) : (
-              <NavLink
-                to="auth/login"
+              <a
+                href="auth/login"
                 className="inline-flex items-center rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 shadow-sm transition-colors"
               >
                 Sign in
-              </NavLink>
+              </a>
             )}
           </div>
 
