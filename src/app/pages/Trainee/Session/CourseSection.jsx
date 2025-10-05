@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
-import { useParams, Outlet } from 'react-router-dom';
-import SectionLayout from '../../../layouts/SectionLayout/SessionLayout';
+import { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import SectionLayout from '../../../layouts/SectionLayout/SectionLayout';
 
 export default function CourseSection() {
 	const { courseId, sectionId } = useParams();

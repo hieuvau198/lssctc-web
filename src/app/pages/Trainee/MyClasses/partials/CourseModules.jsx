@@ -1,11 +1,37 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, Tag, Progress, Divider } from 'antd';
+import { Card, Tag, Progress } from 'antd';
 import { Clock, DollarSign, User, Award } from 'lucide-react';
 
 export default function CourseModules({ mockClassCourses }) {
 	return (
 		<Card title="Course Modules" className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+			{/* Course Summary - moved to top */}
+			<div className="grid grid-cols-4 gap-4 text-center mb-6 pb-4 border-b border-slate-200">
+				<div className="space-y-1">
+					<div className="text-lg font-semibold text-slate-900">{mockClassCourses.length}</div>
+					<div className="text-xs text-slate-500">Total Courses</div>
+				</div>
+				<div className="space-y-1">
+					<div className="text-lg font-semibold text-green-600">
+						{mockClassCourses.filter(c => c.status === 'completed').length}
+					</div>
+					<div className="text-xs text-slate-500">Completed</div>
+				</div>
+				<div className="space-y-1">
+					<div className="text-lg font-semibold text-blue-600">
+						{mockClassCourses.filter(c => c.status === 'in-progress').length}
+					</div>
+					<div className="text-xs text-slate-500">In Progress</div>
+				</div>
+				<div className="space-y-1">
+					<div className="text-lg font-semibold text-slate-600">
+						{Math.round(mockClassCourses.reduce((acc, course) => acc + course.progress, 0) / mockClassCourses.length)}%
+					</div>
+					<div className="text-xs text-slate-500">Avg Progress</div>
+				</div>
+			</div>
+
 			<div className="space-y-5">
 				{mockClassCourses.map((course, index) => (
 					<Link key={course.id} to={`/learn/${course.id}`} className="block">
@@ -68,33 +94,6 @@ export default function CourseModules({ mockClassCourses }) {
 						</div>
 					</Link>
 				))}
-			</div>
-
-			{/* Course Summary */}
-			<Divider className="mt-6 mb-4" />
-			<div className="grid grid-cols-4 gap-4 text-center">
-				<div className="space-y-1">
-					<div className="text-lg font-semibold text-slate-900">{mockClassCourses.length}</div>
-					<div className="text-xs text-slate-500">Total Courses</div>
-				</div>
-				<div className="space-y-1">
-					<div className="text-lg font-semibold text-green-600">
-						{mockClassCourses.filter(c => c.status === 'completed').length}
-					</div>
-					<div className="text-xs text-slate-500">Completed</div>
-				</div>
-				<div className="space-y-1">
-					<div className="text-lg font-semibold text-blue-600">
-						{mockClassCourses.filter(c => c.status === 'in-progress').length}
-					</div>
-					<div className="text-xs text-slate-500">In Progress</div>
-				</div>
-				<div className="space-y-1">
-					<div className="text-lg font-semibold text-slate-600">
-						{Math.round(mockClassCourses.reduce((acc, course) => acc + course.progress, 0) / mockClassCourses.length)}%
-					</div>
-					<div className="text-xs text-slate-500">Avg Progress</div>
-				</div>
 			</div>
 		</Card>
 	);
