@@ -1,12 +1,12 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import VideoContent from './VideoContent';
-import ReadingContent from './ReadingContent';
-import QuizDescription from './QuizDescription';
-import PracticeContent from './PracticeContent';
+import VideoContent from './partials/VideoContent';
+import ReadingContent from './partials/ReadingContent';
+import QuizDescription from './partials/QuizDescription';
+import PracticeContent from './partials/PracticeContent';
 import { getPartitionData } from '../../../mock/lessonPartitions';
 
-export default function LessonContent() {
+export default function LearnContent() {
 	const { courseId, sectionId, partitionId } = useParams();
 
 	// Lookup from mock store
