@@ -22,7 +22,7 @@ export const courseLessons = {
             title: 'Crane Categories and Types',
             duration: '15 min',
             completed: true,
-            videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4'
+            videoUrl: 'https://res.cloudinary.com/dz6yciqlp/video/upload/v1759764473/mov_bbb_cdziab.mp4'
           },
           {
             id: 'what-is-truck-crane',
