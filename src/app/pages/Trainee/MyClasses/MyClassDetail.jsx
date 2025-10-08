@@ -1,161 +1,119 @@
-import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
-import PageNav from '../../../components/PageNav/PageNav';
-import ClassHeader from './partials/ClassHeader';
-import CourseOverview from './partials/CourseOverview';
-import CourseModules from './partials/CourseModules';
-import InstructorInfo from './partials/InstructorInfo';
-import ClassSchedule from './partials/ClassSchedule';
+// src\app\pages\Trainee\MyClasses\MyClassDetail.jsx
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import PageNav from "../../../components/PageNav/PageNav";
+import ClassHeader from "./partials/ClassHeader";
+import ClassOverview from "./partials/ClassOverview";
+import Sections from "./partials/Sections";
+import InstructorInfo from "./partials/InstructorInfo";
+import ClassSchedule from "./partials/ClassSchedule";
+import { 
+	getLearningClassByIdAndTraineeId,
+	getLearningSectionsByClassIdAndTraineeId
+ } from "../../../apis/Trainee/TraineeLearningApi";
 
 export default function MyClassDetail() {
-	const { id } = useParams();
+  const { id } = useParams();
+  const traineeId = 1; // hardcoded
 
-	// Mock data để demo - trong thực tế sẽ fetch theo ID
-	const mockClasses = useMemo(() => [
-		{
-			id: 101,
-			provider: 'Global Crane Academy',
-			name: 'Seaport Crane Operations Fundamentals',
-			progress: 22,
-			badge: 'Foundational',
-			color: 'from-cyan-500 to-blue-600',
-			startDate: 'Sep 1, 2025',
-			endDate: 'Nov 30, 2025'
-		},
-		{
-			id: 102,
-			provider: 'Logistics Institute',
-			name: 'Container Yard Workflow & Optimization',
-			progress: 48,
-			badge: 'Applied',
-			color: 'from-violet-500 to-indigo-600',
-			startDate: 'Oct 1, 2025',
-			endDate: 'Dec 15, 2025'
-		},
-		{
-			id: 103,
-			provider: 'Global Crane Academy',
-			name: 'Advanced Load Balancing & Swing Control',
-			progress: 73,
-			badge: 'Advanced',
-			color: 'from-amber-500 to-orange-600',
-			startDate: 'Aug 15, 2025',
-			endDate: 'Oct 30, 2025'
-		}
-	], []);
+  const [classData, setClassData] = useState(null);
+  const [sections, setSections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-	// Tìm class theo ID
-	const classData = useMemo(() => {
-		return mockClasses.find(cls => cls.id === parseInt(id));
-	}, [mockClasses, id]);
+  // Hardcoded instructor data
+  const mockInstructor = {
+    id: 1,
+    name: "John Smith",
+    email: "john.smith@lssctc.edu",
+    phone: "+84 123 456 789",
+    specialization: "Mobile Crane Operations",
+    yearsOfExperience: 15,
+    certifications: [
+      "Certified Crane Operator",
+      "Safety Training Specialist",
+      "OSHA 30-Hour",
+    ],
+  };
 
-	if (!classData) {
-		return (
-			<div className="max-w-7xl mx-auto px-4 py-8">
-				<PageNav nameMap={{ 'my-classes': 'My Classes' }} />
-				<div className="mt-2">
-					<div className="text-center">
-						<h1 className="text-2xl font-bold text-slate-900 mb-4">Class Not Found</h1>
-						<p className="text-slate-600">The class you're looking for doesn't exist.</p>
-					</div>
-				</div>
-			</div>
-		);
-	}
+  // Fetch learning class data, learning section data from API
+  useEffect(() => {
+    const fetchClassDetailAndSections = async () => {
+      try {
+        const data = await getLearningClassByIdAndTraineeId(id, traineeId);
+        setClassData({
+          id: data.classId,
+          name: data.className,
+          startDate: data.classStartDate,
+          endDate: data.classEndDate,
+          classCapacity: data.classCapacity,
+		  classCode: data.classCode,
+		  programCourseId: data.programCourseId,
+		  courseId: data.courseId,
+          courseCode: data.courseCode,
+          courseName: data.courseName,
+          description: data.courseDescription,
+		  courseDurationHours: data.courseDurationHours,
+          status: data.classStatus,
+		  progress: data.classProgress,
+          provider: "Global Crane Academy",
+          badge: "Foundational",
+          color: "from-cyan-500 to-blue-600",
+        });
 
-	// Mock instructor data
-	const mockInstructor = {
-		id: 1,
-		name: 'John Smith',
-		email: 'john.smith@lssctc.edu',
-		phone: '+84 123 456 789',
-		specialization: 'Mobile Crane Operations',
-		yearsOfExperience: 15,
-		certifications: ['Certified Crane Operator', 'Safety Training Specialist', 'OSHA 30-Hour']
-	};
+		// Fetch sections
+        const sectionsRes = await getLearningSectionsByClassIdAndTraineeId(id, traineeId);
+        setSections(sectionsRes || []);
+      } catch (err) {
+        console.error("Failed to fetch class detail:", err);
+        setError("Unable to load class details. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-	// Mock courses in this class with learner's progress
-	const mockClassCourses = [
-		{
-			id: 1,
-			name: 'Mobile Crane Operations – Level 1 (Beginner)',
-			code: 'MCO-L1-001',
-			description: 'Introduction to mobile crane operations with safety focus',
-			progress: 85,
-			status: 'in-progress',
-			duration: 48,
-			price: 5000000,
-			startDate: '2025-09-01',
-			endDate: '2025-11-30',
-			instructor: 'John Smith',
-			category: 'Mobile Crane'
-		},
-		{
-			id: 2,
-			name: 'Safety Protocols and Risk Management',
-			code: 'SPR-L1-002',
-			description: 'Comprehensive safety training for crane operations',
-			progress: 100,
-			status: 'completed',
-			duration: 24,
-			price: 3000000,
-			startDate: '2025-08-15',
-			endDate: '2025-09-15',
-			instructor: 'John Smith',
-			category: 'Safety Training'
-		},
-		{
-			id: 3,
-			name: 'Load Calculation and Chart Reading',
-			code: 'LCC-L2-003',
-			description: 'Advanced load calculation techniques and chart interpretation',
-			progress: 45,
-			status: 'in-progress',
-			duration: 36,
-			price: 4200000,
-			startDate: '2025-10-01',
-			endDate: '2025-12-15',
-			instructor: 'Sarah Johnson',
-			category: 'Technical Skills'
-		},
-		{
-			id: 4,
-			name: 'Equipment Maintenance and Inspection',
-			code: 'EMI-L1-004',
-			description: 'Preventive maintenance and daily inspection procedures',
-			progress: 0,
-			status: 'not-started',
-			duration: 30,
-			price: 3500000,
-			startDate: '2025-11-01',
-			endDate: '2025-12-30',
-			instructor: 'Mike Wilson',
-			category: 'Maintenance'
-		}
-	];
+    fetchClassDetailAndSections();
+  }, [id]);
 
-	return (
-		<div className="max-w-7xl mx-auto px-4 py-8">
-			<PageNav nameMap={{ 'my-classes': 'My Classes', [id]: classData.name }} />
-			<div className="mt-2">
-				{/* Class Header */}
-				<ClassHeader classData={classData} />
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-8 text-center">
+        <p className="text-slate-600">Loading class details...</p>
+      </div>
+    );
+  }
 
-			{/* Course Content */}
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-				{/* Main Content */}
-				<div className="lg:col-span-2 space-y-8">
-					<CourseOverview />
-					<CourseModules mockClassCourses={mockClassCourses} />
-				</div>
+  if (error || !classData) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <PageNav nameMap={{ "my-classes": "My Classes" }} />
+        <div className="mt-2 text-center">
+          <h1 className="text-2xl font-bold text-slate-900 mb-4">Class Not Found</h1>
+          <p className="text-slate-600">
+            {error || "The class you're looking for doesn't exist."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
-				{/* Sidebar */}
-				<div className="space-y-8">
-					<InstructorInfo mockInstructor={mockInstructor} />
-					<ClassSchedule classData={classData} />
-				</div>
-			</div>
-			</div>
-		</div>
-	);
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <PageNav nameMap={{ "my-classes": "My Classes", [id]: classData.name }} />
+      <div className="mt-2">
+        <ClassHeader classData={classData} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <ClassOverview classData={classData} />
+            <Sections sections={sections} />
+          </div>
+          <div className="space-y-8">
+            <InstructorInfo mockInstructor={mockInstructor} />
+            <ClassSchedule classData={classData} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
+
