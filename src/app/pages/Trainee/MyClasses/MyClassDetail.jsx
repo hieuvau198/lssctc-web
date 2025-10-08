@@ -3,17 +3,21 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PageNav from "../../../components/PageNav/PageNav";
 import ClassHeader from "./partials/ClassHeader";
-import CourseOverview from "./partials/CourseOverview";
-import CourseModules from "./partials/CourseModules";
+import ClassOverview from "./partials/ClassOverview";
+import Sections from "./partials/Sections";
 import InstructorInfo from "./partials/InstructorInfo";
 import ClassSchedule from "./partials/ClassSchedule";
-import { getLearningClassByIdAndTraineeId } from "../../../apis/Trainee/TraineeLearningApi";
+import { 
+	getLearningClassByIdAndTraineeId,
+	getLearningSectionsByClassIdAndTraineeId
+ } from "../../../apis/Trainee/TraineeLearningApi";
 
 export default function MyClassDetail() {
   const { id } = useParams();
   const traineeId = 1; // hardcoded
 
   const [classData, setClassData] = useState(null);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -32,41 +36,9 @@ export default function MyClassDetail() {
     ],
   };
 
-  // Hardcoded course list for the class
-  const mockClassCourses = [
-    {
-      id: 1,
-      name: "Mobile Crane Operations – Level 1 (Beginner)",
-      code: "MCO-L1-001",
-      description: "Introduction to mobile crane operations with safety focus",
-      progress: 85,
-      status: "in-progress",
-      duration: 48,
-      price: 5000000,
-      startDate: "2025-09-01",
-      endDate: "2025-11-30",
-      instructor: "John Smith",
-      category: "Mobile Crane",
-    },
-    {
-      id: 2,
-      name: "Safety Protocols and Risk Management",
-      code: "SPR-L1-002",
-      description: "Comprehensive safety training for crane operations",
-      progress: 100,
-      status: "completed",
-      duration: 24,
-      price: 3000000,
-      startDate: "2025-08-15",
-      endDate: "2025-09-15",
-      instructor: "John Smith",
-      category: "Safety Training",
-    },
-  ];
-
-  // Fetch class data from API
+  // Fetch learning class data, learning section data from API
   useEffect(() => {
-    const fetchClassDetail = async () => {
+    const fetchClassDetailAndSections = async () => {
       try {
         const data = await getLearningClassByIdAndTraineeId(id, traineeId);
         setClassData({
@@ -81,13 +53,17 @@ export default function MyClassDetail() {
           courseCode: data.courseCode,
           courseName: data.courseName,
           description: data.courseDescription,
-		  durationHours: data.durationHours,
+		  courseDurationHours: data.courseDurationHours,
           status: data.classStatus,
 		  progress: data.classProgress,
-          provider: "Global Crane Academy", // placeholder if API doesn’t return provider
+          provider: "Global Crane Academy",
           badge: "Foundational",
           color: "from-cyan-500 to-blue-600",
         });
+
+		// Fetch sections
+        const sectionsRes = await getLearningSectionsByClassIdAndTraineeId(id, traineeId);
+        setSections(sectionsRes || []);
       } catch (err) {
         console.error("Failed to fetch class detail:", err);
         setError("Unable to load class details. Please try again later.");
@@ -96,7 +72,7 @@ export default function MyClassDetail() {
       }
     };
 
-    fetchClassDetail();
+    fetchClassDetailAndSections();
   }, [id]);
 
   if (loading) {
@@ -125,18 +101,12 @@ export default function MyClassDetail() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <PageNav nameMap={{ "my-classes": "My Classes", [id]: classData.name }} />
       <div className="mt-2">
-        {/* Class Header */}
         <ClassHeader classData={classData} />
-
-        {/* Course Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            <CourseOverview classData={classData} />
-            <CourseModules mockClassCourses={mockClassCourses} />
+            <ClassOverview classData={classData} />
+            <Sections sections={sections} />
           </div>
-
-          {/* Sidebar */}
           <div className="space-y-8">
             <InstructorInfo mockInstructor={mockInstructor} />
             <ClassSchedule classData={classData} />

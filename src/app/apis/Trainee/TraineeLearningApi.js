@@ -26,12 +26,31 @@ export const getLearningClassByIdAndTraineeId = async (classId, traineeId) => {
   return response.data;
 };
 
-// get class instructor by class id
-// get learning sections by class id
-// get learning section by section id
-// get learning section partitions by section id
-// get learning section partition by partition id
+// get learning sections by class id and trainee id
+export const getLearningSectionsByClassIdAndTraineeId = async (classId, traineeId) => {
+  const response = await api.get(`/Learnings/sections/class/${classId}/trainee/${traineeId}`);
+  return response.data;
+}
 
+// get learning section by section id and trainee id
+export const getLearningSectionByIdAndTraineeId = async (sectionId, traineeId) => {
+  const response = await api.get(`/Learnings/section/${sectionId}/trainee/${traineeId}`);
+  return response.data;
+}
+
+// get paged learning sections by class id and trainee id
+export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, traineeId, pageIndex = 1, pageSize = 10) => {
+  const response = await api.get(`/Learnings/sections/class/${classId}/trainee/${traineeId}/paged`, {
+    params: { pageIndex, pageSize },
+  });
+  return response.data;
+}
+
+
+// get learning section partitions by section id and trainee id
+// get learning section partition by partition id and trainee id
+
+// get class instructor by class id
 // get learning section material by partition id
 // get learning section quiz by partition id
 // get learning section practice by partition id

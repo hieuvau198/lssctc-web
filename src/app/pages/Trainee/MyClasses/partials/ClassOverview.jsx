@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card } from 'antd';
 
-export default function CourseOverview({ classData }) {
+export default function ClassOverview({ classData }) {
   return (
     <div className="my-4">
       <Card
