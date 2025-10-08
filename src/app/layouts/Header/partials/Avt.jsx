@@ -1,6 +1,8 @@
 import React from 'react';
 import { Dropdown } from 'antd';
 import { NavLink } from 'react-router';
+import Cookies from 'js-cookie';
+import { clearRememberedCredentials } from '../../../lib/crypto';
 
 /**
  * Simple Avatar placeholder for authenticated user.
@@ -19,7 +21,7 @@ export default function Avt({ onLogout }) {
 
   const items = [
     { key: 'profile', label: <NavLink to="/profile" target="_top">Profile</NavLink> },
-    { key: 'my-program', label: <NavLink to="/my-program" target="_top">My Program</NavLink> },
+    { key: 'my-classes', label: <NavLink to="/my-classes" target="_top">My Classes</NavLink> },
     { key: 'certificate', label: <NavLink to="/certificate" target="_top">Accomplishments</NavLink> },
     { type: 'divider' },
     { key: 'logout', label: <span className="text-red-600">Logout</span> },
@@ -27,13 +29,16 @@ export default function Avt({ onLogout }) {
 
   const handleClick = ({ key }) => {
     if (key === 'logout') {
+      // Remove auth cookies and any remembered credentials
       try {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        Cookies.remove('token', { path: '/' });
       } catch {}
+      try { clearRememberedCredentials(); } catch {}
+      // Optionally clear any local user cache
+      try { localStorage.removeItem('user'); } catch {}
       if (typeof onLogout === 'function') onLogout();
       // Navigate to login; fallback to hard redirect to ensure clean state
-      try { window.location.assign('/login'); } catch { window.location.href = '/login'; }
+      try { window.location.assign('/auth/login'); } catch { window.location.href = '/auth/login'; }
     }
   };
 

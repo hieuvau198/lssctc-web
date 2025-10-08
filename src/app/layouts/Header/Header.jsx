@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router";
 import Cookies from 'js-cookie';
 import Avt from "./partials/Avt";
+import { clearRememberedCredentials } from "../../lib/crypto";
 
 export default function Header() {
   const [hidden, setHidden] = useState(false);
@@ -147,7 +148,7 @@ export default function Header() {
           {/* Auth Buttons */}
           <div className="flex items-center gap-3">
             {hasToken ? (
-              <Avt onLogout={() => { Cookies.remove('token', { path: '/' }); setHasToken(false); }} />
+              <Avt onLogout={() => { Cookies.remove('token', { path: '/' }); try{clearRememberedCredentials();}catch{} setHasToken(false); }} />
             ) : (
               <a
                 href="auth/login"
