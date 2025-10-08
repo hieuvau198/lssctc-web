@@ -11,7 +11,7 @@ export default function CourseCard({ course }) {
   } = course ?? {};
 
   return (
-    <div className="group bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200">
+    <div className="group cursor-pointer bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200">
       <div className="relative aspect-[16/9] bg-slate-100 overflow-hidden">
         {thumbnail ? (
           <img

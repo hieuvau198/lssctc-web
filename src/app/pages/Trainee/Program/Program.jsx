@@ -62,7 +62,7 @@ const Program = () => {
         <div className="mb-8">
           <Skeleton.Input active size="large" className="!w-full md:!w-1/2" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 6 }).map((_, idx) => (
             <div key={idx} className="bg-white rounded-lg shadow">
               <div className="w-full h-40 overflow-hidden rounded-t-lg">
@@ -86,7 +86,7 @@ const Program = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <PageNav nameMap={{ program: 'Programs' }} />
-      <h2 className="text-2xl font-bold mb-6">Programs</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6">Programs</h2>
       <Search
         placeholder="Search programs by name"
         allowClear
@@ -103,7 +103,7 @@ const Program = () => {
         <Empty description="No programs found." className="mt-16" />
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {programs.map((program) => (
               <ProgramCard
                 key={program.id}

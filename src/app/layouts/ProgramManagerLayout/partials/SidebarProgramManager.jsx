@@ -22,6 +22,11 @@ const ITEMS = [
     label: "Programs",
     icon: <ExperimentOutlined />,
   },
+  {
+    to: "/programManager/classes",
+    label: "Classes",
+    icon: <ScheduleOutlined />,
+  },
 ];
 
 export default function SidebarProgramManager({

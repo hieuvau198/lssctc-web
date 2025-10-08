@@ -62,6 +62,12 @@ export async function createProgram(payload) {
   return response.data;
 }
 
+// Delete program by id
+export async function deleteProgram(id) {
+  const response = await axios.delete(`${API_BASE_URL}/Programs/${id}`);
+  return response.data;
+}
+
 // Fetch list of courses with paging and filtering
 export async function fetchCourses(params = {}) {
   const searchParams = new URLSearchParams();

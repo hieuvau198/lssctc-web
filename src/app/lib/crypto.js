@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js';
+import Cookies from 'js-cookie';
 
 const KEY = import.meta.env.VITE_CRYPTO_KEY;
 
@@ -13,11 +14,17 @@ const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 export function persistRememberedCredentials({ email, password, remember }) {
   try {
     if (!remember) {
-      localStorage.removeItem(STORAGE_KEY);
+      Cookies.remove(STORAGE_KEY, { path: '/' });
       return;
     }
     const cipher = CryptoJS.AES.encrypt(JSON.stringify({ email, password }), KEY).toString();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ cipher, ts: Date.now() }));
+    const payload = JSON.stringify({ cipher, ts: Date.now() });
+    Cookies.set(STORAGE_KEY, payload, {
+      expires: MAX_AGE_MS / (24 * 60 * 60 * 1000), // days
+      sameSite: 'lax',
+      secure: typeof window !== 'undefined' ? window.location.protocol === 'https:' : true,
+      path: '/',
+    });
   } catch {
     // swallow
   }
@@ -29,12 +36,12 @@ export function persistRememberedCredentials({ email, password, remember }) {
  */
 export function loadRememberedCredentials() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = Cookies.get(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (!parsed?.cipher || !parsed?.ts) return null;
     if (Date.now() - parsed.ts > MAX_AGE_MS) {
-      localStorage.removeItem(STORAGE_KEY);
+      Cookies.remove(STORAGE_KEY, { path: '/' });
       return null;
     }
     const bytes = CryptoJS.AES.decrypt(parsed.cipher, KEY);
@@ -44,7 +51,7 @@ export function loadRememberedCredentials() {
       password: decrypted.password || '',
     };
   } catch {
-    localStorage.removeItem(STORAGE_KEY);
+    Cookies.remove(STORAGE_KEY, { path: '/' });
     return null;
   }
 }
@@ -53,7 +60,7 @@ export function loadRememberedCredentials() {
  * Clear stored remembered credentials.
  */
 export function clearRememberedCredentials() {
-  try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+  try { Cookies.remove(STORAGE_KEY, { path: '/' }); } catch { /* ignore */ }
 }
 
 export const rememberConstants = { STORAGE_KEY, MAX_AGE_MS };

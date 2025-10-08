@@ -1,24 +1,21 @@
-import React from 'react';
-import { NavLink } from 'react-router';
-import { Tooltip } from 'antd';
-import { 
-  DashboardOutlined,
-  UserOutlined,
+import {
   BookOutlined,
-  ScheduleOutlined,
+  DashboardOutlined,
   ExperimentOutlined,
-  SettingOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  ScheduleOutlined,
+  UserOutlined
 } from '@ant-design/icons';
+import { Tooltip } from 'antd';
+import { NavLink } from 'react-router';
 
 const ITEMS = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
   { to: '/admin/users', label: 'Users', icon: <UserOutlined /> },
   { to: '/admin/courses', label: 'Courses', icon: <BookOutlined /> },
-  { to: '/admin/schedule', label: 'Schedule', icon: <ScheduleOutlined /> },
+  { to: '/admin/class', label: 'Class', icon: <ScheduleOutlined /> },
   { to: '/admin/assessments', label: 'Assessments', icon: <ExperimentOutlined /> },
-  { to: '/admin/settings', label: 'Settings', icon: <SettingOutlined /> },
 ];
 
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {

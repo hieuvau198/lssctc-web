@@ -1,0 +1,85 @@
+/* Custom styles for SessionLayout */
+.session-sidebar-item {
+  transition: all 0.2s ease;
+}
+
+.session-sidebar-item:hover {
+  transform: translateX(2px);
+}
+
+.session-sidebar-item.active {
+  background: linear-gradient(90deg, #dbeafe 0%, #bfdbfe 100%);
+  border-left: 3px solid #2563eb;
+}
+
+/* Smooth animations for completion status */
+.completion-circle {
+  transition: all 0.3s ease;
+}
+
+.completion-circle.completed {
+  animation: checkmark-bounce 0.6s ease;
+}
+
+/* Section expand/collapse animations */
+.section-header {
+  transition: all 0.2s ease;
+}
+
+.section-header:hover {
+  background-color: #93c5fd;
+  color: white;
+}
+
+.section-content {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.expand-icon {
+  transition: transform 0.2s ease;
+}
+
+/* Subtle indentation for sub-items */
+.section-partition {
+  position: relative;
+}
+
+.section-partition::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #e2e8f0;
+}
+
+/* Active state indicator bar */
+.section-partition .active-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #2563eb, #1d4ed8);
+  border-radius: 0 4px 4px 0;
+  animation: slide-in 0.3s ease;
+}
+
+@keyframes slide-in {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 4px;
+    opacity: 1;
+  }
+}
+
+@keyframes checkmark-bounce {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}

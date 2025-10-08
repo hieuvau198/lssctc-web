@@ -51,3 +51,14 @@ export async function fetchCourseDetail(id) {
   }
   return response.json();
 }
+
+// Fetch programs a trainee is enrolled in (placeholder endpoint - adjust to real API path if different)
+export async function fetchTraineePrograms({ pageNumber = 1, pageSize = 10, status } = {}) {
+  const q = new URLSearchParams({ PageNumber: String(pageNumber), PageSize: String(pageSize) });
+  if (status) q.append('Status', status); // expected values e.g. InProgress | Completed
+  const response = await fetch(`${API_BASE_URL}/TraineePrograms?${q.toString()}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch trainee programs');
+  }
+  return response.json();
+}
