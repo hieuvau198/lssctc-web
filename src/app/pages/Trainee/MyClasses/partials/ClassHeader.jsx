@@ -13,7 +13,7 @@ export default function ClassHeader({ classData }) {
 					<div className="flex items-start gap-4">
 						<div className="flex-1">
 							<div className="flex items-center gap-2 flex-wrap mb-2">
-								<div className="text-sm text-slate-500">{classData.provider}</div>
+								<div className="text-sm text-slate-500">{"LSSCTC"}</div>
 								{classData.badge && (
 									<span className="text-xs uppercase tracking-wide font-semibold bg-slate-900 text-white px-2 py-1 rounded-full">
 										{classData.badge}
