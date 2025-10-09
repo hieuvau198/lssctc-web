@@ -1,20 +1,69 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import VideoContent from './partials/VideoContent';
-import ReadingContent from './partials/ReadingContent';
-import QuizDescription from './partials/QuizDescription';
-import PracticeContent from './partials/PracticeContent';
-import { getPartitionData } from '../../../mock/lessonPartitions';
+// src/app/pages/Trainee/Learn/LearnContent.jsx
+
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import VideoContent from "./partials/VideoContent";
+import {
+	getLearningPartitionByIdAndTraineeId,
+	getLearningSectionMaterial,
+} from "../../../apis/Trainee/TraineeLearningApi";
 
 export default function LearnContent() {
 	const { courseId, sectionId, partitionId } = useParams();
-	const classId = courseId;
 	const traineeId = 1; // Hardcoded trainee ID
 
-	// Lookup from mock store
-	const partitionData = getPartitionData(classId, partitionId);
+	const [partition, setPartition] = useState(null);
+	const [partitionMaterial, setPartitionMaterial] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
-	if (!partitionData) {
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				setLoading(true);
+				setError(null);
+
+				console.log("Fetching partition:", partitionId);
+				const partitionRes = await getLearningPartitionByIdAndTraineeId(partitionId, traineeId);
+				console.log("Partition response:", partitionRes);
+				setPartition(partitionRes);
+
+				// Only fetch material if it's a video type
+				if (partitionRes.partitionType === 1) {
+					console.log("Fetching section material for partition:", partitionId);
+					const materialRes = await getLearningSectionMaterial(partitionId, traineeId);
+					console.log("Material response:", materialRes);
+					setPartitionMaterial(materialRes);
+				}
+			} catch (err) {
+				console.error("❌ Error fetching partition or material:", err);
+				setError("Failed to load learning content. Check console for details.");
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchData();
+	}, [partitionId, traineeId]);
+
+	if (loading) {
+		return (
+			<div className="text-center py-12">
+				<p className="text-slate-600">Loading content...</p>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="text-center py-12">
+				<h2 className="text-xl font-semibold text-red-600 mb-2">Error</h2>
+				<p className="text-slate-600">{error}</p>
+			</div>
+		);
+	}
+
+	if (!partition) {
 		return (
 			<div className="text-center py-12">
 				<h2 className="text-xl font-semibold text-slate-900 mb-2">Content Not Found</h2>
@@ -23,55 +72,24 @@ export default function LearnContent() {
 		);
 	}
 
-	const renderContent = () => {
-		switch (partitionData.type) {
-			case 'video':
-				return (
-					<VideoContent
-						title={partitionData.title}
-						duration={partitionData.duration}
-						completed={partitionData.completed}
-						videoUrl={partitionData.videoUrl}
-					/>
-				);
-			case 'reading':
-				return (
-					<ReadingContent
-						title={partitionData.title}
-						duration={partitionData.duration}
-						completed={partitionData.completed}
-						contentHtml={partitionData.contentHtml}
-					/>
-				);
-			case 'quiz':
-				return (
-					<QuizDescription
-						title={partitionData.title}
-						duration={partitionData.duration}
-						completed={partitionData.completed}
-						questionCount={partitionData.questionCount}
-						passingScore={partitionData.passingScore}
-						description={partitionData.description}
-					/>
-				);
-			case 'practice':
-				return (
-					<PracticeContent
-						title={partitionData.title}
-						duration={partitionData.duration}
-						completed={partitionData.completed}
-						description={partitionData.description}
-					/>
-				);
-			default:
-				return (
-					<div className="text-center py-12">
-						<h2 className="text-xl font-semibold text-slate-900 mb-2">Unknown Content Type</h2>
-						<p className="text-slate-600">This content type is not supported yet.</p>
-					</div>
-				);
-		}
-	};
+	// Render only video for now
+	if (partition.partitionType === 1 && partitionMaterial) {
+		return (
+			<VideoContent
+				title={partitionMaterial.materialName || "Untitled Video"}
+				completed={partitionMaterial.isCompleted}
+				videoUrl={partitionMaterial.materialUrl}
+			/>
+		);
+	}
 
-	return renderContent();
+	// Unknown type fallback
+	return (
+		<div className="text-center py-12">
+			<h2 className="text-xl font-semibold text-slate-900 mb-2">Unsupported Content Type</h2>
+			<p className="text-slate-600">
+				This type of content (type {partition.partitionType}) is not yet supported.
+			</p>
+		</div>
+	);
 }

@@ -137,7 +137,7 @@ export const getPagedLearningPartitionsBySectionIdAndTraineeId = async (sectionI
 
 //#region Learning Section Mateirals APIs
 // Get a section material by partitionId and traineeId
-export const getSectionMaterialByPartitionIdAndTraineeId = async (partitionId, traineeId) => {
+export const getLearningSectionMaterial = async (partitionId, traineeId) => {
   const response = await api.get(`/Learnings/sectionmaterials/partition/${partitionId}/trainee/${traineeId}`);
   return mapSectionMaterial(response.data);
 };

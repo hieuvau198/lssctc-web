@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Button, Progress } from 'antd';
 import { Play, CheckCircle2, Clock } from 'lucide-react';
 
-export default function VideoContent({ title, duration, completed = false, videoUrl }) {
+export default function VideoContent({ title, completed = false, videoUrl }) {
 	return (
 		<div className="max-w-4xl mx-auto">
 			<Card className="mb-6">
@@ -28,11 +28,6 @@ export default function VideoContent({ title, duration, completed = false, video
 				</div>
 				
 				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-2">
-						<Clock className="w-4 h-4 text-slate-500" />
-						<span className="text-sm text-slate-600">{duration}</span>
-					</div>
-					
 					{completed && (
 						<div className="flex items-center gap-2 text-green-600">
 							<CheckCircle2 className="w-4 h-4" />
