@@ -96,17 +96,6 @@ export default function LearnContent() {
 		);
 	}
 
-	// Render only video for now
-	if (partition.partitionType === 1 && partitionMaterial) {
-		return (
-			<VideoContent
-				title={partitionMaterial.materialName || "Untitled Video"}
-				completed={partitionMaterial.isCompleted}
-				videoUrl={partitionMaterial.materialUrl}
-			/>
-		);
-	}
-
 	switch (partition.partitionType) {
 		case 1: // Video
 			return (
@@ -115,6 +104,8 @@ export default function LearnContent() {
 						title={partitionMaterial.materialName || "Untitled Video"}
 						completed={partitionMaterial.isCompleted}
 						videoUrl={partitionMaterial.materialUrl}
+						onMarkAsComplete={handleMarkAsComplete}
+						onMarkAsNotComplete={handleMarkAsNotComplete}
 					/>
 				)
 			);
