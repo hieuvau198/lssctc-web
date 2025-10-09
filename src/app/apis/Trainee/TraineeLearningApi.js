@@ -124,14 +124,3 @@ export const getPagedLearningPartitionsBySectionIdAndTraineeId = async (sectionI
 
 
 
-// get learning section partitions by section id and trainee id
-// get learning section partition by partition id and trainee id
-
-// get class instructor by class id
-// get learning section material by partition id
-// get learning section quiz by partition id
-// get learning section practice by partition id
-
-// get quiz attempts by quiz id and trainee id
-// get practice attempts by practice id and trainee id
-

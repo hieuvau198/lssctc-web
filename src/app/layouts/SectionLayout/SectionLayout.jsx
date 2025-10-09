@@ -15,6 +15,7 @@ export default function SectionLayout({
   const location = useLocation();
   const navigate = useNavigate();
   const { courseId, sessionId } = useParams();
+  const classId = courseId;
 
   const activeId = React.useMemo(() => {
     const segs = location.pathname.split('/').filter(Boolean);
@@ -34,7 +35,7 @@ export default function SectionLayout({
                   shape="circle"
                   size="small"
                   aria-label="Exit to class"
-                  onClick={() => navigate(`/my-classes/${courseId}`)}
+                  onClick={() => navigate(`/my-classes/${classId}`)}
                   icon={<ArrowLeft className="w-4 h-4" />}
                 />
               </Tooltip>
@@ -122,17 +123,22 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
     }));
   };
 
-  const handleItemClick = (item) => {
-    if (item.isHeader) return; // Don't navigate on section headers
+  const handlePartitionClick = (partition) => {
+  if (partition.isHeader) return; // Don't navigate on section headers
 
-    // Optional callback
-    if (onSelectItem) onSelectItem(item);
+  // Optional callback
+  if (onSelectItem) onSelectItem(partition);
 
-    // Always navigate to keep URL in sync
-    const target = item.href 
-      || (item.sectionId ? `/learn/${courseId}/${item.sectionId}/${item.id}` : `/learn/${courseId}/${item.id}`);
-    navigate(target);
-  };
+  // Always navigate to keep URL in sync
+  const target =
+    partition.href ||
+    (partition.sectionId
+      ? `/learn/${classId}/${partition.sectionId}/${partition.id}`
+      : `/learn/${classId}/${partition.id}`);
+
+  navigate(target);
+};
+
 
   return (
     <div className="p-3">
@@ -178,7 +184,7 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
                       <button
                         key={partition.id}
                         type="button"
-                        onClick={() => handleItemClick(partition)}
+                        onClick={() => handlePartitionClick(partition)}
                         className={[
                           'w-full text-left px-3 py-3 rounded-none transition-all duration-200 flex items-start gap-3 group cursor-pointer',
                           isActive
@@ -210,16 +216,6 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
                           </Tooltip>
                         </div>
                         
-                        {/* Subtitle with duration and type */}
-                        <div className="flex items-center gap-2 text-xs text-slate-500 group-hover:text-blue-600">
-                          <span className="capitalize">{partition.type}</span>
-                          {partition.duration && (
-                            <>
-                              <span>•</span>
-                              <span>{partition.duration}</span>
-                            </>
-                          )}
-                        </div>
                       </div>
                     </button>
                   </div>
