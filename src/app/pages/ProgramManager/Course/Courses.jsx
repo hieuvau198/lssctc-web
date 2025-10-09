@@ -15,8 +15,6 @@ import {
   Popconfirm,
 } from "antd";
 import {
-  AppstoreOutlined,
-  UnorderedListOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import {
@@ -28,6 +26,7 @@ import {
   updateCourse,
 } from "../../../apis/ProgramManager/CourseApi";
 import CourseList from "./partials/CourseList";
+import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import CourseDetail from "./partials/CourseDetail";
 import CreateCourse from "./partials/CreateCourse";
 import EditCourse from "./partials/EditCourse";
@@ -338,18 +337,10 @@ const Courses = () => {
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             Add Course
           </Button>
-          <Button.Group>
-            <Button
-              type={viewMode === "table" ? "primary" : "default"}
-              icon={<UnorderedListOutlined />}
-              onClick={() => setViewMode("table")}
-            />
-            <Button
-              type={viewMode === "card" ? "primary" : "default"}
-              icon={<AppstoreOutlined />}
-              onClick={() => setViewMode("card")}
-            />
-          </Button.Group>
+          <ViewModeToggle 
+            viewMode={viewMode} 
+            onViewModeChange={setViewMode} 
+          />
         </div>
       </div>
 

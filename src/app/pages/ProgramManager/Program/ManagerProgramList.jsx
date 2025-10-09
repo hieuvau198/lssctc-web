@@ -10,8 +10,6 @@ import {
   Card,
 } from "antd";
 import {
-  AppstoreOutlined,
-  UnorderedListOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import {
@@ -24,6 +22,7 @@ import {
 import ProgramTableView from "./partials/ProgramTableView";
 import ProgramCardView from "./partials/ProgramCardView";
 import ProgramDrawer from "./partials/ProgramDrawer";
+import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 
 const { Search } = Input;
 
@@ -269,18 +268,10 @@ const ManagerProgramList = () => {
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             Add Program
           </Button>
-          <Button.Group>
-            <Button
-              type={viewMode === "table" ? "primary" : "default"}
-              icon={<UnorderedListOutlined />}
-              onClick={() => setViewMode("table")}
-            />
-            <Button
-              type={viewMode === "card" ? "primary" : "default"}
-              icon={<AppstoreOutlined />}
-              onClick={() => setViewMode("card")}
-            />
-          </Button.Group>
+          <ViewModeToggle 
+            viewMode={viewMode} 
+            onViewModeChange={setViewMode} 
+          />
         </div>
       </div>
 
