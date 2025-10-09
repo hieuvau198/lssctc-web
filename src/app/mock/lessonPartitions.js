@@ -177,10 +177,10 @@ export function getPartitionData(courseId, partitionId) {
   return null;
 }
 
-export function getFirstPartitionPath(courseId) {
-  const course = courseLessons[String(courseId)];
+export function getFirstPartitionPath(classId) {
+  const course = courseLessons[String(classId)];
   if (!course) return null;
   const firstSection = course.sections[0];
   if (!firstSection || !firstSection.partitions.length) return null;
-  return `/learn/${courseId}/${firstSection.id}/${firstSection.partitions[0].id}`;
+  return `/learn/${classId}/${firstSection.id}/${firstSection.partitions[0].id}`;
 }

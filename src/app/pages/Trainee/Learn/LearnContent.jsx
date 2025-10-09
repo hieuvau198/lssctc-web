@@ -8,9 +8,11 @@ import { getPartitionData } from '../../../mock/lessonPartitions';
 
 export default function LearnContent() {
 	const { courseId, sectionId, partitionId } = useParams();
+	const classId = courseId;
+	const traineeId = 1; // Hardcoded trainee ID
 
 	// Lookup from mock store
-	const partitionData = getPartitionData(courseId, partitionId);
+	const partitionData = getPartitionData(classId, partitionId);
 
 	if (!partitionData) {
 		return (

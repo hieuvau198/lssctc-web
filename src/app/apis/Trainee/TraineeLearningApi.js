@@ -34,6 +34,19 @@ const mapPartition = (item) => ({
   isCompleted: item.isCompleted,
 });
 
+const mapSectionMaterial = (item) => ({
+  sectionMaterialId: item.sectionMaterialId,
+  materialId: item.materialId,
+  partitionId: item.partitionId,
+  partitionRecordId: item.partitionRecordId,
+  materialName: item.materialName,
+  materialDescription: item.materialDescription,
+  materialType: item.materialType,
+  materialUrl: item.materialUrl,
+  partitionRecordStatus: item.partitionRecordStatus,
+  isCompleted: item.isCompleted,
+});
+
 //#endregion
 
 
@@ -122,5 +135,33 @@ export const getPagedLearningPartitionsBySectionIdAndTraineeId = async (sectionI
 
 //#endregion
 
+//#region Learning Section Mateirals APIs
+// Get a section material by partitionId and traineeId
+export const getSectionMaterialByPartitionIdAndTraineeId = async (partitionId, traineeId) => {
+  const response = await api.get(`/Learnings/sectionmaterials/partition/${partitionId}/trainee/${traineeId}`);
+  return mapSectionMaterial(response.data);
+};
 
+// Mark a section material as completed
+export const markSectionMaterialAsCompleted = async (partitionId, traineeId) => {
+  try {
+    const response = await api.put(`/Learnings/sectionmaterials/partition/${partitionId}/trainee/${traineeId}/complete`);
+    return response.status === 200;
+  } catch (error) {
+    console.error("Error marking material as completed:", error);
+    return false;
+  }
+};
+
+// Mark a section material as not completed
+export const markSectionMaterialAsNotCompleted = async (partitionId, traineeId) => {
+  try {
+    const response = await api.put(`/Learnings/sectionmaterials/partition/${partitionId}/trainee/${traineeId}/incomplete`);
+    return response.status === 200;
+  } catch (error) {
+    console.error("Error marking material as not completed:", error);
+    return false;
+  }
+};
+//#endregion
 
