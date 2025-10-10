@@ -2,12 +2,14 @@ import React from 'react';
 import { NavLink } from 'react-router';
 import { Tooltip } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { Home, BookOpen, Layers, Settings } from 'lucide-react';
+import { BookOpen, Layers, FileText, HelpCircle, Dumbbell, User } from 'lucide-react';
 
 const ITEMS = [
-  { to: '/instructor/classes', label: 'Classes', icon: <BookOpen className="w-5 h-5" /> },
-  { to: '/instructor/sections', label: 'Sections', icon: <Layers className="w-5 h-5" /> },
-  { to: '/instructor/profiles', label: 'Profiles', icon: <Layers className="w-5 h-5" /> },
+  { to: '/instructor/classes', label: 'Class', icon: <BookOpen className="w-5 h-5" /> },
+  { to: '/instructor/materials', label: 'Material', icon: <FileText className="w-5 h-5" /> },
+  { to: '/instructor/quizzes', label: 'Quiz', icon: <HelpCircle className="w-5 h-5" /> },
+  { to: '/instructor/practices', label: 'Practice', icon: <Dumbbell className="w-5 h-5" /> },
+  { to: '/instructor/profile', label: 'Profile', icon: <User className="w-5 h-5" /> },
 ];
 
 export default function SidebarInstructor({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {

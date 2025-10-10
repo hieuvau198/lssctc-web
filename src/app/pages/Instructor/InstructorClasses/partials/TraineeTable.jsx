@@ -178,7 +178,7 @@ export default function TraineeTable({ classId }) {
     {
       title: 'Student',
       key: 'student',
-      width: 250,
+      width: 150,
       render: (_, record) => {
         const avatarUrl = record.avatar
           ? record.avatar
@@ -196,9 +196,6 @@ export default function TraineeTable({ classId }) {
               <div className="font-semibold text-slate-900 truncate">
                 {record.fullName}
               </div>
-              <div className="text-xs text-blue-600 font-medium">
-                {record.studentId}
-              </div>
             </div>
           </div>
         );
@@ -207,7 +204,7 @@ export default function TraineeTable({ classId }) {
     {
       title: 'Contact',
       key: 'contact',
-      width: 200,
+      width: 150,
       render: (_, record) => (
         <div className="space-y-1">
           <div className="text-sm text-gray-700 truncate">

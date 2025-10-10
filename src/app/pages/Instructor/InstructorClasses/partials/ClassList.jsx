@@ -46,15 +46,18 @@ const ClassTableView = ({
             dataIndex: "name",
             key: "name",
             width: 220,
+            ellipsis: true,
             render: (name, record) => (
                 <div className="space-y-1">
-                    <div
-                        className="font-semibold text-slate-900 cursor-pointer hover:text-blue-600 transition-colors"
-                        onClick={() => onView(record)}
-                    >
-                        {name}
-                    </div>
-                    <div className="text-xs text-blue-600 font-medium">
+                    <Tooltip title={name}>
+                        <div
+                            className="font-semibold text-slate-900 cursor-pointer hover:text-blue-600 transition-colors truncate"
+                            onClick={() => onView(record)}
+                        >
+                            {name}
+                        </div>
+                    </Tooltip>
+                    <div className="text-xs text-blue-600 font-medium truncate">
                         {record.classCode.name}
                     </div>
                 </div>
@@ -65,16 +68,20 @@ const ClassTableView = ({
             dataIndex: "programCourseId",
             key: "program",
             width: 180,
-            render: (programCourseId) => (
-                <div className="text-sm text-gray-700">
-                    {getProgramName(programCourseId)}
-                </div>
-            ),
+            ellipsis: true,
+            render: (programCourseId) => {
+                const programName = getProgramName(programCourseId);
+                return (
+                    <Tooltip title={programName}>
+                        <div className="text-sm text-gray-700 truncate">{programName}</div>
+                    </Tooltip>
+                );
+            },
         },
         {
             title: "Duration",
             key: "duration",
-            width: 200,
+            width: 100,
             render: (_, record) => (
                 <div className="text-sm text-gray-600">
                     <div>{formatDate(record.startDate)}</div>
@@ -134,7 +141,8 @@ const ClassTableView = ({
                 columns={tableColumns}
                 dataSource={classes}
                 rowKey="id"
-                scroll={{ y: 400 }}
+                // Fixed, taller table body height
+                scroll={{ y: 360 }}
                 pagination={{
                     current: pageNumber,
                     pageSize: pageSize,

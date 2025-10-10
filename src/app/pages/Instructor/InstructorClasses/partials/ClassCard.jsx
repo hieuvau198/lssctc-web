@@ -32,7 +32,7 @@ const ClassCard = ({ classItem, onView }) => {
   return (
     <Card
       hoverable
-      className="rounded-lg shadow h-full flex flex-col"
+      className="rounded-lg shadow h-full flex flex-col w-full max-w-[380px]"
       bodyStyle={{ 
         height: '280px', 
         display: 'flex', 
@@ -42,16 +42,18 @@ const ClassCard = ({ classItem, onView }) => {
     >
       <div className="flex flex-col h-full">
         <div className="flex items-start justify-between gap-3 mb-4">
-          <h3
-            className="font-semibold text-slate-900 line-clamp-2 flex-1 cursor-pointer text-lg leading-6 h-12 flex items-center"
-            onClick={handleViewDetail}
-          >
-            {classItem.name}
-          </h3>
+          <Tooltip title={classItem.name}>
+            <h3
+              className="font-semibold text-slate-900 line-clamp-2 flex-1 cursor-pointer text-lg leading-6 h-12 flex items-center"
+              onClick={handleViewDetail}
+            >
+              {classItem.name}
+            </h3>
+          </Tooltip>
         </div>
 
         <div className="flex items-center justify-between mb-4 h-8">
-          <div className="text-base text-blue-600 font-medium">
+          <div className="text-base text-blue-600 font-medium truncate max-w-[60%]">
             {classItem.classCode.name}
           </div>
           <Tag color={getStatusColor(classItem.status)} className="m-0 flex-shrink-0 text-sm px-3 py-1">
@@ -63,7 +65,9 @@ const ClassCard = ({ classItem, onView }) => {
           <div className="pt-4 border-t text-sm text-slate-700 space-y-3">
             <div className="flex">
               <span className="font-medium w-20 flex-shrink-0">Program:</span> 
-              <span className="flex-1 line-clamp-1">{getProgramName(classItem.programCourseId)}</span>
+              <Tooltip title={getProgramName(classItem.programCourseId)}>
+                <span className="flex-1 truncate">{getProgramName(classItem.programCourseId)}</span>
+              </Tooltip>
             </div>
             <div className="flex">
               <span className="font-medium w-20 flex-shrink-0">Duration:</span> 
