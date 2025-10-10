@@ -7,10 +7,10 @@ import './SectionLayout.css';
 
 export default function SectionLayout({
   itemsLoading = false,
-  items = [], // [{id, type:'video'|'reading'|'quiz', title, duration, completed}]
+  items = [],
   onSelectItem,
   error,
-  courseTitle = "Module Content" // Default fallback
+  courseTitle = "Course Title",
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -194,7 +194,7 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
                       >
                       {/* Completion Status Circle */}
                       <div className="flex-shrink-0 mt-0.5">
-                        {partition.completed ? (
+                        {partition.isCompleted ? (
                           <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
                             <CheckCircle2 className="w-3 h-3 text-white" />
                           </div>
@@ -215,7 +215,6 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
                             </h4>
                           </Tooltip>
                         </div>
-                        
                       </div>
                     </button>
                   </div>

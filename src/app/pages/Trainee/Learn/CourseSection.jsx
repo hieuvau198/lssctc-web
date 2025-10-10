@@ -56,7 +56,7 @@ export default function CourseSection() {
 				type: 'section',
 				title: section.sectionName,
 				duration: `${section.durationMinutes ?? 0} min`,
-				completed: section.isCompleted,
+				isCompleted: section.isCompleted,
 				isHeader: true,
 			});
 
@@ -67,7 +67,7 @@ export default function CourseSection() {
 					type: partition.partitionType || 'content',
 					title: partition.partitionName,
 					duration: partition.partitionDescription || '', // Or use actual duration if available
-					completed: partition.isCompleted,
+					isCompleted: partition.isCompleted,
 					sectionId: section.sectionId,
 					href: `/learn/${classId}/${section.sectionId}/${partition.sectionPartitionId}`,
 				});
