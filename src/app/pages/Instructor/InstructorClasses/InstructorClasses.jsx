@@ -1,3 +1,5 @@
+// src\app\pages\Instructor\InstructorClasses\InstructorClasses.jsx
+
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -11,6 +13,7 @@ import ClassList from "./partials/ClassList";
 import ClassFilters from "./partials/ClassFilters";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import slugify from "../../../lib/slugify";
+import TestDisplayClassList from "./partials/TestDisplayClassList";
 
 export default function InstructorClasses() {
   const [classes, setClasses] = useState([]);
@@ -140,6 +143,9 @@ export default function InstructorClasses() {
         onPageChange={handlePageChange}
         onView={handleViewClass}
       />
+
+      <TestDisplayClassList />
+      
     </div>
   );
 }
