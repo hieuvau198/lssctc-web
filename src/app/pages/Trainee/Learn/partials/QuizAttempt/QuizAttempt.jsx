@@ -8,7 +8,7 @@ import {
   mapQuizAttempt,
 } from "../../../../../apis/Trainee/TraineeQuizApi";
 
-export default function QuizAttempt({ sectionQuiz, partition }) {
+export default function QuizAttempt({ sectionQuiz, partition, onBack }) {
   const traineeId = 1; // TODO: replace with real logged-in user later
 
   const [quizData, setQuizData] = useState(null);
@@ -31,7 +31,7 @@ export default function QuizAttempt({ sectionQuiz, partition }) {
         console.log("Fetched quiz data:", data);
         setQuizData(data);
       } catch (err) {
-        console.error("❌ Error fetching quiz data:", err);
+        console.error("Error fetching quiz data:", err);
         setError("Failed to load quiz data. Please try again.");
       } finally {
         setLoading(false);
@@ -66,7 +66,7 @@ export default function QuizAttempt({ sectionQuiz, partition }) {
     });
   };
 
-  // 🟥 Handle submit quiz
+  // Handle submit quiz
   const handleSubmit = async () => {
     if (!quizData || !sectionQuiz || !partition) return;
 
@@ -85,10 +85,10 @@ export default function QuizAttempt({ sectionQuiz, partition }) {
     try {
       setSubmitting(true);
       const result = await submitSectionQuizAttempt(partition.sectionPartitionId, traineeId, attemptPayload);
-      message.success("✅ Quiz submitted successfully!");
+      message.success("Quiz submitted successfully!");
       setResult(result);
     } catch (err) {
-      console.error("❌ Error submitting quiz:", err);
+      console.error("Error submitting quiz:", err);
       message.error("Failed to submit quiz. Please try again.");
     } finally {
       setSubmitting(false);
@@ -127,12 +127,15 @@ export default function QuizAttempt({ sectionQuiz, partition }) {
   if (result) {
     return (
       <div className="max-w-3xl mx-auto mt-6 text-center">
+        <div className="sticky top-0 bg-white z-10 py-2">
+  <Button onClick={onBack}>Back</Button>
+</div>
         <Card title="Quiz Result">
           <p className="text-lg font-semibold text-slate-700">{result.quizName}</p>
           <p className="text-slate-600 mt-2">Total Score: {result.totalScore ?? "-"}</p>
           <p className="text-slate-600">Your Score: {result.attemptScore ?? "-"}</p>
           <p className={`mt-4 text-lg font-bold ${result.lastAttemptIsPass ? "text-green-600" : "text-red-600"}`}>
-            {result.lastAttemptIsPass ? "🎉 You Passed!" : "❌ You Failed."}
+            {result.lastAttemptIsPass ? "You Passed!" : "You Failed."}
           </p>
           <p className="text-sm text-slate-500 mt-2">
             Attempted on: {new Date(result.lastAttemptDate).toLocaleString()}
@@ -144,7 +147,9 @@ export default function QuizAttempt({ sectionQuiz, partition }) {
   
   return (
   <div className=" mx-auto px-4 py-8">
-    {/* Quiz Header */}
+    <div className="sticky top-0 bg-white z-10 py-2">
+  <Button onClick={onBack}>⬅ Back</Button>
+</div>
     <Card
       className="border border-gray-200 shadow-sm mb-8"
     >

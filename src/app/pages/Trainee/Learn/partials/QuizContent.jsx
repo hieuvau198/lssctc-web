@@ -5,7 +5,7 @@ import { Card, Button, Alert } from 'antd';
 import { FileText, Clock, HelpCircle, CheckCircle2 } from 'lucide-react';
 import QuizAttempt from './QuizAttempt/QuizAttempt';
 
-export default function QuizContent({ sectionQuiz, partition }) {
+export default function QuizContent({ sectionQuiz, partition, onReload }) {
 		const [showAttempt, setShowAttempt] = useState(false); 
 
 	if (!sectionQuiz) {
@@ -35,7 +35,14 @@ export default function QuizContent({ sectionQuiz, partition }) {
 		: null;
 
 	if (showAttempt) {
-		return <QuizAttempt sectionQuiz={sectionQuiz} partition={partition}/>;
+		return <QuizAttempt 
+		sectionQuiz={sectionQuiz} 
+		partition={partition}
+		onBack={async () => {
+        setShowAttempt(false);
+        if (onReload) await onReload();
+      	}}
+		/>;
 	}
 
 	return (

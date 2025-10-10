@@ -76,7 +76,7 @@ export const getQuizWithoutAnswers = async (quizId) => {
     const response = await api.get(`/Quizzes/${quizId}/no-answer`);
     return mapQuiz(response.data);
   } catch (error) {
-    console.error("❌ Error fetching quiz without answers:", error);
+    console.error("Error fetching quiz without answers:", error);
     throw error;
   }
 };
@@ -89,7 +89,7 @@ export const submitSectionQuizAttempt = async (partitionId, traineeId, attemptDa
     );
     return mapQuizResult(response.data);
   } catch (error) {
-    console.error("❌ Error submitting section quiz attempt:", error);
+    console.error("Error submitting section quiz attempt:", error);
     throw error;
   }
 };
