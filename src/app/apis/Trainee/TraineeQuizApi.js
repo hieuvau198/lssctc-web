@@ -40,6 +40,33 @@ const mapQuiz = (item) => ({
   questions: item.questions ? item.questions.map(mapQuizQuestion) : [],
 });
 
+const mapQuizResult = (item) => ({
+  sectionQuizId: item.sectionQuizId,
+  quizId: item.quizId,
+  learningRecordPartitionId: item.learningRecordPartitionId,
+  sectionQuizAttemptId: item.sectionQuizAttemptId,
+  quizName: item.quizName,
+  passScoreCriteria: item.passScoreCriteria,
+  timelimitMinute: item.timelimitMinute,
+  totalScore: item.totalScore,
+  description: item.description,
+  isCompleted: item.isCompleted,
+  attemptScore: item.attemptScore,
+  lastAttemptIsPass: item.lastAttemptIsPass,
+  lastAttemptDate: item.lastAttemptDate,
+});
+
+export const mapQuizAttempt = (quizId, sectionQuizId, answers) => ({
+  quizId,
+  sectionQuizId,
+  answers: answers.map((answer) => ({
+    questionId: answer.questionId,
+    selectedOptionIds: Array.isArray(answer.selectedOptionIds)
+      ? answer.selectedOptionIds
+      : [answer.selectedOptionIds], // ensure it's an array
+  })),
+});
+
 //#endregion
 
 //#region Quiz APIs
@@ -50,6 +77,19 @@ export const getQuizWithoutAnswers = async (quizId) => {
     return mapQuiz(response.data);
   } catch (error) {
     console.error("❌ Error fetching quiz without answers:", error);
+    throw error;
+  }
+};
+
+export const submitSectionQuizAttempt = async (partitionId, traineeId, attemptData) => {
+  try {
+    const response = await api.post(
+      `/Learnings/sectionquizzes/${partitionId}/trainee/${traineeId}/submit`,
+      attemptData
+    );
+    return mapQuizResult(response.data);
+  } catch (error) {
+    console.error("❌ Error submitting section quiz attempt:", error);
     throw error;
   }
 };

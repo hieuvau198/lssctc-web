@@ -5,7 +5,7 @@ import { Card, Button, Alert } from 'antd';
 import { FileText, Clock, HelpCircle, CheckCircle2 } from 'lucide-react';
 import QuizAttempt from './QuizAttempt/QuizAttempt';
 
-export default function QuizContent({ sectionQuiz }) {
+export default function QuizContent({ sectionQuiz, partition }) {
 		const [showAttempt, setShowAttempt] = useState(false); 
 
 	if (!sectionQuiz) {
@@ -24,7 +24,7 @@ export default function QuizContent({ sectionQuiz }) {
 		passScoreCriteria,
 		timelimitMinute,
 		totalScore,
-		lastAttemptScore,
+		attemptScore,
 		lastAttemptIsPass,
 		lastAttemptDate,
 	} = sectionQuiz;
@@ -35,7 +35,7 @@ export default function QuizContent({ sectionQuiz }) {
 		: null;
 
 	if (showAttempt) {
-		return <QuizAttempt sectionQuiz={sectionQuiz} />;
+		return <QuizAttempt sectionQuiz={sectionQuiz} partition={partition}/>;
 	}
 
 	return (
@@ -121,7 +121,7 @@ export default function QuizContent({ sectionQuiz }) {
 									lastAttemptIsPass ? 'text-green-600' : 'text-red-600'
 								}`}
 							>
-								{lastAttemptScore != null ? `${lastAttemptScore}` : '-'}
+								{attemptScore != null ? `${attemptScore}` : '-'}
 							</div>
 						</div>
 						<div>

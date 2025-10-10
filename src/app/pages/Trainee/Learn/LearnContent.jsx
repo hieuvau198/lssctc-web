@@ -138,7 +138,7 @@ export default function LearnContent() {
 		case 3: // Quiz
 			return (
 				sectionQuiz && (
-					<QuizContent sectionQuiz={sectionQuiz} />
+					<QuizContent sectionQuiz={sectionQuiz} partition={partition} />
 				)
 			);
 
