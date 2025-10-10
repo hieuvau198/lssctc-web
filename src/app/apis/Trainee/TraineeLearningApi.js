@@ -47,6 +47,22 @@ const mapSectionMaterial = (item) => ({
   isCompleted: item.isCompleted,
 });
 
+const mapSectionQuiz = (item) => ({
+  sectionQuizId: item.sectionQuizId,
+  quizId: item.quizId,
+  learningRecordPartitionId: item.learningRecordPartitionId,
+  sectionQuizAttemptId: item.sectionQuizAttemptId,
+  quizName: item.quizName,
+  passScoreCriteria: item.passScoreCriteria,
+  timelimitMinute: item.timelimitMinute,
+  totalScore: item.totalScore,
+  description: item.description,
+  isCompleted: item.isCompleted,
+  attemptScore: item.attemptScore,
+  lastAttemptIsPass: item.lastAttemptIsPass,
+  lastAttemptDate: item.lastAttemptDate,
+});
+
 //#endregion
 
 
@@ -165,3 +181,11 @@ export const markSectionMaterialAsNotCompleted = async (partitionId, traineeId) 
 };
 //#endregion
 
+//#region Learning Section Quizzes APIs
+// Get a section quiz by partitionId and traineeId
+export const getLearningSectionQuiz = async (partitionId, traineeId) => {
+  const response = await api.get(`/Learnings/sectionquizzes/partition/${partitionId}/trainee/${traineeId}`);
+  return mapSectionQuiz(response.data);
+};
+
+//#endregion

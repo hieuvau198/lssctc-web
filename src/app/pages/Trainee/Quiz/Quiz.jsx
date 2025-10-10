@@ -1,3 +1,5 @@
+// src\app\pages\Trainee\Quiz\Quiz.jsx
+
 import React, { useEffect, useState } from 'react';
 import PageNav from '../../../components/PageNav/PageNav';
 import QuizHeader from './partials/QuizHeader';

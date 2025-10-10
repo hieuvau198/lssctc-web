@@ -4,11 +4,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import VideoContent from "./partials/VideoContent";
 import ReadingContent from "./partials/ReadingContent";
+import QuizContent from "./partials/QuizContent";
 import {
 	getLearningPartitionByIdAndTraineeId,
 	getLearningSectionMaterial,
 	markSectionMaterialAsCompleted,
-	markSectionMaterialAsNotCompleted
+	markSectionMaterialAsNotCompleted,
+	getLearningSectionQuiz
 } from "../../../apis/Trainee/TraineeLearningApi";
 
 export default function LearnContent() {
@@ -17,6 +19,8 @@ export default function LearnContent() {
 
 	const [partition, setPartition] = useState(null);
 	const [partitionMaterial, setPartitionMaterial] = useState(null);
+		const [sectionQuiz, setSectionQuiz] = useState(null);
+
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
@@ -24,6 +28,8 @@ export default function LearnContent() {
 		try {
 			setLoading(true);
 			setError(null);
+			setPartitionMaterial(null);
+			setSectionQuiz(null);
 
 			console.log("Fetching partition:", partitionId);
 			const partitionRes = await getLearningPartitionByIdAndTraineeId(partitionId, traineeId);
@@ -35,9 +41,15 @@ export default function LearnContent() {
 				const materialRes = await getLearningSectionMaterial(partitionId, traineeId);
 				console.log("Material response:", materialRes);
 				setPartitionMaterial(materialRes);
+			} else if (partitionRes.partitionType === 3) {
+				// Quiz
+				console.log("Fetching section quiz for partition:", partitionId);
+				const quizRes = await getLearningSectionQuiz(partitionId, traineeId);
+				console.log("Quiz response:", quizRes);
+				setSectionQuiz(quizRes);
 			}
 		} catch (err) {
-			console.error("❌ Error fetching partition or material:", err);
+			console.error("Error fetching partition or material or quiz:", err);
 			setError("Failed to load learning content. Check console for details.");
 		} finally {
 			setLoading(false);
@@ -120,6 +132,13 @@ export default function LearnContent() {
 						onMarkAsComplete={handleMarkAsComplete}
 						onMarkAsNotComplete={handleMarkAsNotComplete}
 					/>
+				)
+			);
+
+		case 3: // Quiz
+			return (
+				sectionQuiz && (
+					<QuizContent sectionQuiz={sectionQuiz} />
 				)
 			);
 
