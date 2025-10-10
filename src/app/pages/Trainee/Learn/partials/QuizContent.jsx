@@ -1,10 +1,13 @@
-// src/app/pages/Trainee/Learn/partials/QuizDescription.jsx
+// src\app\pages\Trainee\Learn\partials\QuizContent.jsx
 
-import React from 'react';
+import React, {useState} from 'react';
 import { Card, Button, Alert } from 'antd';
 import { FileText, Clock, HelpCircle, CheckCircle2 } from 'lucide-react';
+import QuizAttempt from './QuizAttempt/QuizAttempt';
 
-export default function QuizContent({ sectionQuiz }) {
+export default function QuizContent({ sectionQuiz, partition, onReload }) {
+		const [showAttempt, setShowAttempt] = useState(false); 
+
 	if (!sectionQuiz) {
 		return (
 			<div className="max-w-4xl mx-auto p-8 text-center text-slate-500">
@@ -21,7 +24,7 @@ export default function QuizContent({ sectionQuiz }) {
 		passScoreCriteria,
 		timelimitMinute,
 		totalScore,
-		lastAttemptScore,
+		attemptScore,
 		lastAttemptIsPass,
 		lastAttemptDate,
 	} = sectionQuiz;
@@ -30,6 +33,17 @@ export default function QuizContent({ sectionQuiz }) {
 	const formattedDate = lastAttemptDate
 		? new Date(lastAttemptDate).toLocaleString()
 		: null;
+
+	if (showAttempt) {
+		return <QuizAttempt 
+		sectionQuiz={sectionQuiz} 
+		partition={partition}
+		onBack={async () => {
+        setShowAttempt(false);
+        if (onReload) await onReload();
+      	}}
+		/>;
+	}
 
 	return (
 		<div className="max-w-4xl mx-auto">
@@ -91,7 +105,7 @@ export default function QuizContent({ sectionQuiz }) {
 						type="primary"
 						size="large"
 						className="flex-1"
-						href={`/quiz/${sectionQuiz.quizId}`}
+						onClick={() => setShowAttempt(true)} // ✅ start quiz in same page
 					>
 						{isCompleted ? 'Retake Quiz' : 'Start Quiz'}
 					</Button>
@@ -114,7 +128,7 @@ export default function QuizContent({ sectionQuiz }) {
 									lastAttemptIsPass ? 'text-green-600' : 'text-red-600'
 								}`}
 							>
-								{lastAttemptScore != null ? `${lastAttemptScore}` : '-'}
+								{attemptScore != null ? `${attemptScore}` : '-'}
 							</div>
 						</div>
 						<div>

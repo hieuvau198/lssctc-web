@@ -189,3 +189,4 @@ export const getLearningSectionQuiz = async (partitionId, traineeId) => {
 };
 
 //#endregion
+
