@@ -6,7 +6,7 @@ import {
   message,
 } from "antd";
 import { useNavigate } from "react-router";
-import { getInstructorClasses } from "../../../mock/instructorClasses";
+import { fetchClasses } from "../../../apis/ProgramManager/ClassesApi";
 import ClassList from "./partials/ClassList";
 import ClassFilters from "./partials/ClassFilters";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
@@ -27,23 +27,26 @@ export default function InstructorClasses() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
-    getInstructorClasses({ 
-      pageNumber, 
-      pageSize, 
-      searchTerm, 
-      status 
-    })
+    fetchClasses({ page: pageNumber, pageSize })
       .then((data) => {
-        setClasses(data.items);
-        setTotal(data.totalCount || 0);
-        setLoading(false);
+        if (cancelled) return;
+        setClasses(Array.isArray(data?.items) ? data.items : []);
+        setTotal(Number(data?.totalCount) || 0);
       })
       .catch((err) => {
-        setError(err.message);
+        if (cancelled) return;
+        setError(err?.message || "Failed to load classes");
+      })
+      .finally(() => {
+        if (cancelled) return;
         setLoading(false);
       });
-  }, [pageNumber, pageSize, searchTerm, status]);
+    return () => {
+      cancelled = true;
+    };
+  }, [pageNumber, pageSize]);
 
   const handleSearch = (value) => {
     setSearchTerm(value);

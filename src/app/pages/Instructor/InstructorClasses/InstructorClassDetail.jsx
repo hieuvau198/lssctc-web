@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Card, Descriptions, Tag, Button, Skeleton, Alert } from 'antd';
 import { ArrowLeftOutlined, CalendarOutlined, TeamOutlined, BookOutlined } from '@ant-design/icons';
-import { getInstructorClasses, getProgramName } from '../../../mock/instructorClasses';
+import { fetchClasses } from '../../../apis/ProgramManager/ClassesApi';
+import { fetchClassDetail } from '../../../apis/ProgramManager/ClassApi';
+import { getProgramName } from '../../../mock/instructorClasses';
 import slugify from '../../../lib/slugify';
 import TraineeTable from './partials/TraineeTable';
 
@@ -14,17 +16,18 @@ export default function InstructorClassDetail() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchClassDetail = async () => {
+        const loadDetail = async () => {
             try {
                 setLoading(true);
                 setError(null);
-                // Since we cannot modify mocks, load all classes and find by computed slug from name
-                const { items } = await getInstructorClasses({ pageNumber: 1, pageSize: 1000 });
-                const data = items.find(c => slugify(c.name) === slug);
-                if (!data) {
+                // Load classes (first page with large pageSize) and find matching slug, then fetch detail by id
+                const list = await fetchClasses({ page: 1, pageSize: 1000 });
+                const matched = Array.isArray(list?.items) ? list.items.find(c => slugify(c.name) === slug) : null;
+                if (!matched) {
                     setError('Class not found');
                 } else {
-                    setClassData(data);
+                    const detail = await fetchClassDetail(matched.id);
+                    setClassData(detail);
                 }
             } catch (err) {
                 setError('Error loading class details');
@@ -35,7 +38,7 @@ export default function InstructorClassDetail() {
         };
 
         if (slug) {
-            fetchClassDetail();
+            loadDetail();
         }
     }, [slug]);
 
@@ -69,9 +72,7 @@ export default function InstructorClassDetail() {
         return (
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="flex items-center gap-3 mb-6">
-                    <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/instructor/classes')}>
-                        Back to Classes
-                    </Button>
+                    <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/instructor/classes')}/>
                     <div className="h-6 w-48 bg-gray-200 animate-pulse rounded"></div>
                 </div>
                 <Card>
@@ -85,9 +86,7 @@ export default function InstructorClassDetail() {
         return (
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="flex items-center gap-3 mb-6">
-                    <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/instructor/classes')}>
-                        Back to Classes
-                    </Button>
+                    <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/instructor/classes')}/>       
                 </div>
                 <Alert
                     message="Error"
@@ -131,25 +130,25 @@ export default function InstructorClassDetail() {
                         </Descriptions.Item>
                         <Descriptions.Item label="Program" span={1}>
                             <div className="flex items-center gap-2">
-                                <BookOutlined />
+                                
                                 {getProgramName(classData.programCourseId)}
                             </div>
                         </Descriptions.Item>
                         <Descriptions.Item label="Capacity" span={1}>
                             <div className="flex items-center gap-2">
-                                <TeamOutlined />
+                                
                                 {classData.capacity} students
                             </div>
                         </Descriptions.Item>
                         <Descriptions.Item label="Start Date" span={1}>
                             <div className="flex items-center gap-2">
-                                <CalendarOutlined />
+                                
                                 {formatDate(classData.startDate)}
                             </div>
                         </Descriptions.Item>
                         <Descriptions.Item label="End Date" span={1}>
                             <div className="flex items-center gap-2">
-                                <CalendarOutlined />
+                                
                                 {formatDate(classData.endDate)}
                             </div>
                         </Descriptions.Item>
