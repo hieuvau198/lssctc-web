@@ -284,7 +284,7 @@ export default function TraineeTable({ classId }) {
   return (
     <div>
       {/* Search and Controls */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-3 whitespace-nowrap">
           <Input
             placeholder="Search trainees..."
@@ -306,7 +306,7 @@ export default function TraineeTable({ classId }) {
         dataSource={filteredTrainees}
         rowKey="id"
         loading={loading}
-        scroll={{ x: 900, y: 400 }}
+        scroll={{ y: 280 }}
         pagination={{
           current: pageNumber,
           pageSize: pageSize,
