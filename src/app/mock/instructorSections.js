@@ -122,3 +122,44 @@ export const getInstructorSections = (filters = {}) => {
     }, 400);
   });
 };
+
+// Mock data for section partitions
+export const mockSectionPartitions = [
+  {
+    id: 1,
+    sectionId: 1,
+    name: 'Crane Categories and Types',
+    partitionTypeId: 1, // 1 = PDF
+    description: 'Crane Categories and Types',
+  },
+  {
+    id: 2,
+    sectionId: 1,
+    name: 'Intro Video',
+    partitionTypeId: 2, // 2 = Video
+    description: 'Overview video',
+  },
+  {
+    id: 3,
+    sectionId: 2,
+    name: 'Safety Manual PDF',
+    partitionTypeId: 1,
+    description: 'Safety PDF document',
+  },
+  {
+    id: 4,
+    sectionId: 3,
+    name: 'Load Chart Examples',
+    partitionTypeId: 1,
+    description: 'PDF with examples',
+  },
+];
+
+export const getSectionPartitions = (sectionId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const parts = mockSectionPartitions.filter((p) => String(p.sectionId) === String(sectionId));
+      resolve(parts);
+    }, 300);
+  });
+};

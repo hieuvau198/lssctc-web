@@ -6,7 +6,9 @@ import { fetchClasses } from '../../../apis/ProgramManager/ClassesApi';
 import { fetchClassDetail } from '../../../apis/ProgramManager/ClassApi';
 import { getProgramName } from '../../../mock/instructorClasses';
 import slugify from '../../../lib/slugify';
-import TraineeTable from './partials/TraineeTable';
+import ClassOverview from './partials/ClassOverview';
+import ClassSections from './partials/ClassSections';
+import ClassMembers from './partials/ClassMembers';
 
 export default function InstructorClassDetail() {
     const { slug } = useParams();
@@ -14,6 +16,7 @@ export default function InstructorClassDetail() {
     const [classData, setClassData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'sections' | 'members'
 
     useEffect(() => {
         const loadDetail = async () => {
@@ -72,7 +75,7 @@ export default function InstructorClassDetail() {
         return (
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="flex items-center gap-3 mb-6">
-                    <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/instructor/classes')}/>
+                    <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/instructor/classes')} />
                     <div className="h-6 w-48 bg-gray-200 animate-pulse rounded"></div>
                 </div>
                 <Card>
@@ -86,7 +89,7 @@ export default function InstructorClassDetail() {
         return (
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="flex items-center gap-3 mb-6">
-                    <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/instructor/classes')}/>       
+                    <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/instructor/classes')} />
                 </div>
                 <Alert
                     message="Error"
@@ -99,8 +102,8 @@ export default function InstructorClassDetail() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-2">
-            <div className="flex items-center gap-3 mb-6">
+        <div className="max-w-7xl mx-auto px-4 py-1">
+            <div className="flex items-center gap-3 mb-2">
                 <Button
                     icon={<ArrowLeftOutlined />}
                     onClick={() => navigate('/instructor/classes')}
@@ -109,89 +112,38 @@ export default function InstructorClassDetail() {
                 />
                 <span className="text-2xl font-semibold m-0">Class Details</span>
             </div>
-
-            <div className="mb-6 rounded-2xl shadow-xl">
-                <Card>
-                    <Descriptions
-                        title={
-                            <div className="flex items-center justify-between">
-                                <span className="text-lg font-semibold">{classData.name}</span>
-                                <Tag color={getStatusColor(classData.status)} className="text-sm">
-                                    {getStatusText(classData.status)}
-                                </Tag>
-                            </div>
-                        }
-                        bordered
-                        column={{ xs: 1, sm: 2, md: 2, lg: 3 }}
+            <div className="mb-2">
+                <div className="inline-flex items-center rounded-lg bg-white shadow-sm">
+                    <Button
+                        type={activeTab === 'overview' ? 'primary' : 'text'}
+                        icon={<BookOutlined />}
+                        onClick={() => setActiveTab('overview')}
                         size="middle"
                     >
-                        <Descriptions.Item label="Class Code" span={1}>
-                            <span className="font-mono font-medium">{classData.classCode.name}</span>
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Program" span={1}>
-                            <div className="flex items-center gap-2">
-                                
-                                {getProgramName(classData.programCourseId)}
-                            </div>
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Capacity" span={1}>
-                            <div className="flex items-center gap-2">
-                                
-                                {classData.capacity} students
-                            </div>
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Start Date" span={1}>
-                            <div className="flex items-center gap-2">
-                                
-                                {formatDate(classData.startDate)}
-                            </div>
-                        </Descriptions.Item>
-                        <Descriptions.Item label="End Date" span={1}>
-                            <div className="flex items-center gap-2">
-                                
-                                {formatDate(classData.endDate)}
-                            </div>
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Duration" span={1}>
-                            {calculateDuration(classData.startDate, classData.endDate)}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Description" span={3}>
-                            <div 
-                                className="max-h-24 overflow-y-auto pr-2 text-gray-700 leading-relaxed custom-scrollbar"
-                                style={{
-                                    scrollbarWidth: 'thin',
-                                    scrollbarColor: '#cbd5e1 #f1f5f9'
-                                }}
-                            >
-                                {classData.description || 'No description available'}
-                            </div>
-                            <style jsx>{`
-                                .custom-scrollbar::-webkit-scrollbar {
-                                    width: 6px;
-                                }
-                                .custom-scrollbar::-webkit-scrollbar-track {
-                                    background: #f1f5f9;
-                                    border-radius: 3px;
-                                }
-                                .custom-scrollbar::-webkit-scrollbar-thumb {
-                                    background: #cbd5e1;
-                                    border-radius: 3px;
-                                }
-                                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                                    background: #94a3b8;
-                                }
-                            `}</style>
-                        </Descriptions.Item>
-                    </Descriptions>
-                </Card>
+                        Overview
+                    </Button>
+                    <Button
+                        type={activeTab === 'sections' ? 'primary' : 'text'}
+                        icon={<CalendarOutlined />}
+                        onClick={() => setActiveTab('sections')}
+                        size="middle"
+                    >
+                        Sections
+                    </Button>
+                    <Button
+                        type={activeTab === 'members' ? 'primary' : 'text'}
+                        icon={<TeamOutlined />}
+                        onClick={() => setActiveTab('members')}
+                        size="middle"
+                    >
+                        Members
+                    </Button>
+                </div>
             </div>
 
-            {/* Trainees Table */}
-            <div className="mb-6 rounded-2xl shadow-xl">
-                <Card title="Class Trainees" className="py-4">
-                    <TraineeTable classId={classData.id} />
-                </Card>
-            </div>
+            {activeTab === 'overview' && <ClassOverview classData={classData} />}
+            {activeTab === 'sections' && <ClassSections classData={classData} />}
+            {activeTab === 'members' && <ClassMembers classData={classData} />}
         </div>
     );
 }

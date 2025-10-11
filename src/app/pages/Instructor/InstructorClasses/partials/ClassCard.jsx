@@ -29,23 +29,34 @@ const ClassCard = ({ classItem, onView }) => {
     navigate(`/instructor/classes/${slug}`);
   };
 
+  const handleKeyDown = (e) => {
+    // Trigger navigation on Enter or Space for accessibility
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleViewDetail();
+    }
+  };
+
   return (
     <Card
       hoverable
-      className="rounded-lg shadow h-full flex flex-col w-full max-w-[380px]"
+      className="rounded-lg shadow h-full flex flex-col w-full max-w-[380px] cursor-pointer"
       bodyStyle={{ 
         height: '280px', 
         display: 'flex', 
         flexDirection: 'column',
         padding: '24px'
       }}
+      onClick={handleViewDetail}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
     >
       <div className="flex flex-col h-full">
         <div className="flex items-start justify-between gap-3 mb-4">
           <Tooltip title={classItem.name}>
             <h3
-              className="font-semibold text-slate-900 line-clamp-2 flex-1 cursor-pointer text-lg leading-6 h-12 flex items-center"
-              onClick={handleViewDetail}
+              className="font-semibold text-slate-900 line-clamp-2 flex-1 text-lg leading-6 h-12 flex items-center"
             >
               {classItem.name}
             </h3>
