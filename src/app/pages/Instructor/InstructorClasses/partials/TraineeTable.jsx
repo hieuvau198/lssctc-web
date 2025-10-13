@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Avatar, Input, Button } from 'antd';
+import { Table, Tag, Avatar, Input, Button, Skeleton } from 'antd';
 import { UserOutlined, SearchOutlined } from '@ant-design/icons';
 
 // Mock data for trainees
@@ -17,7 +17,7 @@ const mockTrainees = [
   },
   {
     id: 2,
-    studentId: 'STU002', 
+    studentId: 'STU002',
     fullName: 'Sarah Johnson',
     email: 'sarah.johnson@email.com',
     phone: '+1-555-0102',
@@ -30,7 +30,7 @@ const mockTrainees = [
     id: 3,
     studentId: 'STU003',
     fullName: 'Michael Brown',
-    email: 'michael.brown@email.com', 
+    email: 'michael.brown@email.com',
     phone: '+1-555-0103',
     enrollmentDate: '2025-09-22T09:15:00',
     status: 'completed',
@@ -121,7 +121,7 @@ export default function TraineeTable({ classId }) {
     if (searchValue.trim() === '') {
       setFilteredTrainees(trainees);
     } else {
-      const filtered = trainees.filter(trainee => 
+      const filtered = trainees.filter(trainee =>
         trainee.fullName.toLowerCase().includes(searchValue.toLowerCase()) ||
         trainee.studentId.toLowerCase().includes(searchValue.toLowerCase()) ||
         trainee.email.toLowerCase().includes(searchValue.toLowerCase())
@@ -186,9 +186,9 @@ export default function TraineeTable({ classId }) {
 
         return (
           <div className="flex items-center gap-3">
-            <Avatar 
-              size={40} 
-              src={avatarUrl} 
+            <Avatar
+              size={40}
+              src={avatarUrl}
               icon={<UserOutlined />}
               className="flex-shrink-0"
             />
@@ -235,9 +235,9 @@ export default function TraineeTable({ classId }) {
       render: (progress) => (
         <div className="flex items-center gap-2">
           <div className="flex-1 bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="h-2 rounded-full transition-all duration-300"
-              style={{ 
+              style={{
                 width: `${progress}%`,
                 backgroundColor: getProgressColor(progress)
               }}
@@ -282,46 +282,76 @@ export default function TraineeTable({ classId }) {
   ];
 
   return (
-    <div>
-      {/* Search and Controls */}
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-3 whitespace-nowrap">
-          <Input
-            placeholder="Search trainees..."
-            prefix={<SearchOutlined />}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            allowClear
-            className="w-80"
-          />
-          <div className="text-sm text-gray-500 whitespace-nowrap">
-            Total: {filteredTrainees.length} trainees
+    <>
+      {loading ? (
+        <>
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-3 whitespace-nowrap w-full">
+              <Skeleton.Input style={{ width: 320, height: 40 }} active />
+              <div className="ml-4">
+                <Skeleton.Input style={{ width: 140, height: 20 }} active />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Trainees Table */}
-      <Table
-        columns={columns}
-        dataSource={filteredTrainees}
-        rowKey="id"
-        loading={loading}
-        scroll={{ y: 280 }}
-        pagination={{
-          current: pageNumber,
-          pageSize: pageSize,
-          total: filteredTrainees.length,
-          onChange: (page, size) => {
-            setPageNumber(page);
-            setPageSize(size);
-          },
-          showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50'],
-          showTotal: (total, range) => 
-            `${range[0]}-${range[1]} of ${total} trainees`,
-        }}
-        size="middle"
-      />
-    </div>
+          {/* Trainees Table or Skeleton */}
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="mb-3">
+              <Skeleton.Button style={{ width: 200, height: 28 }} active />
+            </div>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 p-3 last:border-b-0">
+                <Skeleton.Avatar size={40} shape="circle" active />
+                <div className="flex-1">
+                  <Skeleton.Input style={{ width: '50%', height: 12, marginBottom: 6 }} active />
+                  <Skeleton.Input style={{ width: '35%', height: 10 }} active />
+                </div>
+                <div className="w-20">
+                  <Skeleton.Button size="small" active />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-3 whitespace-nowrap">
+              <Input
+                placeholder="Search trainees..."
+                prefix={<SearchOutlined />}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                allowClear
+                className="w-80"
+              />
+              <div className="text-sm text-gray-500 whitespace-nowrap">
+                Total: {filteredTrainees.length} trainees
+              </div>
+            </div>
+          </div>
+          <Table
+            columns={columns}
+            dataSource={filteredTrainees}
+            rowKey="id"
+            loading={false}
+            scroll={{ y: 280 }}
+            pagination={{
+              current: pageNumber,
+              pageSize: pageSize,
+              total: filteredTrainees.length,
+              onChange: (page, size) => {
+                setPageNumber(page);
+                setPageSize(size);
+              },
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50'],
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} of ${total} trainees`,
+            }}
+            size="middle"
+          />
+        </>
+      )}
+    </>
   );
 }

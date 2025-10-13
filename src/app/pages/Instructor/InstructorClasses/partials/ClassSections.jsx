@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Card, Table, Tag, Empty, Spin } from 'antd';
-import { mockSections, getSectionPartitions } from '../../../../mock/instructorSections';
+import { Card, Skeleton, Table, Tag } from 'antd';
+import { useState } from 'react';
+import { getSectionPartitions, mockSections } from '../../../../mock/instructorSections';
 
 const partitionTypeLabel = (id) => {
   switch (id) {
@@ -50,16 +50,18 @@ const ClassSections = ({ classData }) => {
       ? cached
       : [];
     const partCols = [
-      { title: '#', dataIndex: 'index', key: 'index', width: 50, render: (_, __, i) => i + 1 },
+      // { title: '#', dataIndex: 'index', key: 'index', width: 50, render: (_, __, i) => i + 1 },
       { title: 'Name', dataIndex: 'name', key: 'name' },
       { title: 'Type', dataIndex: 'partitionTypeId', key: 'partitionTypeId', width: 120, render: (t) => partitionTypeLabel(t) },
-      { title: 'Description', dataIndex: 'description', key: 'description' },
+      // { title: 'Description', dataIndex: 'description', key: 'description' },
     ];
 
     return (
       <div>
         {loading ? (
-          <div className="py-4 flex justify-center"><Spin /></div>
+          <div className="py-4">
+            <Skeleton active paragraph={{ rows: 3 }} />
+          </div>
         ) : (
           <Table
             columns={partCols}
@@ -99,7 +101,7 @@ const ClassSections = ({ classData }) => {
 
   return (
     <div className="mb-6 rounded-2xl shadow-xl">
-      <Card title={`Sections (${sections.length})`}>
+      <Card title={`Sections`}>
         <Table
           columns={columns}
           dataSource={pageItems}
@@ -117,7 +119,7 @@ const ClassSections = ({ classData }) => {
             },
           }}
           size="middle"
-          scroll={{ y: 300 }}
+          scroll={{ y: 320 }}
         />
       </Card>
     </div>

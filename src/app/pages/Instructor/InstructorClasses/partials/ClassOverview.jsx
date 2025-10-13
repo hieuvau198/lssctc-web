@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, Descriptions, Tag } from 'antd';
 import { getProgramName } from '../../../../mock/instructorClasses';
 

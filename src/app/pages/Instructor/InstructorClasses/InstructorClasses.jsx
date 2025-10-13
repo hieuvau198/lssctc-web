@@ -1,19 +1,14 @@
-// src\app\pages\Instructor\InstructorClasses\InstructorClasses.jsx
-
-import React, { useEffect, useState } from "react";
 import {
   Alert,
-  Skeleton,
-  Button,
-  message,
+  Skeleton
 } from "antd";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { fetchClasses } from "../../../apis/ProgramManager/ClassesApi";
-import ClassList from "./partials/ClassList";
-import ClassFilters from "./partials/ClassFilters";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import slugify from "../../../lib/slugify";
-import TestDisplayClassList from "./partials/TestDisplayClassList";
+import ClassFilters from "./partials/ClassFilters";
+import ClassList from "./partials/ClassList";
 
 export default function InstructorClasses() {
   const [classes, setClasses] = useState([]);
@@ -22,7 +17,7 @@ export default function InstructorClasses() {
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState(undefined);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
@@ -144,7 +139,7 @@ export default function InstructorClasses() {
         onView={handleViewClass}
       />
 
-      <TestDisplayClassList />
+      {/* <TestDisplayClassList /> */}
       
     </div>
   );

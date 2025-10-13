@@ -1,7 +1,7 @@
 // src\app\pages\Instructor\InstructorClasses\partials\TestDisplayClassList.jsx
 
-import React, { useEffect, useState } from "react";
-import { Table, Spin, Alert, Typography } from "antd";
+import { Alert, Skeleton, Table, Typography } from "antd";
+import { useEffect, useState } from "react";
 import { getInstructorClasses } from "../../../../apis/Instructor/InstructorApi";
 
 const { Title } = Typography;
@@ -58,8 +58,25 @@ export default function TestDisplayClassList() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Spin tip="Loading classes..." />
+      <div className="p-6">
+        <div className="mb-4">
+          <Skeleton.Button style={{ width: 240, height: 28 }} active />
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="flex items-center gap-4 p-4 border-b last:border-b-0">
+              <Skeleton.Avatar size={48} shape="square" active />
+              <div className="flex-1">
+                <Skeleton.Input style={{ width: '60%', height: 16, marginBottom: 8 }} active />
+                <Skeleton.Input style={{ width: '40%', height: 12 }} active />
+              </div>
+              <div className="w-24">
+                <Skeleton.Button size="small" active />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
