@@ -105,7 +105,7 @@ export default function MyClassDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <ClassOverview classData={classData} />
-            <Sections sections={sections} />
+            <Sections sections = {sections} classId = {classData.id} />
           </div>
           <div className="space-y-8">
             <InstructorInfo mockInstructor={mockInstructor} />

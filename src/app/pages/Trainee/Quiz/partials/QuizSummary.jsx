@@ -1,3 +1,5 @@
+// src\app\pages\Trainee\Quiz\partials\QuizSummary.jsx
+
 import React from 'react';
 
 export default function QuizSummary({ questions, answers, onRestart }) {

@@ -13,8 +13,6 @@ import {
   Popconfirm,
 } from "antd";
 import {
-  AppstoreOutlined,
-  UnorderedListOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +24,7 @@ import {
   deleteClass,
 } from "../../../apis/ProgramManager/ClassApi";
 import ClassList from "./partials/ClassList";
+import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import ClassDetailView from "./partials/ClassDetailView";
 import PMClassCard from "./partials/PMClassCard";
 import AddClassForm from "./partials/AddClassForm";
@@ -294,18 +293,10 @@ const PMClasses = () => {
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             Add Class
           </Button>
-          <Button.Group>
-            <Button
-              type={viewMode === "table" ? "primary" : "default"}
-              icon={<UnorderedListOutlined />}
-              onClick={() => setViewMode("table")}
-            />
-            <Button
-              type={viewMode === "card" ? "primary" : "default"}
-              icon={<AppstoreOutlined />}
-              onClick={() => setViewMode("card")}
-            />
-          </Button.Group>
+          <ViewModeToggle 
+            viewMode={viewMode} 
+            onViewModeChange={setViewMode} 
+          />
         </div>
       </div>
 

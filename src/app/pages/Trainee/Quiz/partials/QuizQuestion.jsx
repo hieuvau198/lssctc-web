@@ -1,3 +1,5 @@
+// src\app\pages\Trainee\Quiz\partials\QuizQuestion.jsx
+
 import React from 'react';
 
 export default function QuizQuestion({ q, value, onChange, index }) {

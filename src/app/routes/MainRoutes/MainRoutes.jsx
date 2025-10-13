@@ -6,6 +6,7 @@ import ProgramManagerRoutes from "./partials/ProgramManagerRoutes";
 import SectionRoutes from "./partials/SectionRoutes";
 import SimulationManagerRoutes from "./partials/SimulationManagerRoutes";
 import TraineeRoutes from "./partials/TraineeRoutes";
+import InstructorRoutes from "./partials/InstructorRoutes";
 
 const MainRoutes = () => {
   return (
@@ -16,6 +17,7 @@ const MainRoutes = () => {
         <Route path="admin/*" element={<AdminRoutes />} />
         <Route path="simulationManager/*" element={<SimulationManagerRoutes />} />
         <Route path="programManager/*" element={<ProgramManagerRoutes />} />
+        <Route path="instructor/*" element={<InstructorRoutes />} />
         <Route path="learn/*" element={<SectionRoutes />} />
         <Route path="*" element={<NotFound />} />  
       </Routes>
