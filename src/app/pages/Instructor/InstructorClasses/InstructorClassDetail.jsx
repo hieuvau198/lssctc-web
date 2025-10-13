@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import { Card, Descriptions, Tag, Button, Skeleton, Alert } from 'antd';
-import { ArrowLeftOutlined, CalendarOutlined, TeamOutlined, BookOutlined } from '@ant-design/icons';
-import { fetchClasses } from '../../../apis/ProgramManager/ClassesApi';
+import { ArrowLeftOutlined, BookOutlined, CalendarOutlined, TeamOutlined } from '@ant-design/icons';
+import { Alert, Button, Card, Skeleton } from 'antd';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { fetchClassDetail } from '../../../apis/ProgramManager/ClassApi';
-import { getProgramName } from '../../../mock/instructorClasses';
+import { fetchClasses } from '../../../apis/ProgramManager/ClassesApi';
 import slugify from '../../../lib/slugify';
+import ClassMembers from './partials/ClassMembers';
 import ClassOverview from './partials/ClassOverview';
 import ClassSections from './partials/ClassSections';
-import ClassMembers from './partials/ClassMembers';
 
 export default function InstructorClassDetail() {
     const { slug } = useParams();
@@ -103,44 +102,45 @@ export default function InstructorClassDetail() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-1">
-            <div className="flex items-center gap-3 mb-2">
-                <Button
-                    icon={<ArrowLeftOutlined />}
-                    onClick={() => navigate('/instructor/classes')}
-                    size="middle"
-                    className="flex items-center"
-                />
-                <span className="text-2xl font-semibold m-0">Class Details</span>
-            </div>
-            <div className="mb-2">
+            <div className="flex justify-between items-center gap-3 mb-4">
+                <div className="flex items-center gap-x-3">
+                    <Button
+                        icon={<ArrowLeftOutlined />}
+                        onClick={() => navigate('/instructor/classes')}
+                        size="middle"
+                        className="flex items-center"
+                    />
+                    <span className="text-2xl font-semibold m-0">Class Details</span>
+                </div>
                 <div className="inline-flex items-center rounded-lg bg-white shadow-sm">
-                    <Button
-                        type={activeTab === 'overview' ? 'primary' : 'text'}
-                        icon={<BookOutlined />}
-                        onClick={() => setActiveTab('overview')}
-                        size="middle"
-                    >
-                        Overview
-                    </Button>
-                    <Button
-                        type={activeTab === 'sections' ? 'primary' : 'text'}
-                        icon={<CalendarOutlined />}
-                        onClick={() => setActiveTab('sections')}
-                        size="middle"
-                    >
-                        Sections
-                    </Button>
-                    <Button
-                        type={activeTab === 'members' ? 'primary' : 'text'}
-                        icon={<TeamOutlined />}
-                        onClick={() => setActiveTab('members')}
-                        size="middle"
-                    >
-                        Members
-                    </Button>
+                    <Button.Group>
+                        <Button
+                            type={activeTab === 'overview' ? 'primary' : 'text'}
+                            icon={<BookOutlined />}
+                            onClick={() => setActiveTab('overview')}
+                            size="middle"
+                        >
+                            Overview
+                        </Button>
+                        <Button
+                            type={activeTab === 'sections' ? 'primary' : 'text'}
+                            icon={<CalendarOutlined />}
+                            onClick={() => setActiveTab('sections')}
+                            size="middle"
+                        >
+                            Sections
+                        </Button>
+                        <Button
+                            type={activeTab === 'members' ? 'primary' : 'text'}
+                            icon={<TeamOutlined />}
+                            onClick={() => setActiveTab('members')}
+                            size="middle"
+                        >
+                            Members
+                        </Button>
+                    </Button.Group>
                 </div>
             </div>
-
             {activeTab === 'overview' && <ClassOverview classData={classData} />}
             {activeTab === 'sections' && <ClassSections classData={classData} />}
             {activeTab === 'members' && <ClassMembers classData={classData} />}

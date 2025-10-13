@@ -1,9 +1,7 @@
-import React from "react";
-import { Card, Tag, Button, Tooltip } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
+import { Card, Tag, Tooltip } from "antd";
 import { useNavigate } from "react-router";
-import { getProgramName } from "../../../../mock/instructorClasses";
 import slugify from "../../../../lib/slugify";
+import { getProgramName } from "../../../../mock/instructorClasses";
 
 const ClassCard = ({ classItem, onView }) => {
   const navigate = useNavigate();
