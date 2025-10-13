@@ -27,16 +27,36 @@ const mapClassFromApi = (item) => ({
 
 //#region Class APIs
 
-export const getInstructorClasses = async (instructorId) => {
+// export const getInstructorClasses = async (instructorId) => {
+//   try {
+//     const response = await api.get(`/Classes/by-instructor/${instructorId}`);
+//     // Support both back-end shapes: either { success: true, items: [...] } or direct paged response
+//     const payload = response.data || {};
+//     const rawItems = Array.isArray(payload.items) ? payload.items : (Array.isArray(payload) ? payload : []);
+//     return rawItems.map(mapClassFromApi);
+//   } catch (error) {
+//     console.error("Error fetching classes by instructor:", error);
+//     return [];
+//   }
+// };
+
+export const getInstructorClasses = async (instructorId, { page = 1, pageSize = 20 } = {}) => {
   try {
-    const response = await api.get(`/Classes/by-instructor/${instructorId}`);
-    if (response.data?.success && Array.isArray(response.data.items)) {
-      return response.data.items.map(mapClassFromApi);
-    }
-    return [];
+    const qs = `?page=${encodeURIComponent(page)}&pageSize=${encodeURIComponent(pageSize)}`;
+    const response = await api.get(`/Classes/by-instructor/${instructorId}${qs}`);
+    const data = response.data || {};
+    const items = Array.isArray(data.items) ? data.items.map(mapClassFromApi) : [];
+    return {
+      items,
+      totalCount: Number(data.totalCount) || items.length,
+      page: Number(data.page) || page,
+      pageSize: Number(data.pageSize) || pageSize,
+      totalPages: Number(data.totalPages) || 1,
+      raw: data,
+    };
   } catch (error) {
-    console.error("Error fetching classes by instructor:", error);
-    return [];
+    console.error('Error fetching paged classes by instructor:', error);
+    return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
   }
 };
 

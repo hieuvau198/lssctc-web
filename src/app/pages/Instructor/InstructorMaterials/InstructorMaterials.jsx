@@ -46,18 +46,18 @@ export default function InstructorMaterials() {
         <div>
           <Button.Group>
             <Button
-              type={activeTab === 'videos' ? 'primary' : 'default'}
-              icon={<VideoCameraOutlined />}
-              onClick={() => setActiveTab('videos')}
-            >
-              Videos ({videos.length})
-            </Button>
-            <Button
               type={activeTab === 'docs' ? 'primary' : 'default'}
               icon={<BookOutlined />}
               onClick={() => setActiveTab('docs')}
             >
-              Docs ({docs.length})
+              Docs
+            </Button>
+            <Button
+              type={activeTab === 'videos' ? 'primary' : 'default'}
+              icon={<VideoCameraOutlined />}
+              onClick={() => setActiveTab('videos')}
+            >
+              Videos
             </Button>
           </Button.Group>
         </div>
