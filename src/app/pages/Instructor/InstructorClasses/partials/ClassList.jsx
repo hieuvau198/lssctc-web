@@ -18,8 +18,9 @@ const ClassTableView = ({ classes, pageNumber, pageSize, total, onPageChange, on
     }
   };
 
-  const getStatusColor = (status) => (status === '1' ? 'green' : 'red');
-  const getStatusText = (status) => (status === '1' ? 'Active' : 'Inactive');
+  const isActiveStatus = (status) => String(status) === '1' || Number(status) === 1;
+  const getStatusColor = (status) => (isActiveStatus(status) ? 'green' : 'red');
+  const getStatusText = (status) => (isActiveStatus(status) ? 'Active' : 'Inactive');
 
   const tableColumns = [
     {

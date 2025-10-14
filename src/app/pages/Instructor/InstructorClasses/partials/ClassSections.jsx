@@ -3,19 +3,22 @@ import { useEffect, useMemo, useState } from 'react';
 import { getSectionPartitionsBySection, getSectionsByClass } from '../../../../apis/Instructor/InstructorSectionApi';
 
 const partitionTypeLabel = (typeId) => {
+  // Use colors distinct from section status (status uses green/red)
   switch (String(typeId)) {
     case '1':
       return { text: 'PDF', color: 'blue' };
     case '2':
       return { text: 'Video', color: 'purple' };
     case '3':
-      return { text: 'Quiz', color: 'green' };
+      return { text: 'Quiz', color: 'orange' };
     default:
       return { text: 'Other', color: 'default' };
   }
 };
 
-const getStatusText = (status) => (status === 1 || status === '1' ? 'Active' : 'Inactive');
+const isActiveStatus = (status) => String(status) === '1' || Number(status) === 1;
+const getStatusText = (status) => (isActiveStatus(status) ? 'Active' : 'Inactive');
+const getStatusColor = (status) => (isActiveStatus(status) ? 'green' : 'red');
 
 export default function ClassSections({ classData }) {
   const [sections, setSections] = useState([]);
@@ -55,19 +58,20 @@ export default function ClassSections({ classData }) {
 
   const columns = useMemo(() => [
     { title: '#', dataIndex: 'index', key: 'index', width: 50, render: (_, __, i) => i + 1 },
-    { title: 'Name', dataIndex: 'name', key: 'name', render: (t) => <div style={{ fontWeight: 600 }}>{t}</div> },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (s) => <Tag>{getStatusText(s)}</Tag> },
+    { title: 'Name', dataIndex: 'name', key: 'name', width: 300, render: (t) => <div style={{ fontWeight: 600 }}>{t}</div> },
+    { title: 'Status', dataIndex: 'status', key: 'status', width: 150, render: (s) => <Tag color={getStatusColor(s)}>{getStatusText(s)}</Tag> },
     { title: 'Duration (min)', dataIndex: 'durationMinutes', key: 'durationMinutes', width: 140 },
-  ], []);
-
+    { title: 'Actions', dataIndex: 'actions', key: 'actions', width: 120, render: (_, __, i) => i + 1 },
+  ], [partitionsMap]);
   const fetchPartitionsFor = async (sectionId) => {
-    setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: true, data: [], error: null } }));
+    setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: true, data: [], totalCount: 0, error: null } }));
     try {
       const res = await getSectionPartitionsBySection(sectionId, { page: 1, pageSize: 200 });
       const items = Array.isArray(res.items) ? res.items : [];
-      setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: false, data: items, error: null } }));
+      const total = typeof res.totalCount === 'number' ? res.totalCount : items.length;
+      setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: false, data: items, totalCount: total, error: null } }));
     } catch (err) {
-      setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: false, data: [], error: err?.message || 'Failed to load' } }));
+      setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: false, data: [], totalCount: 0, error: err?.message || 'Failed to load' } }));
     }
   };
 
@@ -83,20 +87,60 @@ export default function ClassSections({ classData }) {
   const expandedRowRender = (parent) => {
     const entry = partitionsMap[parent.id] || { loading: false, data: [], error: null };
 
+    // explicit widths so multiple subtables align the same
     const partCols = [
-      { title: 'Name', dataIndex: 'name', key: 'name' },
-      { title: 'Type', dataIndex: 'partitionTypeId', key: 'type', render: (id) => {
-        const p = partitionTypeLabel(id);
-        return <Tag color={p.color}>{p.text}</Tag>;
-      } },
+      { title: 'Name', dataIndex: 'name', key: 'name', width: 270, ellipsis: true },
+      {
+        title: 'Type', dataIndex: 'partitionTypeId', key: 'type', width: 100, render: (id) => {
+          const p = partitionTypeLabel(id);
+          return <Tag color={p.color}>{p.text}</Tag>;
+        }
+      },
+      { title: 'Actions', dataIndex: 'actions', key: 'actions', width: 100, render: (_, __, i) => i + 1 },
     ];
 
-    if (entry.loading) return (<div style={{ padding: 12 }}><Skeleton active paragraph={{ rows: 3 }} /></div>);
-    if (entry.error) return (<div style={{ padding: 12 }}><Empty description={entry.error} /></div>);
-    if (!entry.data || entry.data.length === 0) return (<div style={{ padding: 12 }}><Empty description="No partitions" /></div>);
+    // render right-aligned narrow subtable container
+    const containerStyle = { display: 'flex', justifyContent: 'flex-end', padding: 8 };
+    const innerStyle = { width: 890, maxWidth: '100%' };
+
+    if (entry.loading) return (
+      <div style={containerStyle}>
+        <div style={innerStyle}>
+          <Skeleton active paragraph={{ rows: 3 }} />
+        </div>
+      </div>
+    );
+
+    if (entry.error) return (
+      <div style={containerStyle}>
+        <div style={innerStyle}>
+          <Empty description={entry.error} />
+        </div>
+      </div>
+    );
+
+    if (!entry.data || entry.data.length === 0) return (
+      <div style={containerStyle}>
+        <div style={innerStyle}>
+          <Empty description="No partitions" />
+        </div>
+      </div>
+    );
 
     return (
-      <Table columns={partCols} dataSource={entry.data} rowKey={(r) => r.id || r.partitionId || r.title} pagination={false} />
+      <div style={containerStyle}>
+        <div style={innerStyle}>
+          <Table
+            columns={partCols}
+            dataSource={entry.data}
+            rowKey={(r) => r.id || r.partitionId || r.title}
+            pagination={false}
+            size="small"
+            tableLayout="fixed"
+            showHeader={false}
+          />
+        </div>
+      </div>
     );
   };
 
