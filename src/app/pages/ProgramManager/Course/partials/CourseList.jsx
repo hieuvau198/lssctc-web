@@ -133,23 +133,28 @@ const CourseTableView = ({
   ];
 
   return (
-    <Table
-      columns={tableColumns}
-      dataSource={courses}
-      rowKey="id"
-      scroll={{ x: 360, y: 360 }}
-      pagination={{
-        current: pageNumber,
-        pageSize: pageSize,
-        total: total,
-        onChange: onPageChange,
-        showSizeChanger: true,
-        pageSizeOptions: ["10", "20", "50"],
-        showTotal: (total, range) =>
-          `${range[0]}-${range[1]} of ${total} courses`,
-      }}
-      className="bg-white rounded-lg shadow"
-    />
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div style={{ height: 400 }} className="overflow-auto">
+        <Table
+          columns={tableColumns}
+          dataSource={courses}
+          rowKey="id"
+          scroll={{ x: 360 }}
+          pagination={false}
+        />
+      </div>
+      <div className="p-4 border-t border-gray-200 bg-white flex justify-center">
+        <Pagination
+          current={pageNumber}
+          pageSize={pageSize}
+          total={total}
+          onChange={onPageChange}
+          showSizeChanger
+          pageSizeOptions={["10", "20", "50"]}
+          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} courses`}
+        />
+      </div>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import { FilePdfOutlined } from '@ant-design/icons';
-import { Button, Card, Empty, Table } from 'antd';
+import { Button, Card, Empty, Table, Pagination } from 'antd';
 import { useState } from 'react';
 
 export default function DocMaterials({ materials = [] }) {
@@ -37,23 +37,26 @@ export default function DocMaterials({ materials = [] }) {
 
   return (
     <Card title={`Documents`} className="mb-4">
-      <Table
-        columns={columns}
-        dataSource={materials}
-        rowKey="id"
-        pagination={{
-          current: page,
-          pageSize,
-          total: materials.length,
-          showSizeChanger: true,
-          pageSizeOptions: ['5', '10', '20'],
-          onChange: (p, ps) => {
-            setPage(p);
-            setPageSize(ps);
-          },
-        }}
-        size="middle"
-      />
+      <div style={{ height: 370 }} className="overflow-auto">
+        <Table
+          columns={columns}
+          dataSource={materials}
+          rowKey="id"
+          pagination={false}
+          size="middle"
+        />
+      </div>
+      <div className="pt-4 border-t border-gray-200 flex justify-center">
+        <Pagination
+          current={page}
+          pageSize={pageSize}
+          total={materials.length}
+          showSizeChanger
+          pageSizeOptions={['5', '10', '20']}
+          onChange={(p, ps) => { setPage(p); setPageSize(ps); }}
+          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} documents`}
+        />
+      </div>
     </Card>
   );
 }

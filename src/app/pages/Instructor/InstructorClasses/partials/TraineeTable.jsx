@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Avatar, Input, Button, Skeleton } from 'antd';
+import { Table, Tag, Avatar, Input, Button, Skeleton, Pagination } from 'antd';
 import { UserOutlined, SearchOutlined } from '@ant-design/icons';
 import { getClassMembers } from '../../../../apis/Instructor/InstructorSectionApi';
 
@@ -364,27 +364,29 @@ export default function TraineeTable({ classId }) {
               </div>
             </div>
           </div>
-          <Table
-            columns={columns}
-            dataSource={filteredTrainees}
-            rowKey="id"
-            loading={false}
-            scroll={{ y: 280 }}
-            pagination={{
-              current: pageNumber,
-              pageSize: pageSize,
-              total: filteredTrainees.length,
-              onChange: (page, size) => {
-                setPageNumber(page);
-                setPageSize(size);
-              },
-              showSizeChanger: true,
-              pageSizeOptions: ['10', '20', '50'],
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} trainees`,
-            }}
-            size="middle"
-          />
+          <div>
+            <div style={{ height: 360 }} className="p-4 overflow-auto">
+              <Table
+                columns={columns}
+                dataSource={filteredTrainees}
+                rowKey="id"
+                loading={false}
+                pagination={false}
+                size="middle"
+              />
+            </div>
+            <div className="p-4 border-t border-gray-200 bg-white flex justify-center">
+              <Pagination
+                current={pageNumber}
+                pageSize={pageSize}
+                total={filteredTrainees.length}
+                onChange={(page, size) => { setPageNumber(page); setPageSize(size); }}
+                showSizeChanger
+                pageSizeOptions={['10', '20', '50']}
+                showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} trainees`}
+              />
+            </div>
+          </div>
         </>
       )}
     </>

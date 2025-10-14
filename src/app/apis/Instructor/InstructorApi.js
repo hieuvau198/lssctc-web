@@ -18,7 +18,7 @@ const mapClassFromApi = (item) => ({
   endDate: item.endDate,
   capacity: item.capacity,
   programCourseId: item.programCourseId,
-  classCode: item.classCode?.name || null,
+  classCode: item.classCode || null,
   description: item.description,
   status: item.status,
 });

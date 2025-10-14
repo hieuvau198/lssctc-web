@@ -1,5 +1,5 @@
-import React from 'react';
-import { Table, Tag } from 'antd';
+import React, { useState } from 'react';
+import { Table, Tag, Pagination } from 'antd';
 
 const COLUMNS = [
   { title: '#', dataIndex: 'idx', width: 60 },
@@ -26,15 +26,32 @@ const MOCK_DATA = Array.from({ length: 6 }).map((_, i) => ({
 }));
 
 export default function SimulatorManagerTable() {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
   const columns = COLUMNS;
   const data = MOCK_DATA;
 
   return (
-    <Table
-      columns={columns}
-      dataSource={data}
-      pagination={{ pageSize: 5 }}
-      rowKey="key"
-    />
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div style={{ height: 300 }} className="overflow-auto">
+        <Table
+          columns={columns}
+          dataSource={data}
+          pagination={false}
+          rowKey="key"
+        />
+      </div>
+      <div className="p-4 border-t bg-white flex justify-center">
+        <Pagination
+          current={page}
+          pageSize={pageSize}
+          total={data.length}
+          onChange={(p, s) => { setPage(p); setPageSize(s); }}
+          showSizeChanger
+          pageSizeOptions={["5", "10", "20"]}
+          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} managers`}
+        />
+      </div>
+    </div>
   );
 }
