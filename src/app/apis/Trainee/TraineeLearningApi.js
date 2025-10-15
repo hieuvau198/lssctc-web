@@ -70,13 +70,13 @@ const mapSectionQuiz = (item) => ({
 
 // Get all learning classes for a trainee
 export const getLearningClassesByTraineeId = async (traineeId) => {
-  const response = await api.get(`/Learnings/classes/trainee/${traineeId}`);
+  const response = await api.get(`/LearningsClasses/classes/trainee/${traineeId}`);
   return response.data;
 };
 
 // Get paged learning classes for a trainee
 export const getPagedLearningClassesByTraineeId = async (traineeId, pageIndex = 1, pageSize = 10) => {
-  const response = await api.get(`/Learnings/classes/trainee/${traineeId}/paged`, {
+  const response = await api.get(`/LearningsClasses/classes/trainee/${traineeId}/paged`, {
     params: { pageIndex, pageSize },
   });
   return response.data;
@@ -84,7 +84,7 @@ export const getPagedLearningClassesByTraineeId = async (traineeId, pageIndex = 
 
 // Get a specific learning class for a trainee
 export const getLearningClassByIdAndTraineeId = async (classId, traineeId) => {
-  const response = await api.get(`/Learnings/class/${classId}/trainee/${traineeId}`);
+  const response = await api.get(`/LearningsClasses/class/${classId}/trainee/${traineeId}`);
   return response.data;
 };
 
@@ -94,17 +94,17 @@ export const getLearningClassByIdAndTraineeId = async (classId, traineeId) => {
 
 // get learning sections by class id and trainee id
 export const getLearningSectionsByClassIdAndTraineeId = async (classId, traineeId) => {
-  const response = await api.get(`/Learnings/sections/class/${classId}/trainee/${traineeId}`);
+  const response = await api.get(`/LearningsSections/sections/class/${classId}/trainee/${traineeId}`);
   return response.data.map(mapSection);
 };
 
 export const getLearningSectionByIdAndTraineeId = async (sectionId, traineeId) => {
-  const response = await api.get(`/Learnings/section/${sectionId}/trainee/${traineeId}`);
+  const response = await api.get(`/LearningsSections/section/${sectionId}/trainee/${traineeId}`);
   return mapSection(response.data);
 };
 
 export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, traineeId, pageIndex = 1, pageSize = 10) => {
-  const response = await api.get(`/Learnings/sections/class/${classId}/trainee/${traineeId}/paged`, {
+  const response = await api.get(`/LearningsSections/sections/class/${classId}/trainee/${traineeId}/paged`, {
     params: { pageIndex, pageSize },
   });
 
@@ -124,17 +124,17 @@ export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, tra
 //#region Learning Partitions APIs
 
 export const getLearningPartitionsBySectionIdAndTraineeId = async (sectionId, traineeId) => {
-  const response = await api.get(`/Learnings/partitions/section/${sectionId}/trainee/${traineeId}`);
+  const response = await api.get(`/LearningsPartitions/partitions/section/${sectionId}/trainee/${traineeId}`);
   return response.data.map(mapPartition);
 };
 
 export const getLearningPartitionByIdAndTraineeId = async (partitionId, traineeId) => {
-  const response = await api.get(`/Learnings/partition/${partitionId}/trainee/${traineeId}`);
+  const response = await api.get(`/LearningsPartitions/partition/${partitionId}/trainee/${traineeId}`);
   return mapPartition(response.data);
 };
 
 export const getPagedLearningPartitionsBySectionIdAndTraineeId = async (sectionId, traineeId, pageIndex = 1, pageSize = 10) => {
-  const response = await api.get(`/Learnings/partitions/section/${sectionId}/trainee/${traineeId}/paged`, {
+  const response = await api.get(`/LearningsPartitions/partitions/section/${sectionId}/trainee/${traineeId}/paged`, {
     params: { pageIndex, pageSize },
   });
 
@@ -154,14 +154,14 @@ export const getPagedLearningPartitionsBySectionIdAndTraineeId = async (sectionI
 //#region Learning Section Mateirals APIs
 // Get a section material by partitionId and traineeId
 export const getLearningSectionMaterial = async (partitionId, traineeId) => {
-  const response = await api.get(`/Learnings/sectionmaterials/partition/${partitionId}/trainee/${traineeId}`);
+  const response = await api.get(`/LearningsMaterials/sectionmaterials/partition/${partitionId}/trainee/${traineeId}`);
   return mapSectionMaterial(response.data);
 };
 
 // Mark a section material as completed
 export const markSectionMaterialAsCompleted = async (partitionId, traineeId) => {
   try {
-    const response = await api.put(`/Learnings/sectionmaterials/partition/${partitionId}/trainee/${traineeId}/complete`);
+    const response = await api.put(`/LearningsMaterials/sectionmaterials/partition/${partitionId}/trainee/${traineeId}/complete`);
     return response.status === 200;
   } catch (error) {
     console.error("Error marking material as completed:", error);
@@ -172,7 +172,7 @@ export const markSectionMaterialAsCompleted = async (partitionId, traineeId) => 
 // Mark a section material as not completed
 export const markSectionMaterialAsNotCompleted = async (partitionId, traineeId) => {
   try {
-    const response = await api.put(`/Learnings/sectionmaterials/partition/${partitionId}/trainee/${traineeId}/incomplete`);
+    const response = await api.put(`/LearningsMaterials/sectionmaterials/partition/${partitionId}/trainee/${traineeId}/incomplete`);
     return response.status === 200;
   } catch (error) {
     console.error("Error marking material as not completed:", error);
@@ -184,7 +184,7 @@ export const markSectionMaterialAsNotCompleted = async (partitionId, traineeId) 
 //#region Learning Section Quizzes APIs
 // Get a section quiz by partitionId and traineeId
 export const getLearningSectionQuiz = async (partitionId, traineeId) => {
-  const response = await api.get(`/Learnings/sectionquizzes/partition/${partitionId}/trainee/${traineeId}`);
+  const response = await api.get(`/LearningsQuizzes/sectionquizzes/partition/${partitionId}/trainee/${traineeId}`);
   return mapSectionQuiz(response.data);
 };
 
