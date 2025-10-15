@@ -4,7 +4,7 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { fetchClasses } from "../../../apis/ProgramManager/ClassesApi";
+import { getInstructorClasses } from "../../../apis/Instructor/InstructorApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import slugify from "../../../lib/slugify";
 import ClassFilters from "./partials/ClassFilters";
@@ -26,21 +26,32 @@ export default function InstructorClasses() {
 
   useEffect(() => {
     let cancelled = false;
+    const instructorId = 2; // TODO: replace with real instructor id from auth/context
     setLoading(true);
-    fetchClasses({ page: pageNumber, pageSize })
-      .then((data) => {
+    (async () => {
+      try {
+        const res = await getInstructorClasses(instructorId, { page: pageNumber, pageSize });
         if (cancelled) return;
-        setClasses(Array.isArray(data?.items) ? data.items : []);
-        setTotal(Number(data?.totalCount) || 0);
-      })
-      .catch((err) => {
+        // res may be paged response with items + totalCount
+        if (res && Array.isArray(res.items)) {
+          setClasses(res.items);
+          setTotal(Number(res.totalCount) || res.items.length || 0);
+        } else if (Array.isArray(res)) {
+          setClasses(res);
+          setTotal(res.length || 0);
+        } else {
+          setClasses([]);
+          setTotal(0);
+        }
+      } catch (err) {
         if (cancelled) return;
         setError(err?.message || "Failed to load classes");
-      })
-      .finally(() => {
+      } finally {
         if (cancelled) return;
         setLoading(false);
-      });
+      }
+    })();
+
     return () => {
       cancelled = true;
     };

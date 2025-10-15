@@ -14,16 +14,13 @@ const ClassCard = ({ classItem, onView }) => {
     });
   };
 
-  const getStatusColor = (status) => {
-    return status === '1' ? 'green' : 'red';
-  };
-
-  const getStatusText = (status) => {
-    return status === '1' ? 'Active' : 'Inactive';
-  };
+  const isActiveStatus = (status) => String(status) === '1' || Number(status) === 1;
+  const getStatusColor = (status) => (isActiveStatus(status) ? 'green' : 'red');
+  const getStatusText = (status) => (isActiveStatus(status) ? 'Active' : 'Inactive');
 
   const handleViewDetail = () => {
-    const slug = slugify(classItem.name);
+    const title = classItem?.name || classItem?.className || `class-${classItem?.id ?? classItem?.classId ?? ''}`;
+    const slug = slugify(title);
     navigate(`/instructor/classes/${slug}`);
   };
 
@@ -63,7 +60,7 @@ const ClassCard = ({ classItem, onView }) => {
 
         <div className="flex items-center justify-between mb-4 h-8">
           <div className="text-base text-blue-600 font-medium truncate max-w-[60%]">
-            {classItem.classCode.name}
+            {classItem.classCode?.name ?? classItem.classCode ?? '-'}
           </div>
           <Tag color={getStatusColor(classItem.status)} className="m-0 flex-shrink-0 text-sm px-3 py-1">
             {getStatusText(classItem.status)}

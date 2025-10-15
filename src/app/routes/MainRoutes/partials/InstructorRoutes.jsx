@@ -7,6 +7,7 @@ import InstructorMaterials from "../../../pages/Instructor/InstructorMaterials/I
 import InstructorQuizzes from "../../../pages/Instructor/InstructorQuizzes/InstructorQuizzes";
 import InstructorPractices from "../../../pages/Instructor/InstructorPractices/InstructorPractices";
 import InstructorProfile from "../../../pages/Instructor/InstructorProfile/InstructorProfile";
+import NotFound from "../../../layouts/NotFound";
 
 export default function InstructorRoutes() {
   return (
@@ -21,6 +22,7 @@ export default function InstructorRoutes() {
         <Route path="/practices" element={<InstructorPractices />} />
         <Route path="/profile" element={<InstructorProfile />} />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

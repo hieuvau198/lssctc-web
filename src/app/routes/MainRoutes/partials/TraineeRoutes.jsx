@@ -12,25 +12,27 @@ import Quiz from '../../../pages/Trainee/Quiz/Quiz'
 import SimulationPlatform from '../../../pages/Trainee/SimulationPlatform/SimulationPlatform'
 import MyClasses from '../../../pages/Trainee/MyClasses/MyClasses'
 import MyClassDetail from '../../../pages/Trainee/MyClasses/MyClassDetail'
+import NotFound from '../../../layouts/NotFound'
 
 export default function TraineeRoutes() {
   return (
     <Routes>
-        <Route element={<TraineeLayout />}>
-          <Route index element={<Home />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/course" element={<Course />} />
-          <Route path="/course/:id" element={<CourseDetail />} />
-          <Route path="/program" element={<Program />} />
-          <Route path="/program/:id" element={<ProgramDetail />} />
-          <Route path="/simulator" element={<SimulationPlatform />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/certificate" element={<CertificateView />} />
-          <Route path="/my-classes" element={<MyClasses />} />
-          <Route path="/my-classes/:id" element={<MyClassDetail />} />
-        </Route>
+      <Route element={<TraineeLayout />}>
+        <Route index element={<Home />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/quiz" element={<Quiz />} />
+        <Route path="/course" element={<Course />} />
+        <Route path="/course/:id" element={<CourseDetail />} />
+        <Route path="/program" element={<Program />} />
+        <Route path="/program/:id" element={<ProgramDetail />} />
+        <Route path="/simulator" element={<SimulationPlatform />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/certificate" element={<CertificateView />} />
+        <Route path="/my-classes" element={<MyClasses />} />
+        <Route path="/my-classes/:id" element={<MyClassDetail />} />
+      </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }

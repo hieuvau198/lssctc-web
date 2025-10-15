@@ -45,24 +45,24 @@ const Courses = () => {
   const [total, setTotal] = useState(0);
   const [deletingId, setDeletingId] = useState(null);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
-  
+
   // Filter states
   const [categoryId, setCategoryId] = useState(undefined);
   const [levelId, setLevelId] = useState(undefined);
   const [isActive, setIsActive] = useState(undefined);
-  
+
   // Drawer states
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState(null); // 'view' | 'create' | 'edit'
   const [currentCourse, setCurrentCourse] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
-  
+
   // Metadata
   const [categories, setCategories] = useState([]);
   const [levels, setLevels] = useState([]);
   const [metaLoading, setMetaLoading] = useState(false);
-  
+
   // Forms
   const [createForm] = Form.useForm();
   const [editForm] = Form.useForm();
@@ -319,81 +319,81 @@ const Courses = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Course Management</h2>
       </div>
 
       {/* Search and Controls */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <Input.Search
-          placeholder="Search courses..."
-          allowClear
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onSearch={handleSearch}
-          className="w-full md:w-80"
-        />
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="col-span-3">
+            <Input.Search
+              placeholder="Search courses..."
+              allowClear
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onSearch={handleSearch}
+              className="w-full md:w-80"
+            />
+          </div>
+          <div className="col-span-2 flex flex-wrap gap-2">
+            <Select
+              placeholder="All Categories"
+              allowClear
+              style={{ width: 150 }}
+              value={categoryId}
+              onChange={setCategoryId}
+              loading={metaLoading}
+            >
+              {categories.map((category) => (
+                <Option key={category.id} value={category.id}>
+                  {category.name}
+                </Option>
+              ))}
+            </Select>
+            <Select
+              placeholder="All Levels"
+              allowClear
+              style={{ width: 120 }}
+              value={levelId}
+              onChange={setLevelId}
+              loading={metaLoading}
+            >
+              {levels.map((level) => (
+                <Option key={level.id} value={level.id}>
+                  {level.name}
+                </Option>
+              ))}
+            </Select>
+            <Select
+              placeholder="All Status"
+              allowClear
+              style={{ width: 100 }}
+              value={isActive}
+              onChange={setIsActive}
+            >
+              <Option value={true}>Active</Option>
+              <Option value={false}>Inactive</Option>
+            </Select>
+          </div>
+        </div>
         <div className="flex gap-2">
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             Add Course
           </Button>
-          <ViewModeToggle 
-            viewMode={viewMode} 
-            onViewModeChange={setViewMode} 
+          <ViewModeToggle
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
           />
         </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        <Select
-          placeholder="All Categories"
-          allowClear
-          style={{ width: 150 }}
-          value={categoryId}
-          onChange={setCategoryId}
-          loading={metaLoading}
-        >
-          {categories.map((category) => (
-            <Option key={category.id} value={category.id}>
-              {category.name}
-            </Option>
-          ))}
-        </Select>
-
-        <Select
-          placeholder="All Levels"
-          allowClear
-          style={{ width: 120 }}
-          value={levelId}
-          onChange={setLevelId}
-          loading={metaLoading}
-        >
-          {levels.map((level) => (
-            <Option key={level.id} value={level.id}>
-              {level.name}
-            </Option>
-          ))}
-        </Select>
-
-        <Select
-          placeholder="All Status"
-          allowClear
-          style={{ width: 100 }}
-          value={isActive}
-          onChange={setIsActive}
-        >
-          <Option value={true}>Active</Option>
-          <Option value={false}>Inactive</Option>
-        </Select>
       </div>
 
       {/* Content */}
       {courses.length === 0 ? (
         <Empty description="No courses found." className="mt-16" />
       ) : (
-        <CourseList 
-          courses={courses} 
+        <CourseList
+          courses={courses}
           viewMode={viewMode}
           pageNumber={pageNumber}
           pageSize={pageSize}
@@ -415,8 +415,8 @@ const Courses = () => {
           drawerMode === 'create'
             ? 'Create Course'
             : drawerMode === 'edit'
-            ? 'Edit Course'
-            : currentCourse?.name || 'Course Detail'
+              ? 'Edit Course'
+              : currentCourse?.name || 'Course Detail'
         }
         extra={
           drawerMode === 'view' && currentCourse ? (

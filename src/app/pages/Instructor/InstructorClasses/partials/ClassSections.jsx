@@ -1,129 +1,280 @@
-import { Card, Skeleton, Table, Tag } from 'antd';
-import { useState } from 'react';
-import { getSectionPartitions, mockSections } from '../../../../mock/instructorSections';
+import { Card, Empty, Skeleton, Table, Tag, Pagination, Button, Modal, Input, Select, Tooltip } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { getSectionPartitionsBySection, getSectionsByClass } from '../../../../apis/Instructor/InstructorSectionApi';
 
-const partitionTypeLabel = (id) => {
-  switch (id) {
-    case 1:
-      return 'PDF';
-    case 2:
-      return 'Video';
+const partitionTypeLabel = (typeId) => {
+  // Use colors distinct from section status (status uses green/red)
+  switch (String(typeId)) {
+    case '1':
+      return { text: 'PDF', color: 'blue' };
+    case '2':
+      return { text: 'Video', color: 'purple' };
+    case '3':
+      return { text: 'Quiz', color: 'orange' };
     default:
-      return 'Other';
+      return { text: 'Other', color: 'default' };
   }
 };
 
-const getStatusText = (status) => (status === 1 || status === '1' ? 'Active' : 'Inactive');
+const isActiveStatus = (status) => String(status) === '1' || Number(status) === 1;
+const getStatusText = (status) => (isActiveStatus(status) ? 'Active' : 'Inactive');
+const getStatusColor = (status) => (isActiveStatus(status) ? 'green' : 'red');
 
-const ClassSections = ({ classData }) => {
-  const provided = Array.isArray(classData?.sections) ? classData.sections : [];
-  const sections = provided.length ? provided : mockSections;
+export default function ClassSections({ classData }) {
+  const navigate = useNavigate();
+  const [sections, setSections] = useState([]);
+  const [loadingSections, setLoadingSections] = useState(false);
+  const [sectionsError, setSectionsError] = useState(null);
+  const [partitionsMap, setPartitionsMap] = useState({}); // id -> { loading, data, error }
+  const [addModal, setAddModal] = useState({ visible: false, sectionId: null });
+  const [newPartition, setNewPartition] = useState({ name: '', partitionTypeId: '1' });
 
-  const [partitionsMap, setPartitionsMap] = useState({});
-  const [loadingMap, setLoadingMap] = useState({});
+  const classId = classData?.classId ?? classData?.id ?? classData?.classID ?? null;
 
-//   if (sections.length === 0) {
-//     return (
-//       <div className="mb-6 rounded-2xl shadow-xl">
-//         <Card title="Sections">
-//           <Empty description="No sections found." />
-//         </Card>
-//       </div>
-//     );
-//   }
+  useEffect(() => {
+    if (!classId) {
+      setSections([]);
+      return;
+    }
 
-  const columns = [
+    let mounted = true;
+    const fetchSections = async () => {
+      setLoadingSections(true);
+      setSectionsError(null);
+      try {
+        const res = await getSectionsByClass(classId, { page: 1, pageSize: 1000 });
+        if (!mounted) return;
+        setSections(Array.isArray(res.items) ? res.items : []);
+      } catch (err) {
+        if (!mounted) return;
+        setSectionsError(err?.message || 'Failed to load sections');
+        setSections([]);
+      } finally {
+        if (!mounted) return;
+        setLoadingSections(false);
+      }
+    };
+
+    fetchSections();
+    return () => { mounted = false; };
+  }, [classId]);
+
+  const columns = useMemo(() => [
     { title: '#', dataIndex: 'index', key: 'index', width: 50, render: (_, __, i) => i + 1 },
-    { title: 'Name', dataIndex: 'name', key: 'name', ellipsis: true },
-    { title: 'Order', dataIndex: 'order', key: 'order', width: 100 },
+    { title: 'Name', dataIndex: 'name', key: 'name', width: 300, render: (t) => <div style={{ fontWeight: 600 }}>{t}</div> },
+    { title: 'Status', dataIndex: 'status', key: 'status', width: 150, render: (s) => <Tag color={getStatusColor(s)}>{getStatusText(s)}</Tag> },
     { title: 'Duration (min)', dataIndex: 'durationMinutes', key: 'durationMinutes', width: 140 },
-    { title: 'Status', dataIndex: 'status', key: 'status', width: 120, render: (s) => <Tag>{getStatusText(s)}</Tag> },
-  ];
-
-  const expandedRowRender = (section) => {
-    const cached = partitionsMap[section.id];
-    const loading = loadingMap[section.id];
-
-    const partitions = Array.isArray(section.partitions) && section.partitions.length
-      ? section.partitions
-      : Array.isArray(cached)
-      ? cached
-      : [];
-    const partCols = [
-      // { title: '#', dataIndex: 'index', key: 'index', width: 50, render: (_, __, i) => i + 1 },
-      { title: 'Name', dataIndex: 'name', key: 'name' },
-      { title: 'Type', dataIndex: 'partitionTypeId', key: 'partitionTypeId', width: 120, render: (t) => partitionTypeLabel(t) },
-      // { title: 'Description', dataIndex: 'description', key: 'description' },
-    ];
-
-    return (
+    { title: 'Actions', dataIndex: 'actions', key: 'actions', width: 140, render: (_, record) => (
       <div>
-        {loading ? (
-          <div className="py-4">
-            <Skeleton active paragraph={{ rows: 3 }} />
-          </div>
-        ) : (
-          <Table
-            columns={partCols}
-            dataSource={partitions}
-            rowKey={(r) => r.id}
-            pagination={false}
+        <Tooltip title="Add materials">
+          <Button
             size="small"
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              const sectionId = record?.id || record?.sectionId;
+              navigate(`/instructor/materials?mode=add&sectionId=${sectionId ?? ''}&classId=${classId ?? ''}`);
+            }}
           />
-        )}
+        </Tooltip>
       </div>
-    );
+    ) },
+  ], [partitionsMap]);
+  const fetchPartitionsFor = async (sectionId) => {
+    setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: true, data: [], totalCount: 0, error: null } }));
+    try {
+      const res = await getSectionPartitionsBySection(sectionId, { page: 1, pageSize: 200 });
+      const items = Array.isArray(res.items) ? res.items : [];
+      const total = typeof res.totalCount === 'number' ? res.totalCount : items.length;
+      setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: false, data: items, totalCount: total, error: null } }));
+    } catch (err) {
+      setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: false, data: [], totalCount: 0, error: err?.message || 'Failed to load' } }));
+    }
   };
 
-  const handleExpand = async (expanded, record) => {
-    if (expanded) {
-      if ((Array.isArray(record.partitions) && record.partitions.length) || partitionsMap[record.id]) return;
-      setLoadingMap((s) => ({ ...s, [record.id]: true }));
-      try {
-        const parts = await getSectionPartitions(record.id);
-        setPartitionsMap((s) => ({ ...s, [record.id]: parts }));
-      } catch (err) {
-        setPartitionsMap((s) => ({ ...s, [record.id]: [] }));
-      } finally {
-        setLoadingMap((s) => ({ ...s, [record.id]: false }));
+  const makeTempId = () => `temp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+  const handleAddPartition = async () => {
+    const sectionId = addModal.sectionId;
+    if (!sectionId) return;
+    const temp = {
+      id: makeTempId(),
+      name: newPartition.name || 'Untitled',
+      partitionTypeId: newPartition.partitionTypeId,
+      isTemp: true,
+    };
+
+    // optimistic update
+    setPartitionsMap((m) => {
+      const prev = m[sectionId] || { loading: false, data: [], totalCount: 0, error: null };
+      return {
+        ...m,
+        [sectionId]: {
+          ...prev,
+          data: [temp, ...(prev.data || [])],
+          totalCount: (prev.totalCount || 0) + 1,
+        }
+      };
+    });
+
+    // close modal and reset form
+    setAddModal({ visible: false, sectionId: null });
+    setNewPartition({ name: '', partitionTypeId: '1' });
+
+    // TODO: call API to create partition on server and replace temp id with real one when returned
+  };
+
+  const handleExpand = (expanded, record) => {
+    if (expanded && record && record.id) {
+      const entry = partitionsMap[record.id];
+      if (!entry || (!entry.loading && entry.data.length === 0 && !entry.error)) {
+        fetchPartitionsFor(record.id);
       }
     }
   };
 
-  // Pagination state for outer sections table
+  const expandedRowRender = (parent) => {
+    const entry = partitionsMap[parent.id] || { loading: false, data: [], error: null };
+
+    // explicit widths so multiple subtables align the same
+    const partCols = [
+      { title: 'Name', dataIndex: 'name', key: 'name', width: 270, ellipsis: true },
+      {
+        title: 'Type', dataIndex: 'partitionTypeId', key: 'type', width: 100, render: (id) => {
+          const p = partitionTypeLabel(id);
+          return <Tag color={p.color}>{p.text}</Tag>;
+        }
+      },
+      { title: 'Actions', dataIndex: 'actions', key: 'actions', width: 100, render: (_, __, i) => i + 1 },
+    ];
+
+    // render right-aligned narrow subtable container
+    const containerStyle = { display: 'flex', justifyContent: 'flex-end', padding: 8 };
+    const innerStyle = { width: 890, maxWidth: '100%' };
+
+    if (entry.loading) return (
+      <div style={containerStyle}>
+        <div style={innerStyle}>
+          <Skeleton active paragraph={{ rows: 3 }} />
+        </div>
+      </div>
+    );
+
+    if (entry.error) return (
+      <div style={containerStyle}>
+        <div style={innerStyle}>
+          <Empty description={entry.error} />
+        </div>
+      </div>
+    );
+
+    if (!entry.data || entry.data.length === 0) return (
+      <div style={containerStyle}>
+        <div style={innerStyle}>
+          <Empty description="No partitions" />
+        </div>
+      </div>
+    );
+
+    return (
+      <div style={containerStyle}>
+        <div style={innerStyle}>
+          <Table
+            columns={partCols}
+            dataSource={entry.data}
+            rowKey={(r) => r.id || r.partitionId || r.title}
+            pagination={false}
+            size="small"
+            tableLayout="fixed"
+            showHeader={false}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  // pagination state
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const total = sections.length;
   const start = (pageNumber - 1) * pageSize;
-  const end = start + pageSize;
-  const pageItems = sections.slice(start, end);
+  const pageItems = sections.slice(start, start + pageSize);
+
+  const renderSkeletonTable = () => {
+    const skeletonColumns = columns.map((col) => ({
+      ...col,
+      render: () => {
+        if (col.dataIndex === 'partitionsCount') return <Skeleton.Input active size="small" style={{ width: 60 }} />;
+        if (col.dataIndex === 'status') return <Skeleton.Input active size="small" style={{ width: 80 }} />;
+        return <Skeleton.Input active size="small" style={{ width: '80%' }} />;
+      }
+    }));
+
+    const skeletonData = new Array(5).fill(null).map((_, i) => ({ key: `s-${i}`, title: '', description: '', partitionsCount: 0 }));
+
+    return (
+      <Card>
+        <Table columns={skeletonColumns} dataSource={skeletonData} pagination={false} rowKey={(r) => r.key} size="middle" />
+      </Card>
+    );
+  };
+
+  if (!classId) return (<Card><Empty description="Select a class to view sections" /></Card>);
+  if (loadingSections) return renderSkeletonTable();
+  if (sectionsError) return (<Card><Empty description={sectionsError} /></Card>);
+  if (!sections || sections.length === 0) return (<Card><Empty description="No sections found" /></Card>);
+
+  const tableData = sections.map((s) => ({ ...s, partitionsCount: s.partitionsCount ?? (s.partitions ? s.partitions.length : 0) }));
 
   return (
-    <div className="mb-6 rounded-2xl shadow-xl">
-      <Card title={`Sections`}>
+    <Card className='shadow-xl'>
+      <div style={{ height: 440 }} className="overflow-auto">
         <Table
           columns={columns}
-          dataSource={pageItems}
-          rowKey={(r) => r.id}
+          dataSource={tableData.slice((pageNumber - 1) * pageSize, (pageNumber - 1) * pageSize + pageSize)}
+          rowKey={(r) => r.id || r.sectionId || r.title}
           expandable={{ expandedRowRender, onExpand: handleExpand }}
-          pagination={{
-            current: pageNumber,
-            pageSize,
-            total,
-            showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '20'],
-            onChange: (page, size) => {
-              setPageNumber(page);
-              setPageSize(size);
-            },
-          }}
+          pagination={false}
           size="middle"
-          scroll={{ y: 320 }}
         />
-      </Card>
-    </div>
+      </div>
+      <Modal
+        title="Add Partition"
+        open={addModal.visible}
+        onOk={handleAddPartition}
+        onCancel={() => { setAddModal({ visible: false, sectionId: null }); setNewPartition({ name: '', partitionTypeId: '1' }); }}
+        okText="Add"
+      >
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <Input value={newPartition.name} onChange={(e) => setNewPartition((p) => ({ ...p, name: e.target.value }))} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Type</label>
+            <Select value={newPartition.partitionTypeId} onChange={(v) => setNewPartition((p) => ({ ...p, partitionTypeId: v }))} style={{ width: '100%' }}>
+              <Select.Option value="1">PDF</Select.Option>
+              <Select.Option value="2">Video</Select.Option>
+              <Select.Option value="3">Quiz</Select.Option>
+              <Select.Option value="0">Other</Select.Option>
+            </Select>
+          </div>
+        </div>
+      </Modal>
+      <div className="pt-4 border-t border-gray-200 flex justify-center">
+        <Pagination
+          current={pageNumber}
+          pageSize={pageSize}
+          total={total}
+          onChange={(p, s) => { setPageNumber(p); setPageSize(s); }}
+          showSizeChanger
+          pageSizeOptions={['5', '10', '20']}
+          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} sections`}
+        />
+      </div>
+    </Card>
   );
-};
-
-export default ClassSections;
+}

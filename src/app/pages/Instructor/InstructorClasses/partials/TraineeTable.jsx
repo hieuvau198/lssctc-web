@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Avatar, Input, Button, Skeleton } from 'antd';
+import { Table, Tag, Avatar, Input, Button, Skeleton, Pagination } from 'antd';
 import { UserOutlined, SearchOutlined } from '@ant-design/icons';
+import { getClassMembers } from '../../../../apis/Instructor/InstructorSectionApi';
 
 // Mock data for trainees
 const mockTrainees = [
@@ -103,14 +104,48 @@ export default function TraineeTable({ classId }) {
   const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
-    // Simulate API call
     const fetchTrainees = async () => {
       setLoading(true);
-      // Simulate delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setTrainees(mockTrainees);
-      setFilteredTrainees(mockTrainees);
-      setLoading(false);
+      try {
+        if (!classId) {
+          // fallback to mock data when no classId provided
+          setTrainees(mockTrainees);
+          setFilteredTrainees(mockTrainees);
+          return;
+        }
+        const res = await getClassMembers(classId, { page: 1, pageSize: 1000 });
+        const items = Array.isArray(res.items) ? res.items : [];
+        // Map API member items to the table row shape expected by this component
+        const mapped = items.map((m) => ({
+          id: m.trainee?.id || m.traineeId || m.id,
+          studentId: m.trainee?.traineeCode || `TR${String(m.traineeId || m.id).padStart(3, '0')}`,
+          fullName: m.trainee?.fullName || 'Unknown',
+          email: m.trainee?.email || '-',
+          phone: m.trainee?.phone || '-',
+          enrollmentDate: m.assignedDate || m.trainee?.enrollmentDate || null,
+          status: (() => {
+            // Map numeric/string status codes to semantic statuses.
+            // Assumption: '1' => enrolled, '2' => completed
+            if (m.status === 1 || m.status === '1') return 'enrolled';
+            if (m.status === 2 || m.status === '2') return 'completed';
+            return m.status || 'unknown';
+          })(),
+          progress: (Array.isArray(m.trainingProgresses) && m.trainingProgresses.length)
+            ? Math.round((m.trainingProgresses[0].progress || 0))
+            : 0,
+          avatar: null,
+        }));
+
+        setTrainees(mapped);
+        setFilteredTrainees(mapped);
+      } catch (err) {
+        // on error, keep mock data
+        console.error('Failed to fetch class members:', err);
+        setTrainees(mockTrainees);
+        setFilteredTrainees(mockTrainees);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchTrainees();
@@ -329,27 +364,29 @@ export default function TraineeTable({ classId }) {
               </div>
             </div>
           </div>
-          <Table
-            columns={columns}
-            dataSource={filteredTrainees}
-            rowKey="id"
-            loading={false}
-            scroll={{ y: 280 }}
-            pagination={{
-              current: pageNumber,
-              pageSize: pageSize,
-              total: filteredTrainees.length,
-              onChange: (page, size) => {
-                setPageNumber(page);
-                setPageSize(size);
-              },
-              showSizeChanger: true,
-              pageSizeOptions: ['10', '20', '50'],
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} trainees`,
-            }}
-            size="middle"
-          />
+          <div>
+            <div style={{ height: 350 }} className="p-4 overflow-auto">
+              <Table
+                columns={columns}
+                dataSource={filteredTrainees}
+                rowKey="id"
+                loading={false}
+                pagination={false}
+                size="middle"
+              />
+            </div>
+            <div className="p-4 border-t border-gray-200 bg-white flex justify-center">
+              <Pagination
+                current={pageNumber}
+                pageSize={pageSize}
+                total={filteredTrainees.length}
+                onChange={(page, size) => { setPageNumber(page); setPageSize(size); }}
+                showSizeChanger
+                pageSizeOptions={['10', '20', '50']}
+                showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} trainees`}
+              />
+            </div>
+          </div>
         </>
       )}
     </>
