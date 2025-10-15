@@ -46,7 +46,7 @@ export default function Header() {
     };
   }, []);
 
-  const linkBase = "px-3 py-2 text-sm font-medium transition-colors";
+  const linkBase = "px-3 text-sm font-medium transition-colors";
   const getLinkClass = ({ isActive }) =>
     [
       linkBase,
@@ -115,8 +115,8 @@ export default function Header() {
           </div>
 
           {/* Center Nav */}
-          <nav className="hidden md:flex items-center justify-center flex-1">
-            <ul className="flex items-center gap-1">
+          <nav className="hidden md:flex items-center justify-center  flex-1">
+            <ul className="flex pt-4 gap-1">
               <li>
                 <NavLink to="/" className={getLinkClass}>
                   Home

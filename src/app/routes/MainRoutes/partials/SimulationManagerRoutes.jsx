@@ -6,6 +6,7 @@ import PracticeStepDetail from '../../../pages/SimManager/Practices/PracticeDeta
 import Practices from '../../../pages/SimManager/Practices/Practices'
 import SimSettings from '../../../pages/SimManager/Settings/Settings'
 import SimulatorConfigs from '../../../pages/SimManager/SimulatorConfigs/SimulatorConfigs'
+import NotFound from '../../../layouts/NotFound'
 
 export default function SimulationManagerRoutes() {
   return (
@@ -21,6 +22,7 @@ export default function SimulationManagerRoutes() {
         <Route path="/configs" element={<SimulatorConfigs />} />
         <Route path="/settings" element={<SimSettings />} />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }

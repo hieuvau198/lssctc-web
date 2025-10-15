@@ -1,8 +1,9 @@
 import { FilePdfOutlined } from '@ant-design/icons';
-import { Button, Card, Empty, Table, Pagination } from 'antd';
+import { Button, Card, Empty, Table, Pagination, Tooltip } from 'antd';
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
-export default function DocMaterials({ materials = [] }) {
+export default function DocMaterials({ materials = [], viewMode = 'table' }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -21,19 +22,44 @@ export default function DocMaterials({ materials = [] }) {
       width: 60,
       render: (_, __, index) => (page - 1) * pageSize + index + 1,
     },
-    { title: 'Name', dataIndex: 'name', key: 'name', ellipsis: true },
+    { title: 'Name', dataIndex: 'name', key: 'name', width: 180, ellipsis: true },
     { title: 'Description', dataIndex: 'description', key: 'description', ellipsis: true, width: 400 },
     {
       title: 'Action',
       key: 'action',
-      width: 140,
+      width: 80,
       render: (_, record) => (
-        <Button type="link" icon={<FilePdfOutlined />} href={record.url} target="_blank" rel="noreferrer">
-          Open
-        </Button>
+        <Tooltip title="Open document">
+          <Button type="primary" icon={<FilePdfOutlined />} href={record.url} target="_blank" rel="noreferrer" />
+        </Tooltip>
       ),
     },
   ];
+
+  if (viewMode === 'card') {
+    return (
+      <Card title={`Documents`} className="mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {materials.map((m) => (
+            <Card key={m.id} size="small" bodyStyle={{ height: 160, overflow: 'auto' }}>
+              <div className="flex items-start justify-between">
+                <div className="flex-1 pr-2">
+                  <div className="text-sm font-semibold line-clamp-1">{m.name}</div>
+                  <div className="text-xs text-gray-500 mt-1">Document</div>
+                  <div className="text-sm text-gray-700 mt-2 truncate">{m.description}</div>
+                </div>
+                <div className="flex-shrink-0 ml-2">
+                  <Tooltip title="Open document">
+                    <Button type="primary" shape="circle" icon={<FilePdfOutlined />} href={m.url} target="_blank" rel="noreferrer" />
+                  </Tooltip>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card title={`Documents`} className="mb-4">
@@ -60,3 +86,8 @@ export default function DocMaterials({ materials = [] }) {
     </Card>
   );
 }
+
+DocMaterials.propTypes = {
+  materials: PropTypes.array,
+  viewMode: PropTypes.oneOf(['table', 'card']),
+};

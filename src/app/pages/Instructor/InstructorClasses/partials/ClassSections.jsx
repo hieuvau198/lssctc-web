@@ -1,5 +1,7 @@
-import { Card, Empty, Skeleton, Table, Tag, Pagination } from 'antd';
+import { Card, Empty, Skeleton, Table, Tag, Pagination, Button, Modal, Input, Select, Tooltip } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { getSectionPartitionsBySection, getSectionsByClass } from '../../../../apis/Instructor/InstructorSectionApi';
 
 const partitionTypeLabel = (typeId) => {
@@ -21,10 +23,13 @@ const getStatusText = (status) => (isActiveStatus(status) ? 'Active' : 'Inactive
 const getStatusColor = (status) => (isActiveStatus(status) ? 'green' : 'red');
 
 export default function ClassSections({ classData }) {
+  const navigate = useNavigate();
   const [sections, setSections] = useState([]);
   const [loadingSections, setLoadingSections] = useState(false);
   const [sectionsError, setSectionsError] = useState(null);
   const [partitionsMap, setPartitionsMap] = useState({}); // id -> { loading, data, error }
+  const [addModal, setAddModal] = useState({ visible: false, sectionId: null });
+  const [newPartition, setNewPartition] = useState({ name: '', partitionTypeId: '1' });
 
   const classId = classData?.classId ?? classData?.id ?? classData?.classID ?? null;
 
@@ -61,7 +66,21 @@ export default function ClassSections({ classData }) {
     { title: 'Name', dataIndex: 'name', key: 'name', width: 300, render: (t) => <div style={{ fontWeight: 600 }}>{t}</div> },
     { title: 'Status', dataIndex: 'status', key: 'status', width: 150, render: (s) => <Tag color={getStatusColor(s)}>{getStatusText(s)}</Tag> },
     { title: 'Duration (min)', dataIndex: 'durationMinutes', key: 'durationMinutes', width: 140 },
-    { title: 'Actions', dataIndex: 'actions', key: 'actions', width: 120, render: (_, __, i) => i + 1 },
+    { title: 'Actions', dataIndex: 'actions', key: 'actions', width: 140, render: (_, record) => (
+      <div>
+        <Tooltip title="Add materials">
+          <Button
+            size="small"
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              const sectionId = record?.id || record?.sectionId;
+              navigate(`/instructor/materials?mode=add&sectionId=${sectionId ?? ''}&classId=${classId ?? ''}`);
+            }}
+          />
+        </Tooltip>
+      </div>
+    ) },
   ], [partitionsMap]);
   const fetchPartitionsFor = async (sectionId) => {
     setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: true, data: [], totalCount: 0, error: null } }));
@@ -73,6 +92,38 @@ export default function ClassSections({ classData }) {
     } catch (err) {
       setPartitionsMap((m) => ({ ...m, [sectionId]: { loading: false, data: [], totalCount: 0, error: err?.message || 'Failed to load' } }));
     }
+  };
+
+  const makeTempId = () => `temp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+  const handleAddPartition = async () => {
+    const sectionId = addModal.sectionId;
+    if (!sectionId) return;
+    const temp = {
+      id: makeTempId(),
+      name: newPartition.name || 'Untitled',
+      partitionTypeId: newPartition.partitionTypeId,
+      isTemp: true,
+    };
+
+    // optimistic update
+    setPartitionsMap((m) => {
+      const prev = m[sectionId] || { loading: false, data: [], totalCount: 0, error: null };
+      return {
+        ...m,
+        [sectionId]: {
+          ...prev,
+          data: [temp, ...(prev.data || [])],
+          totalCount: (prev.totalCount || 0) + 1,
+        }
+      };
+    });
+
+    // close modal and reset form
+    setAddModal({ visible: false, sectionId: null });
+    setNewPartition({ name: '', partitionTypeId: '1' });
+
+    // TODO: call API to create partition on server and replace temp id with real one when returned
   };
 
   const handleExpand = (expanded, record) => {
@@ -190,6 +241,29 @@ export default function ClassSections({ classData }) {
           size="middle"
         />
       </div>
+      <Modal
+        title="Add Partition"
+        open={addModal.visible}
+        onOk={handleAddPartition}
+        onCancel={() => { setAddModal({ visible: false, sectionId: null }); setNewPartition({ name: '', partitionTypeId: '1' }); }}
+        okText="Add"
+      >
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <Input value={newPartition.name} onChange={(e) => setNewPartition((p) => ({ ...p, name: e.target.value }))} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Type</label>
+            <Select value={newPartition.partitionTypeId} onChange={(v) => setNewPartition((p) => ({ ...p, partitionTypeId: v }))} style={{ width: '100%' }}>
+              <Select.Option value="1">PDF</Select.Option>
+              <Select.Option value="2">Video</Select.Option>
+              <Select.Option value="3">Quiz</Select.Option>
+              <Select.Option value="0">Other</Select.Option>
+            </Select>
+          </div>
+        </div>
+      </Modal>
       <div className="pt-4 border-t border-gray-200 flex justify-center">
         <Pagination
           current={pageNumber}

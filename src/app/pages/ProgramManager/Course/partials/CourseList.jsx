@@ -31,7 +31,7 @@ const CourseTableView = ({
       title: "Image",
       dataIndex: "imageUrl",
       key: "imageUrl",
-      width: 80,
+      width: 50,
       fixed: "left",
       render: (imageUrl, record) => (
         <div className="w-12 h-12 overflow-hidden rounded cursor-pointer">

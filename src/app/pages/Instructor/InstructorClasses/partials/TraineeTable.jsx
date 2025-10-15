@@ -365,7 +365,7 @@ export default function TraineeTable({ classId }) {
             </div>
           </div>
           <div>
-            <div style={{ height: 360 }} className="p-4 overflow-auto">
+            <div style={{ height: 350 }} className="p-4 overflow-auto">
               <Table
                 columns={columns}
                 dataSource={filteredTrainees}

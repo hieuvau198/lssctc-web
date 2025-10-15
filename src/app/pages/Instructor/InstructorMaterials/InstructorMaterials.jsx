@@ -1,11 +1,21 @@
 import { BookOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Alert, Button, Card, Skeleton } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import ViewModeToggle from '../../../components/ViewModeToggle/ViewModeToggle';
+import { useLocation } from 'react-router';
 import { getLearningMaterials } from '../../../apis/Instructor/InstructorSectionApi';
 import DocMaterials from './partials/DocMaterials';
 import VideoMaterials from './partials/VideoMaterials';
+import AddMaterials from './partials/AddMaterials';
+
+function useQuery() {
+  const { search } = useLocation();
+  return useMemo(() => new URLSearchParams(search), [search]);
+}
 
 export default function InstructorMaterials() {
+  const query = useQuery();
+  const isAddMode = query.get('mode') === 'add';
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,6 +45,11 @@ export default function InstructorMaterials() {
   // mapping: learningMaterialTypeId === 1 => doc, === 2 => video
   const docs = materials.filter((m) => Number(m.typeId) === 1);
   const videos = materials.filter((m) => Number(m.typeId) === 2);
+  const [viewMode, setViewMode] = useState('table');
+
+  if (isAddMode) {
+    return <AddMaterials />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
@@ -43,7 +58,7 @@ export default function InstructorMaterials() {
           <h1 className="text-2xl font-semibold mb-1">Materials</h1>
           <div className="text-gray-600">Manage your teaching materials</div>
         </div>
-        <div>
+        <div className="flex items-center gap-3">
           <Button.Group>
             <Button
               type={activeTab === 'docs' ? 'primary' : 'default'}
@@ -60,6 +75,9 @@ export default function InstructorMaterials() {
               Videos
             </Button>
           </Button.Group>
+          <div className="ml-2">
+            <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+          </div>
         </div>
       </div>
 
@@ -72,9 +90,9 @@ export default function InstructorMaterials() {
       ) : (
         <div>
           {activeTab === 'videos' ? (
-            <VideoMaterials materials={videos} />
+            <VideoMaterials materials={videos} viewMode={viewMode} />
           ) : (
-            <DocMaterials materials={docs} />
+            <DocMaterials materials={docs} viewMode={viewMode} />
           )}
         </div>
       )}

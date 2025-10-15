@@ -7,6 +7,7 @@ import ManagerProgramList from '../../../pages/ProgramManager/Program/ManagerPro
 import ManagerProgramDetail from '../../../pages/ProgramManager/Program/partials/ManagerProgramDetail'
 import ProgramCreate from '../../../pages/ProgramManager/Program/partials/ProgramCreate'
 import ProgramEdit from '../../../pages/ProgramManager/Program/partials/ProgramEdit'
+import NotFound from '../../../layouts/NotFound'
 
 export default function ProgramManagerRoutes() {
   return (
@@ -21,6 +22,7 @@ export default function ProgramManagerRoutes() {
         <Route path="classes" element={<PMClasses />} />
         <Route path="classes/:id" element={<PMClassDetail />} />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }

@@ -25,12 +25,9 @@ const ClassTableView = ({ classes, pageNumber, pageSize, total, onPageChange, on
   const tableColumns = [
     {
       title: "#",
-      key: "index",
-      width: 50,
-      fixed: "left",
-      render: (_, __, index) => (
-        <span className="font-medium text-gray-600 text-sm">{(pageNumber - 1) * pageSize + index + 1}</span>
-      ),
+      key: "classCode",
+      width: 100,
+      render: (_, record) => record.classCode ?? '-',
     },
     {
       title: "Class Name",
@@ -48,7 +45,6 @@ const ClassTableView = ({ classes, pageNumber, pageSize, total, onPageChange, on
               {name}
             </div>
           </Tooltip>
-          <div className="text-xs text-blue-600 font-medium truncate">{record.classCode ?? '-'}</div>
         </div>
       ),
     },
