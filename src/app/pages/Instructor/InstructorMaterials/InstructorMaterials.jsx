@@ -75,9 +75,6 @@ export default function InstructorMaterials() {
               Videos
             </Button>
           </Button.Group>
-          <div className="ml-2">
-            <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
-          </div>
         </div>
       </div>
 

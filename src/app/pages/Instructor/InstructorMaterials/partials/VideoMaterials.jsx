@@ -2,10 +2,13 @@ import { PlayCircleOutlined } from '@ant-design/icons';
 import { Button, Card, Empty, Table, Pagination, Tooltip } from 'antd';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import DrawerView from './DrawerView';
 
 export default function VideoMaterials({ materials = [], viewMode = 'table' }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
 
   if (!materials || materials.length === 0) {
     return (
@@ -42,7 +45,7 @@ export default function VideoMaterials({ materials = [], viewMode = 'table' }) {
       width: 80,
       render: (_, record) => (
         <Tooltip title="Open video">
-          <Button type="primary" icon={<PlayCircleOutlined />} href={record.url} target="_blank" rel="noreferrer" />
+          <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(record); setDrawerVisible(true); }} />
         </Tooltip>
       ),
     },
@@ -56,20 +59,21 @@ export default function VideoMaterials({ materials = [], viewMode = 'table' }) {
           {materials.map((m) => (
             <Card key={m.id} size="small" bodyStyle={{ height: 160, overflow: 'auto' }}>
               <div className="flex items-start justify-between">
-                <div className="flex-1 pr-2">
-                  <div className="text-sm font-semibold line-clamp-1">{m.name}</div>
-                  <div className="text-xs text-gray-500 mt-1">Video</div>
-                  <div className="text-sm text-gray-700 mt-2 truncate">{m.description}</div>
-                </div>
-                <div className="flex-shrink-0 ml-2">
-                  <Tooltip title="Open video">
-                    <Button type="primary" shape="circle" icon={<PlayCircleOutlined />} href={m.url} target="_blank" rel="noreferrer" />
-                  </Tooltip>
-                </div>
+                  <div className="flex-1 pr-2">
+                    <div className="text-sm font-semibold line-clamp-1">{m.name}</div>
+                    <div className="text-xs text-gray-500 mt-1">Video</div>
+                    <div className="text-sm text-gray-700 mt-2 truncate">{m.description}</div>
+                  </div>
+                  <div className="flex-shrink-0 ml-2">
+                    <Tooltip title="Open video">
+                      <Button type="primary" shape="circle" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(m); setDrawerVisible(true); }} />
+                    </Tooltip>
+                  </div>
               </div>
             </Card>
           ))}
         </div>
+        <DrawerView visible={drawerVisible} onClose={() => setDrawerVisible(false)} material={selectedMaterial} />
       </Card>
     );
   }
@@ -96,6 +100,7 @@ export default function VideoMaterials({ materials = [], viewMode = 'table' }) {
           showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} videos`}
         />
       </div>
+      <DrawerView visible={drawerVisible} onClose={() => setDrawerVisible(false)} material={selectedMaterial} />
     </Card>
   );
 }

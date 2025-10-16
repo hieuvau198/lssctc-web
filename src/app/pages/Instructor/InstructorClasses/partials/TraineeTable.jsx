@@ -294,26 +294,7 @@ export default function TraineeTable({ classId }) {
           {getStatusText(status)}
         </Tag>
       ),
-    },
-    // {
-    //   title: 'Actions',
-    //   key: 'actions',
-    //   width: 80,
-    //   render: (_, record) => (
-    //     <div className="flex justify-center">
-    //       <Button 
-    //         type="text" 
-    //         size="small"
-    //         onClick={() => {
-    //           // Handle view trainee details
-    //           console.log('View trainee:', record);
-    //         }}
-    //       >
-    //         View
-    //       </Button>
-    //     </div>
-    //   ),
-    // },
+    }
   ];
 
   return (
@@ -365,7 +346,7 @@ export default function TraineeTable({ classId }) {
             </div>
           </div>
           <div>
-            <div style={{ height: 350 }} className="p-4 overflow-auto">
+            <div style={{ height: 350 }} className="py-4 overflow-auto">
               <Table
                 columns={columns}
                 dataSource={filteredTrainees}
