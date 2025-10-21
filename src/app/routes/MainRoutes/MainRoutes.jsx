@@ -16,7 +16,7 @@ const MainRoutes = () => {
         <Route path="auth/*" element={<AuthRoutes />} />
         <Route path="admin/*" element={<AdminRoutes />} />
         <Route path="simulationManager/*" element={<SimulationManagerRoutes />} />
-        <Route path="programManager/*" element={<ProgramManagerRoutes />} />
+        {/* <Route path="programManager/*" element={<ProgramManagerRoutes />} /> */}
         <Route path="instructor/*" element={<InstructorRoutes />} />
         <Route path="learnings/*" element={<SectionRoutes />} />
         <Route path="*" element={<NotFound />} />  
