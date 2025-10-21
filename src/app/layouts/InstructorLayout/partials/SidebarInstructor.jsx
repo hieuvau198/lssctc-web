@@ -6,6 +6,8 @@ import { BookOpen, Layers, FileText, HelpCircle, Dumbbell, User } from 'lucide-r
 
 const ITEMS = [
   { to: '/instructor/classes', label: 'Class', icon: <BookOpen className="w-5 h-5" /> },
+  { to: '/instructor/programs', label: 'Program', icon: <Layers className="w-5 h-5" /> },
+  { to: '/instructor/courses', label: 'Course', icon: <Layers className="w-5 h-5" /> },
   { to: '/instructor/materials', label: 'Material', icon: <FileText className="w-5 h-5" /> },
   { to: '/instructor/quizzes', label: 'Quiz', icon: <HelpCircle className="w-5 h-5" /> },
   { to: '/instructor/practices', label: 'Practice', icon: <Dumbbell className="w-5 h-5" /> },

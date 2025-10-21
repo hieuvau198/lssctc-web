@@ -3,6 +3,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getSectionPartitionsBySection, getSectionsByClass } from '../../../../apis/Instructor/InstructorSectionApi';
+import AssignPartitions from './AssignPartitions';
 
 const partitionTypeLabel = (typeId) => {
   // Use colors distinct from section status (status uses green/red)
@@ -30,6 +31,7 @@ export default function ClassSections({ classData }) {
   const [partitionsMap, setPartitionsMap] = useState({}); // id -> { loading, data, error }
   const [addModal, setAddModal] = useState({ visible: false, sectionId: null });
   const [newPartition, setNewPartition] = useState({ name: '', partitionTypeId: '1' });
+  const [assignDrawer, setAssignDrawer] = useState({ visible: false, sectionId: null });
 
   const classId = classData?.classId ?? classData?.id ?? classData?.classID ?? null;
 
@@ -68,14 +70,14 @@ export default function ClassSections({ classData }) {
     { title: 'Duration (min)', dataIndex: 'durationMinutes', key: 'durationMinutes', width: 140 },
     { title: 'Actions', dataIndex: 'actions', key: 'actions', width: 140, render: (_, record) => (
       <div>
-        <Tooltip title="Add materials">
+        <Tooltip title="Assign partitions">
           <Button
             size="small"
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => {
               const sectionId = record?.id || record?.sectionId;
-              navigate(`/instructor/materials?mode=add&sectionId=${sectionId ?? ''}&classId=${classId ?? ''}`);
+              setAssignDrawer({ visible: true, sectionId });
             }}
           />
         </Tooltip>
@@ -272,9 +274,19 @@ export default function ClassSections({ classData }) {
           onChange={(p, s) => { setPageNumber(p); setPageSize(s); }}
           showSizeChanger
           pageSizeOptions={['5', '10', '20']}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} sections`}
+          showTotal={(t, r) => `${r[0]} - ${r[1]} of ${t} sections`}
         />
       </div>
+      <AssignPartitions
+        visible={assignDrawer.visible}
+        sectionId={assignDrawer.sectionId}
+        onClose={() => {
+          // close drawer and refresh partitions for the section if any
+          const sid = assignDrawer.sectionId;
+          setAssignDrawer({ visible: false, sectionId: null });
+          if (sid) fetchPartitionsFor(sid);
+        }}
+      />
     </Card>
   );
 }

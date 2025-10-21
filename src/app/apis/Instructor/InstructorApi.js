@@ -60,4 +60,24 @@ export const getInstructorClasses = async (instructorId, { page = 1, pageSize = 
   }
 };
 
+export const getQuizzes = async ({ page = 1, pageSize = 20 } = {}) => {
+  try {
+    const qs = `?page=${encodeURIComponent(page)}&pageSize=${encodeURIComponent(pageSize)}`;
+    const response = await api.get(`/quizzes${qs}`);
+    const data = response.data || {};
+    const items = Array.isArray(data.items) ? data.items : [];
+    return {
+      items,
+      totalCount: Number(data.totalCount) || items.length,
+      page: Number(data.page) || page,
+      pageSize: Number(data.pageSize) || pageSize,
+      totalPages: Number(data.totalPages) || 1,
+      raw: data,
+    };
+  } catch (err) {
+    console.error('Error fetching quizzes:', err);
+    return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
+  }
+};
+
 //#endregion

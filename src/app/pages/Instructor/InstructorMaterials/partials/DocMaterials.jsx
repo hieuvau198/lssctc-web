@@ -2,10 +2,13 @@ import { FilePdfOutlined } from '@ant-design/icons';
 import { Button, Card, Empty, Table, Pagination, Tooltip } from 'antd';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import DrawerView from './DrawerView';
 
 export default function DocMaterials({ materials = [], viewMode = 'table' }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
 
   if (!materials || materials.length === 0) {
     return (
@@ -30,7 +33,11 @@ export default function DocMaterials({ materials = [], viewMode = 'table' }) {
       width: 80,
       render: (_, record) => (
         <Tooltip title="Open document">
-          <Button type="primary" icon={<FilePdfOutlined />} href={record.url} target="_blank" rel="noreferrer" />
+          <Button
+            type="primary"
+            icon={<FilePdfOutlined />}
+            onClick={() => { setSelectedMaterial(record); setDrawerVisible(true); }}
+          />
         </Tooltip>
       ),
     },
@@ -50,13 +57,14 @@ export default function DocMaterials({ materials = [], viewMode = 'table' }) {
                 </div>
                 <div className="flex-shrink-0 ml-2">
                   <Tooltip title="Open document">
-                    <Button type="primary" shape="circle" icon={<FilePdfOutlined />} href={m.url} target="_blank" rel="noreferrer" />
+                    <Button type="primary" shape="circle" icon={<FilePdfOutlined />} onClick={() => { setSelectedMaterial(m); setDrawerVisible(true); }} />
                   </Tooltip>
                 </div>
               </div>
             </Card>
           ))}
         </div>
+        <DrawerView visible={drawerVisible} onClose={() => setDrawerVisible(false)} material={selectedMaterial} />
       </Card>
     );
   }
@@ -83,6 +91,7 @@ export default function DocMaterials({ materials = [], viewMode = 'table' }) {
           showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} documents`}
         />
       </div>
+      <DrawerView visible={drawerVisible} onClose={() => setDrawerVisible(false)} material={selectedMaterial} />
     </Card>
   );
 }

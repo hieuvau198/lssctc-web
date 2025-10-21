@@ -132,6 +132,46 @@ export async function getClassMembers(classId, { page = 1, pageSize = 20 } = {})
   }
 }
 
+export async function getAllPartitions({ page = 1, pageSize = 200 } = {}) {
+  try {
+    const qs = buildQuery({ page, pageSize });
+    const { data } = await axios.get(`${BASE}/SectionPartitions${qs}`);
+    if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
+    const items = Array.isArray(data.items) ? data.items.map(mapPartitionFromApi) : [];
+    return {
+      items,
+      totalCount: Number(data.totalCount) || items.length,
+      page: Number(data.page) || page,
+      pageSize: Number(data.pageSize) || pageSize,
+      totalPages: Number(data.totalPages) || 1,
+      raw: data,
+    };
+  } catch (err) {
+    console.error('Error fetching all partitions:', err);
+    return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
+  }
+}
+
+export async function assignPartitionToSection(sectionId, partitionId) {
+  try {
+    const { data } = await axios.post(`${BASE}/SectionPartitions/${encodeURIComponent(partitionId)}/assign`, { sectionId });
+    return data;
+  } catch (err) {
+    console.error('Error assigning partition to section:', err);
+    throw err;
+  }
+}
+
+export async function unassignPartitionFromSection(sectionId, partitionId) {
+  try {
+    const { data } = await axios.post(`${BASE}/SectionPartitions/${encodeURIComponent(partitionId)}/unassign`, { sectionId });
+    return data;
+  } catch (err) {
+    console.error('Error unassigning partition from section:', err);
+    throw err;
+  }
+}
+
 export default {
   getLearningMaterials,
   getSectionsByClass,
