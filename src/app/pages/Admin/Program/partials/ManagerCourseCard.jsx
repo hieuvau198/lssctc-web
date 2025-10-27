@@ -3,8 +3,8 @@ import { fetchCourseDetail } from "../../../../apis/ProgramManager/ProgramManage
 import { fetchClassesByProgramCourse } from "../../../../apis/ProgramManager/ClassApi";
 import { Card, Spin, Tag, Alert, Button } from "antd";
 import { DownOutlined, UpOutlined, PlusOutlined } from "@ant-design/icons";
-import PMClassCard from "../../Class/partials/PMClassCard";
-import AddClassForm from "../../Class/partials/AddClassForm";
+import PMClassCard from "../../../Admin/Class/partials/PMClassCard";
+import AddClassForm from "../../../Admin/Class/partials/AddClassForm";
 
 const ManagerCourseCard = ({ courseId, order, programCourseId }) => {
   const [course, setCourse] = useState(null);
