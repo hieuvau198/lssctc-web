@@ -4,6 +4,7 @@ import Dashboard from '../../../pages/Admin/Dashboard/Dashboard'
 import ManageUser from '../../../pages/Admin/ManageUser/ManageUser'
 import Courses from '../../../pages/ProgramManager/Course/Courses'
 import PMClasses from '../../../pages/ProgramManager/Class/PMClasses'
+import ManagerProgramList from '../../../pages/ProgramManager/Program/ManagerProgramList'
 import NotFound from '../../../layouts/NotFound'
 
 export default function AdminRoutes() {
@@ -14,6 +15,7 @@ export default function AdminRoutes() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/users" element={<ManageUser />} />
         <Route path="/courses" element={<Courses />} />
+        <Route path="/programs" element={<ManagerProgramList />} />
         <Route path="/class" element={<PMClasses />} />
       </Route>
       <Route path="*" element={<NotFound />} />

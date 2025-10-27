@@ -69,7 +69,7 @@ export default function CourseSection() {
 					duration: partition.partitionDescription || '', // Or use actual duration if available
 					isCompleted: partition.isCompleted,
 					sectionId: section.sectionId,
-					href: `/learn/${classId}/${section.sectionId}/${partition.sectionPartitionId}`,
+					href: `/learnings/${classId}/${section.sectionId}/${partition.sectionPartitionId}`,
 				});
 			});
 		});

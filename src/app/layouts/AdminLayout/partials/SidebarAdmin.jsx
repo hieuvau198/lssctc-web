@@ -9,13 +9,14 @@ import {
 } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { NavLink } from 'react-router';
+import { Layers } from 'lucide-react';
 
 const ITEMS = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
   { to: '/admin/users', label: 'Users', icon: <UserOutlined /> },
+  { to: '/admin/programs', label: 'Programs', icon: <Layers className="w-5 h-5" /> },
   { to: '/admin/courses', label: 'Courses', icon: <BookOutlined /> },
   { to: '/admin/class', label: 'Class', icon: <ScheduleOutlined /> },
-  { to: '/admin/assessments', label: 'Assessments', icon: <ExperimentOutlined /> },
 ];
 
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
