@@ -22,7 +22,7 @@ export default function Sections({ sections = [], classId }) {
 		<Card  className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
 			<div className="space-y-5">
 				{sections.map((section) => {
-					const deepLink = getFirstPartitionPath(classId) || `/learn/${classId}`;
+					const deepLink = getFirstPartitionPath(classId) || `/learnings/${classId}`;
 					return (
 					<Link key={section.sectionId} to={deepLink} className="block">
 						<div className="flex items-start justify-between p-5 border border-slate-200 rounded-lg bg-slate-50/30 hover:bg-slate-50 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer">

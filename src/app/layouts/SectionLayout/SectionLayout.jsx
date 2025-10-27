@@ -133,8 +133,8 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
   const target =
     partition.href ||
     (partition.sectionId
-      ? `/learn/${classId}/${partition.sectionId}/${partition.id}`
-      : `/learn/${classId}/${partition.id}`);
+      ? `/learnings/${classId}/${partition.sectionId}/${partition.id}`
+      : `/learnings/${classId}/${partition.id}`);
 
   navigate(target);
 };

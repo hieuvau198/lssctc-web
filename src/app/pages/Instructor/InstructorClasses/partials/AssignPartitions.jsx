@@ -17,7 +17,6 @@ export default function AssignPartitions({ visible, onClose, sectionId }) {
     const [assignedList, setAssignedList] = useState([]);
     const [assignedMap, setAssignedMap] = useState({}); // partitionId -> true
     const [loadingAssign, setLoadingAssign] = useState(false);
-    // start with no type selected for 'Assign from existing' (user requested it to be empty initially)
     const [selectedType, setSelectedType] = useState('');
     const [selectedCandidates, setSelectedCandidates] = useState(new Set());
     const [assignedSearch, setAssignedSearch] = useState('');
