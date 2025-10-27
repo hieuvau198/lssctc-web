@@ -2,9 +2,9 @@ import { Route, Routes } from 'react-router'
 import AdminLayout from '../../../layouts/AdminLayout/AdminLayout'
 import Dashboard from '../../../pages/Admin/Dashboard/Dashboard'
 import ManageUser from '../../../pages/Admin/ManageUser/ManageUser'
-import Courses from '../../../pages/ProgramManager/Course/Courses'
-import PMClasses from '../../../pages/ProgramManager/Class/PMClasses'
-import ManagerProgramList from '../../../pages/ProgramManager/Program/ManagerProgramList'
+import Courses from '../../../pages/Admin/Course/Courses'
+import PMClasses from '../../../pages/Admin/Class/PMClasses'
+import ManagerProgramList from '../../../pages/Admin/Program/ManagerProgramList'
 import NotFound from '../../../layouts/NotFound'
 
 export default function AdminRoutes() {
