@@ -1,7 +1,8 @@
 import { CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { App, Badge, Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Switch, Table, Tag, Tooltip, Pagination } from 'antd';
 import { useEffect, useState } from 'react';
-import { deleteQuizQuestion, getQuizQuestionOptions, getQuizQuestions, updateQuizQuestion } from '../../../../apis/Instructor/InstructorQuiz';
+import { deleteQuizQuestion, getQuizQuestions, updateQuizQuestion } from '../../../../apis/Instructor/InstructorQuiz';
+import OptionList from './OptionList';
 
 export default function QuestionList({ quizId }) {
   const { message } = App.useApp();
@@ -11,8 +12,6 @@ export default function QuestionList({ quizId }) {
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
-  const [optionsData, setOptionsData] = useState({});
-  const [loadingOptions, setLoadingOptions] = useState({});
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [form] = Form.useForm();
@@ -39,30 +38,12 @@ export default function QuestionList({ quizId }) {
     }
   };
 
-  const loadOptions = async (questionId) => {
-    if (optionsData[questionId]) return; // Already loaded
-
-    setLoadingOptions((prev) => ({ ...prev, [questionId]: true }));
-    try {
-      const data = await getQuizQuestionOptions(questionId);
-      setOptionsData((prev) => ({ ...prev, [questionId]: data.items || [] }));
-    } catch (e) {
-      console.error('Failed to load options:', e);
-      setOptionsData((prev) => ({ ...prev, [questionId]: [] }));
-    } finally {
-      setLoadingOptions((prev) => ({ ...prev, [questionId]: false }));
-    }
-  };
-
   const handleExpand = (expanded, record) => {
     const keys = expanded
       ? [...expandedRowKeys, record.id]
       : expandedRowKeys.filter((key) => key !== record.id);
     setExpandedRowKeys(keys);
-
-    if (expanded) {
-      loadOptions(record.id);
-    }
+    // Option fetching is handled inside OptionList
   };
 
   const handleEditQuestion = (record) => {
@@ -107,57 +88,7 @@ export default function QuestionList({ quizId }) {
     setEditingQuestion(null);
     form.resetFields();
   };
-
-  const expandedRowRender = (record) => {
-    const options = optionsData[record.id] || [];
-    const isLoadingOptions = loadingOptions[record.id];
-
-    const optionsColumns = [
-      {
-        title: 'Option',
-        dataIndex: 'name',
-        key: 'name',
-        ellipsis: true,
-      },
-      {
-        title: 'Correct',
-        dataIndex: 'isCorrect',
-        key: 'isCorrect',
-        width: 100,
-        align: 'center',
-        render: (isCorrect) =>
-          isCorrect ? (
-            <Tag color="success" icon={<CheckCircleOutlined />}>
-              Correct
-            </Tag>
-          ) : (
-            <Tag color="default" icon={<CloseCircleOutlined />}>
-              Wrong
-            </Tag>
-          ),
-      },
-      {
-        title: 'Score',
-        dataIndex: 'optionScore',
-        key: 'optionScore',
-        width: 100,
-        align: 'center',
-        render: (score) => (score !== null ? score : 0),
-      },
-    ];
-
-    return (
-      <Table
-        columns={optionsColumns}
-        dataSource={options}
-        rowKey="id"
-        loading={isLoadingOptions}
-        pagination={false}
-        size="small"
-        className="ml-8"
-      />
-    );
-  };
+  const expandedRowRender = (record) => <OptionList questionId={record.id} />;
 
   const columns = [
     {
@@ -288,19 +219,32 @@ export default function QuestionList({ quizId }) {
             <Input placeholder="Enter question name" />
           </Form.Item>
 
-          <Form.Item
-            label="Question Score"
-            name="questionScore"
-            rules={[{ required: true, message: 'Please enter question score' }]}
-          >
-            <InputNumber
-              min={0}
-              max={10}
-              step={0.1}
-              placeholder="Enter score"
-              className="w-full"
-            />
-          </Form.Item>
+          {/* Score and Multiple Answers on the same row, symmetric */}
+          <div className="flex gap-4">
+            <Form.Item
+              label="Question Score"
+              name="questionScore"
+              rules={[{ required: true, message: 'Please enter question score' }]}
+              className="flex-1"
+            >
+              <InputNumber
+                min={0}
+                max={10}
+                step={0.1}
+                placeholder="Enter score"
+                className="w-full"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Multiple Answers"
+              name="isMultipleAnswers"
+              valuePropName="checked"
+              className="flex-none w-1/2 flex items-center"
+            >
+              <Switch checkedChildren="Yes" unCheckedChildren="No" />
+            </Form.Item>
+          </div>
 
           <Form.Item
             label="Description"
@@ -311,14 +255,7 @@ export default function QuestionList({ quizId }) {
               placeholder="Enter question description (optional)"
             />
           </Form.Item>
-
-          <Form.Item
-            label="Multiple Answers"
-            name="isMultipleAnswers"
-            valuePropName="checked"
-          >
-            <Switch checkedChildren="Yes" unCheckedChildren="No" />
-          </Form.Item>
+          
         </Form>
       </Modal>
     </>

@@ -55,7 +55,7 @@ export default function InstructorMaterials() {
     <div className="max-w-7xl mx-auto px-4 py-4">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <span className="text-2xl font-semibold mb-1">Materials</span>
+          <span className="text-2xl">Materials</span>
         </div>
         <div className="flex items-center gap-3">
           <Button.Group>

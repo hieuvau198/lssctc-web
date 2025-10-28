@@ -78,7 +78,7 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
                   className={({ isActive }) => [
                     'group flex items-center rounded-md py-2 text-sm font-medium transition-colors',
                     collapsed ? 'justify-center mx-2.5' : 'gap-3 px-3',
-                    isActive ? 'bg-blue-200/85 text-blue-600' : 'text-gray-600 hover:bg-blue-100 hover:text-gray-900'
+                    isActive ? 'bg-gray-200 text-gray-900' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                   ].join(' ')}
                   aria-label={collapsed ? item.label : undefined}
                 >
