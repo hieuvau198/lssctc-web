@@ -16,9 +16,7 @@ export default function SimulationManagerRoutes() {
         <Route path="/dashboard" element={<SimDashboard />} />
         <Route path="/practices" element={<Practices />} />
         <Route path="/practices/:id" element={<PracticeDetail />} />
-        <Route path="/practices/:practiceId/steps/:stepId"
-          element={<PracticeStepDetail />}
-        />
+        <Route path="/practices/:practiceId/steps/:stepId" element={<PracticeStepDetail />} />
         <Route path="/configs" element={<SimulatorConfigs />} />
         <Route path="/settings" element={<SimSettings />} />
       </Route>

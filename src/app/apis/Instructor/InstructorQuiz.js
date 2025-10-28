@@ -105,6 +105,22 @@ export async function updateQuizQuestion(questionId, payload) {
 }
 
 /**
+ * Update quiz question option by ID
+ * @param {number|string} optionId - Option ID
+ * @param {Object} payload - Option data to update
+ * @returns {Promise<Object>} Updated option
+ */
+export async function updateQuizQuestionOption(optionId, payload) {
+  try {
+    const { data } = await axios.put(`${BASE}/QuizQuestionOptions/options/${optionId}`, payload);
+    return data;
+  } catch (err) {
+    console.error('Error updating quiz question option:', err);
+    throw err;
+  }
+}
+
+/**
  * Delete quiz question by ID
  * @param {number} questionId - Question ID
  * @returns {Promise<void>}
@@ -179,5 +195,6 @@ export default {
   updateQuiz,
   deleteQuiz,
   updateQuizQuestion,
+  updateQuizQuestionOption,
   deleteQuizQuestion,
 };

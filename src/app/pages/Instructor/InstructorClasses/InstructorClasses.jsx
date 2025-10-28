@@ -117,8 +117,8 @@ export default function InstructorClasses() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">My Classes</h2>
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-2xl">My Classes</span>
       </div>
 
       {/* Search and Controls */}
