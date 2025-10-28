@@ -17,7 +17,7 @@ export default function InstructorRoutes() {
       <Route element={<InstructorLayout />}>
         <Route index element={<InstructorClasses />} />
         <Route path="/classes" element={<InstructorClasses />} />
-        <Route path="/classes/:slug" element={<InstructorClassDetail />} />
+        <Route path="/classes/:id" element={<InstructorClassDetail />} />
         <Route path="/sections" element={<InstructorSections />} />
         <Route path="/materials" element={<InstructorMaterials />} />
         <Route path="/quizzes" element={<InstructorQuizzes />} />

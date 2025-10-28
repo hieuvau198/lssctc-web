@@ -3,14 +3,12 @@ import { Alert, Button, Card, Skeleton } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { fetchClassDetail } from '../../../apis/ProgramManager/ClassApi';
-import { fetchClasses } from '../../../apis/ProgramManager/ClassesApi';
-import slugify from '../../../lib/slugify';
 import ClassMembers from './partials/ClassMembers';
 import ClassOverview from './partials/ClassOverview';
 import ClassSections from './partials/ClassSections';
 
 export default function InstructorClassDetail() {
-    const { slug } = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
     const [classData, setClassData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -22,13 +20,10 @@ export default function InstructorClassDetail() {
             try {
                 setLoading(true);
                 setError(null);
-                // Load classes (first page with large pageSize) and find matching slug, then fetch detail by id
-                const list = await fetchClasses({ page: 1, pageSize: 1000 });
-                const matched = Array.isArray(list?.items) ? list.items.find(c => slugify(c.name) === slug) : null;
-                if (!matched) {
+                const detail = await fetchClassDetail(Number(id));
+                if (!detail) {
                     setError('Class not found');
                 } else {
-                    const detail = await fetchClassDetail(matched.id);
                     setClassData(detail);
                 }
             } catch (err) {
@@ -39,10 +34,10 @@ export default function InstructorClassDetail() {
             }
         };
 
-        if (slug) {
+        if (id) {
             loadDetail();
         }
-    }, [slug]);
+    }, [id]);
 
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US', {

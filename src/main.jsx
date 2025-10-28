@@ -6,7 +6,7 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <ConfigProvider>
-    <AntdApp>
+    <AntdApp component={false}>
       <App />
     </AntdApp>
   </ConfigProvider>

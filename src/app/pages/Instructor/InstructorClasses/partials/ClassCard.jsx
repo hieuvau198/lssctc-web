@@ -1,6 +1,5 @@
 import { Card, Tag, Tooltip } from "antd";
 import { useNavigate } from "react-router";
-import slugify from "../../../../lib/slugify";
 import { getProgramName } from "../../../../mock/instructorClasses";
 
 const ClassCard = ({ classItem, onView }) => {
@@ -19,9 +18,8 @@ const ClassCard = ({ classItem, onView }) => {
   const getStatusText = (status) => (isActiveStatus(status) ? 'Active' : 'Inactive');
 
   const handleViewDetail = () => {
-    const title = classItem?.name || classItem?.className || `class-${classItem?.id ?? classItem?.classId ?? ''}`;
-    const slug = slugify(title);
-    navigate(`/instructor/classes/${slug}`);
+    const id = classItem?.id ?? classItem?.classId;
+    if (id) navigate(`/instructor/classes/${id}`);
   };
 
   const handleKeyDown = (e) => {

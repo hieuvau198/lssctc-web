@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { getInstructorClasses } from "../../../apis/Instructor/InstructorApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
-import slugify from "../../../lib/slugify";
 import ClassFilters from "./partials/ClassFilters";
 import ClassList from "./partials/ClassList";
 
@@ -68,8 +67,8 @@ export default function InstructorClasses() {
   };
 
   const handleViewClass = (classItem) => {
-    const slug = slugify(classItem.name);
-    navigate(`/instructor/classes/${slug}`);
+    const id = classItem?.id ?? classItem?.classId;
+    if (id) navigate(`/instructor/classes/${id}`);
   };
 
   if (loading) {
