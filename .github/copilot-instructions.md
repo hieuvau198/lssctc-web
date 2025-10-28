@@ -205,6 +205,7 @@ Create hook src/modules/learner/hooks/useLearners.js
 - Responsive for desktop/tablet/mobile.
 - Accessible forms (labels, aria tags).
 - Use Tailwind classes, not inline styles.
+- Use const { message } = App.useApp(); for message.
 
 ---
 
