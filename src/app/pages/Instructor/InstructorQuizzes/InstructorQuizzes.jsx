@@ -3,6 +3,7 @@ import { Card, Table, Skeleton, Empty, Pagination, Alert, Button, Tooltip, messa
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router';
 import { getQuizzes, deleteQuiz } from '../../../apis/Instructor/InstructorQuiz';
+import QuizFilters from './partials/QuizFilters';
 
 export default function InstructorQuizzes() {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ export default function InstructorQuizzes() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const load = async (p = page, ps = pageSize) => {
     setLoading(true);
@@ -30,6 +33,13 @@ export default function InstructorQuizzes() {
   };
 
   useEffect(() => { load(); }, []);
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    setPage(1);
+    // TODO: Implement backend search when API supports it
+    load(1, pageSize);
+  };
 
   const handleView = (record) => {
     navigate(`/instructor/quizzes/${record.id}`);
@@ -53,9 +63,9 @@ export default function InstructorQuizzes() {
   const columns = [
     { title: '#', key: 'index', width: 60, render: (_, __, idx) => (page - 1) * pageSize + idx + 1 },
     { title: 'Name', dataIndex: 'name', key: 'name', ellipsis: true },
-    { title: 'Pass %', dataIndex: 'passScoreCriteria', key: 'passScoreCriteria', width: 100, align: 'center' },
+    { title: 'Pass (pts)', dataIndex: 'passScoreCriteria', key: 'passScoreCriteria', width: 100, align: 'center' },
     { title: 'Time (min)', dataIndex: 'timelimitMinute', key: 'timelimitMinute', width: 120, align: 'center' },
-    { title: 'Total Score', dataIndex: 'totalScore', key: 'totalScore', width: 120, align: 'center' },
+    { title: 'Total Score (pts)', dataIndex: 'totalScore', key: 'totalScore', width: 120, align: 'center' },
     {
       title: 'Actions',
       key: 'actions',
@@ -115,6 +125,17 @@ export default function InstructorQuizzes() {
 
   if (loading) return (
     <div className="max-w-7xl mx-auto px-4 py-4">
+      {/* Header Skeleton */}
+      <div className="flex items-center justify-between mb-4">
+        <Skeleton.Button style={{ width: 200, height: 32 }} active />
+      </div>
+
+      {/* Search Skeleton */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <Skeleton.Input style={{ width: 320, height: 40 }} active />
+      </div>
+
+      {/* Content Skeleton */}
       <Card>
         <Skeleton active paragraph={{ rows: 6 }} />
       </Card>
@@ -123,12 +144,27 @@ export default function InstructorQuizzes() {
 
   if (error) return (
     <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-2xl">Quizzes</span>
+      </div>
       <Alert type="error" message="Error" description={error} />
     </div>
   );
 
   if (!quizzes || quizzes.length === 0) return (
     <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-2xl">Quizzes</span>
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <QuizFilters
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          onSearch={handleSearch}
+        />
+      </div>
+
       <Card title="Quizzes">
         <Empty description="No quizzes found." />
       </Card>
@@ -137,13 +173,34 @@ export default function InstructorQuizzes() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-      
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-2xl">Quizzes</span>
+      </div>
+
+      {/* Search and Controls */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <QuizFilters
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          onSearch={handleSearch}
+        />
+      </div>
+
+      {/* Content */}
       <Card title="Quizzes">
-        <div style={{ height: 420 }} className="overflow-auto">
-          <Table columns={columns} dataSource={quizzes} rowKey="id" pagination={false} size="middle" />
+        <div className="overflow-auto h-[350px]">
+          <Table
+            columns={columns}
+            dataSource={quizzes}
+            rowKey="id"
+            pagination={false}
+            size="middle"
+            // scroll={{ y: 560 }}
+          />
         </div>
         <div className="pt-4 border-t border-gray-200 flex justify-center">
-          <Pagination current={page} pageSize={pageSize} total={total} showSizeChanger pageSizeOptions={["10","20","50"]}
+          <Pagination current={page} pageSize={pageSize} total={total} showSizeChanger pageSizeOptions={["10", "20", "50"]}
             onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }} showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} quizzes`} />
         </div>
       </Card>

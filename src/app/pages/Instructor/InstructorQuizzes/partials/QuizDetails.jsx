@@ -72,7 +72,7 @@ export default function QuizDetails() {
                     message="Quiz Not Found"
                     description="The quiz you are looking for does not exist."
                     action={
-                        <Button size="small" onClick={() => navigate('/instructor/quizzes')}/>
+                        <Button size="small" onClick={() => navigate('/instructor/quizzes')} />
                     }
                 />
             </div>
@@ -128,11 +128,11 @@ export default function QuizDetails() {
                             </Tag>
                         </Descriptions.Item>
 
-                        {quiz.description && (
-                            <Descriptions.Item label="Description" span={2}>
-                                <div className="text-gray-700 whitespace-pre-wrap">{quiz.description}</div>
-                            </Descriptions.Item>
-                        )}
+
+                        <Descriptions.Item label="Description" span={2}>
+                            <div className="text-gray-700 whitespace-pre-wrap">{quiz.description}</div>
+                        </Descriptions.Item>
+
                     </Descriptions>
                 </Card>
             </div>

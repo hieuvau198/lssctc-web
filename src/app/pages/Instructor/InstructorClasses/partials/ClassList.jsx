@@ -24,7 +24,7 @@ const ClassTableView = ({ classes, pageNumber, pageSize, total, onPageChange, on
 
   const tableColumns = [
     {
-      title: "#",
+      title: "Class Code",
       key: "classCode",
       width: 100,
       render: (_, record) => record.classCode ?? '-',
@@ -35,17 +35,10 @@ const ClassTableView = ({ classes, pageNumber, pageSize, total, onPageChange, on
       key: "name",
       width: 220,
       ellipsis: true,
-      render: (name, record) => (
-        <div className="space-y-1">
+      render: (name) => (
           <Tooltip title={name}>
-            <div
-              className="font-semibold text-slate-900 cursor-pointer hover:text-blue-600 transition-colors truncate"
-              onClick={() => onView(record)}
-            >
               {name}
-            </div>
           </Tooltip>
-        </div>
       ),
     },
     {
@@ -58,7 +51,7 @@ const ClassTableView = ({ classes, pageNumber, pageSize, total, onPageChange, on
         const programName = getProgramName(programCourseId);
         return (
           <Tooltip title={programName}>
-            <div className="text-sm text-gray-700 truncate">{programName}</div>
+            {programName}
           </Tooltip>
         );
       },

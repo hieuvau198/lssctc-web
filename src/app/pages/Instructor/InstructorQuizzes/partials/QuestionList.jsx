@@ -169,38 +169,38 @@ export default function QuestionList({ quizId }) {
       <div className="shadow-xl rounded-2xl overflow-hidden">
         <Card title={`Questions (${total})`} className="h-auto flex flex-col overflow-hidden">
           <div className="flex-1 min-h-0">
-              <Table
-                columns={columns}
-                dataSource={questions}
-                rowKey="id"
-                loading={loading}
-                expandable={{
-                  expandedRowRender,
-                  expandedRowKeys,
-                  onExpand: handleExpand,
-                }}
-                pagination={false}
-                size="middle"
-                scroll={{ x: 900, y: 360 }}
-              />
-            </div>
+            <Table
+              columns={columns}
+              dataSource={questions}
+              rowKey="id"
+              loading={loading}
+              expandable={{
+                expandedRowRender,
+                expandedRowKeys,
+                onExpand: handleExpand,
+              }}
+              pagination={false}
+              size="middle"
+              scroll={{ x: 900, y: 360 }}
+            />
+          </div>
 
-            <div className="pt-3 border-t border-gray-200 flex justify-center">
-              <Pagination
-                current={page}
-                pageSize={pageSize}
-                total={total}
-                showSizeChanger
-                pageSizeOptions={["10", "20", "50"]}
-                showTotal={(t, range) => `${range[0]}-${range[1]} of ${t} questions`}
-                onChange={(p, ps) => {
-                  setPage(p);
-                  setPageSize(ps);
-                  loadQuestions();
-                }}
-              />
-            </div>
-          </Card>
+          <div className="pt-3 border-t border-gray-200 flex justify-center">
+            <Pagination
+              current={page}
+              pageSize={pageSize}
+              total={total}
+              showSizeChanger
+              pageSizeOptions={["10", "20", "50"]}
+              showTotal={(t, range) => `${range[0]}-${range[1]} of ${t} questions`}
+              onChange={(p, ps) => {
+                setPage(p);
+                setPageSize(ps);
+                loadQuestions();
+              }}
+            />
+          </div>
+        </Card>
       </div>
 
       <Modal
@@ -216,12 +216,16 @@ export default function QuestionList({ quizId }) {
             name="name"
             rules={[{ required: true, message: 'Please enter question name' }]}
           >
-            <Input placeholder="Enter question name" />
+            <Input
+              maxLength={100}
+              showCount
+              placeholder="Enter question name"
+            />
           </Form.Item>
 
           {/* Score and Multiple Answers on the same row, symmetric */}
           <div className="flex gap-4">
-            <Form.Item
+            {/* <Form.Item
               label="Question Score"
               name="questionScore"
               rules={[{ required: true, message: 'Please enter question score' }]}
@@ -234,7 +238,7 @@ export default function QuestionList({ quizId }) {
                 placeholder="Enter score"
                 className="w-full"
               />
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
               label="Multiple Answers"
@@ -253,9 +257,11 @@ export default function QuestionList({ quizId }) {
             <Input.TextArea
               rows={3}
               placeholder="Enter question description (optional)"
+              maxLength={500}
+              showCount
             />
           </Form.Item>
-          
+
         </Form>
       </Modal>
     </>
