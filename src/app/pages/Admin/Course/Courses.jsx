@@ -1,5 +1,3 @@
-// src\app\pages\ProgramManager\Course\Courses.jsx
-
 import React, { useEffect, useState } from "react";
 import {
   Input,
@@ -13,6 +11,7 @@ import {
   Drawer,
   Space,
   Popconfirm,
+  App,
 } from "antd";
 import {
   PlusOutlined,
@@ -24,6 +23,7 @@ import {
   fetchCourseDetail,
   addCourse,
   updateCourse,
+  deleteCourse,
 } from "../../../apis/ProgramManager/CourseApi";
 import CourseList from "./partials/CourseList";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
@@ -35,6 +35,7 @@ const { Search } = Input;
 const { Option } = Select;
 
 const Courses = () => {
+  const {message} = App.useApp();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -128,8 +129,31 @@ const Courses = () => {
   };
 
   const handleDelete = async (id) => {
-    // Delete functionality not available in current API
-    message.info("Delete functionality not implemented yet");
+    setDeletingId(id);
+    try {
+      const res = await deleteCourse(id);
+      message.success((res && res.message) || 'Course deleted successfully');
+      // Refresh list after delete
+      const params = {
+        pageNumber,
+        pageSize,
+        searchTerm,
+        categoryId,
+        levelId,
+        isActive: isActive === undefined ? undefined : String(isActive).toLowerCase(),
+      };
+      Object.keys(params).forEach((key) =>
+        params[key] === undefined || params[key] === null ? delete params[key] : null
+      );
+      const data = await fetchCourses(params);
+      setCourses(data.items || []);
+      setTotal(data.totalCount || 0);
+      closeDrawer();
+    } catch (err) {
+      message.error(err.message || 'Delete failed');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   // Drawer handlers
@@ -209,8 +233,8 @@ const Courses = () => {
   const handleCreate = async (values) => {
     setSubmitting(true);
     try {
-      await addCourse(values);
-      message.success('Course created successfully');
+      const res = await addCourse(values);
+      message.success((res && res.message) || 'Course created successfully');
       // Refresh list
       const params = {
         pageNumber,
@@ -238,8 +262,8 @@ const Courses = () => {
     if (!currentCourse) return;
     setSubmitting(true);
     try {
-      await updateCourse(currentCourse.id, values);
-      message.success('Course updated successfully');
+      const res = await updateCourse(currentCourse.id, values);
+      message.success((res && res.message) || 'Course updated successfully');
       // Refresh list
       const params = {
         pageNumber,

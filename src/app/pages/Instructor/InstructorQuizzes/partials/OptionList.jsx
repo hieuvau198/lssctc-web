@@ -38,6 +38,8 @@ export default function OptionList({ questionId }) {
       render: (name, opt) =>
         editingOptionId === opt.id ? (
           <Input
+            maxLength={100}
+            showCount
             value={editingOptionValues[opt.id]?.name}
             onChange={(e) =>
               setEditingOptionValues((prev) => ({
@@ -91,7 +93,7 @@ export default function OptionList({ questionId }) {
                 [opt.id]: { ...prev[opt.id], optionScore: val },
               }))
             }
-            className="w-28"
+            className="w-2"
           />
         ) : (
           score !== null ? score : 0
