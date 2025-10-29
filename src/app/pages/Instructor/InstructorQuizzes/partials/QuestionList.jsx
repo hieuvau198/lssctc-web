@@ -167,7 +167,7 @@ export default function QuestionList({ quizId }) {
   return (
     <>
       <div className="shadow-xl rounded-2xl overflow-hidden">
-        <Card title={`Questions (${total})`} className="h-auto flex flex-col overflow-hidden">
+        <Card title={`Questions`} className="h-auto flex flex-col overflow-hidden">
           <div className="flex-1 min-h-0">
             <Table
               columns={columns}

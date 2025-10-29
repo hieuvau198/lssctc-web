@@ -1,76 +1,106 @@
+import axios from 'axios';
+
 const BASE_URL = `${import.meta.env.VITE_API_Program_Service_URL}/Courses`;
 
 export async function fetchCourses({
   pageNumber = 1,
-  pageSize = 12,
+  pageSize = 10,
   searchTerm = "",
   categoryId,
   levelId,
   isActive,
 } = {}) {
-  const params = new URLSearchParams({
-    PageNumber: pageNumber,
-    PageSize: pageSize,
-    SearchTerm: searchTerm,
-  });
+  try {
+    const params = {
+      PageNumber: pageNumber,
+      PageSize: pageSize,
+      SearchTerm: searchTerm,
+    };
+    if (categoryId !== undefined) params.CategoryId = categoryId;
+    if (levelId !== undefined) params.LevelId = levelId;
+    if (isActive !== undefined) params.IsActive = isActive;
 
-  if (categoryId !== undefined) params.append("CategoryId", categoryId);
-  if (levelId !== undefined) params.append("LevelId", levelId);
-  if (isActive !== undefined) params.append("IsActive", isActive);
-
-  const response = await fetch(`${BASE_URL}?${params}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch courses");
+    const { data } = await axios.get(`${BASE_URL}`, { params });
+    return data;
+  } catch (err) {
+    console.error('Error fetching courses:', err);
+    throw err;
   }
-  return response.json();
 }
 
 export async function fetchCourseDetail(id) {
-  const response = await fetch(`${BASE_URL}/${id}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch course detail");
+  try {
+    const { data } = await axios.get(`${BASE_URL}/${id}`);
+    return data;
+  } catch (err) {
+    console.error('Error fetching course detail:', err);
+    throw err;
   }
-  return response.json();
 }
 
 export async function addCourse(course) {
-  const response = await fetch(BASE_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(course),
-  });
-  if (!response.ok) {
-    throw new Error("Failed to add course");
+  try {
+    const { data } = await axios.post(BASE_URL, course);
+    return data;
+  } catch (err) {
+    const msg = err?.response?.data?.message || err.message;
+    console.error('Error adding course:', msg);
+    throw new Error(msg);
   }
-  return response.json();
 }
 
 export async function updateCourse(id, course) {
-  const response = await fetch(`${BASE_URL}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(course),
-  });
-  if (!response.ok) {
-    throw new Error("Failed to update course");
+  try {
+    const { data } = await axios.put(`${BASE_URL}/${id}`, course);
+    return data;
+  } catch (err) {
+    const msg = err?.response?.data?.message || err.message;
+    console.error('Error updating course:', msg);
+    throw new Error(msg);
   }
-  return response.json();
+}
+
+// Delete a course by id
+export async function deleteCourse(id) {
+  try {
+    const { data } = await axios.delete(`${BASE_URL}/${id}`);
+    return data || {};
+  } catch (err) {
+    const msg = err?.response?.data?.message || err.message;
+    console.error('Error deleting course:', msg);
+    throw new Error(msg);
+  }
 }
 
 // Fetch all course categories
 export async function fetchCourseCategories() {
-  const response = await fetch(`${BASE_URL}/categories`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch course categories");
+  try {
+    const { data } = await axios.get(`${BASE_URL}/categories`);
+    // Expecting an array like: [{id, name, description}, ...]
+    if (!Array.isArray(data)) return [];
+    return data.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+    }));
+  } catch (err) {
+    console.error('Error fetching course categories:', err);
+    throw err;
   }
-  return response.json();
 }
 
 // Fetch all course levels
 export async function fetchCourseLevels() {
-  const response = await fetch(`${BASE_URL}/levels`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch course levels");
+  try {
+    const { data } = await axios.get(`${BASE_URL}/levels`);
+    if (!Array.isArray(data)) return [];
+    return data.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+    }));
+  } catch (err) {
+    console.error('Error fetching course levels:', err);
+    throw err;
   }
-  return response.json();
 }
