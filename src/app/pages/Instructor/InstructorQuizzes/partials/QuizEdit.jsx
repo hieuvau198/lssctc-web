@@ -44,7 +44,7 @@ export default function QuizEdit() {
 
       await updateQuiz(id, values);
       message.success('Quiz updated successfully');
-      navigate(`/instructor/quizzes/${id}`);
+      navigate(-1);
     } catch (e) {
       console.error('Failed to update quiz:', e);
       message.error('Failed to update quiz');
@@ -105,7 +105,7 @@ export default function QuizEdit() {
               name="passScoreCriteria"
               rules={[
                 { required: true, message: 'Please enter pass score criteria' },
-                { type: 'number', min: 0, max: 100, message: 'Must be between 0-100' },
+                { type: 'number', min: 0, max: 10, message: 'Must be between 0-10' },
               ]}
             >
               <InputNumber
@@ -133,12 +133,12 @@ export default function QuizEdit() {
             </Form.Item>
           </div>
 
-          <Form.Item
+          {/* <Form.Item
             label="Total Score (Points)"
             name="totalScore"
             rules={[
               { required: true, message: 'Please enter total score' },
-              { type: 'number', min: 0, max: 100, message: 'Must be between 0-100' },
+              { type: 'number', min: 0, max: 10, message: 'Must be between 0-10' },
             ]}
           >
             <InputNumber
@@ -147,7 +147,7 @@ export default function QuizEdit() {
               className="w-full"
               size="large"
             />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item
             label="Description"
