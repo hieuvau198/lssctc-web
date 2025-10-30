@@ -1,4 +1,4 @@
-import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
+import { ArrowLeft, Save } from 'lucide-react';
 import { App, Button, Card, Form, Input, InputNumber, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';

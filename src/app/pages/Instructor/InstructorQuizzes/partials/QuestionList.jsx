@@ -1,4 +1,4 @@
-import { CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { CheckCircle, XCircle, Trash2, Pencil } from 'lucide-react';
 import { App, Badge, Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Switch, Table, Tag, Tooltip, Pagination } from 'antd';
 import { useEffect, useState } from 'react';
 import { deleteQuizQuestion, getQuizQuestions, updateQuizQuestion } from '../../../../apis/Instructor/InstructorQuiz';
@@ -136,7 +136,7 @@ export default function QuestionList({ quizId }) {
           <Tooltip title="Edit Question">
             <Button
               type="text"
-              icon={<EditOutlined />}
+              icon={<Pencil className="w-4 h-4" />}
               onClick={() => handleEditQuestion(record)}
               size="small"
               className="hover:bg-yellow-50 hover:text-yellow-600"
@@ -153,7 +153,7 @@ export default function QuestionList({ quizId }) {
             <Tooltip title="Delete Question">
               <Button
                 type="text"
-                icon={<DeleteOutlined />}
+                icon={<Trash2 className="w-4 h-4" />}
                 size="small"
                 danger
               />

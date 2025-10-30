@@ -1,22 +1,13 @@
-import {
-  BookOutlined,
-  DashboardOutlined,
-  ExperimentOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  ScheduleOutlined,
-  UserOutlined
-} from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { NavLink } from 'react-router';
-import { Layers } from 'lucide-react';
+import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, PanelLeft } from 'lucide-react';
 
 const ITEMS = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
-  { to: '/admin/users', label: 'Users', icon: <UserOutlined /> },
+  { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
+  { to: '/admin/users', label: 'Users', icon: <Users className="w-5 h-5" /> },
   { to: '/admin/programs', label: 'Programs', icon: <Layers className="w-5 h-5" /> },
-  { to: '/admin/courses', label: 'Courses', icon: <BookOutlined /> },
-  { to: '/admin/class', label: 'Class', icon: <ScheduleOutlined /> },
+  { to: '/admin/courses', label: 'Courses', icon: <BookOpen className="w-5 h-5" /> },
+  { to: '/admin/class', label: 'Class', icon: <Calendar className="w-5 h-5" /> },
 ];
 
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
@@ -55,7 +46,7 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
             className="hidden md:inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100"
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
           {/* Mobile close button */}
           <button
@@ -63,7 +54,7 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
             className="md:hidden inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100"
             aria-label="Close navigation"
           >
-            <MenuFoldOutlined />
+            <PanelLeftClose className="w-4 h-4" />
           </button>
         </div>
 

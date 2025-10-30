@@ -13,9 +13,7 @@ import {
   Popconfirm,
   App,
 } from "antd";
-import {
-  PlusOutlined,
-} from "@ant-design/icons";
+import { Plus } from "lucide-react";
 import {
   fetchCourses,
   fetchCourseCategories,
@@ -42,7 +40,7 @@ const Courses = () => {
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [deletingId, setDeletingId] = useState(null);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
@@ -402,7 +400,7 @@ const Courses = () => {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
+          <Button type="primary" icon={<Plus className="w-4 h-4" />} onClick={openCreate}>
             Add Course
           </Button>
           <ViewModeToggle

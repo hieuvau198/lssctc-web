@@ -1,4 +1,4 @@
-import { ArrowLeftOutlined, UserOutlined, MailOutlined, PhoneOutlined, CalendarOutlined, IdcardOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { ArrowLeft, User, Mail, Phone, Calendar, IdCard, CheckCircle } from 'lucide-react';
 import { Avatar, Button, Card, Descriptions, Skeleton, Tag, Divider, Row, Col } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';

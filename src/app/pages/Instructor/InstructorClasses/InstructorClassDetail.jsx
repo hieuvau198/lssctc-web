@@ -1,4 +1,4 @@
-import { ArrowLeftOutlined, BookOutlined, CalendarOutlined, TeamOutlined } from '@ant-design/icons';
+import { ArrowLeft, BookOpen, Calendar, Users } from 'lucide-react';
 import { Alert, Button, Card, Skeleton } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
