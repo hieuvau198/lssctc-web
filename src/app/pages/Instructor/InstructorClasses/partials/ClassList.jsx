@@ -1,6 +1,6 @@
 import React from "react";
 import { Table, Tag, Button, Tooltip, Pagination, Empty } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
+import { Eye } from "lucide-react";
 import ClassCard from "./ClassCard";
 import { getProgramName } from "../../../../mock/instructorClasses";
 

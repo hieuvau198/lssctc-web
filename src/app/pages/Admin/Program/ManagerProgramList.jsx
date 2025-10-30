@@ -1,28 +1,27 @@
-import React, { useEffect, useState } from "react";
-import {
-  Input,
-  Alert,
-  Empty,
-  Button,
-  message,
-  Form,
-  Skeleton,
-  Card,
-} from "antd";
 import {
   PlusOutlined,
 } from "@ant-design/icons";
 import {
-  fetchPrograms,
+  Alert,
+  Button,
+  Empty,
+  Form,
+  Input,
+  message,
+  Skeleton
+} from "antd";
+import { useEffect, useState } from "react";
+import {
+  createProgram,
   deleteProgram,
   fetchProgramDetail,
-  createProgram,
+  fetchPrograms,
   updateProgramBasic,
 } from "../../../apis/ProgramManager/ProgramManagerCourseApi";
-import ProgramTableView from "./partials/ProgramTableView";
+import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import ProgramCardView from "./partials/ProgramCardView";
 import ProgramDrawer from "./partials/ProgramDrawer";
-import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
+import ProgramTableView from "./partials/ProgramTableView";
 
 const { Search } = Input;
 
@@ -33,18 +32,18 @@ const ManagerProgramList = () => {
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [deletingId, setDeletingId] = useState(null);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
-  
+
   // Drawer states
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState(null); // 'view' | 'create' | 'edit'
   const [currentProgram, setCurrentProgram] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
-  
+
   // Forms
   const [createForm] = Form.useForm();
   const [editForm] = Form.useForm();
@@ -268,9 +267,9 @@ const ManagerProgramList = () => {
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             Add Program
           </Button>
-          <ViewModeToggle 
-            viewMode={viewMode} 
-            onViewModeChange={setViewMode} 
+          <ViewModeToggle
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
           />
         </div>
       </div>

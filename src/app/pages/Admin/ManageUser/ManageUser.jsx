@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Menu } from 'antd';
 import {
+  ExperimentOutlined,
   TeamOutlined,
   UserOutlined,
-  ExperimentOutlined,
 } from '@ant-design/icons';
+import { App, Menu } from 'antd';
+import { useState } from 'react';
 import InstructorTable from './partials/InstructorTable';
-import TraineeTable from './partials/TraineeTable';
 import SimulatorManagerTable from './partials/SimulationManagerTable';
+import TraineeTable from './partials/TraineeTable';
 
 const MENU_ITEMS = [
   { key: 'instructor', icon: <UserOutlined />, label: 'Instructor' },
@@ -16,6 +16,7 @@ const MENU_ITEMS = [
 ];
 
 export default function ManageUser() {
+  const { message } = App.useApp();
   const [activeKey, setActiveKey] = useState('instructor');
 
   return (
