@@ -17,7 +17,17 @@ export default function Profile() {
   const fullName = storedUser?.fullName || storedUser?.name || 'Learner';
   const email = storedUser?.email || '-';
   const roles = Array.isArray(storedUser?.roles) ? storedUser.roles : (storedUser?.role ? [storedUser.role] : []);
-  const avatarUrl = !imgErr ? storedUser?.avatarUrl || storedUser?.avatar || null : null;
+  
+  // Generate default avatar URL
+  const getAvatarUrl = () => {
+    if (imgErr) return null;
+    const userAvatar = storedUser?.avatarUrl || storedUser?.avatar;
+    if (userAvatar) return userAvatar;
+    const defaultAvatarBase = import.meta.env.VITE_API_DEFAULT_AVATAR_URL;
+    return `${defaultAvatarBase}${encodeURIComponent(fullName)}`;
+  };
+  
+  const avatarUrl = getAvatarUrl();
   const phone = storedUser?.phone || storedUser?.mobile || '-';
   const studentId = storedUser?.studentId || storedUser?.code || storedUser?.id || '-';
   const status = storedUser?.status || '-';

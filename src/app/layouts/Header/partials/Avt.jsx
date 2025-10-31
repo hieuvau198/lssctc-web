@@ -10,14 +10,27 @@ import { clearRememberedCredentials } from '../../../lib/crypto';
  */
 export default function Avt({ onLogout }) {
   let initial = 'U';
+  let userName = 'User';
+  let avatarUrl = null;
+  
   try {
     const rawUser = localStorage.getItem('user');
     const parsed = rawUser ? JSON.parse(rawUser) : null;
     const name = parsed?.fullName || parsed?.name || parsed?.email;
     if (typeof name === 'string' && name.trim()) {
-      initial = name.trim().charAt(0).toUpperCase();
+      userName = name.trim();
+      initial = userName.charAt(0).toUpperCase();
     }
+    // Check for user avatar
+    avatarUrl = parsed?.avatarUrl || parsed?.avatar || null;
   } catch {}
+
+  // Generate default avatar URL if no avatar provided
+  const getAvatarUrl = () => {
+    if (avatarUrl) return avatarUrl;
+    const defaultAvatarBase = import.meta.env.VITE_API_DEFAULT_AVATAR_URL;
+    return `${defaultAvatarBase}${encodeURIComponent(userName)}`;
+  };
 
   const items = [
     { key: 'profile', label: <NavLink to="/profile" target="_top">Profile</NavLink> },
@@ -51,9 +64,18 @@ export default function Avt({ onLogout }) {
       <button
         type="button"
         title="Account"
-        className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-blue-600 text-white font-semibold select-none shadow-sm outline-none focus:ring-2 focus:ring-blue-300"
+        className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-blue-600 text-white font-semibold select-none shadow-sm outline-none focus:ring-2 focus:ring-blue-300 overflow-hidden"
       >
-        {initial}
+        <img 
+          src={getAvatarUrl()} 
+          alt={userName}
+          className="w-full h-full object-cover rounded-full"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'flex';
+          }}
+        />
+        <span className="hidden items-center justify-center w-full h-full">{initial}</span>
       </button>
     </Dropdown>
   );

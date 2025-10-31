@@ -51,6 +51,14 @@ export default function InstructorProfile() {
 
   const { user } = profile;
 
+  // Generate default avatar URL
+  const getAvatarUrl = (avatarUrl, name) => {
+    if (avatarUrl) return avatarUrl;
+    const defaultAvatarBase = import.meta.env.VITE_API_DEFAULT_AVATAR_URL;
+    const userName = name || 'User';
+    return `${defaultAvatarBase}${encodeURIComponent(userName)}`;
+  };
+
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 py-4">
@@ -66,14 +74,14 @@ export default function InstructorProfile() {
                 <div className="relative inline-block">
                   <Avatar 
                     size={128} 
-                    src={user?.avatar_url}
+                    src={getAvatarUrl(user?.avatar_url, user?.fullname)}
                     className="ring-4 ring-white/30 shadow-2xl"
                   >
                     {user?.fullname?.charAt(0) || 'I'}
                   </Avatar>
                   {profile?.is_active && (
                     <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
-                      <CheckCircleOutlined className="text-white text-lg" />
+                      <CheckCircle className="w-5 h-5 text-white" />
                     </div>
                   )}
                 </div>
