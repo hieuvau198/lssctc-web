@@ -208,11 +208,8 @@ Create hook src/modules/learner/hooks/useLearners.js
 - Accessible forms (labels, aria tags).
 - Use Tailwind classes, not inline styles.
 - Use const { message } = App.useApp(); for message.
-<<<<<<< Updated upstream
-=======
 - Use lucide icons from `lucide-react` package for icons.
 - Use Ant Design components and Shadcn/ui only if already used in the project.
->>>>>>> Stashed changes
 
 ---
 
