@@ -30,26 +30,28 @@
 ```
 src/
   app/            # entry, assets, layouts, pages
-  assets/         # images, svg, fonts
-  components/     # reusable UI components (no direct API calls)
-  contexts/       # global contexts (AuthProvider, ThemeProvider...)
-  hooks/          # shared hooks (useAuth, useQueryClient...)
-  layouts/        # main layouts (header, footer...)
-  modules/        # business logic modules
-    <Module>/
-      api/        # API calls and data mappers
-      components/ # module-specific components
-      pages/      # route-level pages
-      hooks/      # module-specific hooks
-      types/      # JSdoc or TS types
-  routes/         # route configuration
-  styles/         # CSS/Tailwind utilities
+    api/            # fetch api data (same as src/app/api)
+    assets/         # images, svg, fonts (same as src/app/assets)
+    components/     # reusable UI components (no direct API calls, same as src/app/components)
+    contexts/       # global contexts (AuthProvider, ThemeProvider..., same as src/app/contexts)
+    hooks/          # shared hooks (useAuth, useQueryClient..., same as src/app/hooks)
+    layouts/        # main layouts (header, footer, trainee layout, admin layout..., same as src/app/layouts)
+    modules/        # business logic modules (same as src/app/modules)
+    lib/            # utility functions (http, formatDate..., same as src/app/lib)
+    mock/           # mock data for development (same as src/app/mock)
+    pages/          # top-level pages (same as src/app/pages)
+    routes/         # route configuration (same as src/app/routes)
+    styles/         # CSS/Tailwind utilities (same as src/app/styles)
+  App.jsx (same as src/app/App.jsx)
+  main.jsx (same as src/app/main.jsx)
+  index.css (same as src/app/index.css)
 ```
 
 **Rules:**
-- New Page → `src/modules/<Module>/pages/*` and add route in `src/routes`.
-- New API → `src/modules/<Module>/api/*`, return pure async functions.
-- New Hook → `src/modules/<Module>/hooks/*`, use React Query for fetching.
+- New Page → `src/pages/<page-name>/*` and add route in `src/routes`.
+- New API → `src/api/*`, return pure async functions.
+- New Hook → `src/hooks/*`, use React Query for fetching.
+- New Import don't have to use `@/`, use relative paths.
 
 ---
 
@@ -206,6 +208,11 @@ Create hook src/modules/learner/hooks/useLearners.js
 - Accessible forms (labels, aria tags).
 - Use Tailwind classes, not inline styles.
 - Use const { message } = App.useApp(); for message.
+<<<<<<< Updated upstream
+=======
+- Use lucide icons from `lucide-react` package for icons.
+- Use Ant Design components and Shadcn/ui only if already used in the project.
+>>>>>>> Stashed changes
 
 ---
 
