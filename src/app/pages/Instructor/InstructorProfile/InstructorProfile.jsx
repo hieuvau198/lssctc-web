@@ -91,7 +91,7 @@ export default function InstructorProfile() {
                   <h2 className="text-3xl font-bold mb-2">{user?.fullname || 'Unknown'}</h2>
                   <div className="flex flex-wrap gap-3">
                     <Tag color="gold" className="px-3 py-1">
-                      <IdcardOutlined className="mr-1" />
+                      <IdCard className="mr-1" />
                       {profile?.instructor_code || 'N/A'}
                     </Tag>
                     <Tag color={profile?.is_active ? 'green' : 'red'} className="px-3 py-1">
@@ -103,7 +103,7 @@ export default function InstructorProfile() {
                   </div>
                   <div className="flex items-center gap-4 mt-4 text-blue-100">
                     <div className="flex items-center gap-1">
-                      <CalendarOutlined />
+                      <Calendar />
                       <span>Joined {profile?.hire_date || 'Unknown'}</span>
                     </div>
                   </div>
@@ -120,7 +120,7 @@ export default function InstructorProfile() {
                 <Card 
                   title={
                     <div className="flex items-center gap-2">
-                      <UserOutlined className="text-blue-600" />
+                      <User className="text-blue-600" />
                       <span>Personal Information</span>
                     </div>
                   }
@@ -145,7 +145,7 @@ export default function InstructorProfile() {
                       label={<span className="font-medium text-gray-700">Email</span>}
                     >
                       <div className="flex items-center gap-2">
-                        <MailOutlined className="text-gray-500" />
+                        <Mail className="text-gray-500" />
                         <span className="text-blue-600">{user?.email || 'N/A'}</span>
                       </div>
                     </Descriptions.Item>
@@ -153,7 +153,7 @@ export default function InstructorProfile() {
                       label={<span className="font-medium text-gray-700">Phone</span>}
                     >
                       <div className="flex items-center gap-2">
-                        <PhoneOutlined className="text-gray-500" />
+                        <Phone className="text-gray-500" />
                         <span className="text-gray-900">{user?.phone_number || 'N/A'}</span>
                       </div>
                     </Descriptions.Item>
@@ -166,7 +166,7 @@ export default function InstructorProfile() {
                 <Card 
                   title={
                     <div className="flex items-center gap-2">
-                      <IdcardOutlined className="text-indigo-600" />
+                      <IdCard className="text-indigo-600" />
                       <span>Professional Details</span>
                     </div>
                   }
@@ -192,7 +192,7 @@ export default function InstructorProfile() {
                       label={<span className="font-medium text-gray-700">Hire Date</span>}
                     >
                       <div className="flex items-center gap-2">
-                        <CalendarOutlined className="text-gray-500" />
+                        <Calendar className="text-gray-500" />
                         <span className="text-gray-900">{profile?.hire_date || 'N/A'}</span>
                       </div>
                     </Descriptions.Item>
@@ -202,7 +202,7 @@ export default function InstructorProfile() {
                       <Tag 
                         color={profile?.is_active ? 'green' : 'red'} 
                         className="px-3 py-1"
-                        icon={profile?.is_active ? <CheckCircleOutlined /> : null}
+                        icon={profile?.is_active ? <CheckCircle /> : null}
                       >
                         {profile?.is_active ? 'Active' : 'Inactive'}
                       </Tag>

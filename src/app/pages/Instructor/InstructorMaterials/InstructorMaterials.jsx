@@ -61,14 +61,14 @@ export default function InstructorMaterials() {
           <Button.Group>
             <Button
               type={activeTab === 'docs' ? 'primary' : 'default'}
-              icon={<BookOutlined />}
+              icon={<BookOpen />}
               onClick={() => setActiveTab('docs')}
             >
               Docs
             </Button>
             <Button
               type={activeTab === 'videos' ? 'primary' : 'default'}
-              icon={<VideoCameraOutlined />}
+              icon={<Video />}
               onClick={() => setActiveTab('videos')}
             >
               Videos
