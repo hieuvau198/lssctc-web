@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
-import { Modal, Form, Input, InputNumber, Select, Switch, Button } from "antd";
+import React, { useEffect, useState } from "react";
+import { Modal, Form, Input, InputNumber, Select, Switch, Button, Image } from "antd";
+import { fetchCourseCategories, fetchCourseLevels } from "../../../../apis/ProgramManager/CourseApi";
 
 const { Option } = Select;
 
@@ -14,6 +15,11 @@ const EditCourse = ({
   embedded = false,
 }) => {
   const [form] = Form.useForm();
+  const [localCategories, setLocalCategories] = useState(categories || []);
+  const [localLevels, setLocalLevels] = useState(levels || []);
+  const [catsLoading, setCatsLoading] = useState(false);
+  const [lvlsLoading, setLvlsLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState("");
 
   useEffect(() => {
     if (course) {
@@ -28,8 +34,49 @@ const EditCourse = ({
         durationHours: course.durationHours,
         courseCodeName: course.courseCodeName,
       });
+      // initialize preview when editing existing course
+      setImagePreview(course.imageUrl || "");
     }
   }, [course, form]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadCategories() {
+      setCatsLoading(true);
+      try {
+        const data = await fetchCourseCategories();
+        if (!mounted) return;
+        const mapped = data.map((c) => ({ value: c.id, label: c.name }));
+        setLocalCategories(mapped);
+      } catch (err) {
+        console.error('Failed to load categories', err);
+      } finally {
+        if (mounted) setCatsLoading(false);
+      }
+    }
+
+    async function loadLevels() {
+      setLvlsLoading(true);
+      try {
+        const data = await fetchCourseLevels();
+        if (!mounted) return;
+        const mapped = data.map((l) => ({ value: l.id, label: l.name }));
+        setLocalLevels(mapped);
+      } catch (err) {
+        console.error('Failed to load levels', err);
+      } finally {
+        if (mounted) setLvlsLoading(false);
+      }
+    }
+
+    loadCategories();
+    loadLevels();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleOk = () => {
     form
@@ -37,7 +84,7 @@ const EditCourse = ({
       .then((values) => {
         onUpdate(values);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const formContent = (
@@ -56,14 +103,22 @@ const EditCourse = ({
             name="name"
             rules={[{ required: true, message: "Please enter course name" }]}
           >
-            <Input />
+            <Input 
+              maxLength={50}
+              showCount
+              placeholder="Enter course name"
+            />
           </Form.Item>
           <Form.Item
             label="Course Code"
             name="courseCodeName"
             rules={[{ required: true, message: "Please enter course code" }]}
           >
-            <Input />
+            <Input 
+              maxLength={30}
+              showCount
+              placeholder="Enter course code"
+            />
           </Form.Item>
         </div>
       )}
@@ -73,7 +128,11 @@ const EditCourse = ({
           name="name"
           rules={[{ required: true, message: "Please enter course name" }]}
         >
-          <Input />
+          <Input 
+            maxLength={50}
+            showCount
+            placeholder="Enter course name"
+          />
         </Form.Item>
       )}
       {!embedded && (
@@ -82,24 +141,29 @@ const EditCourse = ({
           name="courseCodeName"
           rules={[{ required: true, message: "Please enter course code" }]}
         >
-          <Input />
+          <Input 
+            maxLength={30}
+            showCount
+            placeholder="Enter course code"
+          />
         </Form.Item>
       )}
-      <Form.Item
-        label="Description"
-        name="description"
-        rules={[{ required: true, message: "Please enter description" }]}
-        className={embedded ? "md:col-span-2" : undefined}
-      >
-        <Input.TextArea rows={3} />
-      </Form.Item>
+
       <Form.Item
         label="Category"
         name="categoryId"
         rules={[{ required: true, message: "Please select category" }]}
       >
-        <Select placeholder="Select category" loading={confirmLoading} notFoundContent="No categories">
-          {categories.map((cat) => (
+        <Select
+          placeholder="Select category"
+          showSearch
+          allowClear
+          loading={catsLoading}
+          notFoundContent="No categories"
+          optionFilterProp="children"
+          filterOption={(input, option) => (option?.children || '').toLowerCase().includes(input.toLowerCase())}
+        >
+          {localCategories.map((cat) => (
             <Option key={cat.value} value={cat.value}>
               {cat.label}
             </Option>
@@ -111,8 +175,16 @@ const EditCourse = ({
         name="levelId"
         rules={[{ required: true, message: "Please select level" }]}
       >
-        <Select placeholder="Select level" loading={confirmLoading} notFoundContent="No levels">
-          {levels.map((lvl) => (
+        <Select
+          placeholder="Select level"
+          showSearch
+          allowClear
+          loading={lvlsLoading}
+          notFoundContent="No levels"
+          optionFilterProp="children"
+          filterOption={(input, option) => (option?.children || '').toLowerCase().includes(input.toLowerCase())}
+        >
+          {localLevels.map((lvl) => (
             <Option key={lvl.value} value={lvl.value}>
               {lvl.label}
             </Option>
@@ -138,10 +210,37 @@ const EditCourse = ({
         name="imageUrl"
         rules={[{ required: true, message: "Please enter image URL" }]}
       >
-        <Input />
+        <Input
+          onChange={(e) => {
+            const val = e.target.value;
+            form.setFieldsValue({ imageUrl: val });
+            setImagePreview(val);
+          }}
+        />
+      </Form.Item>
+      <Form.Item label="Preview">
+        <div className="w-36 h-36 flex items-center justify-center border rounded-md overflow-hidden bg-gray-50">
+          {imagePreview ? (
+            <Image
+              src={imagePreview}
+              alt="Preview"
+              fallback="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='96' viewBox='0 0 128 96'%3E%3Crect width='128' height='96' fill='%23f3f4f6'/%3E%3Ctext x='50%' y='50%' fill='%239ca3af' font-size='12' font-family='Arial' dominant-baseline='middle' text-anchor='middle'%3ENo preview%3C/text%3E%3C/svg%3E"
+            />
+          ) : (
+            <div className="text-sm text-gray-500 px-2 text-center">Preview</div>
+          )}
+        </div>
       </Form.Item>
       <Form.Item label="Status" name="isActive" valuePropName="checked">
         <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+      </Form.Item>
+      <Form.Item
+        label="Description"
+        name="description"
+        rules={[{ required: true, message: "Please enter description" }]}
+        className={embedded ? "md:col-span-2" : undefined}
+      >
+        <Input.TextArea rows={3} maxLength={500} showCount placeholder="Enter course description" />
       </Form.Item>
       {embedded && (
         <div className="md:col-span-2 mt-4 flex justify-end gap-3">

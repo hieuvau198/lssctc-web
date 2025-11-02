@@ -1,4 +1,4 @@
-import { CheckCircleOutlined, CloseCircleOutlined, EditOutlined } from '@ant-design/icons';
+import { CheckCircle, XCircle, Pencil } from 'lucide-react';
 import { App, Button, Input, InputNumber, Switch, Table, Tag, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 import { getQuizQuestionOptions, updateQuizQuestionOption } from '../../../../apis/Instructor/InstructorQuiz';
@@ -38,6 +38,8 @@ export default function OptionList({ questionId }) {
       render: (name, opt) =>
         editingOptionId === opt.id ? (
           <Input
+            maxLength={100}
+            showCount
             value={editingOptionValues[opt.id]?.name}
             onChange={(e) =>
               setEditingOptionValues((prev) => ({
@@ -68,9 +70,9 @@ export default function OptionList({ questionId }) {
             }
           />
         ) : isCorrect ? (
-          <Tag color="success" icon={<CheckCircleOutlined />}>Correct</Tag>
+          <Tag color="success" icon={<CheckCircle className="w-3.5 h-3.5" />}>Correct</Tag>
         ) : (
-          <Tag color="default" icon={<CloseCircleOutlined />}>Wrong</Tag>
+          <Tag color="default" icon={<XCircle className="w-3.5 h-3.5" />}>Wrong</Tag>
         ),
     },
     {
@@ -91,7 +93,7 @@ export default function OptionList({ questionId }) {
                 [opt.id]: { ...prev[opt.id], optionScore: val },
               }))
             }
-            className="w-28"
+            className="w-2"
           />
         ) : (
           score !== null ? score : 0
@@ -159,7 +161,7 @@ export default function OptionList({ questionId }) {
             <Tooltip title="Edit option inline">
               <Button
                 type="text"
-                icon={<EditOutlined />}
+                icon={<Pencil className="w-4 h-4" />}
                 size="small"
                 onClick={() => {
                   setEditingOptionId(opt.id);

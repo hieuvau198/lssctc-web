@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Card, Descriptions, Tag, Skeleton, Alert, Button, App } from 'antd';
-import { ArrowLeftOutlined, EditOutlined } from '@ant-design/icons';
+import { ArrowLeft, Pencil } from 'lucide-react';
 import { getQuizById } from '../../../../apis/Instructor/InstructorQuiz';
 import QuestionList from './QuestionList';
 

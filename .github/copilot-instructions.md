@@ -17,8 +17,8 @@
 ## 1) Tech Stack & Rules
 - **Build Tool:** Vite
 - **Frontend Framework:** React 18
-- **UI:** TailwindCSS (no inline styles)
-- **Data Fetching:** React Query (TanStack Query)
+- **UI:** TailwindCSS (no inline styles), Ant Design (if already used), Lucide Icons (for icons)
+- **Data Fetching:** React Query (TanStack Query), axios (if already used)
 - **State Management:** React Context + Local Hooks
 - **Routing:** TanStack Router (or React Router if already used)
 - **Authentication:** JWT Bearer tokens (stored in AuthContext)

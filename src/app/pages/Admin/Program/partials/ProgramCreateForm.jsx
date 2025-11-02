@@ -17,7 +17,7 @@ const ProgramCreateForm = ({ form, onFinish, onCancel, submitting }) => {
         label="Program Name"
         rules={[{ required: true, message: "Please enter program name" }]}
       >
-        <Input maxLength={120} placeholder="Enter program name" />
+        <Input maxLength={120} showCount placeholder="Enter program name" />
       </Form.Item>
 
       <Form.Item

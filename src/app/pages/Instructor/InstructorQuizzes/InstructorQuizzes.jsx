@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Skeleton, Empty, Pagination, Alert, Button, Tooltip, message, Popconfirm } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { getQuizzes, deleteQuiz } from '../../../apis/Instructor/InstructorQuiz';
 import QuizFilters from './partials/QuizFilters';
@@ -77,7 +77,7 @@ export default function InstructorQuizzes() {
             <Button
               type="text"
               size="small"
-              icon={<EyeOutlined />}
+              icon={<Eye className="w-4 h-4" />}
               onClick={(e) => {
                 e.stopPropagation();
                 handleView(record);
@@ -89,7 +89,7 @@ export default function InstructorQuizzes() {
             <Button
               type="text"
               size="small"
-              icon={<EditOutlined />}
+              icon={<Pencil className="w-4 h-4" />}
               onClick={(e) => {
                 e.stopPropagation();
                 handleEdit(record);
@@ -112,7 +112,7 @@ export default function InstructorQuizzes() {
               <Button
                 type="text"
                 size="small"
-                icon={<DeleteOutlined />}
+                icon={<Trash2 className="w-4 h-4" />}
                 onClick={(e) => e.stopPropagation()}
                 danger
               />

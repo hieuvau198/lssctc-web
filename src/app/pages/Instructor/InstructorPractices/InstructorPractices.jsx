@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Empty, Skeleton, Pagination, Tooltip, Button, message } from 'antd';
-import { EyeOutlined } from '@ant-design/icons';
+import { Eye } from 'lucide-react';
 import { getPractices } from '../../../apis/Instructor/InstructorPractice';
 
 export default function InstructorPractices() {
@@ -38,7 +38,7 @@ export default function InstructorPractices() {
       title: 'Actions', key: 'actions', width: 100, fixed: 'right', render: (_, record) => (
         <div className="flex justify-center">
           <Tooltip title="View">
-            <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => message.info(`View practice ${record.practiceName}`)} />
+            <Button type="text" size="small" icon={<Eye className="w-4 h-4" />} onClick={() => message.info(`View practice ${record.practiceName}`)} />
           </Tooltip>
         </div>
       )

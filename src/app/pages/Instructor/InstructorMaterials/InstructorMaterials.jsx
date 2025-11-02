@@ -1,4 +1,4 @@
-import { BookOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { BookOpen, Video } from 'lucide-react';
 import { Alert, Button, Card, Skeleton } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import ViewModeToggle from '../../../components/ViewModeToggle/ViewModeToggle';

@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Tag, Button, Tooltip, Popconfirm } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 const CourseCard = ({ course, onSelect, onEdit, onDelete, deletingId }) => {
   return (
@@ -23,14 +23,14 @@ const CourseCard = ({ course, onSelect, onEdit, onDelete, deletingId }) => {
         <Tooltip title="View Details" key="view">
           <Button
             type="text"
-            icon={<EyeOutlined />}
+            icon={<Eye className="w-4 h-4" />}
             onClick={() => onSelect(course)}
           />
         </Tooltip>,
         <Tooltip title="Edit Course" key="edit">
           <Button
             type="text"
-            icon={<EditOutlined />}
+            icon={<Pencil className="w-4 h-4" />}
             onClick={() => onEdit(course)}
           />
         </Tooltip>,
@@ -44,7 +44,7 @@ const CourseCard = ({ course, onSelect, onEdit, onDelete, deletingId }) => {
             <Button
               type="text"
               danger
-              icon={<DeleteOutlined />}
+              icon={<Trash2 className="w-4 h-4" />}
               loading={deletingId === course.id}
             />
           </Popconfirm>

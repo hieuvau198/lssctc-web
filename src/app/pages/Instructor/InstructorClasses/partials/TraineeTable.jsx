@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Avatar, Input, Button, Skeleton, Pagination } from 'antd';
-import { UserOutlined, SearchOutlined } from '@ant-design/icons';
+import { User, Search } from 'lucide-react';
 import { getClassMembers } from '../../../../apis/Instructor/InstructorSectionApi';
 
 // Mock data for trainees
@@ -215,16 +215,16 @@ export default function TraineeTable({ classId }) {
       key: 'student',
       width: 150,
       render: (_, record) => {
-        const avatarUrl = record.avatar
-          ? record.avatar
-          : `https://ui-avatars.com/api/?name=${encodeURIComponent(record.fullName || 'User')}&background=random`;
+        const defaultAvatarBase = import.meta.env.VITE_API_DEFAULT_AVATAR_URL;
+        const userName = record.fullName || 'User';
+        const avatarUrl = record.avatar || `${defaultAvatarBase}${encodeURIComponent(userName)}`;
 
         return (
           <div className="flex items-center gap-3">
             <Avatar
               size={40}
               src={avatarUrl}
-              icon={<UserOutlined />}
+              icon={<User className="w-4 h-4" />}
               className="flex-shrink-0"
             />
             <div className="min-w-0">
