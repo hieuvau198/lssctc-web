@@ -23,7 +23,7 @@ import ProgramCardView from "./partials/ProgramCardView";
 import ProgramDrawer from "./partials/ProgramDrawer";
 import ProgramTableView from "./partials/ProgramTableView";
 
-const { Search } = Input;
+// const { Search } = Input;
 
 const ManagerProgramList = () => {
   const [programs, setPrograms] = useState([]);
@@ -52,7 +52,7 @@ const ManagerProgramList = () => {
     setLoading(true);
     fetchPrograms({ pageNumber, pageSize, searchTerm })
       .then((data) => {
-        setPrograms(data.items);
+        setPrograms(data.items || []);
         setTotal(data.totalCount || 0);
         setLoading(false);
       })
@@ -79,7 +79,7 @@ const ManagerProgramList = () => {
       message.success("Program deleted successfully");
       // Refresh list
       fetchPrograms({ pageNumber, pageSize, searchTerm }).then((data) => {
-        setPrograms(data.items);
+        setPrograms(data.items || []);
         setTotal(data.totalCount || 0);
       });
       // Close drawer if current program is deleted
@@ -172,7 +172,7 @@ const ManagerProgramList = () => {
       message.success('Program created successfully');
       // Refresh list
       const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
-      setPrograms(data.items);
+      setPrograms(data.items || []);
       setTotal(data.totalCount || 0);
       closeDrawer();
     } catch (err) {
@@ -190,10 +190,10 @@ const ManagerProgramList = () => {
       message.success('Program updated successfully');
       // Refresh list
       const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
-      setPrograms(data.items);
+      setPrograms(data.items || []);
       setTotal(data.totalCount || 0);
       // Update current program
-      const updated = data.items.find(p => p.id === currentProgram.id);
+      const updated = data.items?.find(p => p.id === currentProgram.id);
       setCurrentProgram(updated || null);
       setDrawerMode('view');
     } catch (err) {
