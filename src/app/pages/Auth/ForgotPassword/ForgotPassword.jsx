@@ -70,7 +70,7 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
       <div className="max-w-7xl mx-auto px-4 pt-4">
-        <PageNav items={[{ title: 'Login', href: '/login' }, { title: 'Forgot Password' }]} className="pb-2" />
+        <PageNav items={[{ title: 'Login', href: '/auth/login' }, { title: 'Forgot Password' }]} className="pb-2" />
       </div>
       <div className="flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-md bg-white/90 backdrop-blur border border-blue-100 shadow-sm rounded-lg p-8">

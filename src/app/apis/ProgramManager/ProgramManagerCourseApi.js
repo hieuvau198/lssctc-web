@@ -8,11 +8,8 @@ export async function fetchPrograms(params = {}) {
   if (params.pageSize) searchParams.append("PageSize", params.pageSize);
   if (params.searchTerm) searchParams.append("SearchTerm", params.searchTerm);
 
-  const response = await fetch(`${API_BASE_URL}/Programs?${searchParams}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch programs");
-  }
-  return response.json();
+  const response = await axios.get(`${API_BASE_URL}/Programs?${searchParams}`);
+  return response.data;
 }
 
 // Fetch program detail by id
