@@ -2,7 +2,7 @@ import React from 'react';
 import { Dropdown } from 'antd';
 import { NavLink } from 'react-router';
 import Cookies from 'js-cookie';
-import { clearRememberedCredentials } from '../../../lib/crypto';
+import { clearRememberedCredentials } from '../../../libs/crypto';
 
 /**
  * Simple Avatar placeholder for authenticated user.
