@@ -1,6 +1,6 @@
 import { Card, Tag, Tooltip } from "antd";
 import { useNavigate } from "react-router";
-import { getProgramName } from "../../../../mock/instructorClasses";
+import { getProgramName } from "../../../../mocks/instructorClasses";
 
 const ClassCard = ({ classItem, onView }) => {
   const navigate = useNavigate();

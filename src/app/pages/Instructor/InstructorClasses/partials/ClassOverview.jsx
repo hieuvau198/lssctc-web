@@ -1,5 +1,5 @@
 import { Card, Descriptions, Tag } from 'antd';
-import { getProgramName } from '../../../../mock/instructorClasses';
+import { getProgramName } from '../../../../mocks/instructorClasses';
 
 const ClassOverview = ({ classData }) => {
   const formatDate = (dateString) => {

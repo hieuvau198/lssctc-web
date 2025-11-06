@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card, Table, Input, Select, Tag, Skeleton, Alert, Empty } from 'antd';
-import { getInstructorSections } from '../../../mock/instructorSections';
-import { getProgramName } from '../../../mock/instructorClasses';
+import { getInstructorSections } from '../../../mocks/instructorSections';
+import { getProgramName } from '../../../mocks/instructorClasses';
 
 const { Option } = Select;
 

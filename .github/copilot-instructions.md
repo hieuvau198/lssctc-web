@@ -8,6 +8,7 @@
 - **Do not install new libraries** unless explicitly required. Use only what exists in the project.
 - **Keep the folder structure** exactly as defined below.
 - **Use English code and short comments.**
+- **In chat always response by Vietnamese.**
 - **No hard-coded URLs or tokens.** Use environment variables and helpers.
 - **Follow type-safe practices.** Use JSDoc or PropTypes if needed.
 - **Commit messages:** `feat/(Branch name)-(short Description)`, `fix/(Branch name)-(short Description)`, `refactor/(Branch name)-(short Description)`.

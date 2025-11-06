@@ -10,11 +10,18 @@ import QuizEdit from "../../../pages/Instructor/InstructorQuizzes/partials/QuizE
 import InstructorPractices from "../../../pages/Instructor/InstructorPractices/InstructorPractices";
 import InstructorProfile from "../../../pages/Instructor/InstructorProfile/InstructorProfile";
 import NotFound from "../../../layouts/NotFound";
+import PrivateRoute from "../../PrivateRoutes/PrivateRoute";
 
 export default function InstructorRoutes() {
   return (
     <Routes>
-      <Route element={<InstructorLayout />}>
+      <Route element={
+        <PrivateRoute
+          children={<InstructorLayout />}
+          allowedroles={["Instructor"]}
+          redirectUrl="/auth/login"
+        />}
+      >
         <Route index element={<InstructorClasses />} />
         <Route path="/classes" element={<InstructorClasses />} />
         <Route path="/classes/:id" element={<InstructorClassDetail />} />

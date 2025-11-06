@@ -2,7 +2,7 @@ import { ArrowLeft, User, Mail, Phone, Calendar, IdCard, CheckCircle } from 'luc
 import { Avatar, Button, Card, Descriptions, Skeleton, Tag, Divider, Row, Col } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { getInstructorById } from '../../../mock/instructors';
+import { getInstructorById } from '../../../mocks/instructors';
 
 export default function InstructorProfile() {
   const { id } = useParams();
