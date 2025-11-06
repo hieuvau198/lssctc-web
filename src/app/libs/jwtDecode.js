@@ -1,5 +1,5 @@
-import jwtDecode from 'jwt-decode';
-import useAuthStore from '../stores/AuthStore';
+import { jwtDecode } from 'jwt-decode';
+import useAuthStore from '../store/authStore';
 
 /**
  * Decode a JWT token safely.

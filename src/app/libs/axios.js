@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getAuthToken, removeAuthToken } from './cookies';
 
-const BASE_URL = import.meta.env.VITE_API_Program_Service || '';
+const BASE_URL = import.meta.env.VITE_API_Program_Service_URL || '';
 
 const apiClient = axios.create({
   baseURL: BASE_URL,

@@ -1,7 +1,7 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { setAuthToken, removeAuthToken, getCookie, setCookie, removeCookie } from '../libs/cookies';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 const COOKIE_STORAGE_KEY = 'auth_store';
 
@@ -61,12 +61,15 @@ const useAuthStore = create(
         });
       },
 
-      setToken: (token) => {
+      setToken: (token, options = {}) => {
         if (!token) return;
+        
         // persist cookie for authentication header
         try {
-          setAuthToken(token);
+          // Use options for cookie expiration (e.g., remember me)
+          setAuthToken(token, options);
         } catch (err) {}
+        
         // decode and store claims
         try {
           const claims = jwtDecode(token) || {};

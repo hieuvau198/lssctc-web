@@ -1,71 +1,89 @@
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Input } from 'antd';
+import { Alert, Button, Checkbox, Input, App } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { loginEmail, loginUsername } from '../../../apis/Auth/LoginApi';
 import PageNav from '../../../components/PageNav/PageNav';
 import {
   clearRememberedCredentials,
   loadRememberedCredentials,
   persistRememberedCredentials,
 } from '../../../libs/crypto';
-import { useNavigate } from 'react-router';
-import { loginEmail, loginUsername } from '../../../apis/Auth/LoginApi';
-import { decodeAndStore } from '../../../libs/jwtDecode';
-import { setAuthToken } from '../../../libs/cookies';
+import useAuthStore from '../../../store/authStore';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const { message } = App.useApp();
+  const [identity, setIdentity] = useState(''); // email or username
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const nav = useNavigate();
+  const { setToken } = useAuthStore();
 
   // Restore remembered credentials
   useEffect(() => {
     const creds = loadRememberedCredentials();
     if (creds) {
-      setEmail(creds.email);
+      // previous stored object used `email` field — map to identity
+      setIdentity(creds.email || creds.username || '');
       setPassword(creds.password);
       setRemember(true);
     }
   }, []);
 
-  const persistCredentials = useCallback((em, pw) => {
-    if (!remember) {
+  const persistCredentials = useCallback((id, pw, shouldRemember) => {
+    if (!shouldRemember) {
       clearRememberedCredentials();
       return;
     }
-    persistRememberedCredentials({ email: em, password: pw, remember });
-  }, [remember]);
+    // keep legacy `email` key for backward compatibility
+    persistRememberedCredentials({ email: id, username: id, password: pw, remember: shouldRemember });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    
     try {
-      // Call real login API: decide email vs username
-      const isEmail = String(email).includes('@');
-      const res = isEmail
-        ? await loginEmail(email, password)
-        : await loginUsername(email, password);
-      const token = res?.accessToken || res?.access_token || res?.token;
-      if (!token) throw new Error('No access token returned');
+      // Decide whether identity is email or username (simple heuristic)
+      const isEmail = identity.includes('@');
+      let response;
+      if (isEmail) {
+        response = await loginEmail(identity.trim(), password);
+      } else {
+        response = await loginUsername(identity.trim(), password);
+      }
 
-      // Persist remembered credentials if needed
-      persistCredentials(email, password);
+      if (!response || !response.accessToken) {
+        throw new Error('Invalid response from server');
+      }
 
-      // Decode and store token in auth store (also writes cookie via store.setToken)
-      decodeAndStore(token);
+      const { accessToken } = response;
 
-      // Ensure cookie expiration respects "remember"
-      try {
-        setAuthToken(token, remember ? { expires: 7 } : {});
-      } catch {}
+      // Save credentials if remember me is checked (pass remember state explicitly)
+      persistCredentials(identity, password, remember);
 
-      // Redirect to home
+      // Set token options based on remember me checkbox
+      const tokenOptions = remember ? { expires: 7 } : {}; // 7 days if remember me, session cookie otherwise
+
+      // Set token in authStore (this will also save to cookies automatically)
+      setToken(accessToken, tokenOptions);
+
+      // Redirect to home (or role based redirect could be added)
       nav('/');
+      
     } catch (err) {
-      setError(err?.response?.data?.message || err.message || 'Login failed');
+      // show notification and error block
+      // use message.error from Ant Design message API
+      try {
+        message.error(err.response?.data?.message || err.message || 'Đăng nhập thất bại');
+      } catch (e) {
+        // ignore if message api not available
+      }
+      console.error('Login error:', err);
+      setError(err.response?.data?.message || err.message || 'Đăng nhập thất bại');
     } finally {
       setLoading(false);
     }
@@ -80,28 +98,21 @@ export default function Login() {
         <div className="w-full max-w-md bg-white/90 backdrop-blur border border-blue-100 shadow-sm rounded-lg p-8">
         <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">Sign in</h1>
         <p className="text-gray-500 text-sm mb-6 text-center">Access your LSSCTC training</p>
-        {error && (
-          <Alert
-            message={error}
-            type="error"
-            showIcon
-            className="mb-4"
-          />
-        )}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="identifier">Email or Username</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="identity">Email or Username</label>
             <Input
-              id="identifier"
+              id="identity"
               type="text"
               size="large"
-              placeholder="email or username"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com or username"
+              value={identity}
+              onChange={(e) => setIdentity(e.target.value)}
               disabled={loading}
-              autoComplete="username"
+              autoComplete="username email"
               required
             />
+            <p className="text-xs text-gray-400 mt-1">You can sign in with your email address or username.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">Password</label>

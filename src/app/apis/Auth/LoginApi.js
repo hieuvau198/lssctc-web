@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_Program_Service;
+const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
 
 /**
  * Login using email and password.

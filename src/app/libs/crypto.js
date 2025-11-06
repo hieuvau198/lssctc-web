@@ -1,13 +1,15 @@
 import CryptoJS from 'crypto-js';
 import Cookies from 'js-cookie';
 
-const KEY = import.meta.env.VITE_CRYPTO_KEY;
+// Use configured crypto key; fall back to a deterministic dev key if not provided so
+// the remember-me feature still works during local development.
+const KEY = import.meta.env.VITE_CRYPTO_KEY || 'lssctc-dev-fallback-key-2024';
 
 const STORAGE_KEY = 'lssctc.auth.remember';
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 /**
- * Encrypt and persist credentials (email + password) to localStorage.
+ * Encrypt and persist credentials (email + password) to cookies.
  * If remember is false, existing persisted credentials are cleared.
  * Safe no-throw operations.
  */
@@ -22,11 +24,14 @@ export function persistRememberedCredentials({ email, password, remember }) {
     Cookies.set(STORAGE_KEY, payload, {
       expires: MAX_AGE_MS / (24 * 60 * 60 * 1000), // days
       sameSite: 'lax',
-      secure: typeof window !== 'undefined' ? window.location.protocol === 'https:' : true,
+      secure: typeof window !== 'undefined' ? window.location.protocol === 'https:' : false,
       path: '/',
     });
-  } catch {
-    // swallow
+    console.log('Credentials saved to cookie:', STORAGE_KEY);
+  } catch (err) {
+    console.error('Failed to save remembered credentials:', err);
+    // If encryption or cookie write fails, remove any stale value to avoid confusion.
+    try { Cookies.remove(STORAGE_KEY, { path: '/' }); } catch {}
   }
 }
 
@@ -39,18 +44,32 @@ export function loadRememberedCredentials() {
     const raw = Cookies.get(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (!parsed?.cipher || !parsed?.ts) return null;
+    if (!parsed?.cipher || !parsed?.ts) {
+      console.log('Invalid remembered credentials format');
+      Cookies.remove(STORAGE_KEY, { path: '/' });
+      return null;
+    }
+    
     if (Date.now() - parsed.ts > MAX_AGE_MS) {
       Cookies.remove(STORAGE_KEY, { path: '/' });
       return null;
     }
+    
     const bytes = CryptoJS.AES.decrypt(parsed.cipher, KEY);
-    const decrypted = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    const plain = bytes.toString(CryptoJS.enc.Utf8);
+    if (!plain) {
+      // decryption failed (likely wrong key) — remove cookie
+      Cookies.remove(STORAGE_KEY, { path: '/' });
+      return null;
+    }
+    
+    const decrypted = JSON.parse(plain);
     return {
       email: decrypted.email || '',
       password: decrypted.password || '',
     };
-  } catch {
+  } catch (err) {
+    console.error('Error loading remembered credentials:', err);
     Cookies.remove(STORAGE_KEY, { path: '/' });
     return null;
   }

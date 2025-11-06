@@ -1,8 +1,9 @@
 import React from 'react';
 import { Dropdown } from 'antd';
 import { NavLink } from 'react-router';
-import Cookies from 'js-cookie';
 import { clearRememberedCredentials } from '../../../libs/crypto';
+import { logout } from '../../../apis/Auth/LogoutApi';
+import useAuthStore from '../../../store/authStore';
 
 /**
  * Simple Avatar placeholder for authenticated user.
@@ -42,16 +43,15 @@ export default function Avt({ onLogout }) {
 
   const handleClick = ({ key }) => {
     if (key === 'logout') {
-      // Remove auth cookies and any remembered credentials
-      try {
-        Cookies.remove('token', { path: '/' });
-      } catch {}
-      try { clearRememberedCredentials(); } catch {}
-      // Optionally clear any local user cache
-      try { localStorage.removeItem('user'); } catch {}
-      if (typeof onLogout === 'function') onLogout();
-      // Navigate to login; fallback to hard redirect to ensure clean state
-      try { window.location.assign('/auth/login'); } catch { window.location.href = '/auth/login'; }
+      // Use centralized logout: call backend endpoint (if available) and clear client auth state
+      (async () => {
+        try {
+          await logout(); // this will remove token cookie and clear authStore as a fallback
+        } catch (e) {
+          // ignore — we'll still clear client state below
+        }
+        try { window.location.assign('/auth/login'); } catch { window.location.href = '/auth/login'; }
+      })();
     }
   };
 

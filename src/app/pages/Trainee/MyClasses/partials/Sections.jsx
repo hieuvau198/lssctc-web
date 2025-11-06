@@ -1,5 +1,3 @@
-// src\app\pages\Trainee\MyClasses\partials\Sections.jsx
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Tag, Progress } from 'antd';
