@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Tag, Progress } from 'antd';
 import { Clock, DollarSign, User, Award } from 'lucide-react';
-import { getFirstPartitionPath } from '../../../../mock/lessonPartitions';
+import { getFirstPartitionPath } from '../../../../mocks/lessonPartitions';
 
 export default function Sections({ sections = [], classId }) {
 	if(!sections || sections.length === 0) 

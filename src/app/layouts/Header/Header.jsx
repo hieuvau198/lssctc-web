@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router";
 import Cookies from 'js-cookie';
 import Avt from "./partials/Avt";
-import { clearRememberedCredentials } from "../../lib/crypto";
+import { clearRememberedCredentials } from "../../libs/crypto";
 
 export default function Header() {
   const [hidden, setHidden] = useState(false);

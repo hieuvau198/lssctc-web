@@ -6,9 +6,11 @@ import {
   clearRememberedCredentials,
   loadRememberedCredentials,
   persistRememberedCredentials,
-} from '../../../lib/crypto';
+} from '../../../libs/crypto';
 import { useNavigate } from 'react-router';
-import Cookies from 'js-cookie';
+import { loginEmail, loginUsername } from '../../../apis/Auth/LoginApi';
+import { decodeAndStore } from '../../../libs/jwtDecode';
+import { setAuthToken } from '../../../libs/cookies';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -41,25 +43,29 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      // TODO: call real login API via http('/api/auth/login')
-      await new Promise(r => setTimeout(r, 1000)); // simulate
-      // Simulate token received from API
-      const token = 'demo-token';
+      // Call real login API: decide email vs username
+      const isEmail = String(email).includes('@');
+      const res = isEmail
+        ? await loginEmail(email, password)
+        : await loginUsername(email, password);
+      const token = res?.accessToken || res?.access_token || res?.token;
+      if (!token) throw new Error('No access token returned');
 
+      // Persist remembered credentials if needed
       persistCredentials(email, password);
-      // Persist token in cookies
-      Cookies.set('token', token, {
-        // if remember me is checked, persist for 7 days; otherwise session cookie
-        ...(remember ? { expires: 7 } : {}),
-        sameSite: 'lax',
-        secure: window.location.protocol === 'https:',
-        path: '/',
-      });
-      // redirect or set auth context
-      // Example redirect to home or previous page
-      // nav('/');
+
+      // Decode and store token in auth store (also writes cookie via store.setToken)
+      decodeAndStore(token);
+
+      // Ensure cookie expiration respects "remember"
+      try {
+        setAuthToken(token, remember ? { expires: 7 } : {});
+      } catch {}
+
+      // Redirect to home
+      nav('/');
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err?.response?.data?.message || err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -84,16 +90,16 @@ export default function Login() {
         )}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="identifier">Email or Username</label>
             <Input
-              id="email"
-              type="email"
+              id="identifier"
+              type="text"
               size="large"
-              placeholder="your-email@gmail.com"
+              placeholder="email or username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
-              autoComplete="email"
+              autoComplete="username"
               required
             />
           </div>
