@@ -21,6 +21,31 @@ export default function Login() {
   const nav = useNavigate();
   const { setToken } = useAuthStore();
 
+  // Role-based redirect function
+  const redirectByRole = (role) => {
+    switch (role) {
+      case 'Admin':
+        nav('/admin/dashboard');
+        break;
+      case 'Instructor':
+        nav('/instructor/dashboard');
+        break;
+      case 'Trainee':
+        nav('/');
+        break;
+      case 'SimulationManager':
+        nav('/simulationManager/dashboard');
+        break;
+      case 'ProgramManager':
+        nav('/programManager/dashboard');
+        break;
+      default:
+        // Default redirect if role is unknown or not set
+        nav('/');
+        break;
+    }
+  };
+
   // Restore remembered credentials
   useEffect(() => {
     const creds = loadRememberedCredentials();
@@ -71,8 +96,14 @@ export default function Login() {
       // Set token in authStore (this will also save to cookies automatically)
       setToken(accessToken, tokenOptions);
 
-      // Redirect to home (or role based redirect could be added)
-      nav('/');
+      // Get role from authStore after token is set and decoded
+      const authState = useAuthStore.getState();
+      const userRole = authState.role;
+      
+      console.log('User role after login:', userRole);
+
+      // Redirect based on user role
+      redirectByRole(userRole);
       
     } catch (err) {
       // show notification and error block

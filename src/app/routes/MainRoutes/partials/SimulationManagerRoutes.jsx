@@ -7,11 +7,18 @@ import Practices from '../../../pages/SimManager/Practices/Practices'
 import SimSettings from '../../../pages/SimManager/Settings/Settings'
 import SimulatorConfigs from '../../../pages/SimManager/SimulatorConfigs/SimulatorConfigs'
 import NotFound from '../../../layouts/NotFound'
+import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
 
 export default function SimulationManagerRoutes() {
   return (
     <Routes>
-      <Route element={<SimManagerLayout />}>
+      <Route element={
+        <PrivateRoute
+          children={<SimManagerLayout />}
+          allowedroles={["SimulationManager"]}
+          redirectUrl="/auth/login"
+        />}
+      >
         <Route index element={<SimDashboard />} />
         <Route path="/dashboard" element={<SimDashboard />} />
         <Route path="/practices" element={<Practices />} />

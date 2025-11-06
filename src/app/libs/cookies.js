@@ -12,7 +12,7 @@ export function setAuthToken(token, opts = {}) {
 }
 
 export function getAuthToken() {
-  return Cookies.get(TOKEN_COOKIE_KEY) || null;
+  return Cookies.get(TOKEN_COOKIE_KEY);
 }
 
 export function removeAuthToken(opts = {}) {

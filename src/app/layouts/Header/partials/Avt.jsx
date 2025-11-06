@@ -1,9 +1,6 @@
-import React from 'react';
-import { Dropdown } from 'antd';
-import { NavLink } from 'react-router';
-import { clearRememberedCredentials } from '../../../libs/crypto';
+import { App, Dropdown } from 'antd';
+import { NavLink, useNavigate } from 'react-router';
 import { logout } from '../../../apis/Auth/LogoutApi';
-import useAuthStore from '../../../store/authStore';
 
 /**
  * Simple Avatar placeholder for authenticated user.
@@ -13,6 +10,8 @@ export default function Avt({ onLogout }) {
   let initial = 'U';
   let userName = 'User';
   let avatarUrl = null;
+  const { message } = App.useApp();
+  const nav = useNavigate();
   
   try {
     const rawUser = localStorage.getItem('user');
@@ -43,14 +42,23 @@ export default function Avt({ onLogout }) {
 
   const handleClick = ({ key }) => {
     if (key === 'logout') {
-      // Use centralized logout: call backend endpoint (if available) and clear client auth state
+      // Call centralized logout() which removes auth token and clears authStore
+      // IMPORTANT: do NOT clear remembered credentials here — keep them when user chose "Remember me"
       (async () => {
         try {
-          await logout(); // this will remove token cookie and clear authStore as a fallback
+          await logout();
         } catch (e) {
-          // ignore — we'll still clear client state below
+          message.error('Logout failed. Please try again.');
+          console.error('Logout failed:', e);
+        } finally {
+          // Force a full reload to ensure UI (avatar, protected routes) updates
+          try {
+            window.location.assign('/');
+          } catch (e) {
+            // fallback to SPA navigation if assign is unavailable
+            nav('/');
+          }
         }
-        try { window.location.assign('/auth/login'); } catch { window.location.href = '/auth/login'; }
       })();
     }
   };
