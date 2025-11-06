@@ -1,9 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router';
 import { Tooltip } from 'antd';
-import { BookOpen, FileText, HelpCircle, Dumbbell, User, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { BookOpen, FileText, HelpCircle, Dumbbell, User, PanelLeftClose, PanelLeft, LayoutDashboard } from 'lucide-react';
 
 const ITEMS = [
+  { to: '/instructor/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
   { to: '/instructor/classes', label: 'Class', icon: <BookOpen className="w-5 h-5" /> },
   { to: '/instructor/materials', label: 'Material', icon: <FileText className="w-5 h-5" /> },
   { to: '/instructor/quizzes', label: 'Quiz', icon: <HelpCircle className="w-5 h-5" /> },

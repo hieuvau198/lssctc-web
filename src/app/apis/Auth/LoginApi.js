@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
+import apiClient from '../../libs/axios';
 
 /**
  * Login using email and password.
@@ -10,7 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
  * @returns {Promise<{userName: string, accessToken: string, expiresIn: number}>}
  */
 export async function loginEmail(email, password) {
-  const response = await axios.post(`${API_BASE_URL}/Authens/login-email`, {
+  const response = await apiClient.post('/Authens/login-email', {
     email,
     password,
   });
@@ -25,7 +23,7 @@ export async function loginEmail(email, password) {
  * @returns {Promise<{userName: string, accessToken: string, expiresIn: number}>}
  */
 export async function loginUsername(username, password) {
-  const response = await axios.post(`${API_BASE_URL}/Authens/login-username`, {
+  const response = await apiClient.post('/Authens/login-username', {
     username,
     password,
   });

@@ -11,6 +11,7 @@ import InstructorPractices from "../../../pages/Instructor/InstructorPractices/I
 import InstructorProfile from "../../../pages/Instructor/InstructorProfile/InstructorProfile";
 import NotFound from "../../../layouts/NotFound";
 import PrivateRoute from "../../PrivateRoutes/PrivateRoute";
+import InstructorDashboard from "../../../pages/Instructor/InstructorDashboard/InstructorDashboard";
 
 export default function InstructorRoutes() {
   return (
@@ -23,6 +24,7 @@ export default function InstructorRoutes() {
         />}
       >
         <Route index element={<InstructorClasses />} />
+        <Route path="/dashboard" element={<InstructorDashboard />} />
         <Route path="/classes" element={<InstructorClasses />} />
         <Route path="/classes/:id" element={<InstructorClassDetail />} />
         <Route path="/sections" element={<InstructorSections />} />

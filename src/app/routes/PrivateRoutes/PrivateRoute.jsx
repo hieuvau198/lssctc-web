@@ -1,10 +1,20 @@
 import { Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import useAuthStore from '../../store/authStore';
 import { isTokenExpired } from '../../utils/jwtUtil';
 import { getAuthToken } from '../../libs/cookies';
+import { jwtDecode } from 'jwt-decode';
 
 export default function PrivateRoute({ children, redirectUrl = '/auth/login', allowedroles = [] }) {
   const auth = useAuthStore((state) => state);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Wait for authStore to hydrate from cookies
+  useEffect(() => {
+    // Small delay to ensure zustand persist middleware has loaded
+    const timer = setTimeout(() => setIsHydrated(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Prefer explicit cookie token check (covers page reloads where zustand may not be hydrated yet)
   const cookieToken = getAuthToken();
@@ -16,7 +26,21 @@ export default function PrivateRoute({ children, redirectUrl = '/auth/login', al
   const isAuthenticated = !!tokenToCheck;
   const tokenExpired = isTokenExpired(tokenToCheck);
 
-  const role = auth?.role || '';
+  // Get role from token directly if authStore hasn't hydrated yet
+  let role = auth?.role || '';
+  if (!role && cookieToken) {
+    try {
+      const decoded = jwtDecode(cookieToken);
+      role = decoded?.role || '';
+    } catch (e) {
+      // ignore decode error
+    }
+  }
+
+  // If authStore not hydrated yet and we have a valid token, show loading or wait
+  if (!isHydrated && cookieToken && !auth?.role) {
+    return null; // or a loading spinner component
+  }
   const roleAllowed = Array.isArray(allowedroles) && allowedroles.length > 0
     ? allowedroles.map((r) => String(r).toLowerCase()).includes(String(role).toLowerCase())
     : true; // if no allowedroles specified, allow any authenticated user

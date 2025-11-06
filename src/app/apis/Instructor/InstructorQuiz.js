@@ -1,7 +1,5 @@
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
-const BASE = `${API_BASE_URL}`;
+import apiClient from '../../libs/axios';
+const BASE = '';
 
 function buildQuery(params = {}) {
   const searchParams = new URLSearchParams();
@@ -42,7 +40,7 @@ const mapQuizQuestionOptionFromApi = (item) => ({
 
 export async function getQuizQuestionOptions(questionId) {
   try {
-    const { data } = await axios.get(`${BASE}/QuizQuestionOptions/questions/${questionId}/options`);
+  const { data } = await apiClient.get(`/QuizQuestionOptions/questions/${questionId}/options`);
     if (!data) return { items: [], total: 0 };
     
     const items = Array.isArray(data.items) ? data.items.map(mapQuizQuestionOptionFromApi) : [];
@@ -66,7 +64,7 @@ export async function getQuizQuestionOptions(questionId) {
  */
 export async function updateQuiz(id, payload) {
   try {
-    const { data } = await axios.put(`${BASE}/Quizzes/${id}`, payload);
+  const { data } = await apiClient.put(`/Quizzes/${id}`, payload);
     return data;
   } catch (err) {
     console.error('Error updating quiz:', err);
@@ -81,7 +79,7 @@ export async function updateQuiz(id, payload) {
  */
 export async function deleteQuiz(id) {
   try {
-    await axios.delete(`${BASE}/Quizzes/${id}`);
+  await apiClient.delete(`/Quizzes/${id}`);
   } catch (err) {
     console.error('Error deleting quiz:', err);
     throw err;
@@ -96,7 +94,7 @@ export async function deleteQuiz(id) {
  */
 export async function updateQuizQuestion(questionId, payload) {
   try {
-    const { data } = await axios.put(`${BASE}/QuizQuestions/questions/${questionId}`, payload);
+  const { data } = await apiClient.put(`/QuizQuestions/questions/${questionId}`, payload);
     return data;
   } catch (err) {
     console.error('Error updating quiz question:', err);
@@ -112,7 +110,7 @@ export async function updateQuizQuestion(questionId, payload) {
  */
 export async function updateQuizQuestionOption(optionId, payload) {
   try {
-    const { data } = await axios.put(`${BASE}/QuizQuestionOptions/options/${optionId}`, payload);
+  const { data } = await apiClient.put(`/QuizQuestionOptions/options/${optionId}`, payload);
     return data;
   } catch (err) {
     console.error('Error updating quiz question option:', err);
@@ -127,7 +125,7 @@ export async function updateQuizQuestionOption(optionId, payload) {
  */
 export async function deleteQuizQuestion(questionId) {
   try {
-    await axios.delete(`${BASE}/QuizQuestions/questions/${questionId}`);
+  await apiClient.delete(`/QuizQuestions/questions/${questionId}`);
   } catch (err) {
     console.error('Error deleting quiz question:', err);
     throw err;
@@ -136,7 +134,7 @@ export async function deleteQuizQuestion(questionId) {
 
 export async function getQuizById(id) {
   try {
-    const { data } = await axios.get(`${BASE}/Quizzes/${id}`);
+  const { data } = await apiClient.get(`/Quizzes/${id}`);
     if (!data) throw new Error('Quiz not found');
     return mapQuizFromApi(data);
   } catch (err) {
@@ -148,7 +146,7 @@ export async function getQuizById(id) {
 export async function getQuizQuestions(quizId, { page = 1, pageSize = 10 } = {}) {
   try {
     const qs = buildQuery({ page, pageSize });
-    const { data } = await axios.get(`${BASE}/QuizQuestions/quiz/${quizId}/questions${qs}`);
+  const { data } = await apiClient.get(`/QuizQuestions/quiz/${quizId}/questions${qs}`);
     if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
     
     const items = Array.isArray(data.items) ? data.items.map(mapQuizQuestionFromApi) : [];
@@ -169,7 +167,7 @@ export async function getQuizQuestions(quizId, { page = 1, pageSize = 10 } = {})
 export async function getQuizzes({ pageIndex = 1, pageSize = 10 } = {}) {
   try {
     const qs = buildQuery({ pageIndex, pageSize });
-    const { data } = await axios.get(`${BASE}/Quizzes${qs}`);
+  const { data } = await apiClient.get(`/Quizzes${qs}`);
     if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
     
     const items = Array.isArray(data.items) ? data.items.map(mapQuizFromApi) : [];
