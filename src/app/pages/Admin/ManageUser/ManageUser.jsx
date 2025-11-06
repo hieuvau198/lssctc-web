@@ -4,20 +4,31 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { App, Menu } from 'antd';
-import { useState } from 'react';
-import InstructorTable from './partials/InstructorTable';
-import SimulatorManagerTable from './partials/SimulationManagerTable';
-import TraineeTable from './partials/TraineeTable';
+import { Outlet, Link, useLocation } from 'react-router';
+import { useMemo } from 'react';
 
 const MENU_ITEMS = [
-  { key: 'instructor', icon: <UserOutlined />, label: 'Instructor' },
-  { key: 'trainee', icon: <TeamOutlined />, label: 'Trainee' },
-  { key: 'sim-manager', icon: <ExperimentOutlined />, label: 'Simulator Manager' },
+  { key: 'trainees', icon: <TeamOutlined />, label: 'Trainee', to: 'trainees' },
+  { key: 'instructors', icon: <UserOutlined />, label: 'Instructor', to: 'instructors' },
+  { key: 'simulation-managers', icon: <ExperimentOutlined />, label: 'Simulator Manager', to: 'simulation-managers' },
 ];
 
 export default function ManageUser() {
   const { message } = App.useApp();
-  const [activeKey, setActiveKey] = useState('instructor');
+  const location = useLocation();
+
+  // derive active key from current pathname (last segment)
+  const activeKey = useMemo(() => {
+    const parts = location.pathname.split('/').filter(Boolean);
+    const last = parts[parts.length - 1] || '';
+    // map possible empty or base `/users` to 'instructors' by default
+    if (!last || last === 'users') return 'instructors';
+    // normalize
+    if (last === 'simulation-managers' || last === 'simulation-managers') return 'simulation-managers';
+    if (last === 'trainees') return 'trainees';
+    if (last === 'instructors') return 'instructors';
+    return last;
+  }, [location.pathname]);
 
   return (
     <div className="max-w-[1380px] mx-auto">
@@ -31,15 +42,17 @@ export default function ManageUser() {
           <Menu
             mode="horizontal"
             selectedKeys={[activeKey]}
-            onClick={(e) => setActiveKey(e.key)}
-            items={MENU_ITEMS}
+            items={MENU_ITEMS.map((it) => ({
+              key: it.key,
+              icon: it.icon,
+              label: <Link to={it.to}>{it.label}</Link>,
+            }))}
           />
         </div>
 
         <div className="p-4">
-          {activeKey === 'instructor' && <InstructorTable />}
-          {activeKey === 'trainee' && <TraineeTable />}
-          {activeKey === 'sim-manager' && <SimulatorManagerTable />}
+          {/* Render the nested route (trainees, instructors, simulation-managers) */}
+          <Outlet />
         </div>
       </div>
     </div>

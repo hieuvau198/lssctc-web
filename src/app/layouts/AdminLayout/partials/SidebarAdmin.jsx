@@ -4,7 +4,7 @@ import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, Pan
 
 const ITEMS = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { to: '/admin/users', label: 'Users', icon: <Users className="w-5 h-5" /> },
+  { to: '/admin/users/trainees', label: 'Users', icon: <Users className="w-5 h-5" /> },
   { to: '/admin/programs', label: 'Programs', icon: <Layers className="w-5 h-5" /> },
   { to: '/admin/courses', label: 'Courses', icon: <BookOpen className="w-5 h-5" /> },
   { to: '/admin/class', label: 'Class', icon: <Calendar className="w-5 h-5" /> },

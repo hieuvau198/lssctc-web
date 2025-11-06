@@ -7,6 +7,9 @@ import PMClasses from '../../../pages/Admin/Class/PMClasses'
 import ManagerProgramList from '../../../pages/Admin/Program/ManagerProgramList'
 import NotFound from '../../../layouts/NotFound'
 import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
+import TraineeTable from '../../../pages/Admin/ManageUser/partials/TraineeTable'
+import InstructorTable from '../../../pages/Admin/ManageUser/partials/InstructorTable'
+import SimulationManagerTable from '../../../pages/Admin/ManageUser/partials/SimulationManagerTable'
 
 export default function AdminRoutes() {
   return (
@@ -20,7 +23,11 @@ export default function AdminRoutes() {
       >
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="users" element={<ManageUser />} />
+        <Route path="users" element={<ManageUser />}>
+          <Route path="trainees" element={<TraineeTable />} />
+          <Route path="instructors" element={<InstructorTable />} />
+          <Route path="simulation-managers" element={<SimulationManagerTable />} />
+        </Route>
         <Route path="courses" element={<Courses />} />
         <Route path="programs" element={<ManagerProgramList />} />
         <Route path="class" element={<PMClasses />} />

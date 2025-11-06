@@ -104,7 +104,7 @@ export default function Login() {
 
       // Redirect based on user role
       redirectByRole(userRole);
-      
+      message.success('Login successful');
     } catch (err) {
       // show notification and error block
       // use message.error from Ant Design message API
