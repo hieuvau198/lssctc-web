@@ -33,8 +33,7 @@ export default function ManageUser() {
   return (
     <div className="max-w-[1380px] mx-auto">
       <div className="mb-4">
-        <h1 className="text-2xl font-semibold text-slate-900">Manage Users</h1>
-        <p className="text-slate-600">View and manage users by role.</p>
+        <span className="text-2xl">Manage Users</span>
       </div>
 
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
