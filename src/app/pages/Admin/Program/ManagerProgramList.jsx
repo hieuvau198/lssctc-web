@@ -250,7 +250,7 @@ const ManagerProgramList = () => {
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Program Management</h2>
+        <span className="text-2xl">Program Management</span>
       </div>
 
       {/* Search and Controls */}

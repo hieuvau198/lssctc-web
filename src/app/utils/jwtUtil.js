@@ -1,5 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
-import { getAuthToken } from '../libs/cookies';
+import { getAuthToken, removeAuthToken } from '../libs/cookies';
 
 /**
  * Check whether the current auth token is expired.
@@ -14,9 +14,15 @@ export function isTokenExpired(token) {
     // exp is seconds since epoch in JWT
     if (!claims.exp) return false; // no exp claim -> assume non-expiring
     const now = Math.floor(Date.now() / 1000);
-    return claims.exp <= now;
+    const expired = claims.exp <= now;
+    if (expired) {
+      // token expired: remove any persisted auth cookie to avoid stale state
+      try { removeAuthToken(); } catch (e) { /* ignore */ }
+    }
+    return expired;
   } catch (err) {
-    // If decoding fails, treat as expired/invalid
+    // If decoding fails, treat as expired/invalid and remove any persisted token
+    try { removeAuthToken(); } catch (e) { /* ignore */ }
     return true;
   }
 }

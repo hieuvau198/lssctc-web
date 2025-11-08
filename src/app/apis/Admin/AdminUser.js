@@ -93,11 +93,47 @@ export async function getUserById(id) {
 
 }
 
+export async function createTrainee(payload = {}) {
+	try {
+		const { data } = await apiClient.post(`/Users/trainees`, payload);
+		if (!data) throw new Error('Failed to create trainee');
+		return mapUserFromApi(data);
+	} catch (err) {
+		console.error('Error creating trainee:', err);
+		throw err;
+	}
+}
+
+export async function createInstructor(payload = {}) {
+	try {
+		const { data } = await apiClient.post(`/Users/instructors`, payload);
+		if (!data) throw new Error('Failed to create instructor');
+		return mapUserFromApi(data);
+	} catch (err) {
+		console.error('Error creating instructor:', err);
+		throw err;
+	}
+}
+
+export async function createSimulationManager(payload = {}) {
+	try {
+		const { data } = await apiClient.post(`/Users/simulation-managers`, payload);
+		if (!data) throw new Error('Failed to create simulation manager');
+		return mapUserFromApi(data);
+	} catch (err) {
+		console.error('Error creating simulation manager:', err);
+		throw err;
+	}
+}
+
 export default {
 	getUsers,
 	getTrainees,
 	getInstructors,
 	getSimulationManagers,
 	getUserById,
+	createTrainee,
+	createInstructor,
+	createSimulationManager,
 };
 

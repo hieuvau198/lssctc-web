@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Table, Tag, Pagination, Avatar, Empty } from 'antd';
+import { Table, Tag, Pagination, Avatar, Empty, Button } from 'antd';
 import { getInstructors } from '../../../../apis/Admin/AdminUser';
+import { Plus } from 'lucide-react';
+import DrawerAdd from './DrawerAdd';
 
 const getInitials = (name = '') => {
   return name
@@ -37,6 +39,7 @@ const COLUMNS = [
 ];
 
 export default function InstructorTable() {
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [data, setData] = useState([]);
@@ -75,6 +78,9 @@ export default function InstructorTable() {
   return (
     <div>
       <div className="min-h-[410px] overflow-auto">
+        <div className="flex justify-end mb-4">
+          <Button type="primary" icon={<Plus size={24}/>} onClick={() => setDrawerVisible(true)}>Add Instructor</Button>
+        </div>
         {data.length === 0 && !loading ? (
           <Empty description="No instructors" />
         ) : (
@@ -84,7 +90,7 @@ export default function InstructorTable() {
             pagination={false}
             rowKey="key"
             loading={loading}
-            scroll={{ y: 360 }}
+            scroll={{ y: 320 }}
           />
         )}
       </div>
@@ -99,6 +105,13 @@ export default function InstructorTable() {
           showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} instructors`}
         />
       </div>
+
+      <DrawerAdd
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        role="instructor"
+        onCreated={() => fetchData(page, pageSize)}
+      />
     </div>
   );
 }
