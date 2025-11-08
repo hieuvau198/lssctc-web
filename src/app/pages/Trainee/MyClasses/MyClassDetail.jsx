@@ -8,9 +8,10 @@ import Sections from "./partials/Sections";
 import InstructorInfo from "./partials/InstructorInfo";
 import ClassSchedule from "./partials/ClassSchedule";
 import { 
-	getLearningClassByIdAndTraineeId,
 	getLearningSectionsByClassIdAndTraineeId
  } from "../../../apis/Trainee/TraineeLearningApi";
+import { getLearningClassesByTraineeId  } from '../../../apis/Trainee/TraineeClassApi';
+
 
 export default function MyClassDetail() {
   const { id } = useParams();

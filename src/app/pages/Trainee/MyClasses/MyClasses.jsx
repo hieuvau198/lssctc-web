@@ -4,17 +4,26 @@ import { Link } from 'react-router-dom';
 import { Card, Skeleton, Tag, Progress, Empty, Segmented } from 'antd';
 import { BookOpen } from 'lucide-react';
 import PageNav from '../../../components/PageNav/PageNav';
-import { getLearningClassesByTraineeId } from '../../../apis/Trainee/TraineeLearningApi';
+import { getLearningClassesByTraineeId  } from '../../../apis/Trainee/TraineeClassApi';
+import useAuthStore from '../../../store/authStore'; // <-- IMPORT AUTH STORE
+
 
 export default function MyClasses() {
   const [tab, setTab] = useState('in-progress'); // 'in-progress' | 'completed'
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const traineeId = 1; // Hardcoded for now
+  const traineeId = useAuthStore((state) => state.nameid); // <-- USE ID FROM STORE
 
   useEffect(() => {
     const fetchClasses = async () => {
+      // Guard: Don't fetch if traineeId isn't loaded yet
+      if (!traineeId) {
+        setLoading(false);
+        setPrograms([]);
+        return;
+      }
+
       try {
         setLoading(true);
         const data = await getLearningClassesByTraineeId(traineeId);
@@ -27,13 +36,13 @@ export default function MyClasses() {
 
         // Map API data to your UI structure
         const mapped = filtered.map((c) => ({
-          id: c.classId,
+          id: c.id,
           provider: 'Global Crane Academy', // Optional — placeholder until API provides this
-          name: c.className,
+          name: c.name,
           progress: c.classProgress ?? 0,
-          badge: c.classStatus,
+          badge: c.status,
           color: 'from-cyan-500 to-blue-600',
-          completedAt: c.classEndDate,
+          completedAt: c.endDate,
         }));
 
         setPrograms(mapped);

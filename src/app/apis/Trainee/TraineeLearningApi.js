@@ -68,27 +68,6 @@ const mapSectionQuiz = (item) => ({
 
 //#region Learning Classes APIs
 
-// Get all learning classes for a trainee
-export const getLearningClassesByTraineeId = async (traineeId) => {
-  const response = await api.get(`/LearningsClasses/classes/trainee/${traineeId}`);
-  return response.data;
-};
-
-// Get paged learning classes for a trainee
-export const getPagedLearningClassesByTraineeId = async (traineeId, pageIndex = 1, pageSize = 10) => {
-  const response = await api.get(`/LearningsClasses/classes/trainee/${traineeId}/paged`, {
-    params: { pageIndex, pageSize },
-  });
-  return response.data;
-};
-
-// Get a specific learning class for a trainee
-export const getLearningClassByIdAndTraineeId = async (classId, traineeId) => {
-  const response = await api.get(`/LearningsClasses/class/${classId}/trainee/${traineeId}`);
-  return response.data;
-};
-
-//#endregion
 
 //#region Learning Sections APIs
 
