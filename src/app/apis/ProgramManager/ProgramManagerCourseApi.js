@@ -9,6 +9,8 @@ export async function fetchPrograms(params = {}) {
   if (params.searchTerm) searchParams.append("SearchTerm", params.searchTerm);
 
   const response = await axios.get(`${API_BASE_URL}/Programs?${searchParams}`);
+  // normalize: if backend returns plain array, convert to { items, totalCount }
+  if (Array.isArray(response.data)) return { items: response.data, totalCount: response.data.length };
   return response.data;
 }
 
@@ -77,6 +79,7 @@ export async function fetchCourses(params = {}) {
     searchParams.append("IsActive", params.isActive);
 
   const response = await axios.get(`${API_BASE_URL}/Courses?${searchParams}`);
+  if (Array.isArray(response.data)) return { items: response.data, totalCount: response.data.length };
   return response.data;
 }
 

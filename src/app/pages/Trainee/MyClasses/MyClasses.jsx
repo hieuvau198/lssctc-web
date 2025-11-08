@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom';
 import { Card, Skeleton, Tag, Progress, Empty, Segmented } from 'antd';
 import { BookOpen } from 'lucide-react';
 import PageNav from '../../../components/PageNav/PageNav';
-import { getLearningClassesByTraineeId  } from '../../../apis/Trainee/TraineeClassApi';
+import { getLearningClassesByTraineeId } from '../../../apis/Trainee/TraineeClassApi';
 import useAuthStore from '../../../store/authStore'; // <-- IMPORT AUTH STORE
+import { getAuthToken } from '../../../libs/cookies';
+import { decodeToken } from '../../../libs/jwtDecode';
 
 
 export default function MyClasses() {
@@ -13,12 +15,17 @@ export default function MyClasses() {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const traineeId = useAuthStore((state) => state.nameid); // <-- USE ID FROM STORE
+  const traineeIdFromStore = useAuthStore((state) => state.nameid); // <-- USE ID FROM STORE
 
   useEffect(() => {
     const fetchClasses = async () => {
-      // Guard: Don't fetch if traineeId isn't loaded yet
-      if (!traineeId) {
+      // Resolve traineeId: prefer store, fallback to decoding token cookie (handles zustand hydrate race)
+      const token = getAuthToken();
+      const decoded = token ? decodeToken(token) : null;
+      const resolvedTraineeId = traineeIdFromStore || decoded?.nameid || decoded?.nameId || decoded?.sub || null;
+
+      // Guard: Don't fetch if traineeId isn't available yet
+      if (!resolvedTraineeId) {
         setLoading(false);
         setPrograms([]);
         return;
@@ -26,7 +33,7 @@ export default function MyClasses() {
 
       try {
         setLoading(true);
-        const data = await getLearningClassesByTraineeId(traineeId);
+        const data = await getLearningClassesByTraineeId(resolvedTraineeId);
 
         // Filter classes based on progress (simulate your "In Progress" / "Completed" tabs)
         const filtered =
@@ -55,7 +62,7 @@ export default function MyClasses() {
     };
 
     fetchClasses();
-  }, [tab, traineeId]);
+  }, [tab, traineeIdFromStore]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -85,15 +92,17 @@ export default function MyClasses() {
         )}
 
         {!loading && programs.length === 0 && (
-          <Empty description="No classes found" className="py-16" />
+          <div className="min-h-screen flex items-center justify-center">
+            <Empty description="No classes found" className="py-16" />
+          </div>
         )}
 
         {!loading && programs.length > 0 && (
           <div className="space-y-6">
             {programs.map((p) => (
-              <div className="my-4" key={p.id}>
+              <div className="min-h-screen my-4" key={p.id}>
                 <Link to={`/my-classes/${p.id}`}>
-                  <Card className="group rounded-2xl border hover:shadow-lg transition-all duration-300 overflow-hidden relative cursor-pointer">
+                  <Card className="group rounded-2xl shadow-xl border hover:shadow-lg transition-all duration-300 overflow-hidden relative cursor-pointer">
                     <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r opacity-80 from-transparent via-slate-200 to-transparent" />
                     <div className="flex">
                       <div className="flex-1 p-6">

@@ -21,6 +21,10 @@ export async function fetchCourses({
     if (isActive !== undefined) params.IsActive = isActive;
 
     const { data } = await axios.get(`${BASE_URL}`, { params });
+    // normalize response: some endpoints return an array, others return { items, totalCount }
+    if (Array.isArray(data)) {
+      return { items: data, totalCount: data.length };
+    }
     return data;
   } catch (err) {
     console.error('Error fetching courses:', err);

@@ -73,17 +73,17 @@ const mapSectionQuiz = (item) => ({
 
 // get learning sections by class id and trainee id
 export const getLearningSectionsByClassIdAndTraineeId = async (classId, traineeId) => {
-  const response = await api.get(`/LearningsSections/sections/class/${classId}/trainee/${traineeId}`);
+  const response = await api.get(`Sections/course/${classId}/trainee/${traineeId}`);
   return response.data.map(mapSection);
 };
 
 export const getLearningSectionByIdAndTraineeId = async (sectionId, traineeId) => {
-  const response = await api.get(`/LearningsSections/section/${sectionId}/trainee/${traineeId}`);
+  const response = await api.get(`Section/${sectionId}/trainee/${traineeId}`);
   return mapSection(response.data);
 };
 
 export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, traineeId, pageIndex = 1, pageSize = 10) => {
-  const response = await api.get(`/LearningsSections/sections/class/${classId}/trainee/${traineeId}/paged`, {
+  const response = await api.get(`Sections/course/${classId}/trainee/${traineeId}/paged`, {
     params: { pageIndex, pageSize },
   });
 

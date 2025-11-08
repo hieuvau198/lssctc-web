@@ -69,21 +69,40 @@ export async function getLearningClassesByTraineeId(traineeId) {
 export async function getPagedLearningClassesByTraineeId(traineeId, params = {}) {
   if (!traineeId) throw new Error('Trainee ID is required');
   try {
-    const qs = buildQuery(params); // Pass { pageNumber, pageSize } here
-    const { data } = await apiClient.get(`/classes/trainee/${traineeId}/paged${qs}`);
-    if (!data) return { items: [], total: 0 };
+    // support both param names: { page, pageSize } or { pageNumber, pageSize }
+    const page = params.page ?? params.pageNumber ?? 1;
+    const pageSize = params.pageSize ?? 10;
+    const qs = buildQuery({ page, pageSize });
 
-    // Standardize response
-    const items = Array.isArray(data)
-      ? data.map(mapClassFromApi)
-      : Array.isArray(data.items)
-      ? data.items.map(mapClassFromApi)
-      : [];
-    
-    // API PagedResult uses 'totalCount'
-    const total = data.total || data.totalCount || items.length;
+    const { data } = await apiClient.get(`/Classes/trainee/${traineeId}/paged${qs}`);
+    if (!data) {
+      return { items: [], totalCount: 0, page, pageSize, totalPages: 0, raw: data };
+    }
 
-    return { items, total: Number(total) || items.length, raw: data };
+    // If backend returns a plain array, map and wrap into paged shape
+    if (Array.isArray(data)) {
+      const items = data.map(mapClassFromApi);
+      const totalCount = items.length;
+      const totalPages = pageSize > 0 ? Math.ceil(totalCount / pageSize) : 1;
+      return { items, totalCount, page, pageSize, totalPages, raw: data };
+    }
+
+    // If backend returns a paged object with items
+    const rawItems = Array.isArray(data.items) ? data.items : [];
+    const items = rawItems.map(mapClassFromApi);
+    const totalCount = Number(data.totalCount ?? data.total ?? items.length) || items.length;
+    const totalPages = Number(data.totalPages ?? (pageSize > 0 ? Math.ceil(totalCount / pageSize) : 1)) || 1;
+    const respPage = Number(data.page ?? page) || page;
+    const respPageSize = Number(data.pageSize ?? pageSize) || pageSize;
+
+    return {
+      items,
+      totalCount,
+      page: respPage,
+      pageSize: respPageSize,
+      totalPages,
+      raw: data,
+    };
   } catch (err) {
     console.error(`Error fetching paged classes for trainee ${traineeId}:`, err);
     throw err;
@@ -102,7 +121,7 @@ export async function getLearningClassByIdAndTraineeId(traineeId, classId) {
 
   try {
     // Using the URL from your C# Controller: [HttpGet("trainee/{traineeId}/class/{classId}")]
-    const { data } = await apiClient.get(`/classes/trainee/${traineeId}/class/${classId}`);
+    const { data } = await apiClient.get(`/Classes/trainee/${traineeId}/class/${classId}`);
     if (!data) throw new Error('Class not found for this trainee');
     return mapClassFromApi(data);
   } catch (err) {
