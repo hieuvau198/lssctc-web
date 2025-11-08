@@ -1,4 +1,3 @@
-// src/app/pages/Trainee/MyClasses/MyClasses.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Skeleton, Tag, Progress, Empty, Segmented } from 'antd';
@@ -22,7 +21,7 @@ export default function MyClasses() {
       // Resolve traineeId: prefer store, fallback to decoding token cookie (handles zustand hydrate race)
       const token = getAuthToken();
       const decoded = token ? decodeToken(token) : null;
-      const resolvedTraineeId = traineeIdFromStore || decoded?.nameid || decoded?.nameId || decoded?.sub || null;
+      const resolvedTraineeId = traineeIdFromStore || decoded?.nameid;
 
       // Guard: Don't fetch if traineeId isn't available yet
       if (!resolvedTraineeId) {
