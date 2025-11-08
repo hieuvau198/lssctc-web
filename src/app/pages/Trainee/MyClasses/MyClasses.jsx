@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, Skeleton, Tag, Progress, Empty, Segmented } from 'antd';
+import { Card, Empty, Progress, Segmented, Skeleton, Tag } from 'antd';
 import { BookOpen } from 'lucide-react';
-import PageNav from '../../../components/PageNav/PageNav';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getLearningClassesByTraineeId } from '../../../apis/Trainee/TraineeClassApi';
-import useAuthStore from '../../../store/authStore'; // <-- IMPORT AUTH STORE
+import PageNav from '../../../components/PageNav/PageNav';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
+import useAuthStore from '../../../store/authStore'; // <-- IMPORT AUTH STORE
 
 
 export default function MyClasses() {

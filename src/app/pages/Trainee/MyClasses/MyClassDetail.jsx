@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import { Empty } from 'antd';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import PageNav from '../../../components/PageNav/PageNav';
-import ClassHeader from './partials/ClassHeader';
-import ClassOverview from './partials/ClassOverview';
-import Sections from './partials/Sections';
-import InstructorInfo from './partials/InstructorInfo';
-import ClassSchedule from './partials/ClassSchedule';
-import { getLearningSectionsByClassIdAndTraineeId } from '../../../apis/Trainee/TraineeLearningApi';
 import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
-import useAuthStore from '../../../store/authStore';
+import { getLearningSectionsByClassIdAndTraineeId } from '../../../apis/Trainee/TraineeLearningApi';
+import PageNav from '../../../components/PageNav/PageNav';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
-import { Empty } from 'antd';
+import useAuthStore from '../../../store/authStore';
+import ClassHeader from './partials/ClassHeader';
+import ClassOverview from './partials/ClassOverview';
+import ClassSchedule from './partials/ClassSchedule';
+import InstructorInfo from './partials/InstructorInfo';
+import Sections from './partials/Sections';
 
 export default function MyClassDetail() {
   const { id } = useParams();
