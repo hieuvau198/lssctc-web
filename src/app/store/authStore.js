@@ -1,3 +1,4 @@
+// src\app\store\authStore.js
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { setAuthToken, removeAuthToken, getCookie, setCookie, removeCookie } from '../libs/cookies';

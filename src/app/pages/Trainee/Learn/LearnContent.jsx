@@ -11,6 +11,8 @@ import {
   markSectionMaterialAsCompleted,
   markSectionMaterialAsNotCompleted,
   getLearningSectionQuiz,
+  getActivityRecordsByClassAndSection,
+  getActivityById,
 } from "../../../apis/Trainee/TraineeLearningApi";
 
 export default function LearnContent() {
@@ -41,17 +43,70 @@ export default function LearnContent() {
 
       if ([1, 2].includes(partitionRes.partitionType)) {
         console.log("Fetching section material for partition:", partitionId);
-        const materialRes = await getLearningSectionMaterial(
-          partitionId,
-          traineeId
-        );
+        const materialRes = await getLearningSectionMaterial(partitionId, traineeId);
         console.log("Material response:", materialRes);
+
+        // Merge activity record if available
+        try {
+          const activityRecords = await getActivityRecordsByClassAndSection(courseId, sectionId);
+          const matched = activityRecords.find(
+            (r) => r.activityId === partitionId || r.activityId === partitionRes.sectionPartitionId
+          );
+          if (matched) {
+            materialRes.isCompleted = matched.isCompleted;
+            materialRes.activityRecord = matched;
+
+            // Fetch activity meta (title/description/duration) and merge
+            try {
+              const activityMeta = await getActivityById(matched.activityId);
+              if (activityMeta) {
+                materialRes.materialName = materialRes.materialName || activityMeta.activityTitle;
+                materialRes.materialDescription = materialRes.materialDescription || activityMeta.activityDescription;
+                materialRes.estimatedDurationMinutes = materialRes.estimatedDurationMinutes || activityMeta.estimatedDurationMinutes;
+              }
+            } catch (e) {
+              console.debug('Failed to fetch activity meta for', matched.activityId, e);
+            }
+          }
+        } catch (e) {
+          console.debug('No activity records available for section', sectionId, e);
+        }
+
         setPartitionMaterial(materialRes);
       } else if (partitionRes.partitionType === 3) {
         // Quiz
         console.log("Fetching section quiz for partition:", partitionId);
         const quizRes = await getLearningSectionQuiz(partitionId, traineeId);
         console.log("Quiz response:", quizRes);
+
+        // Merge activity record for quiz if available
+        try {
+          const activityRecords = await getActivityRecordsByClassAndSection(courseId, sectionId);
+          const matched = activityRecords.find(
+            (r) => r.activityId === partitionId || r.activityId === partitionRes.sectionPartitionId
+          );
+          if (matched) {
+            quizRes.isCompleted = matched.isCompleted;
+            quizRes.attemptScore = matched.score ?? quizRes.attemptScore;
+            quizRes.lastAttemptDate = matched.completedDate ?? quizRes.lastAttemptDate;
+            quizRes.activityRecord = matched;
+
+            // Fetch activity meta for quiz
+            try {
+              const activityMeta = await getActivityById(matched.activityId);
+              if (activityMeta) {
+                quizRes.quizName = quizRes.quizName || activityMeta.activityTitle;
+                quizRes.description = quizRes.description || activityMeta.activityDescription;
+                quizRes.timelimitMinute = quizRes.timelimitMinute || activityMeta.estimatedDurationMinutes;
+              }
+            } catch (e) {
+              console.debug('Failed to fetch activity meta for quiz', matched.activityId, e);
+            }
+          }
+        } catch (e) {
+          console.debug('No activity records available for section', sectionId, e);
+        }
+
         setSectionQuiz(quizRes);
       }
     } catch (err) {

@@ -1,25 +1,26 @@
 // src/app/apis/Trainee/TraineeLearningApi.js
-import axios from "axios";
+import apiClient from '../../libs/axios';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_Program_Service_URL || "https://localhost:7212/api",
-  headers: { Accept: "*/*" },
-});
+// Re-use the central apiClient so Authorization header (token) is attached automatically
+const api = apiClient;
 
 //#region Mapping function
 
 const mapSection = (item) => ({
+  // Section record shape returned from /SectionRecords/my-records/class/{classId}
+  sectionRecordId: item.id ?? item.sectionRecordId,
   sectionId: item.sectionId,
   sectionName: item.sectionName,
-  sectionDescription: item.sectionDescription,
-  sectionOrder: item.sectionOrder,
-  durationMinutes: item.durationMinutes,
-  sectionRecordStatus: item.sectionRecordStatus,
+  sectionDescription: item.name ?? item.sectionDescription ?? null,
+  sectionOrder: item.sectionOrder ?? null,
+  durationMinutes: item.durationMinutes ?? null,
+  sectionRecordStatus: item.sectionRecordStatus ?? null,
   classId: item.classId,
-  sectionRecordId: item.sectionRecordId,
-  isCompleted: item.isCompleted,
-  sectionProgress: item.sectionProgress,
-  isTraineeAttended: item.isTraineeAttended,
+  isCompleted: !!item.isCompleted,
+  sectionProgress: item.progress ?? item.sectionProgress ?? 0,
+  isTraineeAttended: !!item.isTraineeAttended,
+  traineeId: item.traineeId ?? null,
+  traineeName: item.traineeName ?? null,
 });
 
 const mapPartition = (item) => ({
@@ -63,63 +64,116 @@ const mapSectionQuiz = (item) => ({
   lastAttemptDate: item.lastAttemptDate,
 });
 
-//#endregion
+// Map activity record returned by /ActivityRecords/my-records/class/{classId}/section/{sectionId}
+const mapActivityRecord = (item) => ({
+  activityRecordId: item.id,
+  sectionRecordId: item.sectionRecordId,
+  activityId: item.activityId,
+  status: item.status,
+  score: item.score,
+  isCompleted: !!item.isCompleted,
+  completedDate: item.completedDate ?? null,
+  activityType: item.activityType,
+  learningProgressId: item.learningProgressId,
+  sectionId: item.sectionId,
+  traineeId: item.traineeId,
+  traineeName: item.traineeName,
+  classId: item.classId,
+});
 
-
-//#region Learning Classes APIs
-
-// Get all learning classes for a trainee
-export const getLearningClassesByTraineeId = async (traineeId) => {
-  const response = await api.get(`/LearningsClasses/classes/trainee/${traineeId}`);
-  return response.data;
-};
-
-// Get paged learning classes for a trainee
-export const getPagedLearningClassesByTraineeId = async (traineeId, pageIndex = 1, pageSize = 10) => {
-  const response = await api.get(`/LearningsClasses/classes/trainee/${traineeId}/paged`, {
-    params: { pageIndex, pageSize },
-  });
-  return response.data;
-};
-
-// Get a specific learning class for a trainee
-export const getLearningClassByIdAndTraineeId = async (classId, traineeId) => {
-  const response = await api.get(`/LearningsClasses/class/${classId}/trainee/${traineeId}`);
-  return response.data;
-};
-
-//#endregion
-
-//#region Learning Sections APIs
-
-// get learning sections by class id and trainee id
-export const getLearningSectionsByClassIdAndTraineeId = async (classId, traineeId) => {
-  const response = await api.get(`/LearningsSections/sections/class/${classId}/trainee/${traineeId}`);
-  return response.data.map(mapSection);
-};
-
-export const getLearningSectionByIdAndTraineeId = async (sectionId, traineeId) => {
-  const response = await api.get(`/LearningsSections/section/${sectionId}/trainee/${traineeId}`);
-  return mapSection(response.data);
-};
-
-export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, traineeId, pageIndex = 1, pageSize = 10) => {
-  const response = await api.get(`/LearningsSections/sections/class/${classId}/trainee/${traineeId}/paged`, {
-    params: { pageIndex, pageSize },
-  });
-
-  const { items, totalCount, page, pageSize: size, totalPages } = response.data;
-
+// Fetch activity metadata by id
+export const getActivityById = async (activityId) => {
+  if (activityId == null) throw new Error('activityId is required');
+  const response = await api.get(`/Activities/${activityId}`);
+  const d = response.data || {};
   return {
-    items: items.map(mapSection),
-    totalCount,
-    page,
-    pageSize: size,
-    totalPages,
+    activityId: d.id,
+    activityTitle: d.activityTitle ?? d.name ?? null,
+    activityDescription: d.activityDescription ?? d.description ?? null,
+    activityType: d.activityType ?? null,
+    estimatedDurationMinutes: d.estimatedDurationMinutes ?? d.durationMinutes ?? null,
   };
 };
 
+//endregion
+
+
+//region Learning Classes APIs
+
+
+//region Learning Sections APIs
+
+// get learning sections by class id and trainee id
+export const getLearningSectionsByClassIdAndTraineeId = async (classId, traineeId) => {
+  // Use the new SectionRecords endpoint that returns the trainee's section records for a class.
+  // The endpoint does not require traineeId because token identifies the trainee.
+  const response = await api.get(`/SectionRecords/my-records/class/${classId}`);
+  // response.data is expected to be an array
+  const arr = Array.isArray(response.data) ? response.data : [];
+  return arr.map(mapSection);
+};
+
+export const getLearningSectionByIdAndTraineeId = async (sectionRecordId, traineeId) => {
+  // Attempt to fetch a specific section record by id from SectionRecords
+  // Prefer server-side record endpoint if available
+  try {
+    const response = await api.get(`/SectionRecords/${sectionRecordId}`);
+    return mapSection(response.data);
+  } catch (e) {
+    // Fallback: if endpoint not available, try the old route (keep compatibility)
+    const response = await api.get(`Section/${sectionRecordId}/trainee/${traineeId}`);
+    return mapSection(response.data);
+  }
+};
+
+export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, traineeId, pageIndex = 1, pageSize = 10) => {
+  // Try paged SectionRecords endpoint; if not present, fetch full list and page client-side
+  try {
+    const response = await api.get(`/SectionRecords/my-records/class/${classId}/paged`, {
+      params: { pageIndex, pageSize },
+    });
+
+    const { items = [], totalCount = 0, page = pageIndex, pageSize: size = pageSize, totalPages = Math.max(1, Math.ceil(totalCount / (size || 1))) } = response.data || {};
+
+    return {
+      items: (Array.isArray(items) ? items : []).map(mapSection),
+      totalCount,
+      page,
+      pageSize: size,
+      totalPages,
+    };
+  } catch (err) {
+    // Fallback: fetch all and paginate client-side
+    const all = await getLearningSectionsByClassIdAndTraineeId(classId, traineeId);
+    const totalCount = all.length;
+    const start = (pageIndex - 1) * pageSize;
+    const pagedItems = all.slice(start, start + pageSize);
+    const totalPages = pageSize > 0 ? Math.ceil(totalCount / pageSize) : 1;
+    return {
+      items: pagedItems,
+      totalCount,
+      page: pageIndex,
+      pageSize,
+      totalPages,
+    };
+  }
+};
+
 //#endregion
+
+//region Activity Records
+
+/**
+ * Get activity records for a class + section for the current trainee (token identifies trainee)
+ * GET /ActivityRecords/my-records/class/{classId}/section/{sectionId}
+ */
+export const getActivityRecordsByClassAndSection = async (classId, sectionId) => {
+  const response = await api.get(`/ActivityRecords/my-records/class/${classId}/section/${sectionId}`);
+  const arr = Array.isArray(response.data) ? response.data : [];
+  return arr.map(mapActivityRecord);
+};
+
+//endregion
 
 //#region Learning Partitions APIs
 

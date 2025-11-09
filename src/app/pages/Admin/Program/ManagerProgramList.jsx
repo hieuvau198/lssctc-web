@@ -52,8 +52,10 @@ const ManagerProgramList = () => {
     setLoading(true);
     fetchPrograms({ pageNumber, pageSize, searchTerm })
       .then((data) => {
-        setPrograms(data.items || []);
-        setTotal(data.totalCount || 0);
+        // normalize response: some APIs return an array, others return { items, totalCount }
+        const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
+        setPrograms(resp.items || []);
+        setTotal(resp.totalCount || resp.total || 0);
         setLoading(false);
       })
       .catch((err) => {
@@ -77,10 +79,11 @@ const ManagerProgramList = () => {
     try {
       await deleteProgram(id);
       message.success("Program deleted successfully");
-      // Refresh list
+      // Refresh list (normalize response)
       fetchPrograms({ pageNumber, pageSize, searchTerm }).then((data) => {
-        setPrograms(data.items || []);
-        setTotal(data.totalCount || 0);
+        const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
+        setPrograms(resp.items || []);
+        setTotal(resp.totalCount || resp.total || 0);
       });
       // Close drawer if current program is deleted
       if (currentProgram?.id === id) {
@@ -170,10 +173,11 @@ const ManagerProgramList = () => {
     try {
       await createProgram(values);
       message.success('Program created successfully');
-      // Refresh list
-      const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
-      setPrograms(data.items || []);
-      setTotal(data.totalCount || 0);
+  // Refresh list (normalize response)
+  const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
+  const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
+  setPrograms(resp.items || []);
+  setTotal(resp.totalCount || resp.total || 0);
       closeDrawer();
     } catch (err) {
       message.error(err.message || 'Create failed');
@@ -188,10 +192,11 @@ const ManagerProgramList = () => {
     try {
       await updateProgramBasic(currentProgram.id, values);
       message.success('Program updated successfully');
-      // Refresh list
-      const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
-      setPrograms(data.items || []);
-      setTotal(data.totalCount || 0);
+  // Refresh list (normalize response)
+  const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
+  const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
+  setPrograms(resp.items || []);
+  setTotal(resp.totalCount || resp.total || 0);
       // Update current program
       const updated = data.items?.find(p => p.id === currentProgram.id);
       setCurrentProgram(updated || null);

@@ -1,23 +1,38 @@
-// src/app/pages/Trainee/MyClasses/MyClasses.jsx
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, Skeleton, Tag, Progress, Empty, Segmented } from 'antd';
+import { Card, Empty, Progress, Segmented, Skeleton, Tag } from 'antd';
 import { BookOpen } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { getLearningClassesByTraineeId } from '../../../apis/Trainee/TraineeClassApi';
 import PageNav from '../../../components/PageNav/PageNav';
-import { getLearningClassesByTraineeId } from '../../../apis/Trainee/TraineeLearningApi';
+import { getAuthToken } from '../../../libs/cookies';
+import { decodeToken } from '../../../libs/jwtDecode';
+import useAuthStore from '../../../store/authStore'; // <-- IMPORT AUTH STORE
+
 
 export default function MyClasses() {
   const [tab, setTab] = useState('in-progress'); // 'in-progress' | 'completed'
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const traineeId = 1; // Hardcoded for now
+  const traineeIdFromStore = useAuthStore((state) => state.nameid); // <-- USE ID FROM STORE
 
   useEffect(() => {
     const fetchClasses = async () => {
+      // Resolve traineeId: prefer store, fallback to decoding token cookie (handles zustand hydrate race)
+      const token = getAuthToken();
+      const decoded = token ? decodeToken(token) : null;
+      const resolvedTraineeId = traineeIdFromStore || decoded?.nameid;
+
+      // Guard: Don't fetch if traineeId isn't available yet
+      if (!resolvedTraineeId) {
+        setLoading(false);
+        setPrograms([]);
+        return;
+      }
+
       try {
         setLoading(true);
-        const data = await getLearningClassesByTraineeId(traineeId);
+        const data = await getLearningClassesByTraineeId(resolvedTraineeId);
 
         // Filter classes based on progress (simulate your "In Progress" / "Completed" tabs)
         const filtered =
@@ -27,13 +42,13 @@ export default function MyClasses() {
 
         // Map API data to your UI structure
         const mapped = filtered.map((c) => ({
-          id: c.classId,
+          id: c.id,
           provider: 'Global Crane Academy', // Optional — placeholder until API provides this
-          name: c.className,
+          name: c.name,
           progress: c.classProgress ?? 0,
-          badge: c.classStatus,
+          badge: c.status,
           color: 'from-cyan-500 to-blue-600',
-          completedAt: c.classEndDate,
+          completedAt: c.endDate,
         }));
 
         setPrograms(mapped);
@@ -46,7 +61,7 @@ export default function MyClasses() {
     };
 
     fetchClasses();
-  }, [tab, traineeId]);
+  }, [tab, traineeIdFromStore]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -76,15 +91,17 @@ export default function MyClasses() {
         )}
 
         {!loading && programs.length === 0 && (
-          <Empty description="No classes found" className="py-16" />
+          <div className="min-h-screen flex items-center justify-center">
+            <Empty description="No classes found" className="py-16" />
+          </div>
         )}
 
         {!loading && programs.length > 0 && (
           <div className="space-y-6">
             {programs.map((p) => (
-              <div className="my-4" key={p.id}>
+              <div className="min-h-screen my-4" key={p.id}>
                 <Link to={`/my-classes/${p.id}`}>
-                  <Card className="group rounded-2xl border hover:shadow-lg transition-all duration-300 overflow-hidden relative cursor-pointer">
+                  <Card className="group rounded-2xl shadow-xl border hover:shadow-lg transition-all duration-300 overflow-hidden relative cursor-pointer">
                     <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r opacity-80 from-transparent via-slate-200 to-transparent" />
                     <div className="flex">
                       <div className="flex-1 p-6">
