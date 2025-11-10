@@ -8,12 +8,25 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Clean install deps (avoid npm optional deps bug)
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
+
+      - name: Ensure Rollup Linux binary installed
+        run: |
+          npm install @rollup/rollup-linux-x64-gnu --no-save || true
 
       - name: Build project
         run: npm run build
