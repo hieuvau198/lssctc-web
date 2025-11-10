@@ -1,19 +1,13 @@
-// src\app\pages\Instructor\InstructorClasses\InstructorClasses.jsx
-
-import React, { useEffect, useState } from "react";
 import {
   Alert,
-  Skeleton,
-  Button,
-  message,
+  Skeleton
 } from "antd";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { fetchClasses } from "../../../apis/ProgramManager/ClassesApi";
-import ClassList from "./partials/ClassList";
-import ClassFilters from "./partials/ClassFilters";
+import { getInstructorClasses } from "../../../apis/Instructor/InstructorApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
-import slugify from "../../../lib/slugify";
-import TestDisplayClassList from "./partials/TestDisplayClassList";
+import ClassFilters from "./partials/ClassFilters";
+import ClassList from "./partials/ClassList";
 
 export default function InstructorClasses() {
   const [classes, setClasses] = useState([]);
@@ -22,7 +16,7 @@ export default function InstructorClasses() {
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState(undefined);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
@@ -31,21 +25,32 @@ export default function InstructorClasses() {
 
   useEffect(() => {
     let cancelled = false;
+    const instructorId = 2; // TODO: replace with real instructor id from auth/context
     setLoading(true);
-    fetchClasses({ page: pageNumber, pageSize })
-      .then((data) => {
+    (async () => {
+      try {
+        const res = await getInstructorClasses(instructorId, { page: pageNumber, pageSize });
         if (cancelled) return;
-        setClasses(Array.isArray(data?.items) ? data.items : []);
-        setTotal(Number(data?.totalCount) || 0);
-      })
-      .catch((err) => {
+        // res may be paged response with items + totalCount
+        if (res && Array.isArray(res.items)) {
+          setClasses(res.items);
+          setTotal(Number(res.totalCount) || res.items.length || 0);
+        } else if (Array.isArray(res)) {
+          setClasses(res);
+          setTotal(res.length || 0);
+        } else {
+          setClasses([]);
+          setTotal(0);
+        }
+      } catch (err) {
         if (cancelled) return;
         setError(err?.message || "Failed to load classes");
-      })
-      .finally(() => {
+      } finally {
         if (cancelled) return;
         setLoading(false);
-      });
+      }
+    })();
+
     return () => {
       cancelled = true;
     };
@@ -62,8 +67,8 @@ export default function InstructorClasses() {
   };
 
   const handleViewClass = (classItem) => {
-    const slug = slugify(classItem.name);
-    navigate(`/instructor/classes/${slug}`);
+    const id = classItem?.id ?? classItem?.classId;
+    if (id) navigate(`/instructor/classes/${id}`);
   };
 
   if (loading) {
@@ -112,8 +117,8 @@ export default function InstructorClasses() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">My Classes</h2>
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-2xl">My Classes</span>
       </div>
 
       {/* Search and Controls */}
@@ -144,7 +149,7 @@ export default function InstructorClasses() {
         onView={handleViewClass}
       />
 
-      <TestDisplayClassList />
+      {/* <TestDisplayClassList /> */}
       
     </div>
   );

@@ -1,10 +1,7 @@
-// src\app\pages\Trainee\MyClasses\partials\Sections.jsx
-
-import React from 'react';
+import { Card, Progress, Tag } from 'antd';
+import { Clock, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Card, Tag, Progress } from 'antd';
-import { Clock, DollarSign, User, Award } from 'lucide-react';
-import { getFirstPartitionPath } from '../../../../mock/lessonPartitions';
+import { getFirstPartitionPath } from '../../../../mocks/lessonPartitions';
 
 export default function Sections({ sections = [], classId }) {
 	if(!sections || sections.length === 0) 
@@ -22,7 +19,7 @@ export default function Sections({ sections = [], classId }) {
 		<Card  className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
 			<div className="space-y-5">
 				{sections.map((section) => {
-					const deepLink = getFirstPartitionPath(classId) || `/learn/${classId}`;
+					const deepLink = getFirstPartitionPath(classId) || `/learnings/${classId}`;
 					return (
 					<Link key={section.sectionId} to={deepLink} className="block">
 						<div className="flex items-start justify-between p-5 border border-slate-200 rounded-lg bg-slate-50/30 hover:bg-slate-50 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer">

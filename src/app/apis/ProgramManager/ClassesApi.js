@@ -1,8 +1,7 @@
-import axios from "axios";
+import apiClient from '../../libs/axios';
 
-// Base URL for Program Service (Program / Course / Class domain)
-const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
-const CLASSES_BASE = `${API_BASE_URL}/Classes`;
+// Base path for Classes endpoints (apiClient already sets baseURL)
+const CLASSES_BASE = `/Classes`;
 
 /**
  * Helper: build query string for pagination or generic params
@@ -24,7 +23,22 @@ function buildQuery(params = {}) {
  */
 export async function fetchClasses({ page = 1, pageSize = 10 } = {}) {
 	const qs = buildQuery({ page, pageSize });
-	const { data } = await axios.get(`${CLASSES_BASE}${qs}`);
+	const { data } = await apiClient.get(`${CLASSES_BASE}${qs}`);
+
+	// Normalize when backend returns a plain array
+	if (Array.isArray(data)) {
+		const totalCount = data.length;
+		const totalPages = pageSize > 0 ? Math.ceil(totalCount / pageSize) : 1;
+		return {
+			items: data,
+			totalCount,
+			page,
+			pageSize,
+			totalPages,
+		};
+	}
+
+	// otherwise assume server returned paged shape already
 	return data;
 }
 
@@ -34,7 +48,7 @@ export async function fetchClasses({ page = 1, pageSize = 10 } = {}) {
  */
 export async function fetchClassesByProgramCourse(programCourseId) {
 	if (programCourseId == null) throw new Error("programCourseId is required");
-	const { data } = await axios.get(
+	const { data } = await apiClient.get(
 		`${CLASSES_BASE}/programcourse/${programCourseId}`
 	);
 	return data;
@@ -46,7 +60,7 @@ export async function fetchClassesByProgramCourse(programCourseId) {
  * @param {Object} payload - matches ClassCreateDto
  */
 export async function createClass(payload) {
-	const { data } = await axios.post(`${CLASSES_BASE}/create`, payload);
+	const { data } = await apiClient.post(`${CLASSES_BASE}/create`, payload);
 	return data;
 }
 
@@ -56,7 +70,7 @@ export async function createClass(payload) {
  * @param {{classId:number,instructorId:number,position?:string}} payload
  */
 export async function assignInstructor(payload) {
-	const { data } = await axios.post(
+	const { data } = await apiClient.post(
 		`${CLASSES_BASE}/assign-instructor`,
 		payload
 	);
@@ -69,7 +83,7 @@ export async function assignInstructor(payload) {
  * @param {{classId:number,traineeId:number,name?:string,description?:string,traineeContact?:string}} payload
  */
 export async function assignTrainee(payload) {
-	const { data } = await axios.post(`${CLASSES_BASE}/assign-trainee`, payload);
+	const { data } = await apiClient.post(`${CLASSES_BASE}/assign-trainee`, payload);
 	return data;
 }
 
@@ -79,7 +93,7 @@ export async function assignTrainee(payload) {
  */
 export async function fetchClassEnrollment(classId) {
 	if (classId == null) throw new Error("classId is required");
-	const { data } = await axios.get(`${CLASSES_BASE}/${classId}/enrollment`);
+	const { data } = await apiClient.get(`${CLASSES_BASE}/${classId}/enrollment`);
 	return data;
 }
 
@@ -89,7 +103,7 @@ export async function fetchClassEnrollment(classId) {
  * @param {{enrollmentId:number,description?:string}} payload
  */
 export async function approveEnrollment(payload) {
-	const { data } = await axios.post(
+	const { data } = await apiClient.post(
 		`${CLASSES_BASE}/approve-enrollment`,
 		payload
 	);
@@ -102,7 +116,7 @@ export async function approveEnrollment(payload) {
  */
 export async function fetchClassMembers(classId) {
 	if (classId == null) throw new Error("classId is required");
-	const { data } = await axios.get(`${CLASSES_BASE}/${classId}/members`);
+	const { data } = await apiClient.get(`${CLASSES_BASE}/${classId}/members`);
 	return data;
 }
 
@@ -112,7 +126,7 @@ export async function fetchClassMembers(classId) {
  */
 export async function fetchClassInstructor(classId) {
 	if (classId == null) throw new Error("classId is required");
-	const { data } = await axios.get(`${CLASSES_BASE}/${classId}/instructor`);
+	const { data } = await apiClient.get(`${CLASSES_BASE}/${classId}/instructor`);
 	return data;
 }
 
@@ -122,7 +136,7 @@ export async function fetchClassInstructor(classId) {
  */
 export async function fetchMemberProgress(memberId) {
 	if (memberId == null) throw new Error("memberId is required");
-	const { data } = await axios.get(
+	const { data } = await apiClient.get(
 		`${CLASSES_BASE}/members/${memberId}/progress`
 	);
 	return data;
@@ -134,7 +148,7 @@ export async function fetchMemberProgress(memberId) {
  * @param {{courseMemberId:number,status?:string,name?:string,description?:string,progressPercentage?:number,startDate?:string,lastUpdated?:string}} payload
  */
 export async function createTrainingProgress(payload) {
-	const { data } = await axios.post(`${CLASSES_BASE}/progress`, payload);
+	const { data } = await apiClient.post(`${CLASSES_BASE}/progress`, payload);
 	return data;
 }
 
@@ -144,7 +158,7 @@ export async function createTrainingProgress(payload) {
  * @param {{id:number,status?:string,progressPercentage?:number,description?:string}} payload
  */
 export async function updateTrainingProgress(payload) {
-	const { data } = await axios.put(`${CLASSES_BASE}/progress`, payload);
+	const { data } = await apiClient.put(`${CLASSES_BASE}/progress`, payload);
 	return data;
 }
 
@@ -154,7 +168,7 @@ export async function updateTrainingProgress(payload) {
  */
 export async function fetchTrainingResults(progressId) {
 	if (progressId == null) throw new Error("progressId is required");
-	const { data } = await axios.get(
+	const { data } = await apiClient.get(
 		`${CLASSES_BASE}/progress/${progressId}/results`
 	);
 	return data;
@@ -166,7 +180,7 @@ export async function fetchTrainingResults(progressId) {
  * @param {{trainingProgressId:number,trainingResultTypeId:number,resultValue?:string,resultDate?:string,notes?:string}} payload
  */
 export async function createTrainingResult(payload) {
-	const { data } = await axios.post(`${CLASSES_BASE}/results`, payload);
+	const { data } = await apiClient.post(`${CLASSES_BASE}/results`, payload);
 	return data;
 }
 
@@ -176,7 +190,7 @@ export async function createTrainingResult(payload) {
  * @param {{id:number,resultValue?:string,notes?:string}} payload
  */
 export async function updateTrainingResult(payload) {
-	const { data } = await axios.put(`${CLASSES_BASE}/results`, payload);
+	const { data } = await apiClient.put(`${CLASSES_BASE}/results`, payload);
 	return data;
 }
 
@@ -186,7 +200,7 @@ export async function updateTrainingResult(payload) {
  * @param {{classId:number,name?:string,description?:string,syllabusSectionId:number,durationMinutes?:number,order?:number,startDate?:string,endDate?:string}} payload
  */
 export async function createClassSection(payload) {
-	const { data } = await axios.post(`${CLASSES_BASE}/sections`, payload);
+	const { data } = await apiClient.post(`${CLASSES_BASE}/sections`, payload);
 	return data;
 }
 
@@ -196,7 +210,7 @@ export async function createClassSection(payload) {
  * @param {{syllabusName?:string,courseName?:string,courseCode?:string,sectionTitle?:string,sectionDescription?:string,sectionOrder?:number,estimatedDurationMinutes?:number}} payload
  */
 export async function createSyllabusSection(payload) {
-	const { data } = await axios.post(
+	const { data } = await apiClient.post(
 		`${CLASSES_BASE}/syllabus-sections`,
 		payload
 	);

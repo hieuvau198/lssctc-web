@@ -1,22 +1,14 @@
 import React from 'react';
 import { NavLink } from 'react-router';
 import { Tooltip } from 'antd';
-import {
-  DashboardOutlined,
-  ExperimentOutlined,
-  ControlOutlined,
-  ScheduleOutlined,
-  SettingOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-} from '@ant-design/icons';
+import { LayoutDashboard, FlaskConical, Sliders, Calendar, Settings, PanelLeftClose, PanelLeft } from 'lucide-react';
 
 const ITEMS = [
-  { to: '/simulationManager/dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
-  { to: '/simulationManager/practices', label: 'Practices', icon: <ExperimentOutlined /> },
-  { to: '/simulationManager/configs', label: 'Simulator Configs', icon: <ControlOutlined /> },
-  { to: '/simulationManager/sessions', label: 'Sessions', icon: <ScheduleOutlined /> },
-  { to: '/simulationManager/settings', label: 'Settings', icon: <SettingOutlined /> },
+  { to: '/simulationManager/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
+  { to: '/simulationManager/practices', label: 'Practices', icon: <FlaskConical className="w-5 h-5" /> },
+  { to: '/simulationManager/configs', label: 'Simulator Configs', icon: <Sliders className="w-5 h-5" /> },
+  { to: '/simulationManager/sessions', label: 'Sessions', icon: <Calendar className="w-5 h-5" /> },
+  { to: '/simulationManager/settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
 
 export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
@@ -47,14 +39,14 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
             className="hidden md:inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100"
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
           <button
             onClick={onMobileToggle}
             className="md:hidden inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100"
             aria-label="Close navigation"
           >
-            <MenuFoldOutlined />
+            <PanelLeftClose className="w-4 h-4" />
           </button>
         </div>
 

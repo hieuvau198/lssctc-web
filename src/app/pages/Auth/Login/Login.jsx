@@ -1,65 +1,120 @@
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Input } from 'antd';
+import { Alert, Button, Checkbox, Input, App } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { loginEmail, loginUsername } from '../../../apis/Auth/LoginApi';
 import PageNav from '../../../components/PageNav/PageNav';
 import {
   clearRememberedCredentials,
   loadRememberedCredentials,
   persistRememberedCredentials,
-} from '../../../lib/crypto';
-import { useNavigate } from 'react-router';
-import Cookies from 'js-cookie';
+} from '../../../libs/crypto';
+import useAuthStore from '../../../store/authStore';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const { message } = App.useApp();
+  const [identity, setIdentity] = useState(''); // email or username
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const nav = useNavigate();
+  const { setToken } = useAuthStore();
+
+  // Role-based redirect function
+  const redirectByRole = (role) => {
+    switch (role) {
+      case 'Admin':
+        nav('/admin/dashboard');
+        break;
+      case 'Instructor':
+        nav('/instructor/dashboard');
+        break;
+      case 'Trainee':
+        nav('/');
+        break;
+      case 'SimulationManager':
+        nav('/simulationManager/dashboard');
+        break;
+      case 'ProgramManager':
+        nav('/programManager/dashboard');
+        break;
+      default:
+        // Default redirect if role is unknown or not set
+        nav('/');
+        break;
+    }
+  };
 
   // Restore remembered credentials
   useEffect(() => {
     const creds = loadRememberedCredentials();
     if (creds) {
-      setEmail(creds.email);
+      // previous stored object used `email` field — map to identity
+      setIdentity(creds.email || creds.username || '');
       setPassword(creds.password);
       setRemember(true);
     }
   }, []);
 
-  const persistCredentials = useCallback((em, pw) => {
-    if (!remember) {
+  const persistCredentials = useCallback((id, pw, shouldRemember) => {
+    if (!shouldRemember) {
       clearRememberedCredentials();
       return;
     }
-    persistRememberedCredentials({ email: em, password: pw, remember });
-  }, [remember]);
+    // keep legacy `email` key for backward compatibility
+    persistRememberedCredentials({ email: id, username: id, password: pw, remember: shouldRemember });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    
     try {
-      // TODO: call real login API via http('/api/auth/login')
-      await new Promise(r => setTimeout(r, 1000)); // simulate
-      // Simulate token received from API
-      const token = 'demo-token';
+      // Decide whether identity is email or username (simple heuristic)
+      const isEmail = identity.includes('@');
+      let response;
+      if (isEmail) {
+        response = await loginEmail(identity.trim(), password);
+      } else {
+        response = await loginUsername(identity.trim(), password);
+      }
 
-      persistCredentials(email, password);
-      // Persist token in cookies
-      Cookies.set('token', token, {
-        // if remember me is checked, persist for 7 days; otherwise session cookie
-        ...(remember ? { expires: 7 } : {}),
-        sameSite: 'lax',
-        secure: window.location.protocol === 'https:',
-        path: '/',
-      });
-      // redirect or set auth context
-      // Example redirect to home or previous page
-      // nav('/');
+      if (!response || !response.accessToken) {
+        throw new Error('Invalid response from server');
+      }
+
+      const { accessToken } = response;
+
+      // Save credentials if remember me is checked (pass remember state explicitly)
+      persistCredentials(identity, password, remember);
+
+      // Set token options based on remember me checkbox
+      const tokenOptions = remember ? { expires: 7 } : {}; // 7 days if remember me, session cookie otherwise
+
+      // Set token in authStore (this will also save to cookies automatically)
+      setToken(accessToken, tokenOptions);
+
+      // Get role from authStore after token is set and decoded
+      const authState = useAuthStore.getState();
+      const userRole = authState.role;
+      
+      console.log('User role after login:', userRole);
+
+      // Redirect based on user role
+      redirectByRole(userRole);
+      message.success('Login successful');
     } catch (err) {
-      setError(err.message || 'Login failed');
+      // show notification and error block
+      // use message.error from Ant Design message API
+      try {
+        message.error(err.response?.data?.message || err.message || 'Đăng nhập thất bại');
+      } catch (e) {
+        // ignore if message api not available
+      }
+      console.error('Login error:', err);
+      setError(err.response?.data?.message || err.message || 'Đăng nhập thất bại');
     } finally {
       setLoading(false);
     }
@@ -74,28 +129,21 @@ export default function Login() {
         <div className="w-full max-w-md bg-white/90 backdrop-blur border border-blue-100 shadow-sm rounded-lg p-8">
         <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">Sign in</h1>
         <p className="text-gray-500 text-sm mb-6 text-center">Access your LSSCTC training</p>
-        {error && (
-          <Alert
-            message={error}
-            type="error"
-            showIcon
-            className="mb-4"
-          />
-        )}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="identity">Email or Username</label>
             <Input
-              id="email"
-              type="email"
+              id="identity"
+              type="text"
               size="large"
-              placeholder="your-email@gmail.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com or username"
+              value={identity}
+              onChange={(e) => setIdentity(e.target.value)}
               disabled={loading}
-              autoComplete="email"
+              autoComplete="username email"
               required
             />
+            <p className="text-xs text-gray-400 mt-1">You can sign in with your email address or username.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">Password</label>

@@ -8,11 +8,10 @@ export async function fetchPrograms(params = {}) {
   if (params.pageSize) searchParams.append("PageSize", params.pageSize);
   if (params.searchTerm) searchParams.append("SearchTerm", params.searchTerm);
 
-  const response = await fetch(`${API_BASE_URL}/Programs?${searchParams}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch programs");
-  }
-  return response.json();
+  const response = await axios.get(`${API_BASE_URL}/Programs?${searchParams}`);
+  // normalize: if backend returns plain array, convert to { items, totalCount }
+  if (Array.isArray(response.data)) return { items: response.data, totalCount: response.data.length };
+  return response.data;
 }
 
 // Fetch program detail by id
@@ -80,6 +79,7 @@ export async function fetchCourses(params = {}) {
     searchParams.append("IsActive", params.isActive);
 
   const response = await axios.get(`${API_BASE_URL}/Courses?${searchParams}`);
+  if (Array.isArray(response.data)) return { items: response.data, totalCount: response.data.length };
   return response.data;
 }
 

@@ -1,5 +1,4 @@
-import axios from "axios";
-const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
+import apiClient from '../../libs/axios';
 
 /**
  * Fetch paginated list of classes
@@ -8,10 +7,24 @@ const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
  */
 export async function fetchClasses(params = {}) {
   const { page = 1, pageSize = 10 } = params;
-  const res = await axios.get(
-    `${API_BASE_URL}/Classes?page=${page}&pageSize=${pageSize}`
-  );
-  return res.data;
+  const res = await apiClient.get(`/Classes?page=${page}&pageSize=${pageSize}`);
+  const data = res.data;
+
+  // If backend returns an array, normalize to a consistent paged shape
+  if (Array.isArray(data)) {
+    const totalCount = data.length;
+    const totalPages = pageSize > 0 ? Math.ceil(totalCount / pageSize) : 1;
+    return {
+      items: data,
+      totalCount,
+      page,
+      pageSize,
+      totalPages,
+    };
+  }
+
+  // otherwise assume server already returned a paged object
+  return data;
 }
 
 /**
@@ -20,7 +33,7 @@ export async function fetchClasses(params = {}) {
  * @returns {Promise<Object>}
  */
 export async function fetchClassDetail(id) {
-  const res = await axios.get(`${API_BASE_URL}/Classes/${id}`);
+  const res = await apiClient.get(`/Classes/${id}`);
   return res.data;
 }
 
@@ -30,9 +43,7 @@ export async function fetchClassDetail(id) {
  * @returns {Promise<Array>}
  */
 export async function fetchClassesByProgramCourse(programCourseId) {
-  const res = await axios.get(
-    `${API_BASE_URL}/Classes/programcourse/${programCourseId}`
-  );
+  const res = await apiClient.get(`/Classes/programcourse/${programCourseId}`);
   return res.data;
 }
 
@@ -42,7 +53,7 @@ export async function fetchClassesByProgramCourse(programCourseId) {
  * @returns {Promise<Object>}
  */
 export async function createClass(payload) {
-  const res = await axios.post(`${API_BASE_URL}/Classes/create`, payload);
+  const res = await apiClient.post(`/Classes/create`, payload);
   return res.data;
 }
 
@@ -53,7 +64,7 @@ export async function createClass(payload) {
  * @returns {Promise<Object>}
  */
 export async function updateClass(id, payload) {
-  const res = await axios.put(`${API_BASE_URL}/Classes/${id}`, payload);
+  const res = await apiClient.put(`/Classes/${id}`, payload);
   return res.data;
 }
 
@@ -63,6 +74,6 @@ export async function updateClass(id, payload) {
  * @returns {Promise<Object>}
  */
 export async function deleteClass(id) {
-  const res = await axios.delete(`${API_BASE_URL}/Classes/${id}`);
+  const res = await apiClient.delete(`/Classes/${id}`);
   return res.data;
 }

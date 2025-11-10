@@ -13,7 +13,7 @@ export default function HomeBanner() {
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
   return (
-  <section className="relative overflow-hidden bg-blue-200 text-slate-900">
+    <section className="relative overflow-hidden bg-blue-200 text-slate-900">
       {/* Decorative background */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
         <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-blue-100 blur-3xl" />
@@ -21,7 +21,7 @@ export default function HomeBanner() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08),transparent_60%)]" />
       </div>
 
-  <div className="relative max-w-[1380px] mx-auto px-5 sm:px-6 md:px-10 pt-14 pb-12 md:pt-20 md:pb-18 lg:pt-24 lg:pb-20">
+      <div className="relative max-w-[1380px] mx-auto px-5 sm:px-6 md:px-10 pt-14 pb-12 md:pt-20 md:pb-18 lg:pt-24 lg:pb-20">
         <div className="grid gap-12 md:gap-16 lg:grid-cols-2 items-start lg:items-center">
           {/* Left copy */}
           <div>

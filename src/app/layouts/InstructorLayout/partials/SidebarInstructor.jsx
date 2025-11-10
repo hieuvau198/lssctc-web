@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router';
 import { Tooltip } from 'antd';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { BookOpen, Layers, FileText, HelpCircle, Dumbbell, User } from 'lucide-react';
+import { BookOpen, FileText, HelpCircle, Dumbbell, User, PanelLeftClose, PanelLeft, LayoutDashboard } from 'lucide-react';
 
 const ITEMS = [
+  { to: '/instructor/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
   { to: '/instructor/classes', label: 'Class', icon: <BookOpen className="w-5 h-5" /> },
   { to: '/instructor/materials', label: 'Material', icon: <FileText className="w-5 h-5" /> },
   { to: '/instructor/quizzes', label: 'Quiz', icon: <HelpCircle className="w-5 h-5" /> },
@@ -35,10 +35,10 @@ export default function SidebarInstructor({ collapsed, onToggle, mobileOpen, onM
             {!collapsed && <span className="font-semibold text-sm tracking-wide">Instructor</span>}
           </div>
           <button onClick={onToggle} className="hidden md:inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
           <button onClick={onMobileToggle} className="md:hidden inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100" aria-label="Close navigation">
-            <MenuFoldOutlined />
+            <PanelLeftClose className="w-4 h-4" />
           </button>
         </div>
 
@@ -52,7 +52,7 @@ export default function SidebarInstructor({ collapsed, onToggle, mobileOpen, onM
                   className={({ isActive }) => [
                     'group flex items-center rounded-md py-2 text-sm font-medium transition-colors',
                     collapsed ? 'justify-center mx-2.5' : 'gap-3 px-3',
-                    isActive ? 'bg-blue-200/85 text-blue-600' : 'text-gray-600 hover:bg-blue-100 hover:text-gray-900',
+                    isActive ? 'bg-gray-200 text-gray-900' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
                   ].join(' ')}
                   aria-label={collapsed ? item.label : undefined}
                 >

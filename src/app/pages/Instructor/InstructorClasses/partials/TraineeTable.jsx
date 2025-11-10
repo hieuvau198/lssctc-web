@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Avatar, Input, Button } from 'antd';
-import { UserOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Tag, Avatar, Input, Button, Skeleton, Pagination } from 'antd';
+import { User, Search } from 'lucide-react';
+import { getClassMembers } from '../../../../apis/Instructor/InstructorSectionApi';
 
 // Mock data for trainees
 const mockTrainees = [
@@ -17,7 +18,7 @@ const mockTrainees = [
   },
   {
     id: 2,
-    studentId: 'STU002', 
+    studentId: 'STU002',
     fullName: 'Sarah Johnson',
     email: 'sarah.johnson@email.com',
     phone: '+1-555-0102',
@@ -30,7 +31,7 @@ const mockTrainees = [
     id: 3,
     studentId: 'STU003',
     fullName: 'Michael Brown',
-    email: 'michael.brown@email.com', 
+    email: 'michael.brown@email.com',
     phone: '+1-555-0103',
     enrollmentDate: '2025-09-22T09:15:00',
     status: 'completed',
@@ -103,14 +104,48 @@ export default function TraineeTable({ classId }) {
   const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
-    // Simulate API call
     const fetchTrainees = async () => {
       setLoading(true);
-      // Simulate delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setTrainees(mockTrainees);
-      setFilteredTrainees(mockTrainees);
-      setLoading(false);
+      try {
+        if (!classId) {
+          // fallback to mock data when no classId provided
+          setTrainees(mockTrainees);
+          setFilteredTrainees(mockTrainees);
+          return;
+        }
+        const res = await getClassMembers(classId, { page: 1, pageSize: 1000 });
+        const items = Array.isArray(res.items) ? res.items : [];
+        // Map API member items to the table row shape expected by this component
+        const mapped = items.map((m) => ({
+          id: m.trainee?.id || m.traineeId || m.id,
+          studentId: m.trainee?.traineeCode || `TR${String(m.traineeId || m.id).padStart(3, '0')}`,
+          fullName: m.trainee?.fullName || 'Unknown',
+          email: m.trainee?.email || '-',
+          phone: m.trainee?.phone || '-',
+          enrollmentDate: m.assignedDate || m.trainee?.enrollmentDate || null,
+          status: (() => {
+            // Map numeric/string status codes to semantic statuses.
+            // Assumption: '1' => enrolled, '2' => completed
+            if (m.status === 1 || m.status === '1') return 'enrolled';
+            if (m.status === 2 || m.status === '2') return 'completed';
+            return m.status || 'unknown';
+          })(),
+          progress: (Array.isArray(m.trainingProgresses) && m.trainingProgresses.length)
+            ? Math.round((m.trainingProgresses[0].progress || 0))
+            : 0,
+          avatar: null,
+        }));
+
+        setTrainees(mapped);
+        setFilteredTrainees(mapped);
+      } catch (err) {
+        // on error, keep mock data
+        console.error('Failed to fetch class members:', err);
+        setTrainees(mockTrainees);
+        setFilteredTrainees(mockTrainees);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchTrainees();
@@ -121,7 +156,7 @@ export default function TraineeTable({ classId }) {
     if (searchValue.trim() === '') {
       setFilteredTrainees(trainees);
     } else {
-      const filtered = trainees.filter(trainee => 
+      const filtered = trainees.filter(trainee =>
         trainee.fullName.toLowerCase().includes(searchValue.toLowerCase()) ||
         trainee.studentId.toLowerCase().includes(searchValue.toLowerCase()) ||
         trainee.email.toLowerCase().includes(searchValue.toLowerCase())
@@ -180,16 +215,16 @@ export default function TraineeTable({ classId }) {
       key: 'student',
       width: 150,
       render: (_, record) => {
-        const avatarUrl = record.avatar
-          ? record.avatar
-          : `https://ui-avatars.com/api/?name=${encodeURIComponent(record.fullName || 'User')}&background=random`;
+        const defaultAvatarBase = import.meta.env.VITE_API_DEFAULT_AVATAR_URL;
+        const userName = record.fullName || 'User';
+        const avatarUrl = record.avatar || `${defaultAvatarBase}${encodeURIComponent(userName)}`;
 
         return (
           <div className="flex items-center gap-3">
-            <Avatar 
-              size={40} 
-              src={avatarUrl} 
-              icon={<UserOutlined />}
+            <Avatar
+              size={40}
+              src={avatarUrl}
+              icon={<User className="w-4 h-4" />}
               className="flex-shrink-0"
             />
             <div className="min-w-0">
@@ -235,9 +270,9 @@ export default function TraineeTable({ classId }) {
       render: (progress) => (
         <div className="flex items-center gap-2">
           <div className="flex-1 bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="h-2 rounded-full transition-all duration-300"
-              style={{ 
+              style={{
                 width: `${progress}%`,
                 backgroundColor: getProgressColor(progress)
               }}
@@ -259,69 +294,82 @@ export default function TraineeTable({ classId }) {
           {getStatusText(status)}
         </Tag>
       ),
-    },
-    // {
-    //   title: 'Actions',
-    //   key: 'actions',
-    //   width: 80,
-    //   render: (_, record) => (
-    //     <div className="flex justify-center">
-    //       <Button 
-    //         type="text" 
-    //         size="small"
-    //         onClick={() => {
-    //           // Handle view trainee details
-    //           console.log('View trainee:', record);
-    //         }}
-    //       >
-    //         View
-    //       </Button>
-    //     </div>
-    //   ),
-    // },
+    }
   ];
 
   return (
-    <div>
-      {/* Search and Controls */}
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-3 whitespace-nowrap">
-          <Input
-            placeholder="Search trainees..."
-            prefix={<SearchOutlined />}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            allowClear
-            className="w-80"
-          />
-          <div className="text-sm text-gray-500 whitespace-nowrap">
-            Total: {filteredTrainees.length} trainees
+    <>
+      {loading ? (
+        <>
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-3 whitespace-nowrap w-full">
+              <Skeleton.Input style={{ width: 320, height: 40 }} active />
+              <div className="ml-4">
+                <Skeleton.Input style={{ width: 140, height: 20 }} active />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Trainees Table */}
-      <Table
-        columns={columns}
-        dataSource={filteredTrainees}
-        rowKey="id"
-        loading={loading}
-        scroll={{ y: 280 }}
-        pagination={{
-          current: pageNumber,
-          pageSize: pageSize,
-          total: filteredTrainees.length,
-          onChange: (page, size) => {
-            setPageNumber(page);
-            setPageSize(size);
-          },
-          showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50'],
-          showTotal: (total, range) => 
-            `${range[0]}-${range[1]} of ${total} trainees`,
-        }}
-        size="middle"
-      />
-    </div>
+          {/* Trainees Table or Skeleton */}
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="mb-3">
+              <Skeleton.Button style={{ width: 200, height: 28 }} active />
+            </div>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 p-3 last:border-b-0">
+                <Skeleton.Avatar size={40} shape="circle" active />
+                <div className="flex-1">
+                  <Skeleton.Input style={{ width: '50%', height: 12, marginBottom: 6 }} active />
+                  <Skeleton.Input style={{ width: '35%', height: 10 }} active />
+                </div>
+                <div className="w-20">
+                  <Skeleton.Button size="small" active />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-3 whitespace-nowrap">
+              <Input
+                placeholder="Search trainees..."
+                prefix={<SearchOutlined />}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                allowClear
+                className="w-80"
+              />
+              <div className="text-sm text-gray-500 whitespace-nowrap">
+                Total: {filteredTrainees.length} trainees
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style={{ height: 350 }} className="py-4 overflow-auto">
+              <Table
+                columns={columns}
+                dataSource={filteredTrainees}
+                rowKey="id"
+                loading={false}
+                pagination={false}
+                size="middle"
+              />
+            </div>
+            <div className="p-4 border-t border-gray-200 bg-white flex justify-center">
+              <Pagination
+                current={pageNumber}
+                pageSize={pageSize}
+                total={filteredTrainees.length}
+                onChange={(page, size) => { setPageNumber(page); setPageSize(size); }}
+                showSizeChanger
+                pageSizeOptions={['10', '20', '50']}
+                showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} trainees`}
+              />
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
