@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import Cookies from 'js-cookie';
 import Avt from "./partials/Avt";
 import { clearRememberedCredentials } from "../../libs/crypto";
+import { Button } from "antd";
 
 export default function Header() {
   const [hidden, setHidden] = useState(false);
@@ -10,6 +11,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const lastScroll = useRef(0);
   const [hasToken, setHasToken] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => {
@@ -150,12 +152,12 @@ export default function Header() {
             {hasToken ? (
               <Avt onLogout={() => { Cookies.remove('token', { path: '/' }); try{clearRememberedCredentials();}catch{} setHasToken(false); }} />
             ) : (
-              <a
-                href="auth/login"
-                className="inline-flex items-center rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 shadow-sm transition-colors"
+              <Button
+                onClick={() => navigate('/auth/login')}
+                type="primary"
               >
                 Sign in
-              </a>
+              </Button>
             )}
           </div>
 

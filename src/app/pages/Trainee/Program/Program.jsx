@@ -32,7 +32,23 @@ const Program = () => {
     })
       .then((data) => {
         if (isCancelled) return;
-        const items = data?.items || data?.data || [];
+        // Normalize API response: support paged ({items, totalCount}) or plain array
+        const rawItems = data?.items || data?.data || data || [];
+
+        // Map fields from API to UI-friendly names. API may return different aliases.
+        const mapProgram = (p) => ({
+          id: p.id ?? p.programId ?? p.program_id,
+          name: p.name ?? p.title ?? '',
+          description: p.description ?? p.summary ?? '',
+          isActive: p.isActive ?? p.is_active ?? p.active ?? false,
+          durationHours: p.durationHours ?? p.duration ?? p.duration_hours ?? 0,
+          totalCourses: p.totalCourses ?? p.total_courses ?? p.courseCount ?? 0,
+          imageUrl: p.imageUrl ?? p.image ?? p.image_url ?? p.thumbnailUrl ?? p.thumbnail_url ?? '',
+          // keep original raw object for other needs
+          _raw: p,
+        });
+
+        const items = Array.isArray(rawItems) ? rawItems.map(mapProgram) : [];
         setPrograms(items);
         // Try to find total from common keys; fallback to items length
         const t = data?.totalItems ?? data?.total ?? data?.totalCount ?? items.length ?? 0;
@@ -86,11 +102,10 @@ const Program = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <PageNav nameMap={{ program: 'Programs' }} />
-      <h2 className="text-2xl sm:text-3xl font-bold mb-6">Programs</h2>
+      <span className="text-2xl mb-4">Programs</span>
       <Search
         placeholder="Search programs by name"
         allowClear
-        size="large"
         className="mb-8"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
@@ -100,7 +115,7 @@ const Program = () => {
         enterButton
       />
       {programs.length === 0 ? (
-        <Empty description="No programs found." className="mt-16" />
+        <Empty description="No programs found." className="mt-16 min-h-[350px]" />
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
