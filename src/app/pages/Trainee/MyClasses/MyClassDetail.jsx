@@ -1,4 +1,4 @@
-import { Empty } from 'antd';
+import { Empty, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
@@ -80,8 +80,8 @@ export default function MyClassDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8 text-center">
-        <p className="text-slate-600">Loading class details...</p>
+      <div className="max-w-7xl flex flex-col min-h-screen mx-auto px-4 py-8 text-center justify-center">
+        <Spin size="large" tip="Loading class details..." />
       </div>
     );
   }
