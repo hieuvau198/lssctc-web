@@ -60,20 +60,18 @@ export default function Course() {
         <PageNav nameMap={{ course: 'Courses' }} />
         <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Courses</h1>
-            <p className="mt-1 text-slate-600 text-sm sm:text-base max-w-prose">
-              Explore our training catalog and start your learning journey.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 sm:items-center md:justify-end w-full md:w-auto">
-            <Input.Search
-              placeholder="Search courses"
-              allowClear
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onSearch={(v) => setSearchInput(v)}
-              className="w-full sm:w-64"
-            />
+            <span className="text-2xl mb-4">Courses</span>
+            <div>
+              <Input.Search
+                placeholder="Search courses"
+                allowClear
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onSearch={(v) => setSearchInput(v)}
+                className="w-full sm:w-64"
+                enterButton
+              />
+            </div>
           </div>
         </div>
         {error && (
@@ -97,7 +95,9 @@ export default function Course() {
             ))}
           </div>
         ) : data.length === 0 ? (
-          <Empty description="No active courses found" className="mt-16" />
+          <div>
+            <Empty description="No active courses found" className="mt-16  min-h-[350px]" />
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
