@@ -1,4 +1,7 @@
 {
-  "buildCommand": "npm ci || npm install && npm install @rollup/rollup-linux-x64-gnu --no-save && npm run build",
-  "installCommand": "npm install"
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
 }
