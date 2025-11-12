@@ -14,11 +14,11 @@ import {
   // API mới cho Material
   getMaterialsByActivityId,
 } from "../../../apis/Trainee/TraineeLearningApi";
-import { 
-  getQuizWithoutAnswers, 
-  submitSectionQuizAttempt, 
-  mapQuizAttempt,
-} from "../../../apis/Trainee/TraineeQuizApi"; // <-- Import API Quiz MỚI
+import {
+  // Cập nhật API Quiz
+  getQuizByActivityIdForTrainee,
+  submitQuizAttempt,
+} from '../../../apis/Trainee/TraineeQuizApi';
 
 // --- IMPORT ĐỂ XỬ LÝ AUTH ---
 import { getAuthToken } from "../../../libs/cookies";
@@ -27,22 +27,19 @@ import useAuthStore from "../../../store/authStore";
 // --- KẾT THÚC IMPORT ---
 
 export default function LearnContent() {
-  const { courseId, sectionId, partitionId } = useParams(); // partitionId là activityId
-  const activityId = parseInt(partitionId, 10); // Đảm bảo là số
+  const { courseId, sectionId, partitionId } = useParams();
+  const activityId = parseInt(partitionId, 10);
 
-  // --- LOGIC TRAINEE ID ---
   const traineeIdFromStore = useAuthStore((s) => s.nameid);
   const [traineeId, setTraineeId] = useState(null);
-  // --- KẾT THÚC LOGIC ---
 
-  const [activityRecord, setActivityRecord] = useState(null); // Bản ghi chứa mọi thông tin
+  const [activityRecord, setActivityRecord] = useState(null);
   const [materialsList, setMaterialsList] = useState([]);
-  const [sectionQuiz, setSectionQuiz] = useState(null); // Sẽ lưu trữ dữ liệu từ getQuizWithoutAnswers
+  const [sectionQuiz, setSectionQuiz] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- EFFECT LẤY TRAINEE ID ---
   useEffect(() => {
     const token = getAuthToken();
     const decoded = token ? decodeToken(token) : null;
@@ -60,11 +57,10 @@ export default function LearnContent() {
       setTraineeId(resolvedTraineeId);
     }
   }, [traineeIdFromStore]);
-  // --- KẾT THÚC EFFECT ---
 
   const fetchPartitionData = useCallback(async () => {
     if (!traineeId || !activityId || !courseId || !sectionId) {
-      return; // Chờ tất cả các ID
+      return;
     }
 
     try {
@@ -76,7 +72,7 @@ export default function LearnContent() {
 
       console.log("Fetching activity record for activityId:", activityId);
 
-      // 1. Lấy Activity Record (Đây là nguồn thông tin chính)
+      // 1. Get Activity Record
       let matchedRecord = null;
       try {
         const activityRecords = await getActivityRecordsByClassAndSection(
@@ -100,55 +96,68 @@ export default function LearnContent() {
       
       const activityType = matchedRecord.activityType; // "Material", "Quiz", "Practice"
 
-      // 2. Tải nội dung cụ thể dựa trên loại
-      if (activityType === "Material") {
-        console.log("Fetching materials for activity:", activityId);
+      // 2. Load content
+      if (activityType === 'Material') {
         const materialResArray = await getMaterialsByActivityId(activityId);
-        console.log("Materials list response:", materialResArray);
         setMaterialsList(materialResArray || []);
-
-      } else if (activityType === "Quiz") {
-        console.log("Fetching quiz data for activity (quizId):", activityId);
-        // Giả sử activityId cũng chính là quizId
-        // Gọi API từ TraineeQuizApi.js
-        const quizData = await getQuizWithoutAnswers(activityId); 
-        console.log("Quiz data response:", quizData);
-
-        // Gộp dữ liệu từ activityRecord vào
+      } else if (activityType === 'Quiz') {
+        const quizData = await getQuizByActivityIdForTrainee(activityId);
         const combinedQuizData = {
-          ...quizData, // Chứa questions, passScoreCriteria, v.v.
-          quizId: quizData.id, // Đảm bảo quizId tồn tại
-          quizName: matchedRecord.activityName || quizData.name, // Ưu tiên tên từ record
+          ...quizData,
+          quizId: quizData.id,
+          quizName: matchedRecord.activityName || quizData.name,
           isCompleted: matchedRecord.isCompleted,
           attemptScore: matchedRecord.score,
           lastAttemptDate: matchedRecord.completedDate,
           activityRecord: matchedRecord,
-          // Ánh xạ các trường cũ mà QuizContent có thể cần
-          sectionQuizId: activityId, // Dùng tạm
-          learningRecordPartitionId: activityId, // Dùng tạm
+          sectionQuizId: activityId,
+          learningRecordPartitionId: activityId,
         };
-        
         setSectionQuiz(combinedQuizData);
-      
-      } else if (activityType === "Practice") {
-        // Không cần làm gì thêm, chỉ cần activityRecord là đủ
-        console.log("Setting up Practice content");
+      } else if (activityType === 'Practice') {
+        // Practice logic
       } else {
-        console.warn("Unknown activityType:", activityType);
         throw new Error(`Unsupported content type: ${activityType}`);
       }
-
     } catch (err) {
-      console.error("Error fetching partition data:", err);
-      setError(err.message || "Failed to load learning content.");
+      console.error('Error fetching partition data:', err);
+      setError(err.message || 'Failed to load learning content.');
     } finally {
       setLoading(false);
     }
-  }, [activityId, traineeId, courseId, sectionId]); // Đổi partitionId -> activityId
+  }, [activityId, traineeId, courseId, sectionId]);
 
   useEffect(() => {
     fetchPartitionData();
   }, [fetchPartitionData]);
+
+  const handleQuizSubmit = async (answers) => {
+    console.log('[LearnContent] handleQuizSubmit triggered.'); // <-- LOG
+    if (!activityRecord || activityRecord.activityType !== 'Quiz') {
+      console.error('[LearnContent] Missing activityRecord for quiz.');
+      throw new Error('Activity record for this quiz is missing.');
+    }
+
+    const payload = {
+      activityRecordId: activityRecord.activityRecordId, // This is the 'Id' from ActivityRecordDto
+      answers: answers,
+    };
+
+    console.log('[LearnContent] Calling submitQuizAttempt with payload:', payload); // <-- LOG
+
+    try {
+      const result = await submitQuizAttempt(payload);
+      console.log('[LearnContent] API call successful, result:', result); // <-- LOG
+      
+      // Reload all data to show the result screen
+      await fetchPartitionData();
+      return result;
+    } catch (err) {
+      console.error('[LearnContent] API call failed:', err);
+      alert(`Failed to submit quiz: ${err.message || 'Unknown error'}`);
+      throw err; // Re-throw error
+    }
+  };
 
   // Các hàm markAsComplete/NotComplete giờ chỉ áp dụng cho "Material"
   const handleMarkAsComplete = async () => {
@@ -262,18 +271,18 @@ export default function LearnContent() {
         </div>
       );
 
-    case "Quiz":
+    case 'Quiz':
       // Cần một "partition" giả lập cho QuizContent
       const quizPartition = {
         sectionPartitionId: activityRecord.activityId,
-        // ... các trường khác mà QuizContent có thể cần
       };
       return (
         sectionQuiz && (
           <QuizContent
-            sectionQuiz={sectionQuiz} // Dữ liệu quiz từ getQuizWithoutAnswers + record
-            partition={quizPartition}  // ID
+            sectionQuiz={sectionQuiz} // Dữ liệu quiz MỚI
+            partition={quizPartition}
             onReload={fetchPartitionData}
+            onSubmitAttempt={handleQuizSubmit} // <-- Truyền hàm nộp bài MỚI
           />
         )
       );
