@@ -1,3 +1,4 @@
+// src\app\layouts\SectionLayout\SectionLayout.jsx
 import React from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
 import ScrollTop from '../../components/ScrollTop/ScrollTop';

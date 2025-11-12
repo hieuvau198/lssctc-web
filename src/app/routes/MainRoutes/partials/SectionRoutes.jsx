@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router'
 import NotFound from '../../../layouts/NotFound'
 import CourseSection from '../../../pages/Trainee/Learn/CourseSection'
 import LearnContent from '../../../pages/Trainee/Learn/LearnContent'
+import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
 
 export default function SectionRoutes() {
   return (

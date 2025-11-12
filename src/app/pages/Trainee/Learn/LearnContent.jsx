@@ -5,127 +5,166 @@ import { useParams } from "react-router-dom";
 import VideoContent from "./partials/VideoContent";
 import ReadingContent from "./partials/ReadingContent";
 import QuizContent from "./partials/QuizContent";
+import PracticeContent from "./partials/PracticeContent"; // <-- Import PracticeContent
 import {
-  getLearningPartitionByIdAndTraineeId,
-  getLearningSectionMaterial,
+  // APIs được giữ lại
   markSectionMaterialAsCompleted,
   markSectionMaterialAsNotCompleted,
-  getLearningSectionQuiz,
   getActivityRecordsByClassAndSection,
-  getActivityById,
+  // API mới cho Material
+  getMaterialsByActivityId,
 } from "../../../apis/Trainee/TraineeLearningApi";
+import {
+  // Cập nhật API Quiz
+  getQuizByActivityIdForTrainee,
+  submitQuizAttempt,
+} from '../../../apis/Trainee/TraineeQuizApi';
+
+// --- IMPORT ĐỂ XỬ LÝ AUTH ---
+import { getAuthToken } from "../../../libs/cookies";
+import { decodeToken } from "../../../libs/jwtDecode";
+import useAuthStore from "../../../store/authStore";
+// --- KẾT THÚC IMPORT ---
 
 export default function LearnContent() {
   const { courseId, sectionId, partitionId } = useParams();
-  const traineeId = 1; // Hardcoded trainee ID
+  const activityId = parseInt(partitionId, 10);
 
-  const [partition, setPartition] = useState(null);
-  const [partitionMaterial, setPartitionMaterial] = useState(null);
+  const traineeIdFromStore = useAuthStore((s) => s.nameid);
+  const [traineeId, setTraineeId] = useState(null);
+
+  const [activityRecord, setActivityRecord] = useState(null);
+  const [materialsList, setMaterialsList] = useState([]);
   const [sectionQuiz, setSectionQuiz] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    const token = getAuthToken();
+    const decoded = token ? decodeToken(token) : null;
+    const resolvedTraineeId =
+      traineeIdFromStore ||
+      decoded?.nameid ||
+      decoded?.nameId ||
+      decoded?.sub ||
+      null;
+
+    if (!resolvedTraineeId) {
+      setError("Trainee ID not available. Please log in again.");
+      setLoading(false);
+    } else {
+      setTraineeId(resolvedTraineeId);
+    }
+  }, [traineeIdFromStore]);
+
   const fetchPartitionData = useCallback(async () => {
+    if (!traineeId || !activityId || !courseId || !sectionId) {
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
-      setPartitionMaterial(null);
+      setMaterialsList([]);
       setSectionQuiz(null);
+      setActivityRecord(null);
 
-      console.log("Fetching partition:", partitionId);
-      const partitionRes = await getLearningPartitionByIdAndTraineeId(
-        partitionId,
-        traineeId
-      );
-      console.log("Partition response:", partitionRes);
-      setPartition(partitionRes);
+      console.log("Fetching activity record for activityId:", activityId);
 
-      if ([1, 2].includes(partitionRes.partitionType)) {
-        console.log("Fetching section material for partition:", partitionId);
-        const materialRes = await getLearningSectionMaterial(partitionId, traineeId);
-        console.log("Material response:", materialRes);
-
-        // Merge activity record if available
-        try {
-          const activityRecords = await getActivityRecordsByClassAndSection(courseId, sectionId);
-          const matched = activityRecords.find(
-            (r) => r.activityId === partitionId || r.activityId === partitionRes.sectionPartitionId
-          );
-          if (matched) {
-            materialRes.isCompleted = matched.isCompleted;
-            materialRes.activityRecord = matched;
-
-            // Fetch activity meta (title/description/duration) and merge
-            try {
-              const activityMeta = await getActivityById(matched.activityId);
-              if (activityMeta) {
-                materialRes.materialName = materialRes.materialName || activityMeta.activityTitle;
-                materialRes.materialDescription = materialRes.materialDescription || activityMeta.activityDescription;
-                materialRes.estimatedDurationMinutes = materialRes.estimatedDurationMinutes || activityMeta.estimatedDurationMinutes;
-              }
-            } catch (e) {
-              console.debug('Failed to fetch activity meta for', matched.activityId, e);
-            }
-          }
-        } catch (e) {
-          console.debug('No activity records available for section', sectionId, e);
+      // 1. Get Activity Record
+      let matchedRecord = null;
+      try {
+        const activityRecords = await getActivityRecordsByClassAndSection(
+          courseId,
+          sectionId
+        );
+        matchedRecord = activityRecords.find(
+          (r) => r.activityId === activityId
+        );
+        
+        if (matchedRecord) {
+          setActivityRecord(matchedRecord);
+          console.log("Found Activity Record:", matchedRecord);
+        } else {
+          throw new Error("Activity record not found for this user.");
         }
+      } catch (e) {
+        console.error("Failed to fetch activity record:", e);
+        throw new Error(`Failed to load activity record: ${e.message}`);
+      }
+      
+      const activityType = matchedRecord.activityType; // "Material", "Quiz", "Practice"
 
-        setPartitionMaterial(materialRes);
-      } else if (partitionRes.partitionType === 3) {
-        // Quiz
-        console.log("Fetching section quiz for partition:", partitionId);
-        const quizRes = await getLearningSectionQuiz(partitionId, traineeId);
-        console.log("Quiz response:", quizRes);
-
-        // Merge activity record for quiz if available
-        try {
-          const activityRecords = await getActivityRecordsByClassAndSection(courseId, sectionId);
-          const matched = activityRecords.find(
-            (r) => r.activityId === partitionId || r.activityId === partitionRes.sectionPartitionId
-          );
-          if (matched) {
-            quizRes.isCompleted = matched.isCompleted;
-            quizRes.attemptScore = matched.score ?? quizRes.attemptScore;
-            quizRes.lastAttemptDate = matched.completedDate ?? quizRes.lastAttemptDate;
-            quizRes.activityRecord = matched;
-
-            // Fetch activity meta for quiz
-            try {
-              const activityMeta = await getActivityById(matched.activityId);
-              if (activityMeta) {
-                quizRes.quizName = quizRes.quizName || activityMeta.activityTitle;
-                quizRes.description = quizRes.description || activityMeta.activityDescription;
-                quizRes.timelimitMinute = quizRes.timelimitMinute || activityMeta.estimatedDurationMinutes;
-              }
-            } catch (e) {
-              console.debug('Failed to fetch activity meta for quiz', matched.activityId, e);
-            }
-          }
-        } catch (e) {
-          console.debug('No activity records available for section', sectionId, e);
-        }
-
-        setSectionQuiz(quizRes);
+      // 2. Load content
+      if (activityType === 'Material') {
+        const materialResArray = await getMaterialsByActivityId(activityId);
+        setMaterialsList(materialResArray || []);
+      } else if (activityType === 'Quiz') {
+        const quizData = await getQuizByActivityIdForTrainee(activityId);
+        const combinedQuizData = {
+          ...quizData,
+          quizId: quizData.id,
+          quizName: matchedRecord.activityName || quizData.name,
+          isCompleted: matchedRecord.isCompleted,
+          attemptScore: matchedRecord.score,
+          lastAttemptDate: matchedRecord.completedDate,
+          activityRecord: matchedRecord,
+          sectionQuizId: activityId,
+          learningRecordPartitionId: activityId,
+        };
+        setSectionQuiz(combinedQuizData);
+      } else if (activityType === 'Practice') {
+        // Practice logic
+      } else {
+        throw new Error(`Unsupported content type: ${activityType}`);
       }
     } catch (err) {
-      console.error("Error fetching partition or material or quiz:", err);
-      setError("Failed to load learning content. Check console for details.");
+      console.error('Error fetching partition data:', err);
+      setError(err.message || 'Failed to load learning content.');
     } finally {
       setLoading(false);
     }
-  }, [partitionId, traineeId]);
+  }, [activityId, traineeId, courseId, sectionId]);
 
   useEffect(() => {
     fetchPartitionData();
   }, [fetchPartitionData]);
 
-  // handle mark material as complete
+  const handleQuizSubmit = async (answers) => {
+    console.log('[LearnContent] handleQuizSubmit triggered.'); // <-- LOG
+    if (!activityRecord || activityRecord.activityType !== 'Quiz') {
+      console.error('[LearnContent] Missing activityRecord for quiz.');
+      throw new Error('Activity record for this quiz is missing.');
+    }
+
+    const payload = {
+      activityRecordId: activityRecord.activityRecordId, // This is the 'Id' from ActivityRecordDto
+      answers: answers,
+    };
+
+    console.log('[LearnContent] Calling submitQuizAttempt with payload:', payload); // <-- LOG
+
+    try {
+      const result = await submitQuizAttempt(payload);
+      console.log('[LearnContent] API call successful, result:', result); // <-- LOG
+      
+      // Reload all data to show the result screen
+      await fetchPartitionData();
+      return result;
+    } catch (err) {
+      console.error('[LearnContent] API call failed:', err);
+      alert(`Failed to submit quiz: ${err.message || 'Unknown error'}`);
+      throw err; // Re-throw error
+    }
+  };
+
+  // Các hàm markAsComplete/NotComplete giờ chỉ áp dụng cho "Material"
   const handleMarkAsComplete = async () => {
-    if (!partition || !partitionMaterial) return;
+    if (!activityRecord || activityRecord.activityType !== 'Material' || !traineeId) return;
+    
     const success = await markSectionMaterialAsCompleted(
-      partition.sectionPartitionId,
+      activityRecord.activityId, // Dùng activityId
       traineeId
     );
     if (success) {
@@ -135,11 +174,11 @@ export default function LearnContent() {
     }
   };
 
-  // handle mark material as not complete
   const handleMarkAsNotComplete = async () => {
-    if (!partition || !partitionMaterial) return;
+    if (!activityRecord || activityRecord.activityType !== 'Material' || !traineeId) return;
+
     const success = await markSectionMaterialAsNotCompleted(
-      partition.sectionPartitionId,
+      activityRecord.activityId, // Dùng activityId
       traineeId
     );
     if (success) {
@@ -149,6 +188,7 @@ export default function LearnContent() {
     }
   };
 
+  // --- PHẦN RENDER ---
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -166,7 +206,7 @@ export default function LearnContent() {
     );
   }
 
-  if (!partition) {
+  if (!activityRecord) {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold text-slate-900 mb-2">
@@ -179,42 +219,82 @@ export default function LearnContent() {
     );
   }
 
-  switch (partition.partitionType) {
-    case 1: // Video
+  // Lấy trạng thái hoàn thành chung của Activity
+  const isActivityCompleted = activityRecord?.isCompleted || false;
+
+  switch (activityRecord.activityType) {
+    case "Material":
       return (
-        partitionMaterial && (
-          <VideoContent
-            title={partitionMaterial.materialName || "Untitled Video"}
-            completed={partitionMaterial.isCompleted}
-            videoUrl={partitionMaterial.materialUrl}
-            onMarkAsComplete={handleMarkAsComplete}
-            onMarkAsNotComplete={handleMarkAsNotComplete}
-          />
-        )
+        <div className="space-y-6">
+          {materialsList.length > 0 ? (
+            materialsList.map((material) => {
+              // Dùng learningMaterialType (chuỗi)
+              if (material.learningMaterialType === 'Video') {
+                return (
+                  <VideoContent
+                    key={material.id}
+                    title={material.name || "Untitled Video"}
+                    completed={isActivityCompleted}
+                    videoUrl={material.materialUrl}
+                    onMarkAsComplete={handleMarkAsComplete}
+                    onMarkAsNotComplete={handleMarkAsNotComplete}
+                  />
+                );
+              } else if (material.learningMaterialType === 'Document') {
+                return (
+                  <ReadingContent
+                    key={material.id}
+                    title={material.name || "Untitled Document"}
+                    completed={isActivityCompleted}
+                    documentUrl={material.materialUrl}
+                    onMarkAsComplete={handleMarkAsComplete}
+                    onMarkAsNotComplete={handleMarkAsNotComplete}
+                  />
+                );
+              }
+              return (
+                <div key={material.id} className="text-center py-4 text-red-500">
+                  Unknown material type: {material.learningMaterialType}
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-center py-12">
+              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+                No Materials Found
+              </h2>
+              <p className="text-slate-600">
+                This activity has no learning materials attached.
+              </p>
+            </div>
+          )}
+        </div>
       );
 
-    case 2: // Document
-      return (
-        partitionMaterial && (
-          <ReadingContent
-            title={partitionMaterial.materialName || "Untitled Document"}
-            completed={partitionMaterial.isCompleted}
-            documentUrl={partitionMaterial.materialUrl}
-            onMarkAsComplete={handleMarkAsComplete}
-            onMarkAsNotComplete={handleMarkAsNotComplete}
-          />
-        )
-      );
-
-    case 3: // Quiz
+    case 'Quiz':
+      // Cần một "partition" giả lập cho QuizContent
+      const quizPartition = {
+        sectionPartitionId: activityRecord.activityId,
+      };
       return (
         sectionQuiz && (
-          <QuizContent 
-		  sectionQuiz={sectionQuiz} 
-		  partition={partition}
-		  onReload={fetchPartitionData}
-		  />
+          <QuizContent
+            sectionQuiz={sectionQuiz} // Dữ liệu quiz MỚI
+            partition={quizPartition}
+            onReload={fetchPartitionData}
+            onSubmitAttempt={handleQuizSubmit} // <-- Truyền hàm nộp bài MỚI
+          />
         )
+      );
+    
+    case "Practice":
+      return (
+        <PracticeContent 
+          title={activityRecord.activityName}
+          completed={isActivityCompleted}
+          description={"This is a simulation practice."} // TODO: Lấy mô tả từ đâu đó?
+          duration={activityRecord.estimatedDurationMinutes || "N/A"} // TODO: DTO không có
+        />
       );
 
     default:
@@ -224,7 +304,7 @@ export default function LearnContent() {
             Unsupported Content Type
           </h2>
           <p className="text-slate-600">
-            This type of content (type {partition.partitionType}) is not yet
+            This type of content (type {activityRecord.activityType}) is not yet
             supported.
           </p>
         </div>

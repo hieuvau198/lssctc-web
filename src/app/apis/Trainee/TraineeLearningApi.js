@@ -23,57 +23,42 @@ const mapSection = (item) => ({
   traineeName: item.traineeName ?? null,
 });
 
-const mapPartition = (item) => ({
-  sectionPartitionId: item.sectionPartitionId,
-  sectionId: item.sectionId,
-  partitionRecordId: item.partitionRecordId,
-  partitionName: item.partitionName,
-  partitionDescription: item.partitionDescription,
-  partitionOrder: item.partitionOrder,
-  partitionType: item.partitionType,
-  partitionRecordStatus: item.partitionRecordStatus,
-  isCompleted: item.isCompleted,
-});
+// ----------------------------------------------------------------
+// ĐÃ XÓA: mapPartition VÀ getLearningPartition...
+// ----------------------------------------------------------------
 
-const mapSectionMaterial = (item) => ({
-  sectionMaterialId: item.sectionMaterialId,
-  materialId: item.materialId,
-  partitionId: item.partitionId,
-  partitionRecordId: item.partitionRecordId,
-  materialName: item.materialName,
-  materialDescription: item.materialDescription,
-  materialType: item.materialType,
-  materialUrl: item.materialUrl,
-  partitionRecordStatus: item.partitionRecordStatus,
-  isCompleted: item.isCompleted,
-});
+// ----------------------------------------------------------------
+// ĐÃ XÓA: mapSectionMaterial VÀ getLearningSectionMaterial
+// ----------------------------------------------------------------
 
-const mapSectionQuiz = (item) => ({
-  sectionQuizId: item.sectionQuizId,
-  quizId: item.quizId,
-  learningRecordPartitionId: item.learningRecordPartitionId,
-  sectionQuizAttemptId: item.sectionQuizAttemptId,
-  quizName: item.quizName,
-  passScoreCriteria: item.passScoreCriteria,
-  timelimitMinute: item.timelimitMinute,
-  totalScore: item.totalScore,
+// --- MAPPER MỚI CHO API MATERIAL CỦA BẠN ---
+// Dựa trên JSON: /Materials/activities/{activityId}/materials
+const mapMaterialFromActivity = (item) => ({
+  id: item.id,
+  activityId: item.activityId,
+  learningMaterialId: item.learningMaterialId,
+  name: item.name,
   description: item.description,
-  isCompleted: item.isCompleted,
-  attemptScore: item.attemptScore,
-  lastAttemptIsPass: item.lastAttemptIsPass,
-  lastAttemptDate: item.lastAttemptDate,
+  learningMaterialType: item.learningMaterialType, // "Document" hoặc "Video"
+  materialUrl: item.materialUrl,
 });
+// --- KẾT THÚC MAPPER MỚI ---
+
+// ----------------------------------------------------------------
+// ĐÃ XÓA: mapSectionQuiz VÀ getLearningSectionQuiz
+// ----------------------------------------------------------------
 
 // Map activity record returned by /ActivityRecords/my-records/class/{classId}/section/{sectionId}
 const mapActivityRecord = (item) => ({
   activityRecordId: item.id,
   sectionRecordId: item.sectionRecordId,
   activityId: item.activityId,
+  activityName: item.activityName ?? `Activity ${item.activityId}`, // SỬ DỤNG TRƯỜNG MỚI
   status: item.status,
   score: item.score,
   isCompleted: !!item.isCompleted,
   completedDate: item.completedDate ?? null,
-  activityType: item.activityType,
+  activityType: item.activityType, // SỬ DỤNG TRƯỜNG MỚI ("Material", "Quiz", "Practice")
   learningProgressId: item.learningProgressId,
   sectionId: item.sectionId,
   traineeId: item.traineeId,
@@ -81,60 +66,37 @@ const mapActivityRecord = (item) => ({
   classId: item.classId,
 });
 
-// Fetch activity metadata by id
-export const getActivityById = async (activityId) => {
-  if (activityId == null) throw new Error('activityId is required');
-  const response = await api.get(`/Activities/${activityId}`);
-  const d = response.data || {};
-  return {
-    activityId: d.id,
-    activityTitle: d.activityTitle ?? d.name ?? null,
-    activityDescription: d.activityDescription ?? d.description ?? null,
-    activityType: d.activityType ?? null,
-    estimatedDurationMinutes: d.estimatedDurationMinutes ?? d.durationMinutes ?? null,
-  };
-};
+// ----------------------------------------------------------------
+// ĐÃ XÓA: getActivityById (Không còn cần thiết)
+// ----------------------------------------------------------------
 
 //endregion
-
-
-//region Learning Classes APIs
-
 
 //region Learning Sections APIs
 
 // get learning sections by class id and trainee id
 export const getLearningSectionsByClassIdAndTraineeId = async (classId, traineeId) => {
-  // Use the new SectionRecords endpoint that returns the trainee's section records for a class.
-  // The endpoint does not require traineeId because token identifies the trainee.
   const response = await api.get(`/SectionRecords/my-records/class/${classId}`);
-  // response.data is expected to be an array
   const arr = Array.isArray(response.data) ? response.data : [];
   return arr.map(mapSection);
 };
 
 export const getLearningSectionByIdAndTraineeId = async (sectionRecordId, traineeId) => {
-  // Attempt to fetch a specific section record by id from SectionRecords
-  // Prefer server-side record endpoint if available
   try {
     const response = await api.get(`/SectionRecords/${sectionRecordId}`);
     return mapSection(response.data);
   } catch (e) {
-    // Fallback: if endpoint not available, try the old route (keep compatibility)
     const response = await api.get(`Section/${sectionRecordId}/trainee/${traineeId}`);
     return mapSection(response.data);
   }
 };
 
 export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, traineeId, pageIndex = 1, pageSize = 10) => {
-  // Try paged SectionRecords endpoint; if not present, fetch full list and page client-side
   try {
     const response = await api.get(`/SectionRecords/my-records/class/${classId}/paged`, {
       params: { pageIndex, pageSize },
     });
-
     const { items = [], totalCount = 0, page = pageIndex, pageSize: size = pageSize, totalPages = Math.max(1, Math.ceil(totalCount / (size || 1))) } = response.data || {};
-
     return {
       items: (Array.isArray(items) ? items : []).map(mapSection),
       totalCount,
@@ -143,7 +105,6 @@ export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, tra
       totalPages,
     };
   } catch (err) {
-    // Fallback: fetch all and paginate client-side
     const all = await getLearningSectionsByClassIdAndTraineeId(classId, traineeId);
     const totalCount = all.length;
     const start = (pageIndex - 1) * pageSize;
@@ -164,8 +125,7 @@ export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, tra
 //region Activity Records
 
 /**
- * Get activity records for a class + section for the current trainee (token identifies trainee)
- * GET /ActivityRecords/my-records/class/{classId}/section/{sectionId}
+ * Get activity records for a class + section for the current trainee
  */
 export const getActivityRecordsByClassAndSection = async (classId, sectionId) => {
   const response = await api.get(`/ActivityRecords/my-records/class/${classId}/section/${sectionId}`);
@@ -175,46 +135,22 @@ export const getActivityRecordsByClassAndSection = async (classId, sectionId) =>
 
 //endregion
 
-//#region Learning Partitions APIs
-
-export const getLearningPartitionsBySectionIdAndTraineeId = async (sectionId, traineeId) => {
-  const response = await api.get(`/LearningsPartitions/partitions/section/${sectionId}/trainee/${traineeId}`);
-  return response.data.map(mapPartition);
-};
-
-export const getLearningPartitionByIdAndTraineeId = async (partitionId, traineeId) => {
-  const response = await api.get(`/LearningsPartitions/partition/${partitionId}/trainee/${traineeId}`);
-  return mapPartition(response.data);
-};
-
-export const getPagedLearningPartitionsBySectionIdAndTraineeId = async (sectionId, traineeId, pageIndex = 1, pageSize = 10) => {
-  const response = await api.get(`/LearningsPartitions/partitions/section/${sectionId}/trainee/${traineeId}/paged`, {
-    params: { pageIndex, pageSize },
-  });
-
-  const { items, totalCount, page, pageSize: size, totalPages } = response.data;
-
-  return {
-    items: items.map(mapPartition),
-    totalCount,
-    page,
-    pageSize: size,
-    totalPages,
-  };
-};
-
-//#endregion
-
 //#region Learning Section Mateirals APIs
-// Get a section material by partitionId and traineeId
-export const getLearningSectionMaterial = async (partitionId, traineeId) => {
-  const response = await api.get(`/LearningsMaterials/sectionmaterials/partition/${partitionId}/trainee/${traineeId}`);
-  return mapSectionMaterial(response.data);
+
+// --- API MỚI CỦA BẠN ---
+// Get materials for a specific activity
+export const getMaterialsByActivityId = async (activityId) => {
+  if (activityId == null) throw new Error('activityId is required');
+  const response = await api.get(`/Materials/activities/${activityId}/materials`);
+  const arr = Array.isArray(response.data) ? response.data : [];
+  return arr.map(mapMaterialFromActivity);
 };
+// --- KẾT THÚC API MỚI ---
 
 // Mark a section material as completed
 export const markSectionMaterialAsCompleted = async (partitionId, traineeId) => {
   try {
+    // 'partitionId' ở đây được hiểu là activityId
     const response = await api.put(`/LearningsMaterials/sectionmaterials/partition/${partitionId}/trainee/${traineeId}/complete`);
     return response.status === 200;
   } catch (error) {
@@ -226,6 +162,7 @@ export const markSectionMaterialAsCompleted = async (partitionId, traineeId) => 
 // Mark a section material as not completed
 export const markSectionMaterialAsNotCompleted = async (partitionId, traineeId) => {
   try {
+    // 'partitionId' ở đây được hiểu là activityId
     const response = await api.put(`/LearningsMaterials/sectionmaterials/partition/${partitionId}/trainee/${traineeId}/incomplete`);
     return response.status === 200;
   } catch (error) {
@@ -234,13 +171,3 @@ export const markSectionMaterialAsNotCompleted = async (partitionId, traineeId) 
   }
 };
 //#endregion
-
-//#region Learning Section Quizzes APIs
-// Get a section quiz by partitionId and traineeId
-export const getLearningSectionQuiz = async (partitionId, traineeId) => {
-  const response = await api.get(`/LearningsQuizzes/sectionquizzes/partition/${partitionId}/trainee/${traineeId}`);
-  return mapSectionQuiz(response.data);
-};
-
-//#endregion
-

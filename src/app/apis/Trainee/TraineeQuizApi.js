@@ -1,23 +1,17 @@
 // src/app/apis/Trainee/TraineeQuizApi.js
+import apiClient from '../../libs/axios';
 
-import axios from "axios";
+const api = apiClient;
 
-const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL; // e.g. https://localhost:7212/api
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: { Accept: "*/*" },
-});
-
-//#region Mapping Functions
-
+// --- MAPPER CHO GET /Quizzes/for-trainee/activity/{id} ---
+// (Mapper này không đổi vì response body giống nhau)
 const mapQuizOption = (item) => ({
   id: item.id,
   quizQuestionId: item.quizQuestionId,
+  name: item.name,
   description: item.description,
   displayOrder: item.displayOrder,
   optionScore: item.optionScore,
-  name: item.name,
 });
 
 const mapQuizQuestion = (item) => ({
@@ -27,71 +21,81 @@ const mapQuizQuestion = (item) => ({
   questionScore: item.questionScore,
   description: item.description,
   isMultipleAnswers: item.isMultipleAnswers,
-  options: item.options ? item.options.map(mapQuizOption) : [],
+  options: Array.isArray(item.options) ? item.options.map(mapQuizOption) : [],
 });
 
-const mapQuiz = (item) => ({
+const mapQuizForTrainee = (item) => ({
   id: item.id,
   name: item.name,
   passScoreCriteria: item.passScoreCriteria,
   timelimitMinute: item.timelimitMinute,
   totalScore: item.totalScore,
   description: item.description,
-  questions: item.questions ? item.questions.map(mapQuizQuestion) : [],
+  questions: Array.isArray(item.questions) ? item.questions.map(mapQuizQuestion) : [],
 });
 
-const mapQuizResult = (item) => ({
-  sectionQuizId: item.sectionQuizId,
-  quizId: item.quizId,
-  learningRecordPartitionId: item.learningRecordPartitionId,
-  sectionQuizAttemptId: item.sectionQuizAttemptId,
-  quizName: item.quizName,
-  passScoreCriteria: item.passScoreCriteria,
-  timelimitMinute: item.timelimitMinute,
-  totalScore: item.totalScore,
-  description: item.description,
-  isCompleted: item.isCompleted,
+// --- MAPPER CHO POST /QuizAttempts/my-attempts/submit ---
+// (Mapper này không đổi)
+const mapQuizAttemptAnswer = (item) => ({
+// ... (giữ nguyên)
+  id: item.id,
+  quizOptionId: item.quizOptionId,
+  isCorrect: item.isCorrect,
+  name: item.name,
+});
+
+const mapQuizAttemptQuestion = (item) => ({
+// ... (giữ nguyên)
+  id: item.id,
+  questionId: item.questionId,
   attemptScore: item.attemptScore,
-  lastAttemptIsPass: item.lastAttemptIsPass,
-  lastAttemptDate: item.lastAttemptDate,
+  questionScore: item.questionScore,
+  isCorrect: item.isCorrect,
+  isMultipleAnswers: item.isMultipleAnswers,
+  name: item.name,
+  quizAttemptAnswers: Array.isArray(item.quizAttemptAnswers)
+    ? item.quizAttemptAnswers.map(mapQuizAttemptAnswer)
+    : [],
 });
 
-export const mapQuizAttempt = (quizId, sectionQuizId, answers) => ({
-  quizId,
-  sectionQuizId,
-  answers: answers.map((answer) => ({
-    questionId: answer.questionId,
-    selectedOptionIds: Array.isArray(answer.selectedOptionIds)
-      ? answer.selectedOptionIds
-      : [answer.selectedOptionIds], // ensure it's an array
-  })),
+export const mapQuizAttempt = (item) => ({
+// ... (giữ nguyên)
+  id: item.id,
+  activityRecordId: item.activityRecordId,
+  quizId: item.quizId,
+  name: item.name,
+  attemptScore: item.attemptScore,
+  maxScore: item.maxScore,
+  quizAttemptDate: item.quizAttemptDate,
+  status: item.status,
+  attemptOrder: item.attemptOrder,
+  isPass: item.isPass,
+  isCurrent: item.isCurrent,
+  quizAttemptQuestions: Array.isArray(item.quizAttemptQuestions)
+    ? item.quizAttemptQuestions.map(mapQuizAttemptQuestion)
+    : [],
 });
 
-//#endregion
+// --- HÀM API ---
 
-//#region Quiz APIs
-
-export const getQuizWithoutAnswers = async (quizId) => {
-  try {
-    const response = await api.get(`/Quizzes/${quizId}/no-answer`);
-    return mapQuiz(response.data);
-  } catch (error) {
-    console.error("Error fetching quiz without answers:", error);
-    throw error;
-  }
+/**
+ * Lấy chi tiết quiz cho trainee BẰNG ACTIVITY ID
+ * GET /api/Quizzes/for-trainee/activity/{activityId}
+ */
+export const getQuizByActivityIdForTrainee = async (activityId) => {
+  if (activityId == null) throw new Error('activityId is required');
+  // --- THAY ĐỔI ENDPOINT ---
+  const response = await api.get(`/Quizzes/for-trainee/activity/${activityId}`);
+  // --- KẾT THÚC THAY ĐỔI ---
+  return mapQuizForTrainee(response.data);
 };
 
-export const submitSectionQuizAttempt = async (partitionId, traineeId, attemptData) => {
-  try {
-    const response = await api.post(
-      `/Learnings/sectionquizzes/${partitionId}/trainee/${traineeId}/submit`,
-      attemptData
-    );
-    return mapQuizResult(response.data);
-  } catch (error) {
-    console.error("Error submitting section quiz attempt:", error);
-    throw error;
-  }
+/**
+ * Nộp bài làm quiz
+ * POST /api/QuizAttempts/my-attempts/submit
+ */
+export const submitQuizAttempt = async (payload) => {
+  if (payload == null) throw new Error('payload is required');
+  const response = await api.post('/QuizAttempts/my-attempts/submit', payload);
+  return mapQuizAttempt(response.data);
 };
-
-//#endregion

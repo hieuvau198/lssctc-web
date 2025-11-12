@@ -1,8 +1,7 @@
+// src\app\pages\Trainee\MyClasses\MyClassDetail.jsx
 import { Empty, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
-import { getLearningSectionsByClassIdAndTraineeId } from '../../../apis/Trainee/TraineeLearningApi';
 import PageNav from '../../../components/PageNav/PageNav';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
@@ -12,6 +11,8 @@ import ClassOverview from './partials/ClassOverview';
 import ClassSchedule from './partials/ClassSchedule';
 import InstructorInfo from './partials/InstructorInfo';
 import Sections from './partials/Sections';
+import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
+import { getLearningSectionsByClassIdAndTraineeId } from '../../../apis/Trainee/TraineeLearningApi';
 
 export default function MyClassDetail() {
   const { id } = useParams();
