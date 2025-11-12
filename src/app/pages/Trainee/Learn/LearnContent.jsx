@@ -1,5 +1,12 @@
 // src/app/pages/Trainee/Learn/LearnContent.jsx
 
+// this component need refactor cause api updates
+// trainee id gets from token in cookie
+// get section records from api
+// get activity records from api
+// merge section record and activity record to make sidebar
+// for each type of activity, get material / quiz / practice from api, right now, should empty this part first, do it later when the sidebar data works
+
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import VideoContent from "./partials/VideoContent";
