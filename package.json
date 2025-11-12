@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "postinstall": "npm rebuild lightningcss --force && node -e \"if (process.platform === 'linux') { require('child_process').execSync('npm install @rollup/rollup-linux-x64-gnu --no-save', {stdio: 'inherit'}); }\"",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
