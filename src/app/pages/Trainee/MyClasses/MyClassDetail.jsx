@@ -1,3 +1,4 @@
+// src\app\pages\Trainee\MyClasses\MyClassDetail.jsx
 import { Empty, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
