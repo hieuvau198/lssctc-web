@@ -253,7 +253,7 @@ export default function AboutUs() {
       </section>
 
       {/* Contact & Location */}
-      <section className="py-16 bg-slate-100 text-slate-900">
+      {/* <section className="py-16 bg-slate-100 text-slate-900">
         <div className="max-w-[1380px] mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
@@ -306,7 +306,7 @@ export default function AboutUs() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

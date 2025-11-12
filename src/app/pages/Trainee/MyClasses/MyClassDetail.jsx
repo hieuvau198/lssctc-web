@@ -1,4 +1,4 @@
-import { Empty } from 'antd';
+import { Empty, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
@@ -80,8 +80,8 @@ export default function MyClassDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8 text-center">
-        <p className="text-slate-600">Loading class details...</p>
+      <div className="max-w-7xl flex flex-col min-h-screen mx-auto px-4 py-8 text-center justify-center">
+        <Spin size="large" tip="Loading class details..." />
       </div>
     );
   }
@@ -89,7 +89,7 @@ export default function MyClassDetail() {
   if (error || !classData) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <PageNav nameMap={{ 'my-classes': 'My Classes' }} />
+        <PageNav items={[{ title: 'My Classes', href: '/my-classes' }]} />
         <div className="min-h-screen flex flex-col items-center justify-center mt-2 text-center">
           <Empty description="No classes found" className="py-16" />
         </div>
@@ -99,7 +99,7 @@ export default function MyClassDetail() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <PageNav nameMap={{ 'my-classes': 'My Classes', [id]: classData?.name }} />
+      <PageNav items={[{ title: 'My Classes', href: '/my-classes' }, { title: classData?.name }]} />
       <div className="mt-2">
         <ClassHeader classData={classData} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

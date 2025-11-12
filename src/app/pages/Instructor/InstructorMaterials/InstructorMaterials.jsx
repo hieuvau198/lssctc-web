@@ -1,12 +1,11 @@
-import { BookOpen, Video } from 'lucide-react';
 import { Alert, Button, Card, Skeleton } from 'antd';
+import { BookOpen, Video } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import ViewModeToggle from '../../../components/ViewModeToggle/ViewModeToggle';
 import { useLocation } from 'react-router';
 import { getLearningMaterials } from '../../../apis/Instructor/InstructorSectionApi';
+import AddMaterials from './partials/AddMaterials';
 import DocMaterials from './partials/DocMaterials';
 import VideoMaterials from './partials/VideoMaterials';
-import AddMaterials from './partials/AddMaterials';
 
 function useQuery() {
   const { search } = useLocation();
@@ -28,7 +27,7 @@ export default function InstructorMaterials() {
         setLoading(true);
         setError(null);
         // fetch all materials (no section filter)
-        const res = await getLearningMaterials({ page: 1, pageSize: 200 });
+        const res = await getLearningMaterials({ page: 1, pageSize: 100 });
         if (cancelled) return;
         setMaterials(Array.isArray(res.items) ? res.items : []);
       } catch (err) {
@@ -43,8 +42,8 @@ export default function InstructorMaterials() {
   }, []);
 
   // mapping: learningMaterialTypeId === 1 => doc, === 2 => video
-  const docs = materials.filter((m) => Number(m.typeId) === 1);
-  const videos = materials.filter((m) => Number(m.typeId) === 2);
+  const docs = materials.filter((m) => Number(m.typeId) === 2);
+  const videos = materials.filter((m) => Number(m.typeId) === 1);
   const [viewMode, setViewMode] = useState('table');
 
   if (isAddMode) {
