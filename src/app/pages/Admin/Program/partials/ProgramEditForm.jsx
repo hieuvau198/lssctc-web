@@ -1,7 +1,15 @@
-import React from "react";
-import { Form, Input, InputNumber, Switch, Button, Space } from "antd";
+import React, { useState, useEffect } from "react";
+import { Form, Input, InputNumber, Switch, Button, Space, Image } from "antd";
 
 const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
+  const [preview, setPreview] = useState(null);
+
+  useEffect(() => {
+    try {
+      const v = form?.getFieldValue?.('imageUrl') || '';
+      setPreview(v?.trim() ? v.trim() : null);
+    } catch (err) {}
+  }, [form]);
   return (
     <Form
       form={form}
@@ -16,20 +24,7 @@ const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
         <Input maxLength={120} showCount placeholder="Enter program name" />
       </Form.Item>
 
-      <Form.Item
-        name="description"
-        label="Description"
-        rules={[{ required: true, message: "Please enter description" }]}
-      >
-        <Input.TextArea
-          rows={4}
-          maxLength={500}
-          showCount
-          placeholder="Enter program description"
-        />
-      </Form.Item>
-
-      <Form.Item
+      {/* <Form.Item
         name="durationHours"
         label="Duration (hours)"
         rules={[{ required: true, message: "Please enter duration" }]}
@@ -40,7 +35,7 @@ const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
           className="w-full"
           placeholder="Enter duration in hours"
         />
-      </Form.Item>
+      </Form.Item> */}
 
       <Form.Item
         name="imageUrl"
@@ -50,15 +45,47 @@ const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
           { type: "url", message: "Please enter a valid URL" },
         ]}
       >
-        <Input maxLength={300} placeholder="https://example.com/image.jpg" />
+        <Input
+          maxLength={300}
+          allowClear
+          placeholder="https://example.com/image.jpg"
+          onChange={(e) => {
+            const v = e?.target?.value || '';
+            setPreview(v.trim() ? v.trim() : null);
+          }}
+        />
       </Form.Item>
 
-      <Form.Item
+      <div className="mb-4">
+        <div className="text-sm text-gray-600 mb-2">Image preview</div>
+        <div className="w-32 h-32 flex items-center justify-center rounded-lg overflow-hidden bg-gray-100">
+          {preview ? (
+            <Image src={preview} preview={{ mask: 'Click to preview' }} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400">No image</div>
+          )}
+        </div>
+      </div>
+
+      {/* <Form.Item
         name="isActive"
         label="Status"
         valuePropName="checked"
       >
         <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+      </Form.Item> */}
+      
+      <Form.Item
+        name="description"
+        label="Description"
+        rules={[{ required: true, message: "Please enter description" }]}
+      >
+        <Input.TextArea
+          rows={3}
+          maxLength={500}
+          showCount
+          placeholder="Enter program description"
+        />
       </Form.Item>
 
       <Form.Item>

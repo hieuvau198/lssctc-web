@@ -31,9 +31,6 @@ const ProgramDetailView = ({ program, loading }) => {
               {program.isActive ? 'Active' : 'Inactive'}
             </Tag>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
-            {program.description}
-          </p>
           <div className="flex flex-wrap gap-4 text-sm text-slate-600">
             <span>
               <span className="font-medium">Duration:</span> {program.durationHours}h
@@ -41,6 +38,9 @@ const ProgramDetailView = ({ program, loading }) => {
             <span>
               <span className="font-medium">Total Courses:</span> {program.totalCourses || 0}
             </span>
+          </div>
+          <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line max-h-20 overflow-auto pr-2">
+            {program.description}
           </div>
         </div>
       </div>
