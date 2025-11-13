@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_Simulation_Service_URL;
+const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
 const BASE = `${API_BASE_URL}`;
 
 function buildQuery(params = {}) {
@@ -26,7 +26,7 @@ const mapPracticeFromApi = (item) => ({
 export async function getPractices({ page = 1, pageSize = 10 } = {}) {
   try {
     const qs = buildQuery({ page, pageSize });
-    const { data } = await axios.get(`${BASE}/Practices${qs}`);
+    const { data } = await axios.get(`${BASE}/Practices/paged${qs}`);
     if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
 
     const items = Array.isArray(data.items) ? data.items.map(mapPracticeFromApi) : [];

@@ -53,7 +53,7 @@ export async function fetchClassesByProgramCourse(programCourseId) {
  * @returns {Promise<Object>}
  */
 export async function createClass(payload) {
-  const res = await apiClient.post(`/Classes/create`, payload);
+  const res = await apiClient.post(`/Classes`, payload);
   return res.data;
 }
 

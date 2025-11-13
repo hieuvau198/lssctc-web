@@ -8,9 +8,9 @@ export async function fetchPrograms(params = {}) {
   if (params.pageSize) searchParams.append("PageSize", params.pageSize);
   if (params.searchTerm) searchParams.append("SearchTerm", params.searchTerm);
 
-  const response = await axios.get(`${API_BASE_URL}/Programs?${searchParams}`);
+  const response = await axios.get(`${API_BASE_URL}/Programs/paged?${searchParams}`);
   // normalize: if backend returns plain array, convert to { items, totalCount }
-  if (Array.isArray(response.data)) return { items: response.data, totalCount: response.data.length };
+  if (Array.isArray(response.data)) return { items: response.data, totalCount: response.totalCount };
   return response.data;
 }
 
@@ -23,7 +23,7 @@ export async function fetchProgramDetail(id) {
 // Update program basic info
 export async function updateProgramBasic(id, payload) {
   const response = await axios.put(
-    `${API_BASE_URL}/Programs/${id}/basic`,
+    `${API_BASE_URL}/Programs/${id}`,
     payload
   );
   return response.data;

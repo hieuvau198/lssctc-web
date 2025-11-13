@@ -44,7 +44,7 @@ export default function DrawerAdd({ visible = false, onClose = () => { }, role =
                 created = await createSimulationManager(payload);
             }
 
-            message.success(`${getTitle(role)} created`);
+            message.success(`${getTitle(role)} successfully`);
             form.resetFields();
             setAvatarPreview(null);
             onCreated(created);
@@ -69,12 +69,20 @@ export default function DrawerAdd({ visible = false, onClose = () => { }, role =
                 <Row gutter={12}>
                     <Col span={12}>
                         <Form.Item name="username" label="Username" rules={[{ required: true, message: 'Please enter username' }]}>
-                            <Input placeholder="Username" />
+                            <Input
+                                placeholder="Username"
+                                showCount
+                                maxLength={50}
+                            />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item name="fullName" label="Full name" rules={[{ required: true, message: 'Please enter full name' }]}>
-                            <Input placeholder="Full name" />
+                            <Input
+                                placeholder="Full name"
+                                showCount
+                                maxLength={100}
+                            />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -97,7 +105,7 @@ export default function DrawerAdd({ visible = false, onClose = () => { }, role =
                                 },
                             ]}
                         >
-                            <Input placeholder="0XXXXXXXXX" maxLength={10} />
+                            <Input placeholder="0XXXXXXXXX" showCount maxLength={10} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -105,7 +113,7 @@ export default function DrawerAdd({ visible = false, onClose = () => { }, role =
                 <Row gutter={12}>
                     <Col span={12}>
                         <Form.Item name="password" label="Password" rules={[{ required: true, message: 'Please set a password' }, { min: 6, message: 'Password must be at least 6 characters' }]}>
-                            <Input.Password placeholder="Password" />
+                            <Input.Password placeholder="Password" showCount minLength={6} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -125,40 +133,40 @@ export default function DrawerAdd({ visible = false, onClose = () => { }, role =
                                 }),
                             ]}
                         >
-                            <Input.Password placeholder="Confirm password" />
+                            <Input.Password placeholder="Confirm password" showCount minLength={6} />
                         </Form.Item>
                     </Col>
                 </Row>
 
                 <Row>
                     <Col span={24}>
-                                    <Form.Item name="avatarUrl" label="Avatar URL">
-                                        <Input
-                                            placeholder="https://example.com/avatar.jpg"
-                                            allowClear
-                                            onChange={(e) => {
-                                                const v = e?.target?.value || '';
-                                                setAvatarPreview(v.trim() ? v.trim() : null);
-                                            }}
-                                        />
-                                    </Form.Item>
+                        <Form.Item name="avatarUrl" label="Avatar URL">
+                            <Input
+                                placeholder="https://example.com/avatar.jpg"
+                                allowClear
+                                onChange={(e) => {
+                                    const v = e?.target?.value || '';
+                                    setAvatarPreview(v.trim() ? v.trim() : null);
+                                }}
+                            />
+                        </Form.Item>
                     </Col>
                 </Row>
 
-                        <div className="mb-4">
-                            <div className="text-sm text-gray-600 mb-2">Avatar preview</div>
-                            <div className="w-32 h-32 flex items-center justify-center rounded-lg overflow-hidden bg-gray-100">
-                                {avatarPreview ? (
-                                    <Image
-                                        src={avatarPreview}
-                                        preview={{ mask: 'Click to preview' }}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400">No image</div>
-                                )}
-                            </div>
-                        </div>
+                <div className="mb-4">
+                    <div className="text-sm text-gray-600 mb-2">Avatar preview</div>
+                    <div className="w-32 h-32 flex items-center justify-center rounded-lg overflow-hidden bg-gray-100">
+                        {avatarPreview ? (
+                            <Image
+                                src={avatarPreview}
+                                preview={{ mask: 'Click to preview' }}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">No image</div>
+                        )}
+                    </div>
+                </div>
 
                 <div className="flex justify-end">
                     <Button onClick={() => { form.resetFields(); onClose(); }} style={{ marginRight: 8 }}>
