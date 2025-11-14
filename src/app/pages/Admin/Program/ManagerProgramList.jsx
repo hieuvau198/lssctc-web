@@ -3,11 +3,11 @@ import {
 } from "@ant-design/icons";
 import {
   Alert,
+  App,
   Button,
   Empty,
   Form,
   Input,
-  message,
   Skeleton
 } from "antd";
 import { useEffect, useState } from "react";
@@ -26,6 +26,7 @@ import ProgramTableView from "./partials/ProgramTableView";
 // const { Search } = Input;
 
 const ManagerProgramList = () => {
+  const { message } = App.useApp();
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

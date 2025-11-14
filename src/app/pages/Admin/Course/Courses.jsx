@@ -1,31 +1,30 @@
-import React, { useEffect, useState } from "react";
 import {
-  Input,
   Alert,
-  Empty,
-  Button,
-  message,
-  Form,
-  Skeleton,
-  Select,
-  Drawer,
-  Space,
-  Popconfirm,
   App,
+  Button,
+  Drawer,
+  Empty,
+  Form,
+  Input,
+  Popconfirm,
+  Select,
+  Skeleton,
+  Space
 } from "antd";
 import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
-  fetchCourses,
-  fetchCourseCategories,
-  fetchCourseLevels,
-  fetchCourseDetail,
   addCourse,
-  updateCourse,
   deleteCourse,
+  fetchCourseCategories,
+  fetchCourseDetail,
+  fetchCourseLevels,
+  fetchCourses,
+  updateCourse,
 } from "../../../apis/ProgramManager/CourseApi";
-import CourseList from "./partials/CourseList";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import CourseDetail from "./partials/CourseDetail";
+import CourseList from "./partials/CourseList";
 import CreateCourse from "./partials/CreateCourse";
 import EditCourse from "./partials/EditCourse";
 
