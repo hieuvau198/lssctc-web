@@ -7,6 +7,7 @@ import PageNav from '../../../components/PageNav/PageNav';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
 import useAuthStore from '../../../store/authStore'; // <-- IMPORT AUTH STORE
+import { getClassStatus } from '../../../utils/classStatus';
 
 
 export default function MyClasses() {
@@ -47,6 +48,7 @@ export default function MyClasses() {
           name: c.name,
           progress: c.classProgress ?? 0,
           badge: c.status,
+          _statusMapped: c.status,
           color: 'from-cyan-500 to-blue-600',
           completedAt: c.endDate,
         }));
@@ -112,11 +114,14 @@ export default function MyClasses() {
                                 <div className="text-xs text-slate-500 mb-0.5">
                                   {p.provider}
                                 </div>
-                                {p.badge && (
-                                  <span className="text-[10px] uppercase tracking-wide font-semibold bg-slate-900 text-white px-2 py-0.5 rounded-full">
-                                    {p.badge}
-                                  </span>
-                                )}
+                                {p.badge && (() => {
+                                  const s = getClassStatus(p.badge);
+                                  return (
+                                    <span className={`text-[10px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded-full text-white`} style={{ background: s.color === 'default' ? undefined : undefined }}>
+                                      {s.label}
+                                    </span>
+                                  );
+                                })()}
                               </div>
                               <h3 className="text-lg font-semibold text-slate-900 leading-snug m-0 line-clamp-2 group-hover:text-slate-700 transition">
                                 {p.name}

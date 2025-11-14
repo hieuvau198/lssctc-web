@@ -39,8 +39,11 @@ const ProgramDetailView = ({ program, loading }) => {
               <span className="font-medium">Total Courses:</span> {program.totalCourses || 0}
             </span>
           </div>
-          <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line max-h-20 md:max-h-40 overflow-auto pr-2">
-            {program.description}
+          <div>
+            <div className="text-sm font-medium text-slate-800 mb-1">Description</div>
+            <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line max-h-20 md:max-h-40 overflow-auto pr-2">
+              {program.description}
+            </div>
           </div>
         </div>
       </div>

@@ -22,12 +22,16 @@ const EditCourse = ({
   const [imagePreview, setImagePreview] = useState("");
 
   useEffect(() => {
-    if (course) {
+    if (course && localCategories.length > 0 && localLevels.length > 0) {
+      // Map category and level names to IDs
+      const categoryId = course.categoryId || localCategories.find(c => c.label === course.category)?.value;
+      const levelId = course.levelId || localLevels.find(l => l.label === course.level)?.value;
+
       form.setFieldsValue({
         name: course.name,
         description: course.description,
-        categoryId: course.categoryId,
-        levelId: course.levelId,
+        categoryId: categoryId,
+        levelId: levelId,
         price: course.price,
         isActive: course.isActive,
         imageUrl: course.imageUrl,
@@ -37,7 +41,7 @@ const EditCourse = ({
       // initialize preview when editing existing course
       setImagePreview(course.imageUrl || "");
     }
-  }, [course, form]);
+  }, [course, form, localCategories, localLevels]);
 
   useEffect(() => {
     let mounted = true;
@@ -102,9 +106,10 @@ const EditCourse = ({
             label="Name"
             name="name"
             rules={[{ required: true, message: "Please enter course name" }]}
+            className={embedded ? "md:col-span-2" : undefined}
           >
             <Input 
-              maxLength={50}
+              maxLength={120}
               showCount
               placeholder="Enter course name"
             />
@@ -116,9 +121,10 @@ const EditCourse = ({
           label="Name"
           name="name"
           rules={[{ required: true, message: "Please enter course name" }]}
+          className={embedded ? "md:col-span-2" : undefined}
         >
           <Input 
-            maxLength={50}
+            maxLength={120}
             showCount
             placeholder="Enter course name"
           />
@@ -172,7 +178,7 @@ const EditCourse = ({
         name="price"
         rules={[{ required: true, message: "Please enter price" }]}
       >
-        <InputNumber min={0} style={{ width: "100%" }} />
+        <InputNumber min={1} max={10000} style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item
         label="Duration (hours)"
@@ -184,6 +190,7 @@ const EditCourse = ({
       <Form.Item
         label="Image URL"
         name="imageUrl"
+        allowClear
         rules={[{ required: true, message: "Please enter image URL" }]}
       >
         <Input

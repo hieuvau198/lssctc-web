@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Spin, Alert, Button } from "antd";
 import { fetchClassDetail } from "../../../../apis/ProgramManager/ClassApi";
 import EditDeleteClassForm from "./EditDeleteClassForm";
+import { getClassStatus } from "../../../../utils/classStatus";
 
 const PMClassDetail = () => {
   const { id } = useParams();
@@ -78,15 +79,10 @@ const PMClassDetail = () => {
             </span>
             <span className="text-sm text-gray-600">
               <span className="font-medium">Status:</span>{" "}
-              <span
-                className={
-                  classDetail.status === "1"
-                    ? "text-green-600 font-semibold"
-                    : "text-red-600 font-semibold"
-                }
-              >
-                {classDetail.status === "1" ? "Active" : "Inactive"}
-              </span>
+              {(() => {
+                const s = getClassStatus(classDetail.status);
+                return <span className={`font-semibold ${s.color === 'green' ? 'text-green-600' : s.color === 'red' ? 'text-red-600' : ''}`}>{s.label}</span>;
+              })()}
             </span>
           </div>
         </section>
@@ -162,15 +158,14 @@ const PMClassDetail = () => {
                     <td className="py-2 px-3">{m.trainee?.email || "N/A"}</td>
                     <td className="py-2 px-3">{m.trainee?.traineeCode}</td>
                     <td className="py-2 px-3">
-                      {m.status === "1" ? (
-                        <span className="text-green-600 font-semibold">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="text-red-600 font-semibold">
-                          Inactive
-                        </span>
-                      )}
+                      {(() => {
+                        const s = getClassStatus(m.status);
+                        return (
+                          <span className={`font-semibold ${s.color === 'green' ? 'text-green-600' : s.color === 'red' ? 'text-red-600' : ''}`}>
+                            {s.label}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="py-2 px-3">
                       {m.assignedDate?.slice(0, 10)}

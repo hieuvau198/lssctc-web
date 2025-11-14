@@ -93,10 +93,10 @@ const CreateCourse = ({
       className={embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6" : undefined}
     >
       {embedded && (
-        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Form.Item label="Name" name="name" rules={[{ required: true, message: "Please enter course name" }]}>
+        <div className="md:col-span-2 grid grid-cols-4 md:grid-cols-2 gap-6">
+          <Form.Item label="Name" name="name" rules={[{ required: true, message: "Please enter course name" }]} className={embedded ? "md:col-span-2" : undefined}>
             <Input
-              maxLength={50}
+              maxLength={120}
               showCount
               placeholder="Enter course name"
             />
@@ -104,9 +104,9 @@ const CreateCourse = ({
         </div>
       )}
       {!embedded && (
-        <Form.Item label="Name" name="name" rules={[{ required: true, message: "Please enter course name" }]}>
+        <Form.Item label="Name" name="name" rules={[{ required: true, message: "Please enter course name" }]} className={embedded ? "md:col-span-2" : undefined}>
           <Input
-            maxLength={50}
+            maxLength={120}
             showCount
             placeholder="Enter course name"
           />
@@ -143,7 +143,7 @@ const CreateCourse = ({
         </Select>
       </Form.Item>
       <Form.Item label="Price" name="price" rules={[{ required: true, message: "Please enter price" }]}>
-        <InputNumber min={1} style={{ width: "100%" }} />
+        <InputNumber min={1} max={10000} style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item label="Duration (hours)" name="durationHours" rules={[{ required: true, message: "Please enter duration" }]}>
         <InputNumber min={1} style={{ width: "100%" }} />
@@ -166,6 +166,7 @@ const CreateCourse = ({
             <Image
               src={imagePreview}
               alt="Preview"
+              allowClear
               fallback="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='96' viewBox='0 0 128 96'%3E%3Crect width='128' height='96' fill='%23f3f4f6'/%3E%3Ctext x='50%' y='50%' fill='%239ca3af' font-size='12' font-family='Arial' dominant-baseline='middle' text-anchor='middle'%3ENo preview%3C/text%3E%3C/svg%3E"
             />
           ) : (
