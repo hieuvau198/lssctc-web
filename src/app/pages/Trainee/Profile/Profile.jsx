@@ -1,3 +1,4 @@
+// src\app\pages\Trainee\Profile\Profile.jsx
 import React, { useState } from 'react';
 import { Card, Avatar, Typography, Divider, Button } from 'antd';
 import PageNav from '../../../components/PageNav/PageNav';
