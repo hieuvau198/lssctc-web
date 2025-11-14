@@ -9,6 +9,7 @@ import CourseDetail from '../../../pages/Trainee/Course/partials/CourseDetail'
 import MyClassDetail from '../../../pages/Trainee/MyClasses/MyClassDetail'
 import MyClasses from '../../../pages/Trainee/MyClasses/MyClasses'
 import Profile from '../../../pages/Trainee/Profile/Profile'
+import EditProfile from '../../../pages/Trainee/Profile/EditProfile'
 import Program from '../../../pages/Trainee/Program/Program'
 import ProgramDetail from '../../../pages/Trainee/Program/partials/ProgramDetail'
 import SimulationPlatform from '../../../pages/Trainee/SimulationPlatform/SimulationPlatform'
@@ -33,6 +34,14 @@ export default function TraineeRoutes() {
           element={
             <PrivateRoute allowedroles={["Trainee"]} redirectUrl="/auth/login">
               <Profile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="profile/edit"
+          element={
+            <PrivateRoute allowedroles={["Trainee"]} redirectUrl="/auth/login">
+              <EditProfile />
             </PrivateRoute>
           }
         />

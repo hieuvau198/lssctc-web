@@ -53,7 +53,35 @@ export async function getTraineeProfileById(traineeId, token) {
 }
 
 /**
- * Update trainee profile
+ * Update trainee profile by user ID
+ * PUT /api/Profiles/trainee/by-user/{userId}
+ * Only updates: phoneNumber, avatarUrl, educationLevel, educationImageUrl
+ * @param {number} userId - User ID
+ * @param {Object} profileData - Profile data to update (phoneNumber, avatarUrl, educationLevel, educationImageUrl)
+ * @param {string} token - JWT Bearer token
+ * @returns {Promise<Object>} Updated profile data
+ */
+export async function updateTraineeProfileByUserId(userId, profileData, token) {
+  const response = await fetch(`${API_BASE_URL}/Profiles/trainee/by-user/${userId}`, {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(profileData),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || `HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Update trainee profile (legacy endpoint)
  * PUT /api/Profiles/trainee/{traineeId}
  * @param {number} traineeId - Trainee ID
  * @param {Object} profileData - Profile data to update

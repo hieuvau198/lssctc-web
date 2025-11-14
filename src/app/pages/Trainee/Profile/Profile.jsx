@@ -1,6 +1,7 @@
 // src\app\pages\Trainee\Profile\Profile.jsx
 import React, { useState, useEffect } from 'react';
 import { Card, Avatar, Typography, Divider, Button, Spin, Alert } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import PageNav from '../../../components/PageNav/PageNav';
 import useAuthStore from '../../../store/authStore';
 import { getAuthToken } from '../../../libs/cookies';
@@ -9,6 +10,7 @@ import { getTraineeProfileByUserId } from '../../../apis/Trainee/TraineeProfileA
 const { Title, Text } = Typography;
 
 export default function Profile() {
+  const navigate = useNavigate();
   const [imgErr, setImgErr] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -141,7 +143,13 @@ export default function Profile() {
           <Text type="secondary" className="text-sm sm:text-base">Your personal information</Text>
         </div>
         <div>
-          <Button type="primary" href="/profile/edit" className="w-full sm:w-auto">Update info</Button>
+          <Button 
+            type="primary" 
+            onClick={() => navigate('/profile/edit')}
+            className="w-full sm:w-auto"
+          >
+            Update info
+          </Button>
         </div>
       </div>
 
