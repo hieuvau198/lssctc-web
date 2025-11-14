@@ -45,16 +45,13 @@ export default function Sections({ sections = [], classId }) {
 											<Clock className="w-3 h-3" />
 											<span>{section.durationMinutes} mins</span>
 										</div>
-										<div className="flex items-center gap-1">
-											<User className="w-3 h-3" />
-											<span>"course.instructor"</span>
-										</div>
+										
 									</div>
 
 									<div className="space-y-2">
 										<div className="flex items-center justify-between text-sm">
 											<span className="text-slate-600">Progress</span>
-											<span className="font-medium text-slate-900">{section.sectionProgress * 100}%</span>
+											<span className="font-medium text-slate-900">{section.sectionProgress}%</span>
 										</div>
 										<Progress
 											percent={section.sectionProgress * 100}
