@@ -109,17 +109,6 @@ const EditCourse = ({
               placeholder="Enter course name"
             />
           </Form.Item>
-          <Form.Item
-            label="Course Code"
-            name="courseCodeName"
-            rules={[{ required: true, message: "Please enter course code" }]}
-          >
-            <Input 
-              maxLength={30}
-              showCount
-              placeholder="Enter course code"
-            />
-          </Form.Item>
         </div>
       )}
       {!embedded && (
@@ -132,19 +121,6 @@ const EditCourse = ({
             maxLength={50}
             showCount
             placeholder="Enter course name"
-          />
-        </Form.Item>
-      )}
-      {!embedded && (
-        <Form.Item
-          label="Course Code"
-          name="courseCodeName"
-          rules={[{ required: true, message: "Please enter course code" }]}
-        >
-          <Input 
-            maxLength={30}
-            showCount
-            placeholder="Enter course code"
           />
         </Form.Item>
       )}

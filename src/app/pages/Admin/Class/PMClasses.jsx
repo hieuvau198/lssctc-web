@@ -1,38 +1,37 @@
-import React, { useEffect, useState } from "react";
-import {
-  Pagination,
-  Alert,
-  Empty,
-  Button,
-  message,
-  Form,
-  Skeleton,
-  Input,
-  Drawer,
-  Space,
-  Popconfirm,
-} from "antd";
 import {
   PlusOutlined,
 } from "@ant-design/icons";
+import {
+  Alert,
+  App,
+  Button,
+  Drawer,
+  Empty,
+  Form,
+  Input,
+  Popconfirm,
+  Skeleton,
+  Space
+} from "antd";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  fetchClasses,
-  fetchClassDetail,
   createClass,
-  updateClass,
   deleteClass,
+  fetchClassDetail,
+  fetchClasses,
+  updateClass,
 } from "../../../apis/ProgramManager/ClassApi";
-import ClassList from "./partials/ClassList";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
-import ClassDetailView from "./partials/ClassDetailView";
-import PMClassCard from "./partials/PMClassCard";
 import AddClassForm from "./partials/AddClassForm";
+import ClassDetailView from "./partials/ClassDetailView";
+import ClassList from "./partials/ClassList";
 import EditDeleteClassForm from "./partials/EditDeleteClassForm";
 
 const { Search } = Input;
 
 const PMClasses = () => {
+  const { message } = App.useApp();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

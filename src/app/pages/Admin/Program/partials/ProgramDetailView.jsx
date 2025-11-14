@@ -14,9 +14,9 @@ const ProgramDetailView = ({ program, loading }) => {
   return (
     <div className="space-y-6">
       {/* Basic Info */}
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="md:w-1/3">
-          <div className="aspect-video rounded-lg overflow-hidden bg-slate-100 border">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <div className="md:col-span-1">
+          <div className="aspect-video rounded-lg overflow-hidden bg-slate-100 border h-64 md:h-auto">
             <img
               src={program.imageUrl}
               alt={program.name}
@@ -24,7 +24,7 @@ const ProgramDetailView = ({ program, loading }) => {
             />
           </div>
         </div>
-        <div className="flex-1 space-y-3">
+        <div className="md:col-span-2 space-y-3">
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-semibold">{program.name}</h3>
             <Tag color={program.isActive ? 'green' : 'red'}>
@@ -39,7 +39,7 @@ const ProgramDetailView = ({ program, loading }) => {
               <span className="font-medium">Total Courses:</span> {program.totalCourses || 0}
             </span>
           </div>
-          <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line max-h-20 overflow-auto pr-2">
+          <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line max-h-20 md:max-h-40 overflow-auto pr-2">
             {program.description}
           </div>
         </div>
