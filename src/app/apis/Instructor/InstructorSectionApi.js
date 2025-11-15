@@ -1,3 +1,5 @@
+// src\app\apis\Instructor\InstructorSectionApi.js
+
 import apiClient from '../../libs/axios';
 
 // Use apiClient which already sets baseURL to VITE_API_Program_Service_URL
@@ -33,35 +35,62 @@ const mapLearningMaterial = (item) => {
 
 const mapSectionFromApi = (item) => ({
   id: item.id,
-  name: item.name,
-  description: item.description,
-  classesId: item.classesId,
-  syllabusSectionId: item.syllabusSectionId,
-  durationMinutes: item.durationMinutes,
-  order: item.order,
-  startDate: item.startDate,
-  endDate: item.endDate,
-  status: item.status,
+  title: item.sectionTitle,
+  description: item.sectionDescription,
+  duration: item.estimatedDurationMinutes,
 });
 
-const mapPartitionFromApi = (item) => ({
+const mapActivityFromApi = (item) => ({
   id: item.id,
-  sectionId: item.sectionId,
-  name: item.name,
-  partitionTypeId: item.partitionTypeId,
-  displayOrder: item.displayOrder,
-  description: item.description,
+  title: item.activityTitle,
+  description: item.activityDescription,
+  type: item.activityType,
+  duration: item.estimatedDurationMinutes,
 });
 
-const mapClassMemberFromApi = (item) => ({
-  id: item.id,
-  traineeId: item.traineeId,
-  classId: item.classId,
-  assignedDate: item.assignedDate,
-  status: item.status,
-  trainee: item.trainee || null,
-  trainingProgresses: Array.isArray(item.trainingProgresses) ? item.trainingProgresses : [],
-});
+export const getSectionsByCourseId = async (courseId) => {
+  if (!courseId) {
+    console.warn('getSectionsByCourseId called without courseId');
+    return [];
+  }
+  try {
+    const response = await apiClient.get(`/Sections/course/${courseId}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+    return data.map(mapSectionFromApi);
+  } catch (error) {
+    console.error(`Error fetching sections for course ${courseId}:`, error.response || error);
+    return [];
+  }
+};
+
+export const getSectionById = async (sectionId) => {
+  if (!sectionId) {
+    console.warn('getSectionById called without sectionId');
+    return null;
+  }
+  try {
+    const response = await apiClient.get(`/Sections/${sectionId}`);
+    return mapSectionFromApi(response.data);
+  } catch (error) {
+    console.error(`Error fetching section ${sectionId}:`, error.response || error);
+    return null;
+  }
+};
+
+export const getActivitiesBySectionId = async (sectionId) => {
+  if (!sectionId) {
+    console.warn('getActivitiesBySectionId called without sectionId');
+    return [];
+  }
+  try {
+    const response = await apiClient.get(`/Activities/section/${sectionId}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+    return data.map(mapActivityFromApi);
+  } catch (error) {
+    console.error(`Error fetching activities for section ${sectionId}:`, error.response || error);
+    return [];
+  }
+};
 
 export async function getLearningMaterials({ sectionId, page = 1, pageSize = 20 } = {}) {
   try {
@@ -86,86 +115,6 @@ export async function getLearningMaterials({ sectionId, page = 1, pageSize = 20 
   }
 }
 
-export async function getSectionsByClass(classId, { page = 1, pageSize = 20 } = {}) {
-  try {
-    const qs = buildQuery({ page, pageSize });
-  const { data } = await apiClient.get(`/Sections/by-class/${encodeURIComponent(classId)}${qs}`);
-    if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
-    const items = Array.isArray(data.items) ? data.items.map(mapSectionFromApi) : [];
-    return {
-      items,
-      totalCount: Number(data.totalCount) || items.length,
-      page: Number(data.page) || page,
-      pageSize: Number(data.pageSize) || pageSize,
-      totalPages: Number(data.totalPages) || 1,
-      raw: data,
-    };
-  } catch (err) {
-    console.error('Error fetching sections by class:', err);
-    return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
-  }
-}
-
-export async function getSectionPartitionsBySection(sectionId, { page = 1, pageSize = 20 } = {}) {
-  try {
-    const qs = buildQuery({ page, pageSize });
-  const { data } = await apiClient.get(`/SectionPartitions/by-section/${encodeURIComponent(sectionId)}${qs}`);
-    if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
-    const items = Array.isArray(data.items) ? data.items.map(mapPartitionFromApi) : [];
-    return {
-      items,
-      totalCount: Number(data.totalCount) || items.length,
-      page: Number(data.page) || page,
-      pageSize: Number(data.pageSize) || pageSize,
-      totalPages: Number(data.totalPages) || 1,
-      raw: data,
-    };
-  } catch (err) {
-    console.error('Error fetching section partitions by section:', err);
-    return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
-  }
-}
-
-export async function getClassMembers(classId, { page = 1, pageSize = 20 } = {}) {
-  try {
-    const qs = buildQuery({ page, pageSize });
-  const { data } = await apiClient.get(`/Classes/${encodeURIComponent(classId)}/members${qs}`);
-    if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
-    const items = Array.isArray(data.items) ? data.items.map(mapClassMemberFromApi) : [];
-    return {
-      items,
-      totalCount: Number(data.totalCount) || items.length,
-      page: Number(data.page) || page,
-      pageSize: Number(data.pageSize) || pageSize,
-      totalPages: Number(data.totalPages) || 1,
-      raw: data,
-    };
-  } catch (err) {
-    console.error('Error fetching class members:', err);
-    return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
-  }
-}
-
-export async function getAllPartitions({ page = 1, pageSize = 200 } = {}) {
-  try {
-    const qs = buildQuery({ page, pageSize });
-  const { data } = await apiClient.get(`/SectionPartitions${qs}`);
-    if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
-    const items = Array.isArray(data.items) ? data.items.map(mapPartitionFromApi) : [];
-    return {
-      items,
-      totalCount: Number(data.totalCount) || items.length,
-      page: Number(data.page) || page,
-      pageSize: Number(data.pageSize) || pageSize,
-      totalPages: Number(data.totalPages) || 1,
-      raw: data,
-    };
-  } catch (err) {
-    console.error('Error fetching all partitions:', err);
-    return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
-  }
-}
-
 export async function createLearningMaterial(payload) {
   try {
     if (!payload || !payload.name || !payload.materialUrl || !payload.learningMaterialType) {
@@ -182,48 +131,7 @@ export async function createLearningMaterial(payload) {
   }
 }
 
-export async function assignPartitionToSection(sectionId, partitionId) {
-  try {
-  const { data } = await apiClient.post(`/SectionPartitions/${encodeURIComponent(partitionId)}/assign`, { sectionId });
-    return data;
-  } catch (err) {
-    console.error('Error assigning partition to section:', err);
-    throw err;
-  }
-}
-
-export async function unassignPartitionFromSection(sectionId, partitionId) {
-  try {
-  const { data } = await apiClient.post(`/SectionPartitions/${encodeURIComponent(partitionId)}/unassign`, { sectionId });
-    return data;
-  } catch (err) {
-    console.error('Error unassigning partition from section:', err);
-    throw err;
-  }
-}
-
 export default {
   getLearningMaterials,
-  getSectionsByClass,
-  getSectionPartitionsBySection,
-  getClassMembers,
-  createLearningMaterial,
-  assignPartitionToSection,
-  unassignPartitionFromSection,
+  createLearningMaterial
 };
-// get learning material by section id
-// get learning material by section partition id
-// upload learning material
-// assign learning material to section partition
-// unassign learning material from section partition
-// create quiz
-// get quizzes by section id
-// get quizzes by section partition id
-// assign quiz to section partition
-// unassign quiz from section partition
-// get practices
-// get practices by section id
-// get practices by section partition id
-// assign practice to section partition
-// unassign practice from section partition
-

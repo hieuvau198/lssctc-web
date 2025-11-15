@@ -36,7 +36,6 @@ const ClassOverview = ({ classData }) => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold leading-tight m-0">{classData.name}</h2>
-                <div className="text-sm text-gray-500 mt-1">Program: {getProgramName(classData.programCourseId)}</div>
               </div>
             </div>
           }
@@ -47,7 +46,7 @@ const ClassOverview = ({ classData }) => {
           contentStyle={{ fontSize: 14 }}
         >
           <Descriptions.Item label="Class Code" span={1}>
-            <span className="font-mono font-medium text-sm">{classData.classCode.name}</span>
+            <span className="font-mono font-medium text-sm">{classData.classCode}</span>
           </Descriptions.Item>
           <Descriptions.Item label="Capacity" span={1}>
             <div className="text-sm">{classData.capacity} students</div>
@@ -63,7 +62,7 @@ const ClassOverview = ({ classData }) => {
           </Descriptions.Item>
           <Descriptions.Item label="Status" span={1}>
             <Tag color={getStatusColor(classData.status)} style={{ fontSize: 12, padding: '2px 8px' }}>
-              {getStatusText(classData.status)}
+              {classData.status}
             </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="Description" span={2}>

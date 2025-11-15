@@ -178,10 +178,7 @@ export default function InstructorClasses() {
         total={total}
         onPageChange={handlePageChange}
         onView={handleViewClass}
-      />
-
-      {/* <TestDisplayClassList /> */}
-      
+      />      
     </div>
   );
 }

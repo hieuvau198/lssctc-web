@@ -1,13 +1,16 @@
 import React from 'react';
-import { Card } from 'antd';
-import TraineeTable from './TraineeTable';
+import { Alert } from 'antd';
 
-const ClassMembers = ({ classData }) => {
+const ClassMembers = ({ classId }) => {
+  // This section is under construction.
   return (
-    <div className="mb-6 rounded-2xl shadow-xl">
-      <Card title="Class Trainees" className="py-2">
-        <TraineeTable classId={classData.id} />
-      </Card>
+    <div className="p-4">
+      <Alert
+        message="Under Construction"
+        description="The class members section is currently being updated."
+        type="info"
+        showIcon
+      />
     </div>
   );
 };
