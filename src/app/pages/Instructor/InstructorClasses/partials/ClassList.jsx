@@ -1,195 +1,141 @@
+import { Pagination, Table, Button } from "antd"; 
 import React from "react";
-import { Table, Tag, Button, Tooltip, Pagination, Empty } from "antd";
-import { Eye } from "lucide-react";
 import ClassCard from "./ClassCard";
-import { getProgramName } from "../../../../mocks/instructorClasses";
+import { EyeOutlined } from "@ant-design/icons";
 
-// Table View Component
-const ClassTableView = ({ classes, pageNumber, pageSize, total, onPageChange, onView }) => {
-  const formatDate = (dateString) => {
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch (e) {
-      return '-';
-    }
-  };
-
-  const isActiveStatus = (status) => String(status) === '1' || Number(status) === 1;
-  const getStatusColor = (status) => (isActiveStatus(status) ? 'green' : 'red');
-  const getStatusText = (status) => (isActiveStatus(status) ? 'Active' : 'Inactive');
-
-  const tableColumns = [
+const ClassTableView = ({ classes, onView, paginationProps }) => {
+  const columns = [
     {
-      title: "Class Code",
+      title: "Code",
+      dataIndex: "classCode",
       key: "classCode",
-      width: 100,
-      render: (_, record) => record.classCode ?? '-',
+      width: 120,
     },
     {
-      title: "Class Name",
+      title: "Name",
       dataIndex: "name",
       key: "name",
-      width: 220,
-      ellipsis: true,
-      render: (name) => (
-          <Tooltip title={name}>
-              {name}
-          </Tooltip>
+      render: (text, record) => (
+        <span
+          className="font-medium text-blue-600 hover:underline cursor-pointer"
+          onClick={() => onView(record)}
+        >
+          {text || record.className || "Mobile Crane Training"}
+        </span>
       ),
     },
     {
-      title: "Program",
-      dataIndex: "programCourseId",
-      key: "program",
-      width: 180,
-      ellipsis: true,
-      render: (programCourseId) => {
-        const programName = getProgramName(programCourseId);
-        return (
-          <Tooltip title={programName}>
-            {programName}
-          </Tooltip>
-        );
-      },
+      title: "Start",
+      dataIndex: "startDate",
+      key: "startDate",
+      width: 120,
+      render: (text) => (text ? new Date(text).toLocaleDateString() : "-"),
     },
     {
-      title: "Duration",
-      key: "duration",
+      title: "End",
+      dataIndex: "endDate",
+      key: "endDate",
+      width: 120,
+      render: (text) => (text ? new Date(text).toLocaleDateString() : "-"),
+    },
+    {
+      title: "Trainees",
+      dataIndex: "traineeCount",
+      key: "traineeCount",
       width: 100,
-      render: (_, record) => (
-        <div className="text-sm text-gray-600">
-          <div>{formatDate(record.startDate)}</div>
-          <div className="text-xs text-gray-500">to {formatDate(record.endDate)}</div>
-        </div>
-      ),
-    },
-    {
-      title: "Capacity",
-      dataIndex: "capacity",
-      key: "capacity",
-      width: 80,
-      render: (capacity) => <div className="text-sm font-medium text-center">{capacity}</div>,
+      align: "center",
+      render: (count) => count ?? 0,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      width: 100,
-      render: (status) => <Tag color={getStatusColor(status)} className="text-center">{getStatusText(status)}</Tag>,
+      width: 120,
+      align: "center",
+      render: (status) => status ?? "Cancelled",
     },
     {
       title: "Actions",
-      dataIndex: "actions",
       key: "actions",
-      width: 80,
-      fixed: "right",
+      width: 100,
+      align: "center",
       render: (_, record) => (
-        <div className="flex justify-center">
-          <Tooltip title="View Details">
-            <Button
-              type="text"
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={(e) => {
-                e.stopPropagation();
-                onView(record);
-              }}
-              className="hover:bg-blue-50 hover:text-blue-600"
-            />
-          </Tooltip>
-        </div>
+        <Button
+          type="link"
+          icon={<EyeOutlined />} 
+          onClick={() => onView(record)}
+        >
+          View
+        </Button>
       ),
     },
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      <div style={{ height: 440 }}  className="p-4 overflow-auto border-b border-gray-200">
-        <Table
-          columns={tableColumns}
-          dataSource={classes}
-          rowKey={(r) => r.id ?? r.classId ?? `${r.name ?? 'class'}-${r.programCourseId ?? '0'}`}
-          pagination={false}
-          className="w-full"
-          onRow={(record) => ({ onClick: () => onView(record) })}
-          size="middle"
-        />
-      </div>
-
-      <div className="p-4 bg-white flex justify-center">
-        <Pagination
-          current={pageNumber}
-          pageSize={pageSize}
-          total={total}
-          onChange={onPageChange}
-          showSizeChanger={true}
-          pageSizeOptions={["10", "20", "50"]}
-          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} classes`}
-        />
-      </div>
-    </div>
-  );
-};
-
-// Card View Component
-const ClassCardView = ({ classes, pageNumber, pageSize, total, onPageChange, onView }) => {
-  return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
-        {classes.map((classItem, i) => (
-          <div key={classItem.id ?? classItem.classId ?? `${classItem.name ?? 'class'}-${i}`} className="flex">
-            <ClassCard classItem={classItem} onView={onView} />
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-center mt-8">
-        <Pagination
-          current={pageNumber}
-          pageSize={pageSize}
-          total={total}
-          onChange={onPageChange}
-          showSizeChanger={true}
-          pageSizeOptions={["10", "20", "50"]}
-          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} classes`}
-        />
-      </div>
-    </>
-  );
-};
-
-// Main ClassList component
-const ClassList = ({ classes, viewMode = "table", pageNumber = 1, pageSize = 12, total = 0, onPageChange, onView }) => {
-  if (!Array.isArray(classes) || classes.length === 0) {
-    return <Empty description="No classes found." className="mt-16" />;
-  }
-
-  if (viewMode === "table") {
-    return (
-      <ClassTableView
-        classes={classes}
-        pageNumber={pageNumber}
-        pageSize={pageSize}
-        total={total}
-        onPageChange={onPageChange}
-        onView={onView}
-      />
-    );
-  }
-
-  return (
-    <ClassCardView
-      classes={classes}
-      pageNumber={pageNumber}
-      pageSize={pageSize}
-      total={total}
-      onPageChange={onPageChange}
-      onView={onView}
+    <Table
+      dataSource={classes}
+      columns={columns}
+      rowKey={(r) => r.id || r.classId}
+      pagination={false}
     />
   );
 };
 
-export default ClassList;
+// Main component
+export default function ClassList({
+  classes = [],
+  viewMode = "table",
+  pageNumber = 1,
+  pageSize = 10,
+  total = 0,
+  onPageChange,
+  onView,
+}) {
+  const paginationProps = {
+    current: pageNumber,
+    pageSize: pageSize,
+    total: total,
+    onChange: onPageChange,
+    showSizeChanger: true,
+    showTotal: (total, range) =>
+      `${range[0]}-${range[1]} of ${total} classes`,
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow">
+      {/* Content */}
+      <div className="p-0">
+        {viewMode === "card" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+            {classes.length > 0 ? (
+              classes.map((classItem) => (
+                <ClassCard
+                  key={classItem.id || classItem.classId}
+                  classItem={classItem}
+                  onView={onView}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center text-slate-500 py-10">
+                No classes found.
+              </div>
+            )}
+          </div>
+        ) : (
+          <ClassTableView
+            classes={classes}
+            onView={onView}
+            paginationProps={paginationProps}
+          />
+        )}
+      </div>
+
+      {/* Pagination Footer */}
+      {total > (classes.length || 0) || total > pageSize ? (
+        <div className="flex justify-center p-6 border-t border-slate-100">
+          <Pagination {...paginationProps} />
+        </div>
+      ) : null}
+    </div>
+  );
+}

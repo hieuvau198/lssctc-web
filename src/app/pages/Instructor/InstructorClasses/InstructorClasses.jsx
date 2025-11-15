@@ -1,3 +1,4 @@
+// src\app\pages\Instructor\InstructorClasses\InstructorClasses.jsx
 import {
   Alert,
   Skeleton
@@ -8,6 +9,9 @@ import { getInstructorClasses } from "../../../apis/Instructor/InstructorApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import ClassFilters from "./partials/ClassFilters";
 import ClassList from "./partials/ClassList";
+import useAuthStore from "../../../store/authStore"; // 1. Import the auth store
+import { getAuthToken } from "../../../libs/cookies"; // 2. Import token utils
+import { decodeToken } from "../../../libs/jwtDecode"; // 3. Import token utils
 
 export default function InstructorClasses() {
   const [classes, setClasses] = useState([]);
@@ -19,19 +23,46 @@ export default function InstructorClasses() {
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState(undefined);
-  const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
+  const [viewMode, setViewMode] = useState("table");
   
   const navigate = useNavigate();
 
+  const instructorIdFromStore = useAuthStore((s) => s.nameid);
+  const [instructorId, setInstructorId] = useState(null);
+
   useEffect(() => {
+    const token = getAuthToken();
+    const decoded = token ? decodeToken(token) : null;
+    const resolvedInstructorId =
+      instructorIdFromStore ||
+      decoded?.nameid ||
+      decoded?.nameId ||
+      decoded?.sub ||
+      null;
+
+    if (!resolvedInstructorId) {
+      setError("Instructor ID not available. Please log in again.");
+      setLoading(false);
+    } else {
+      setInstructorId(resolvedInstructorId);
+    }
+  }, [instructorIdFromStore]);
+
+  useEffect(() => {
+    if (!instructorId) {
+      return;
+    }
+
     let cancelled = false;
-    const instructorId = 2; // TODO: replace with real instructor id from auth/context
     setLoading(true);
     (async () => {
       try {
-        const res = await getInstructorClasses(instructorId, { page: pageNumber, pageSize });
+        const res = await getInstructorClasses(instructorId, {
+          page: pageNumber,
+          pageSize,
+        });
         if (cancelled) return;
-        // res may be paged response with items + totalCount
+        
         if (res && Array.isArray(res.items)) {
           setClasses(res.items);
           setTotal(Number(res.totalCount) || res.items.length || 0);
@@ -54,7 +85,7 @@ export default function InstructorClasses() {
     return () => {
       cancelled = true;
     };
-  }, [pageNumber, pageSize]);
+  }, [instructorId, pageNumber, pageSize]);
 
   const handleSearch = (value) => {
     setSearchTerm(value);

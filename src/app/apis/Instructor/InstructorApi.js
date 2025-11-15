@@ -20,19 +20,6 @@ const mapClassFromApi = (item) => ({
 
 //#region Class APIs
 
-// export const getInstructorClasses = async (instructorId) => {
-//   try {
-//     const response = await api.get(`/Classes/by-instructor/${instructorId}`);
-//     // Support both back-end shapes: either { success: true, items: [...] } or direct paged response
-//     const payload = response.data || {};
-//     const rawItems = Array.isArray(payload.items) ? payload.items : (Array.isArray(payload) ? payload : []);
-//     return rawItems.map(mapClassFromApi);
-//   } catch (error) {
-//     console.error("Error fetching classes by instructor:", error);
-//     return [];
-//   }
-// };
-
 export const getInstructorClasses = async (instructorId, { page = 1, pageSize = 20 } = {}) => {
   if (instructorId == null) {
     return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
@@ -105,6 +92,19 @@ export const getQuizzes = async ({ page = 1, pageSize = 20 } = {}) => {
   } catch (err) {
     console.error('Error fetching quizzes:', err);
     return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
+  }
+};
+
+export const getInstructorClassById = async (classId) => {
+  if (!classId) {
+    return Promise.reject(new Error("Class ID is required."));
+  }
+  try {
+    const response = await apiClient.get(`/Classes/${classId}`);
+    return response.data; // Returns the class detail object directly
+  } catch (error) {
+    console.error(`Error fetching class detail for ID ${classId}:`, error);
+    throw error.response?.data || error;
   }
 };
 

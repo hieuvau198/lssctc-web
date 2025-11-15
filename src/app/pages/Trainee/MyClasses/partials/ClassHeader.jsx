@@ -30,11 +30,11 @@ export default function ClassHeader({ classData }) {
 								</div>
 								<div className="flex items-center gap-2">
 									<Users className="w-4 h-4" />
-									<span>25 students</span>
+									<span>{classData.capacity} students</span>
 								</div>
 								<div className="flex items-center gap-2">
 									<Clock className="w-4 h-4" />
-									<span>{classData.courseDurationHours}h</span>
+									<span>{classData.courseDurationHours} hrs</span>
 								</div>
 							</div>
 							<Progress
