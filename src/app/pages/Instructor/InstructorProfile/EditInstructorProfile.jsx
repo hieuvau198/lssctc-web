@@ -48,7 +48,6 @@ export default function EditInstructorProfile() {
         
         // Fill form with existing data
         form.setFieldsValue({
-          username: fullProfile.username,
           email: fullProfile.email,
           fullname: fullProfile.fullname,
           phoneNumber: fullProfile.phoneNumber,
@@ -83,7 +82,7 @@ export default function EditInstructorProfile() {
       
       // Format data for API
       const updateData = {
-        username: values.username,
+        username: profileData.username, // Keep existing username (not editable)
         email: values.email,
         fullname: values.fullname,
         phoneNumber: values.phoneNumber,
@@ -182,14 +181,6 @@ export default function EditInstructorProfile() {
           <div className="mb-6">
             <h4 className="text-lg font-semibold mb-4 text-blue-600">Basic Information</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Form.Item
-                label="Username"
-                name="username"
-                rules={[{ required: true, message: 'Please enter username' }]}
-              >
-                <Input placeholder="e.g., thaygiao" />
-              </Form.Item>
-
               <Form.Item
                 label="Full Name"
                 name="fullname"

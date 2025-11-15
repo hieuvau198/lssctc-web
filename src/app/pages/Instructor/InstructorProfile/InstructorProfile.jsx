@@ -194,13 +194,6 @@ export default function InstructorProfile() {
                       <span className="text-gray-900">{profileData?.fullname || 'N/A'}</span>
                     </Descriptions.Item>
                     <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">Username</span>}
-                    >
-                      <span className="text-gray-900 font-mono bg-gray-100 px-2 py-1 rounded">
-                        {profileData?.username || 'N/A'}
-                      </span>
-                    </Descriptions.Item>
-                    <Descriptions.Item 
                       label={<span className="font-medium text-gray-700">Email</span>}
                     >
                       <div className="flex items-center gap-2">
@@ -355,13 +348,6 @@ export default function InstructorProfile() {
                 onClick={() => navigate('/instructor/profile/edit')}
               >
                 Edit Profile
-              </Button>
-              <Button 
-                size="large"
-                className="px-8 shadow-md hover:shadow-lg transition-shadow"
-                onClick={() => navigate(-1)}
-              >
-                Go Back
               </Button>
             </div>
           </div>
