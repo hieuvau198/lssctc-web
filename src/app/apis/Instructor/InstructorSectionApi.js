@@ -92,6 +92,29 @@ export const getActivitiesBySectionId = async (sectionId) => {
   }
 };
 
+export const createActivity = async (payload) => {
+  try {
+    const response = await apiClient.post('/Activities', payload);
+    return mapActivityFromApi(response.data);
+  } catch (error) {
+    console.error('Error creating activity:', error.response || error);
+    throw error.response?.data || error;
+  }
+};
+
+export const assignActivityToSection = async (sectionId, activityId) => {
+  if (!sectionId || !activityId) {
+    return Promise.reject(new Error('Section ID and Activity ID are required.'));
+  }
+  try {
+    const response = await apiClient.post(`/Activities/section/${sectionId}/activity/${activityId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error assigning activity ${activityId} to section ${sectionId}:`, error.response || error);
+    throw error.response?.data || error;
+  }
+};
+
 export async function getLearningMaterials({ sectionId, page = 1, pageSize = 20 } = {}) {
   try {
     const qs = buildQuery({ sectionId, page, pageSize });
