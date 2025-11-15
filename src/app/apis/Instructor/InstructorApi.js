@@ -6,11 +6,12 @@ import apiClient from '../../libs/axios';
 
 const mapClassFromApi = (item) => ({
   classId: item.id,
+  courseId: item.courseId,
   name: item.name,
   startDate: item.startDate,
   endDate: item.endDate,
   capacity: item.capacity,
-  programCourseId: item.programCourseId,
+  programId: item.programId,
   classCode: item.classCode || null,
   description: item.description,
   status: item.status,

@@ -1,7 +1,6 @@
 import { Alert, Breadcrumb, Skeleton, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-// 1. Import the new API function
 import { getInstructorClassById } from "../../../apis/Instructor/InstructorApi";
 import BackButton from "../../../components/BackButton/BackButton";
 import ClassMembers from "./partials/ClassMembers";
@@ -20,10 +19,9 @@ export default function InstructorClassDetail() {
     setLoading(true);
     (async () => {
       try {
-        // 2. Use the new function
         const res = await getInstructorClassById(classId);
         if (cancelled) return;
-        setClassDetail(res); // 3. Set the response directly
+        setClassDetail(res);
       } catch (err) {
         if (cancelled) return;
         setError(err?.message || "Failed to load class details");
@@ -37,27 +35,8 @@ export default function InstructorClassDetail() {
     };
   }, [classId]);
 
-  const tabItems = [
-    {
-      key: "overview",
-      label: "Overview",
-      // The component should be safe to render as long as classDetail is passed
-      children: <ClassOverview classData={classDetail} />,
-    },
-    {
-      key: "sections",
-      label: "Sections",
-      // As you noted, this might be broken, but we'll leave it for now
-      children: <ClassSections classId={classId} />,
-    },
-    {
-      key: "members",
-      label: "Members",
-      // As you noted, this might be broken, but we'll leave it for now
-      children: <ClassMembers classId={classId} />,
-    },
-  ];
-
+  // MOVED LOADING AND ERROR CHECKS UP
+  // This ensures classDetail is available before tabItems is defined.
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-4">
@@ -88,6 +67,27 @@ export default function InstructorClassDetail() {
     );
   }
 
+  // Define tabItems ONLY when data is guaranteed to be available.
+  const tabItems = [
+    {
+      key: "overview",
+      label: "Overview",
+      children: <ClassOverview classData={classDetail} />,
+    },
+    {
+      key: "sections",
+      label: "Sections",
+      // classDetail is now guaranteed to be non-null
+      // We still use optional chaining just in case programCourseId is null
+      children: <ClassSections courseId={classDetail?.courseId} />,
+    },
+    {
+      key: "members",
+      label: "Members",
+      children: <ClassMembers classId={classId} />,
+    },
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
       <div className="flex justify-start items-center mb-4">
@@ -99,7 +99,6 @@ export default function InstructorClassDetail() {
               title: <Link to="/instructor/classes">My Classes</Link>,
             },
             {
-              // 4. This should now work, assuming the new API returns courseName
               title: classDetail.courseName || "Class Detail",
             },
           ]}
