@@ -24,7 +24,7 @@ function buildQuery(params = {}) {
 const mapClassFromApi = (item) => ({
   id: item.id,
   name: item.name || '',
-  capacity: item.capacity || 0,
+  capacity: item.capacity || 10,
   classCode: item.classCode || 'N/A',
   programId: item.programId,
   courseId: item.courseId,
@@ -33,6 +33,7 @@ const mapClassFromApi = (item) => ({
   endDate: item.endDate,
   status: item.status || 'Unknown',
   classProgress: item.classProgress ?? 0, // <-- ADDED THIS LINE
+  durationHours: item.durationHours ?? 80, // <-- ADDED THIS LINE
 });
 
 /**
