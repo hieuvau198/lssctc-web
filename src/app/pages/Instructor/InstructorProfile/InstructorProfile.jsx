@@ -1,29 +1,59 @@
-import { ArrowLeft, User, Mail, Phone, Calendar, IdCard, CheckCircle } from 'lucide-react';
-import { Avatar, Button, Card, Descriptions, Skeleton, Tag, Divider, Row, Col } from 'antd';
+import { ArrowLeft, User, Mail, Phone, Calendar, IdCard, CheckCircle, Award, Briefcase } from 'lucide-react';
+import { Avatar, Button, Card, Descriptions, Skeleton, Tag, Divider, Row, Col, Alert } from 'antd';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import { getInstructorById } from '../../../mocks/instructors';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../../../store/authStore';
+import { getAuthToken } from '../../../libs/cookies';
+import { getInstructorProfileByUserId } from '../../../apis/Instructor/InstructorProfileApi';
 
 export default function InstructorProfile() {
-  const { id } = useParams();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState(null);
+  const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  const { nameid } = useAuthStore();
+  const token = getAuthToken();
 
   useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      setLoading(true);
-      // simulate small delay
-      await new Promise((r) => setTimeout(r, 200));
-      if (cancelled) return;
-      const p = getInstructorById(id || 1);
-      setProfile(p);
-      setLoading(false);
+    const fetchProfile = async () => {
+      if (!token) {
+        setError('Không tìm thấy token xác thực. Vui lòng đăng nhập lại.');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        
+        // Decode token to get user ID
+        const { jwtDecode } = await import('jwt-decode');
+        const decoded = jwtDecode(token);
+        const userId = decoded.nameid || decoded.nameId || decoded.sub;
+        
+        if (!userId) {
+          throw new Error('Không tìm thấy ID người dùng trong token');
+        }
+        
+        console.log('=== Instructor Profile Fetch Debug ===');
+        console.log('📡 Fetching profile for userId:', userId);
+        
+        // Fetch instructor profile
+        const fullProfile = await getInstructorProfileByUserId(userId, token);
+        console.log('✅ Success:', fullProfile);
+        
+        setProfileData(fullProfile);
+        setError(null);
+      } catch (err) {
+        console.error('❌ Error:', err);
+        setError(err.message || 'Không thể tải thông tin hồ sơ');
+      } finally {
+        setLoading(false);
+      }
     };
-    load();
-    return () => { cancelled = true; };
-  }, [id]);
+
+    fetchProfile();
+  }, [token]);
 
   if (loading) {
     return (
@@ -37,7 +67,27 @@ export default function InstructorProfile() {
     );
   }
 
-  if (!profile) {
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <Alert
+              message="Error Loading Profile"
+              description={error}
+              type="error"
+              showIcon
+            />
+            <Button className="mt-4" onClick={() => navigate(-1)}>
+              Go Back
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profileData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-7xl mx-auto px-4 py-8">
@@ -49,14 +99,15 @@ export default function InstructorProfile() {
     );
   }
 
-  const { user } = profile;
-
-  // Generate default avatar URL
-  const getAvatarUrl = (avatarUrl, name) => {
-    if (avatarUrl) return avatarUrl;
-    const defaultAvatarBase = import.meta.env.VITE_API_DEFAULT_AVATAR_URL;
-    const userName = name || 'User';
-    return `${defaultAvatarBase}${encodeURIComponent(userName)}`;
+  // Map role number to string
+  const getRoleName = (roleNumber) => {
+    const roles = {
+      1: 'Admin',
+      2: 'Instructor',
+      3: 'Simulation Manager',
+      4: 'Trainee'
+    };
+    return roles[roleNumber] || 'Unknown';
   };
 
   return (
@@ -74,12 +125,12 @@ export default function InstructorProfile() {
                 <div className="relative inline-block">
                   <Avatar 
                     size={128} 
-                    src={getAvatarUrl(user?.avatar_url, user?.fullname)}
+                    src={profileData?.avatarUrl}
                     className="ring-4 ring-white/30 shadow-2xl"
                   >
-                    {user?.fullname?.charAt(0) || 'I'}
+                    {profileData?.fullname?.charAt(0) || 'I'}
                   </Avatar>
-                  {profile?.is_active && (
+                  {profileData?.isInstructorActive && (
                     <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
                       <CheckCircle className="w-5 h-5 text-white" />
                     </div>
@@ -88,24 +139,32 @@ export default function InstructorProfile() {
               </Col>
               <Col xs={24} md={16}>
                 <div className="space-y-2">
-                  <h2 className="text-3xl font-bold mb-2">{user?.fullname || 'Unknown'}</h2>
+                  <h2 className="text-3xl font-bold mb-2">{profileData?.fullname || 'Unknown'}</h2>
                   <div className="flex flex-wrap gap-3">
-                    <Tag color="gold" className="px-3 py-1">
-                      <IdCard className="mr-1" />
-                      {profile?.instructor_code || 'N/A'}
+                    <Tag color="gold" className="px-3 py-1 flex items-center">
+                      <IdCard className="mr-1 w-4 h-4" />
+                      {profileData?.instructorCode || 'N/A'}
                     </Tag>
-                    <Tag color={profile?.is_active ? 'green' : 'red'} className="px-3 py-1">
-                      {profile?.is_active ? 'Active' : 'Inactive'}
+                    <Tag color={profileData?.isInstructorActive ? 'green' : 'red'} className="px-3 py-1">
+                      {profileData?.isInstructorActive ? 'Active' : 'Inactive'}
                     </Tag>
                     <Tag color="blue" className="px-3 py-1">
-                      {user?.role || 'Instructor'}
+                      {getRoleName(profileData?.role)}
                     </Tag>
+                    {profileData?.experienceYears && (
+                      <Tag color="purple" className="px-3 py-1 flex items-center">
+                        <Award className="mr-1 w-4 h-4" />
+                        {profileData.experienceYears} years exp.
+                      </Tag>
+                    )}
                   </div>
                   <div className="flex items-center gap-4 mt-4 text-blue-100">
-                    <div className="flex items-center gap-1">
-                      <Calendar />
-                      <span>Joined {profile?.hire_date || 'Unknown'}</span>
-                    </div>
+                    {profileData?.hireDate && (
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>Joined {new Date(profileData.hireDate).toLocaleDateString()}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Col>
@@ -132,29 +191,29 @@ export default function InstructorProfile() {
                       label={<span className="font-medium text-gray-700">Full Name</span>}
                       labelStyle={{ width: '120px' }}
                     >
-                      <span className="text-gray-900">{user?.fullname || 'N/A'}</span>
+                      <span className="text-gray-900">{profileData?.fullname || 'N/A'}</span>
                     </Descriptions.Item>
                     <Descriptions.Item 
                       label={<span className="font-medium text-gray-700">Username</span>}
                     >
                       <span className="text-gray-900 font-mono bg-gray-100 px-2 py-1 rounded">
-                        {user?.username || 'N/A'}
+                        {profileData?.username || 'N/A'}
                       </span>
                     </Descriptions.Item>
                     <Descriptions.Item 
                       label={<span className="font-medium text-gray-700">Email</span>}
                     >
                       <div className="flex items-center gap-2">
-                        <Mail className="text-gray-500" />
-                        <span className="text-blue-600">{user?.email || 'N/A'}</span>
+                        <Mail className="text-gray-500 w-4 h-4" />
+                        <span className="text-blue-600">{profileData?.email || 'N/A'}</span>
                       </div>
                     </Descriptions.Item>
                     <Descriptions.Item 
                       label={<span className="font-medium text-gray-700">Phone</span>}
                     >
                       <div className="flex items-center gap-2">
-                        <Phone className="text-gray-500" />
-                        <span className="text-gray-900">{user?.phone_number || 'N/A'}</span>
+                        <Phone className="text-gray-500 w-4 h-4" />
+                        <span className="text-gray-900">{profileData?.phoneNumber || 'N/A'}</span>
                       </div>
                     </Descriptions.Item>
                   </Descriptions>
@@ -178,38 +237,111 @@ export default function InstructorProfile() {
                       label={<span className="font-medium text-gray-700">Role</span>}
                     >
                       <Tag color="blue" className="px-3 py-1">
-                        {user?.role || 'Instructor'}
+                        {getRoleName(profileData?.role)}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item 
                       label={<span className="font-medium text-gray-700">Instructor Code</span>}
                     >
                       <span className="text-gray-900 font-mono bg-gray-100 px-2 py-1 rounded">
-                        {profile?.instructor_code || 'N/A'}
+                        {profileData?.instructorCode || 'N/A'}
                       </span>
+                    </Descriptions.Item>
+                    <Descriptions.Item 
+                      label={<span className="font-medium text-gray-700">Experience Years</span>}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Award className="text-gray-500 w-4 h-4" />
+                        <span className="text-gray-900">{profileData?.experienceYears || 0} years</span>
+                      </div>
                     </Descriptions.Item>
                     <Descriptions.Item 
                       label={<span className="font-medium text-gray-700">Hire Date</span>}
                     >
                       <div className="flex items-center gap-2">
-                        <Calendar className="text-gray-500" />
-                        <span className="text-gray-900">{profile?.hire_date || 'N/A'}</span>
+                        <Calendar className="text-gray-500 w-4 h-4" />
+                        <span className="text-gray-900">
+                          {profileData?.hireDate ? new Date(profileData.hireDate).toLocaleDateString() : 'N/A'}
+                        </span>
                       </div>
                     </Descriptions.Item>
                     <Descriptions.Item 
                       label={<span className="font-medium text-gray-700">Status</span>}
                     >
                       <Tag 
-                        color={profile?.is_active ? 'green' : 'red'} 
+                        color={profileData?.isInstructorActive ? 'green' : 'red'} 
                         className="px-3 py-1"
-                        icon={profile?.is_active ? <CheckCircle /> : null}
                       >
-                        {profile?.is_active ? 'Active' : 'Inactive'}
+                        {profileData?.isInstructorActive ? 'Active' : 'Inactive'}
                       </Tag>
                     </Descriptions.Item>
                   </Descriptions>
                 </Card>
               </Col>
+            </Row>
+
+            <Divider className="my-8" />
+
+            {/* Biography and Specialization */}
+            <Row gutter={[32, 32]}>
+              {/* Biography */}
+              {profileData?.biography && (
+                <Col xs={24}>
+                  <Card 
+                    title={
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="text-green-600" />
+                        <span>Biography</span>
+                      </div>
+                    }
+                    className="shadow-md border-l-4 border-l-green-500"
+                  >
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                      {profileData.biography}
+                    </p>
+                  </Card>
+                </Col>
+              )}
+
+              {/* Specialization */}
+              {profileData?.specialization && (
+                <Col xs={24}>
+                  <Card 
+                    title={
+                      <div className="flex items-center gap-2">
+                        <Award className="text-purple-600" />
+                        <span>Specialization</span>
+                      </div>
+                    }
+                    className="shadow-md border-l-4 border-l-purple-500"
+                  >
+                    <p className="text-gray-700">
+                      {profileData.specialization}
+                    </p>
+                  </Card>
+                </Col>
+              )}
+
+              {/* Professional Profile Certificate */}
+              {profileData?.professionalProfileUrl && (
+                <Col xs={24}>
+                  <Card 
+                    title={
+                      <div className="flex items-center gap-2">
+                        <Award className="text-orange-600" />
+                        <span>Professional Certificate</span>
+                      </div>
+                    }
+                    className="shadow-md border-l-4 border-l-orange-500"
+                  >
+                    <img
+                      src={profileData.professionalProfileUrl}
+                      alt="Professional Certificate"
+                      className="max-w-2xl w-full rounded-lg shadow-md"
+                    />
+                  </Card>
+                </Col>
+              )}
             </Row>
 
             <Divider className="my-8" />
@@ -220,14 +352,16 @@ export default function InstructorProfile() {
                 type="primary" 
                 size="large"
                 className="px-8 shadow-md hover:shadow-lg transition-shadow"
+                onClick={() => navigate('/instructor/profile/edit')}
               >
                 Edit Profile
               </Button>
               <Button 
                 size="large"
                 className="px-8 shadow-md hover:shadow-lg transition-shadow"
+                onClick={() => navigate(-1)}
               >
-                Change Password
+                Go Back
               </Button>
             </div>
           </div>
