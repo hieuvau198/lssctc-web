@@ -1,15 +1,17 @@
 import { Route, Routes } from 'react-router'
 import AdminLayout from '../../../layouts/AdminLayout/AdminLayout'
+import NotFound from '../../../layouts/NotFound'
+import ClassEditPage from '../../../pages/Admin/Class/ClassEditPage'
+import ClassViewPage from '../../../pages/Admin/Class/ClassViewPage'
+import PMClasses from '../../../pages/Admin/Class/PMClasses'
+import Courses from '../../../pages/Admin/Course/Courses'
 import Dashboard from '../../../pages/Admin/Dashboard/Dashboard'
 import ManageUser from '../../../pages/Admin/ManageUser/ManageUser'
-import Courses from '../../../pages/Admin/Course/Courses'
-import PMClasses from '../../../pages/Admin/Class/PMClasses'
-import ManagerProgramList from '../../../pages/Admin/Program/ManagerProgramList'
-import NotFound from '../../../layouts/NotFound'
-import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
-import TraineeTable from '../../../pages/Admin/ManageUser/partials/TraineeTable'
 import InstructorTable from '../../../pages/Admin/ManageUser/partials/InstructorTable'
 import SimulationManagerTable from '../../../pages/Admin/ManageUser/partials/SimulationManagerTable'
+import TraineeTable from '../../../pages/Admin/ManageUser/partials/TraineeTable'
+import ManagerProgramList from '../../../pages/Admin/Program/ManagerProgramList'
+import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
 
 export default function AdminRoutes() {
   return (
@@ -30,7 +32,11 @@ export default function AdminRoutes() {
         </Route>
         <Route path="courses" element={<Courses />} />
         <Route path="programs" element={<ManagerProgramList />} />
-        <Route path="class" element={<PMClasses />} />
+        <Route path="class">
+          <Route index element={<PMClasses />} />
+          <Route path=":id" element={<ClassViewPage />} />
+          <Route path=":id/edit" element={<ClassEditPage />} />
+        </Route>
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -117,30 +117,35 @@ const EditDeleteClassForm = ({
     }
   }, [classItem, form]);
 
-  // Fetch programs when modal opens (open prop) so user can reassign program
+  // Fetch programs when modal opens or when used embedded (page/edit).
+  // Also ensure the courses for the class's program are loaded so Selects show labels.
   useEffect(() => {
-    if (open) {
+    const shouldFetchPrograms = open || embedded;
+    if (shouldFetchPrograms) {
       setLoadingPrograms(true);
       fetchPrograms({ pageNumber: 1, pageSize: 200 })
         .then((data) => setPrograms(data.items || []))
         .catch((err) => console.error('Failed to fetch programs', err))
         .finally(() => setLoadingPrograms(false));
-
-      // If classItem has a programId, load its courses
-      const pid = classItem?.programId || null;
-      if (pid) {
-        setSelectedProgram(pid);
-        setLoadingCourses(true);
-        fetchCoursesByProgram(pid)
-          .then((data) => setCourses(data.items || []))
-          .catch((err) => {
-            console.error('Failed to fetch courses by program', err);
-            setCourses([]);
-          })
-          .finally(() => setLoadingCourses(false));
-      }
     }
-  }, [open, classItem]);
+
+    // If classItem has a programId, load its courses regardless of modal state
+    const pid = classItem?.programId || null;
+    if (pid) {
+      setSelectedProgram(pid);
+      setLoadingCourses(true);
+      fetchCoursesByProgram(pid)
+        .then((data) => setCourses(data.items || []))
+        .catch((err) => {
+          console.error('Failed to fetch courses by program', err);
+          setCourses([]);
+        })
+        .finally(() => setLoadingCourses(false));
+    } else {
+      // clear courses when no program
+      setCourses([]);
+    }
+  }, [open, classItem, embedded]);
 
   const handleProgramChange = (programId) => {
     setSelectedProgram(programId || null);
