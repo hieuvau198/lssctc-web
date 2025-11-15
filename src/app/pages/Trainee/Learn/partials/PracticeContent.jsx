@@ -1,8 +1,10 @@
 import React from 'react';
 import { Card, Button, Progress } from 'antd';
 import { Settings, CheckCircle2, Clock, Play } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function PracticeContent({ title, duration, completed = false, description }) {
+	const navigate = useNavigate();
 	return (
 		<div className="max-w-4xl mx-auto">
 			<Card className="mb-6">
@@ -56,7 +58,11 @@ export default function PracticeContent({ title, duration, completed = false, de
 							<CheckCircle2 className="w-5 h-5" />
 							<span className="font-semibold">Practice Completed</span>
 						</div>
-						<Button size="large" icon={<Play className="w-4 h-4" />}>
+						<Button 
+							size="large" 
+							icon={<Play className="w-4 h-4" />}
+							onClick={() => navigate('/simulator')}
+						>
 							Practice Again
 						</Button>
 					</div>
@@ -67,8 +73,9 @@ export default function PracticeContent({ title, duration, completed = false, de
 							size="large"
 							icon={<Play className="w-4 h-4" />}
 							className="px-8"
+							onClick={() => navigate('/simulator')}
 						>
-							Start Practice Session
+							Start Practice
 						</Button>
 					</div>
 				)}
