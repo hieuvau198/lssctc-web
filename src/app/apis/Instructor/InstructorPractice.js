@@ -44,6 +44,29 @@ export async function getPractices({ page = 1, pageSize = 10 } = {}) {
   }
 }
 
+/**
+ * Get tasks by practice ID
+ * GET /api/Tasks/practice/{practiceId}
+ * @param {number} practiceId
+ * @param {string} token
+ * @returns {Promise<Array>} List of tasks
+ */
+export async function getTasksByPracticeId(practiceId, token) {
+  try {
+    const { data } = await axios.get(`${BASE}/Tasks/practice/${practiceId}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.error('Error fetching tasks by practiceId:', err);
+    throw err;
+  }
+}
+
 export default {
   getPractices,
+  getTasksByPracticeId,
 };
