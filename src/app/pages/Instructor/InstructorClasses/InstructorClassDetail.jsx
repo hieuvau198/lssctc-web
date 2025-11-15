@@ -42,7 +42,7 @@ export default function InstructorClassDetail() {
       key: "overview",
       label: "Overview",
       // The component should be safe to render as long as classDetail is passed
-      children: <ClassOverview classDetail={classDetail} />,
+      children: <ClassOverview classData={classDetail} />,
     },
     {
       key: "sections",
