@@ -306,6 +306,7 @@ export default function LearnContent() {
             completed={sectionPractice.isCompleted} // Dùng isCompleted đã gộp
             description={sectionPractice.practiceDescription} // Dùng mô tả từ practice
             duration={`${sectionPractice.estimatedDurationMinutes || 0} min`} // Dùng duration từ practice
+            tasks={sectionPractice.tasks} // <-- THÊM DÒNG NÀY ĐỂ TRUYỀN TASKS
           />
         )
       );
