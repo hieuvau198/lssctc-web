@@ -5,26 +5,24 @@ import { useParams } from "react-router-dom";
 import VideoContent from "./partials/VideoContent";
 import ReadingContent from "./partials/ReadingContent";
 import QuizContent from "./partials/QuizContent";
-import PracticeContent from "./partials/PracticeContent"; // <-- Import PracticeContent
+import PracticeContent from "./partials/PracticeContent";
 import {
-  // APIs được giữ lại
   markSectionMaterialAsCompleted,
   markSectionMaterialAsNotCompleted,
   getActivityRecordsByClassAndSection,
-  // API mới cho Material
   getMaterialsByActivityId,
 } from "../../../apis/Trainee/TraineeLearningApi";
 import {
-  // Cập nhật API Quiz
   getQuizByActivityIdForTrainee,
   submitQuizAttempt,
 } from '../../../apis/Trainee/TraineeQuizApi';
+import {
+  getPracticeByActivityRecordId
+} from '../../../apis/Trainee/TraineePracticeApi';
 
-// --- IMPORT ĐỂ XỬ LÝ AUTH ---
 import { getAuthToken } from "../../../libs/cookies";
 import { decodeToken } from "../../../libs/jwtDecode";
 import useAuthStore from "../../../store/authStore";
-// --- KẾT THÚC IMPORT ---
 
 export default function LearnContent() {
   const { courseId, sectionId, partitionId } = useParams();
@@ -36,6 +34,7 @@ export default function LearnContent() {
   const [activityRecord, setActivityRecord] = useState(null);
   const [materialsList, setMaterialsList] = useState([]);
   const [sectionQuiz, setSectionQuiz] = useState(null);
+  const [sectionPractice, setSectionPractice] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,6 +67,7 @@ export default function LearnContent() {
       setError(null);
       setMaterialsList([]);
       setSectionQuiz(null);
+      setSectionPractice(null); // <-- RESET PRACTICE STATE
       setActivityRecord(null);
 
       console.log("Fetching activity record for activityId:", activityId);
@@ -115,7 +115,17 @@ export default function LearnContent() {
         };
         setSectionQuiz(combinedQuizData);
       } else if (activityType === 'Practice') {
-        // Practice logic
+        // --- LOGIC MỚI ĐỂ LOAD PRACTICE DATA ---
+        const practiceData = await getPracticeByActivityRecordId(matchedRecord.activityRecordId); 
+        const combinedPracticeData = {
+          ...practiceData,
+          // Ghi đè các trường từ activity record để đảm bảo đúng
+          title: matchedRecord.activityName || practiceData.practiceName,
+          isCompleted: matchedRecord.isCompleted,
+          activityRecord: matchedRecord,
+        };
+        setSectionPractice(combinedPracticeData);
+        // --- KẾT THÚC LOGIC MỚI ---
       } else {
         throw new Error(`Unsupported content type: ${activityType}`);
       }
@@ -288,14 +298,18 @@ export default function LearnContent() {
       );
     
     case "Practice":
+      // --- CẬP NHẬT RENDER CHO PRACTICE ---
       return (
-        <PracticeContent 
-          title={activityRecord.activityName}
-          completed={isActivityCompleted}
-          description={"This is a simulation practice."} // TODO: Lấy mô tả từ đâu đó?
-          duration={activityRecord.estimatedDurationMinutes || "N/A"} // TODO: DTO không có
-        />
+        sectionPractice && (
+          <PracticeContent 
+            title={sectionPractice.title} // Dùng title đã gộp
+            completed={sectionPractice.isCompleted} // Dùng isCompleted đã gộp
+            description={sectionPractice.practiceDescription} // Dùng mô tả từ practice
+            duration={`${sectionPractice.estimatedDurationMinutes || 0} min`} // Dùng duration từ practice
+          />
+        )
       );
+      // --- KẾT THÚC CẬP NHẬT ---
 
     default:
       return (
