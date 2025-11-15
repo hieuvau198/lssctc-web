@@ -9,6 +9,7 @@ import QuizDetails from "../../../pages/Instructor/InstructorQuizzes/partials/Qu
 import QuizEdit from "../../../pages/Instructor/InstructorQuizzes/partials/QuizEdit";
 import InstructorPractices from "../../../pages/Instructor/InstructorPractices/InstructorPractices";
 import InstructorProfile from "../../../pages/Instructor/InstructorProfile/InstructorProfile";
+import EditInstructorProfile from "../../../pages/Instructor/InstructorProfile/EditInstructorProfile";
 import NotFound from "../../../layouts/NotFound";
 import PrivateRoute from "../../PrivateRoutes/PrivateRoute";
 import InstructorDashboard from "../../../pages/Instructor/InstructorDashboard/InstructorDashboard";
@@ -34,6 +35,7 @@ export default function InstructorRoutes() {
         <Route path="/quizzes/:id/edit" element={<QuizEdit />} />
         <Route path="/practices" element={<InstructorPractices />} />
         <Route path="/profile" element={<InstructorProfile />} />
+        <Route path="/profile/edit" element={<EditInstructorProfile />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
