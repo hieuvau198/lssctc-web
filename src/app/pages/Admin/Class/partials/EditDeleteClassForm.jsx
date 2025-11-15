@@ -16,6 +16,8 @@ import {
   updateClass,
   deleteClass,
 } from "../../../../apis/ProgramManager/ClassApi";
+import { fetchPrograms } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
+import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
 
 /**
  * @param {Object} props
@@ -47,6 +49,9 @@ const EditDeleteClassForm = ({
   const [deleteError, setDeleteError] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
+  const [programs, setPrograms] = useState([]);
+  const [loadingPrograms, setLoadingPrograms] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState(null);
 
   const handleFinish = async (values) => {
     if (embedded && onUpdate) {
@@ -66,12 +71,14 @@ const EditDeleteClassForm = ({
         capacity: values.capacity,
         description: values.description,
         classCode: values.classCode,
+        programId: values.programId,
+        courseId: values.courseId,
       });
       onUpdated?.();
       onClose();
     } catch (err) {
       setError(
-        err?.response?.data?.message || err?.message || "Failed to update class"
+        err?.response?.data || err?.message || "Failed to update class"
       );
     } finally {
       setSaving(false);
@@ -87,7 +94,7 @@ const EditDeleteClassForm = ({
       onClose();
     } catch (err) {
       setDeleteError(
-        err?.response?.data?.message || err?.message || "Failed to delete class"
+        err?.response?.data || err?.message || "Failed to delete class"
       );
     } finally {
       setDeleting(false);
@@ -103,29 +110,54 @@ const EditDeleteClassForm = ({
         capacity: classItem?.capacity,
         description: classItem?.description,
         classCode: classItem?.classCode?.name || classItem?.classCode || "",
+        programId: classItem?.programId || null,
         courseId:
           classItem?.programCourseId || classItem?.courseId || classItem?.course?.id || classItem?.programCourse?.id || null,
       });
     }
   }, [classItem, form]);
 
+  // Fetch programs when modal opens (open prop) so user can reassign program
   useEffect(() => {
-    let mounted = true;
-    async function loadCourses() {
-      setLoadingCourses(true);
-      try {
-        const data = await (await import('../../../../apis/ProgramManager/ProgramManagerCourseApi')).fetchCourses({ pageNumber: 1, pageSize: 200 });
-        if (!mounted) return;
-        setCourses(data.items || []);
-      } catch (err) {
-        console.error('Failed to load courses', err);
-      } finally {
-        if (mounted) setLoadingCourses(false);
+    if (open) {
+      setLoadingPrograms(true);
+      fetchPrograms({ pageNumber: 1, pageSize: 200 })
+        .then((data) => setPrograms(data.items || []))
+        .catch((err) => console.error('Failed to fetch programs', err))
+        .finally(() => setLoadingPrograms(false));
+
+      // If classItem has a programId, load its courses
+      const pid = classItem?.programId || null;
+      if (pid) {
+        setSelectedProgram(pid);
+        setLoadingCourses(true);
+        fetchCoursesByProgram(pid)
+          .then((data) => setCourses(data.items || []))
+          .catch((err) => {
+            console.error('Failed to fetch courses by program', err);
+            setCourses([]);
+          })
+          .finally(() => setLoadingCourses(false));
       }
     }
-    loadCourses();
-    return () => { mounted = false; };
-  }, []);
+  }, [open, classItem]);
+
+  const handleProgramChange = (programId) => {
+    setSelectedProgram(programId || null);
+    form.setFieldsValue({ courseId: undefined });
+    if (!programId) {
+      setCourses([]);
+      return;
+    }
+    setLoadingCourses(true);
+    fetchCoursesByProgram(programId)
+      .then((data) => setCourses(data.items || []))
+      .catch((err) => {
+        console.error('Failed to fetch courses by program', err);
+        setCourses([]);
+      })
+      .finally(() => setLoadingCourses(false));
+  };
 
   const formContent = (
     <>
@@ -144,7 +176,7 @@ const EditDeleteClassForm = ({
           rules={[{ required: true, message: "Please enter class name" }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input placeholder="Class name" />
+          <Input placeholder="Class name" allowClear showCount maxLength={120} />
         </Form.Item>
         <Form.Item
           label="Class Code"
@@ -152,19 +184,46 @@ const EditDeleteClassForm = ({
           rules={[{ required: true, message: "Please enter class code" }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input placeholder="Class code" />
+          <Input placeholder="Class code" allowClear showCount maxLength={50} />
+        </Form.Item>
+
+        <Form.Item
+          label="Program"
+          name="programId"
+          rules={[{ required: true, message: 'Please select a program' }]}
+          className={embedded ? 'md:col-span-1' : undefined}
+        >
+          <Select
+            placeholder="Select a program"
+            loading={loadingPrograms}
+            showSearch
+            allowClear
+            optionFilterProp="children"
+            onChange={handleProgramChange}
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().includes(input.toLowerCase())
+            }
+          >
+            {programs.map((p) => (
+              <Select.Option key={p.id} value={p.id}>
+                {p.name}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
 
         <Form.Item
           label="Course"
           name="courseId"
+          rules={[{ required: true, message: "Please select a course" }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
           <Select
             placeholder="Course"
             loading={loadingCourses}
-            disabled
+            disabled={!selectedProgram}
             showSearch
+            allowClear
             optionFilterProp="children"
             filterOption={(input, option) =>
               option?.children?.toLowerCase().includes(input.toLowerCase())
@@ -178,21 +237,6 @@ const EditDeleteClassForm = ({
           </Select>
         </Form.Item>
 
-        <Form.Item
-          label="Capacity"
-          name="capacity"
-          rules={[
-            {
-              required: true,
-              type: "number",
-              min: 1,
-              message: "Capacity must be at least 1",
-            },
-          ]}
-          className={embedded ? "md:col-span-1" : undefined}
-        >
-          <InputNumber min={1} className="w-full" />
-        </Form.Item>
         <Form.Item
           label="Start Date"
           name="startDate"
@@ -219,8 +263,25 @@ const EditDeleteClassForm = ({
         >
           <DatePicker className="w-full" />
         </Form.Item>
+
+        <Form.Item
+          label="Capacity"
+          name="capacity"
+          rules={[
+            {
+              required: true,
+              type: "number",
+              min: 1,
+              message: "Capacity must be at least 1",
+            },
+          ]}
+          className={embedded ? "md:col-span-1" : undefined}
+        >
+          <InputNumber min={1} className="w-full" />
+        </Form.Item>
+
         <Form.Item label="Description" name="description" className={embedded ? "md:col-span-2" : undefined}>
-          <Input.TextArea rows={3} placeholder="Description" />
+          <Input.TextArea rows={3} placeholder="Description" showCount maxLength={500} allowClear />
         </Form.Item>
         <Form.Item>
           <Space>

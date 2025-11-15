@@ -12,7 +12,8 @@ import {
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { createClass } from "../../../../apis/ProgramManager/ClassApi";
-import { fetchCourses } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
+import { fetchCourses, fetchPrograms } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
+import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
 
 const AddClassForm = ({
   open,
@@ -29,23 +30,58 @@ const AddClassForm = ({
   const [error, setError] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
+  const [programs, setPrograms] = useState([]);
+  const [loadingPrograms, setLoadingPrograms] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState(null);
 
-  // Fetch courses for selection
+  // Fetch programs on open. Courses are loaded after choosing a program.
   useEffect(() => {
     if (open) {
-      setLoadingCourses(true);
-      fetchCourses({ pageNumber: 1, pageSize: 100 })
+      setLoadingPrograms(true);
+      fetchPrograms({ pageNumber: 1, pageSize: 100 })
         .then((data) => {
-          setCourses(data.items || []);
+          setPrograms(data.items || []);
         })
         .catch((err) => {
-          console.error('Failed to fetch courses:', err);
+          console.error('Failed to fetch programs:', err);
         })
         .finally(() => {
-          setLoadingCourses(false);
+          setLoadingPrograms(false);
         });
+
+      // If there is an initial program selected in the form, load its courses
+      const initialProgram = form.getFieldValue('programId');
+      if (initialProgram) {
+        setSelectedProgram(initialProgram);
+        setLoadingCourses(true);
+        fetchCoursesByProgram(initialProgram)
+          .then((data) => setCourses(data.items || []))
+          .catch((err) => console.error('Failed to fetch courses by program:', err))
+          .finally(() => setLoadingCourses(false));
+      }
     }
   }, [open]);
+
+  const handleProgramChange = (programId) => {
+    setSelectedProgram(programId || null);
+    // clear selected course when program changes
+    form.setFieldsValue({ courseId: undefined });
+    if (!programId) {
+      setCourses([]);
+      return;
+    }
+
+    setLoadingCourses(true);
+    fetchCoursesByProgram(programId)
+      .then((data) => {
+        setCourses(data.items || []);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch courses by program:', err);
+        setCourses([]);
+      })
+      .finally(() => setLoadingCourses(false));
+  };
 
   const handleFinish = async (values) => {
     if (embedded && onCreate) {
@@ -64,7 +100,8 @@ const AddClassForm = ({
         startDate: values.startDate.toISOString(),
         endDate: values.endDate.toISOString(),
         capacity: values.capacity,
-        programCourseId: values.courseId || programCourseId, // Send programCourseId field with courseId value
+        programId: values.programId,
+        courseId: values.courseId || programCourseId, // Send courseId (use programCourseId as fallback)
         description: values.description,
       });
       form.resetFields();
@@ -102,7 +139,7 @@ const AddClassForm = ({
           rules={[{ required: true, message: "Please enter class name" }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input placeholder="Class name" showCount maxLength={120} />
+          <Input placeholder="Class name" showCount maxLength={120} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -111,7 +148,33 @@ const AddClassForm = ({
           rules={[{ required: true, message: "Please enter class code" }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input placeholder="Class code" showCount maxLength={50} />
+          <Input placeholder="Class code" showCount allowClear maxLength={50} />
+        </Form.Item>
+
+        {/* Program Selection */}
+        <Form.Item
+          label="Program"
+          name="programId"
+          rules={[{ required: true, message: 'Please select a program' }]}
+          className={embedded ? 'md:col-span-1' : undefined}
+        >
+          <Select
+            placeholder="Select a program"
+            loading={loadingPrograms}
+            showSearch
+            allowClear
+            optionFilterProp="children"
+            onChange={handleProgramChange}
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().includes(input.toLowerCase())
+            }
+          >
+            {programs.map((p) => (
+              <Select.Option key={p.id} value={p.id}>
+                {p.name}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
 
         {/* Course Selection - only show if not in program context */}
@@ -125,7 +188,9 @@ const AddClassForm = ({
             <Select
               placeholder="Select a course"
               loading={loadingCourses}
+              disabled={!selectedProgram}
               showSearch
+              allowClear
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option?.children?.toLowerCase().includes(input.toLowerCase())
@@ -139,23 +204,6 @@ const AddClassForm = ({
             </Select>
           </Form.Item>
         )}
-
-        <Form.Item
-          label="Capacity"
-          name="capacity"
-          rules={[
-            {
-              required: true,
-              type: "number",
-              min: 10,
-              max: 50,
-              message: "Capacity must be at least 1",
-            },
-          ]}
-          className={embedded ? "md:col-span-1" : undefined}
-        >
-          <InputNumber min={1} max={50} className="w-full" />
-        </Form.Item>
 
         <Form.Item
           label="Start Date"
@@ -183,8 +231,26 @@ const AddClassForm = ({
         >
           <DatePicker className="w-full" />
         </Form.Item>
+        
+        <Form.Item
+          label="Capacity"
+          name="capacity"
+          rules={[
+            {
+              required: true,
+              type: "number",
+              min: 10,
+              max: 50,
+              message: "Capacity must be at least 10",
+            },
+          ]}
+          className={embedded ? "md:col-span-1" : undefined}
+        >
+          <InputNumber min={1} max={50} className="w-full" />
+        </Form.Item>
+
         <Form.Item label="Description" name="description" className={embedded ? "md:col-span-2" : undefined}>
-          <Input.TextArea rows={3} placeholder="Description" showCount maxLength={500} />
+          <Input.TextArea rows={3} placeholder="Description" showCount maxLength={500} allowClear />
         </Form.Item>
         <Form.Item>
           <Space>

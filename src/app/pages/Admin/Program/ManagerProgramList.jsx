@@ -92,7 +92,7 @@ const ManagerProgramList = () => {
       }
     } catch (err) {
       message.error(
-        err?.response?.data?.message || err?.message || "Delete failed"
+        err?.response?.data || err?.message || "Delete failed"
       );
     } finally {
       setDeletingId(null);

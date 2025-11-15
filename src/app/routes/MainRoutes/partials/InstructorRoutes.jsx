@@ -12,6 +12,7 @@ import InstructorProfile from "../../../pages/Instructor/InstructorProfile/Instr
 import NotFound from "../../../layouts/NotFound";
 import PrivateRoute from "../../PrivateRoutes/PrivateRoute";
 import InstructorDashboard from "../../../pages/Instructor/InstructorDashboard/InstructorDashboard";
+import PracticeDetail from "../../../pages/Instructor/InstructorPractices/partials/PracticeDetail";
 
 export default function InstructorRoutes() {
   return (
@@ -33,6 +34,7 @@ export default function InstructorRoutes() {
         <Route path="/quizzes/:id" element={<QuizDetails />} />
         <Route path="/quizzes/:id/edit" element={<QuizEdit />} />
         <Route path="/practices" element={<InstructorPractices />} />
+        <Route path="/practices/:id" element={<PracticeDetail />} />
         <Route path="/profile" element={<InstructorProfile />} />
       </Route>
       <Route path="*" element={<NotFound />} />
