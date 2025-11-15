@@ -1,9 +1,10 @@
 import { Alert, Button, Card, Skeleton } from 'antd';
 import { BookOpen, Video, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { getLearningMaterials } from '../../../apis/Instructor/InstructorSectionApi';
 import AddMaterials from './partials/AddMaterials';
+import EditMaterials from './partials/EditMaterials';
 import DocMaterials from './partials/DocMaterials';
 import VideoMaterials from './partials/VideoMaterials';
 
@@ -14,7 +15,9 @@ function useQuery() {
 
 export default function InstructorMaterials() {
   const query = useQuery();
+  const { id } = useParams();
   const isAddMode = query.get('mode') === 'add';
+  const isEditMode = !!id;
   const navigate = useNavigate();
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,9 +42,13 @@ export default function InstructorMaterials() {
         if (!cancelled) setLoading(false);
       }
     };
-    load();
+    
+    // Luôn load materials khi refreshKey thay đổi hoặc khi quay lại từ edit/add mode
+    if (!isAddMode && !isEditMode) {
+      load();
+    }
     return () => { cancelled = true; };
-  }, [refreshKey]);
+  }, [refreshKey, isAddMode, isEditMode]);
 
   // mapping: learningMaterialTypeId === 1 => doc, === 2 => video
   const docs = materials.filter((m) => Number(m.typeId) === 2);
@@ -50,6 +57,13 @@ export default function InstructorMaterials() {
 
   if (isAddMode) {
     return <AddMaterials onSuccess={() => {
+      setRefreshKey(prev => prev + 1);
+      navigate('/instructor/materials');
+    }} />;
+  }
+
+  if (isEditMode) {
+    return <EditMaterials onSuccess={() => {
       setRefreshKey(prev => prev + 1);
       navigate('/instructor/materials');
     }} />;

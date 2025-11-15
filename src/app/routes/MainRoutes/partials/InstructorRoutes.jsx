@@ -31,6 +31,7 @@ export default function InstructorRoutes() {
         <Route path="/classes/:classId" element={<InstructorClassDetail />} />
         <Route path="/sections" element={<InstructorSections />} />
         <Route path="/materials" element={<InstructorMaterials />} />
+        <Route path="/materials/edit/:id" element={<InstructorMaterials />} />
         <Route path="/quizzes" element={<InstructorQuizzes />} />
         <Route path="/quizzes/:id" element={<QuizDetails />} />
         <Route path="/quizzes/:id/edit" element={<QuizEdit />} />

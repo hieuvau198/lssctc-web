@@ -1,11 +1,13 @@
-import { PlayCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlayCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Card, Empty, Table, Pagination, Tooltip, Modal, message, App } from 'antd';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
-import { deleteMaterial } from '../../../../apis/Instructor/MaterialsApi';
+import { deleteMaterial } from '../../../../apis/Instructor/InstructorMaterialsApi';
 import DrawerView from './DrawerView';
 
 export default function VideoMaterials({ materials = [], viewMode = 'table', onDelete }) {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -68,11 +70,14 @@ export default function VideoMaterials({ materials = [], viewMode = 'table', onD
     {
       title: 'Action',
       key: 'action',
-      width: 120,
+      width: 150,
       render: (_, record) => (
         <div className="flex gap-2">
           <Tooltip title="Open video">
             <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(record); setDrawerVisible(true); }} />
+          </Tooltip>
+          <Tooltip title="Edit material">
+            <Button type="default" icon={<EditOutlined />} onClick={() => navigate(`/instructor/materials/edit/${record.id}`)} />
           </Tooltip>
           <Tooltip title="Delete material">
             <Button danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} loading={deleting} />
@@ -98,6 +103,9 @@ export default function VideoMaterials({ materials = [], viewMode = 'table', onD
                   <div className="flex-shrink-0 ml-2 flex gap-1">
                     <Tooltip title="Open video">
                       <Button type="primary" shape="circle" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(m); setDrawerVisible(true); }} />
+                    </Tooltip>
+                    <Tooltip title="Edit material">
+                      <Button shape="circle" icon={<EditOutlined />} onClick={() => navigate(`/instructor/materials/edit/${m.id}`)} />
                     </Tooltip>
                     <Tooltip title="Delete material">
                       <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleDelete(m)} loading={deleting} />

@@ -2,7 +2,7 @@ import { ArrowLeftOutlined, BookOutlined, VideoCameraOutlined } from '@ant-desig
 import { Button, Card, Form, Input, Radio, Space, message } from 'antd';
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { createMaterial } from '../../../../apis/Instructor/MaterialsApi';
+import { createMaterial } from '../../../../apis/Instructor/InstructorMaterialsApi';
 
 function useQuery() {
   const { search } = useLocation();
