@@ -121,12 +121,56 @@ export async function fetchClassMembers(classId) {
 }
 
 /**
+ * Get trainees of a class
+ * GET /api/Classes/{classId}/trainees
+ */
+export async function fetchClassTrainees(classId, { page = 1, pageSize = 10 } = {}) {
+	if (classId == null) throw new Error("classId is required");
+	const qs = buildQuery({ page, pageSize });
+	const { data } = await apiClient.get(`${CLASSES_BASE}/${classId}/trainees${qs}`);
+	// normalize paged response or plain array
+	if (Array.isArray(data)) {
+		return {
+			items: data,
+			totalCount: data.length,
+			page,
+			pageSize,
+			totalPages: pageSize > 0 ? Math.ceil(data.length / pageSize) : 1,
+		};
+	}
+	return data;
+}
+
+/**
  * Get instructor of a class
  * GET /api/Classes/{classId}/instructor
  */
 export async function fetchClassInstructor(classId) {
 	if (classId == null) throw new Error("classId is required");
 	const { data } = await apiClient.get(`${CLASSES_BASE}/${classId}/instructor`);
+	return data;
+}
+
+/**
+ * Assign an Instructor to a Class (by class id)
+ * POST /api/Classes/{classId}/instructor
+ * @param {number} classId
+ * @param {{instructorId:number, position?:string}} payload
+ */
+export async function addInstructorToClass(classId, payload) {
+	if (classId == null) throw new Error("classId is required");
+	const { data } = await apiClient.post(`${CLASSES_BASE}/${classId}/instructor`, payload);
+	return data;
+}
+
+/**
+ * Remove instructor assignment from a Class
+ * DELETE /api/Classes/{classId}/instructor
+ * @param {number} classId
+ */
+export async function removeInstructorFromClass(classId) {
+	if (classId == null) throw new Error("classId is required");
+	const { data } = await apiClient.delete(`${CLASSES_BASE}/${classId}/instructor`);
 	return data;
 }
 
@@ -223,11 +267,13 @@ export const ClassesApi = {
 	fetchClassesByProgramCourse,
 	createClass,
 	assignInstructor,
+	addInstructorToClass,
 	assignTrainee,
 	fetchClassEnrollment,
 	approveEnrollment,
 	fetchClassMembers,
 	fetchClassInstructor,
+	removeInstructorFromClass,
 	fetchMemberProgress,
 	createTrainingProgress,
 	updateTrainingProgress,

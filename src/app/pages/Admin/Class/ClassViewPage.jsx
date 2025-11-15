@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { App, Button, Popconfirm, Skeleton } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
-import { fetchClassDetail, deleteClass } from '../../../apis/ProgramManager/ClassApi';
-import ClassDetailView from './partials/ClassDetailView';
+import { App, Button, Skeleton } from 'antd';
 import { ArrowLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { fetchClassDetail } from '../../../apis/ProgramManager/ClassApi';
+import ClassDetailView from './partials/ClassDetailView';
 
 const ClassViewPage = () => {
   const { message } = App.useApp();
@@ -23,15 +23,6 @@ const ClassViewPage = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleDelete = async () => {
-    try {
-      await deleteClass(id);
-      message.success('Class deleted');
-      navigate('/admin/class');
-    } catch (err) {
-      message.error(err?.message || 'Delete failed');
-    }
-  };
 
   if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
   if (!classItem) return null;
@@ -40,7 +31,7 @@ const ClassViewPage = () => {
     <div className="max-w-7xl mx-auto p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
-            <Button type="default" icon={<ArrowLeft size={16} />} onClick={() => navigate('/admin/class')}>Back</Button>
+          <Button type="default" icon={<ArrowLeft size={16} />} onClick={() => navigate('/admin/class')}>Back</Button>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => navigate(`/admin/class/${id}/edit`)}>Edit</Button>
@@ -49,7 +40,13 @@ const ClassViewPage = () => {
           </Popconfirm> */}
         </div>
       </div>
-      <ClassDetailView classItem={classItem} />
+      <ClassDetailView
+        classItem={classItem}
+        loading={loading}
+        onRefresh={() => {
+          fetchClassDetail(id).then(setClassItem);
+        }}
+      />
     </div>
   );
 };
