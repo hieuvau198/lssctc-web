@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Tag, Button, Tooltip, Popconfirm } from "antd";
+import { getClassStatus } from "../../../../utils/classStatus";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 /**
@@ -24,9 +25,14 @@ const PMClassCard = ({ classItem, onDetail, onEdit, onDelete, deletingId, compac
           >
             {classItem.name}
           </h4>
-          <Tag size="small" color={classItem.status === "1" ? "green" : "red"}>
-            {classItem.status === "1" ? "Active" : "Inactive"}
-          </Tag>
+            {(() => {
+              const s = getClassStatus(classItem.status);
+              return (
+                <Tag size="small" color={s.color}>
+                  {s.label}
+                </Tag>
+              );
+            })()}
         </div>
         <div className="text-xs text-gray-600 space-y-1">
           <div>
@@ -92,9 +98,14 @@ const PMClassCard = ({ classItem, onDetail, onEdit, onDelete, deletingId, compac
         >
           {classItem.name}
         </h3>
-        <Tag color={classItem.status === "1" ? "green" : "red"} className="m-0">
-          {classItem.status === "1" ? "Active" : "Inactive"}
-        </Tag>
+        {(() => {
+          const s = getClassStatus(classItem.status);
+          return (
+            <Tag color={s.color} className="m-0">
+              {s.label}
+            </Tag>
+          );
+        })()}
       </div>
       <div className="text-sm text-gray-600 mb-2">
         <div className="flex flex-wrap gap-2">

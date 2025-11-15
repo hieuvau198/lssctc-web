@@ -1,39 +1,28 @@
-import React, { useState, useEffect } from "react";
 import {
-  Modal,
+  Alert,
+  Button,
+  DatePicker,
   Form,
   Input,
   InputNumber,
-  DatePicker,
-  Button,
-  Alert,
-  Space,
+  Modal,
   Select,
+  Space,
 } from "antd";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { createClass } from "../../../../apis/ProgramManager/ClassApi";
 import { fetchCourses } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
-import dayjs from "dayjs";
 
-/**
- * @param {Object} props
- * @param {boolean} props.open
- * @param {Function} props.onClose
- * @param {Function} props.onCancel
- * @param {Function} props.onCreate
- * @param {boolean} props.confirmLoading
- * @param {boolean} props.embedded
- * @param {number|string} props.programCourseId
- * @param {Function} props.onCreated
- */
-const AddClassForm = ({ 
-  open, 
-  onClose, 
-  onCancel, 
-  onCreate, 
-  confirmLoading, 
-  embedded = false, 
-  programCourseId, 
-  onCreated 
+const AddClassForm = ({
+  open,
+  onClose,
+  onCancel,
+  onCreate,
+  confirmLoading,
+  embedded = false,
+  programCourseId,
+  onCreated
 }) => {
   const [form] = Form.useForm();
   const [saving, setSaving] = useState(false);
@@ -99,6 +88,7 @@ const AddClassForm = ({
         form={form}
         layout="vertical"
         onFinish={handleFinish}
+        className={embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4" : undefined}
         initialValues={{
           capacity: 10,
           startDate: dayjs(),
@@ -106,12 +96,31 @@ const AddClassForm = ({
           courseId: programCourseId, // Set default courseId if programCourseId is provided
         }}
       >
+        <Form.Item
+          label="Class Name"
+          name="name"
+          rules={[{ required: true, message: "Please enter class name" }]}
+          className={embedded ? "md:col-span-1" : undefined}
+        >
+          <Input placeholder="Class name" showCount maxLength={120} />
+        </Form.Item>
+
+        <Form.Item
+          label="Class Code"
+          name="classCode"
+          rules={[{ required: true, message: "Please enter class code" }]}
+          className={embedded ? "md:col-span-1" : undefined}
+        >
+          <Input placeholder="Class code" showCount maxLength={50} />
+        </Form.Item>
+
         {/* Course Selection - only show if not in program context */}
         {!programCourseId && (
           <Form.Item
             label="Course"
             name="courseId"
             rules={[{ required: true, message: "Please select a course" }]}
+            className={embedded ? "md:col-span-1" : undefined}
           >
             <Select
               placeholder="Select a course"
@@ -130,35 +139,7 @@ const AddClassForm = ({
             </Select>
           </Form.Item>
         )}
-        
-        <Form.Item
-          label="Class Code"
-          name="classCode"
-          rules={[{ required: true, message: "Please enter class code" }]}
-        >
-          <Input placeholder="Class code" />
-        </Form.Item>
-        <Form.Item
-          label="Class Name"
-          name="name"
-          rules={[{ required: true, message: "Please enter class name" }]}
-        >
-          <Input placeholder="Class name" />
-        </Form.Item>
-        <Form.Item
-          label="Start Date"
-          name="startDate"
-          rules={[{ required: true, message: "Please select start date" }]}
-        >
-          <DatePicker className="w-full" />
-        </Form.Item>
-        <Form.Item
-          label="End Date"
-          name="endDate"
-          rules={[{ required: true, message: "Please select end date" }]}
-        >
-          <DatePicker className="w-full" />
-        </Form.Item>
+
         <Form.Item
           label="Capacity"
           name="capacity"
@@ -166,15 +147,44 @@ const AddClassForm = ({
             {
               required: true,
               type: "number",
-              min: 1,
+              min: 10,
+              max: 50,
               message: "Capacity must be at least 1",
             },
           ]}
+          className={embedded ? "md:col-span-1" : undefined}
         >
-          <InputNumber min={1} className="w-full" />
+          <InputNumber min={1} max={50} className="w-full" />
         </Form.Item>
-        <Form.Item label="Description" name="description">
-          <Input.TextArea rows={2} placeholder="Description" />
+
+        <Form.Item
+          label="Start Date"
+          name="startDate"
+          rules={[{ required: true, message: "Please select start date" }]}
+          className={embedded ? "md:col-span-1" : undefined}
+        >
+          <DatePicker className="w-full" />
+        </Form.Item>
+        <Form.Item
+          label="End Date"
+          name="endDate"
+          rules={[
+            { required: true, message: "Please select end date" },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                const start = getFieldValue('startDate');
+                if (!value || !start) return Promise.resolve();
+                if (value.isAfter(start)) return Promise.resolve();
+                return Promise.reject(new Error('End date must be after start date'));
+              }
+            })
+          ]}
+          className={embedded ? "md:col-span-1" : undefined}
+        >
+          <DatePicker className="w-full" />
+        </Form.Item>
+        <Form.Item label="Description" name="description" className={embedded ? "md:col-span-2" : undefined}>
+          <Input.TextArea rows={3} placeholder="Description" showCount maxLength={500} />
         </Form.Item>
         <Form.Item>
           <Space>

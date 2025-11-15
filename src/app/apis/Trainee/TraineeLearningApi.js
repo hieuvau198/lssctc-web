@@ -23,16 +23,6 @@ const mapSection = (item) => ({
   traineeName: item.traineeName ?? null,
 });
 
-// ----------------------------------------------------------------
-// ĐÃ XÓA: mapPartition VÀ getLearningPartition...
-// ----------------------------------------------------------------
-
-// ----------------------------------------------------------------
-// ĐÃ XÓA: mapSectionMaterial VÀ getLearningSectionMaterial
-// ----------------------------------------------------------------
-
-// --- MAPPER MỚI CHO API MATERIAL CỦA BẠN ---
-// Dựa trên JSON: /Materials/activities/{activityId}/materials
 const mapMaterialFromActivity = (item) => ({
   id: item.id,
   activityId: item.activityId,
@@ -42,13 +32,7 @@ const mapMaterialFromActivity = (item) => ({
   learningMaterialType: item.learningMaterialType, // "Document" hoặc "Video"
   materialUrl: item.materialUrl,
 });
-// --- KẾT THÚC MAPPER MỚI ---
 
-// ----------------------------------------------------------------
-// ĐÃ XÓA: mapSectionQuiz VÀ getLearningSectionQuiz
-// ----------------------------------------------------------------
-
-// Map activity record returned by /ActivityRecords/my-records/class/{classId}/section/{sectionId}
 const mapActivityRecord = (item) => ({
   activityRecordId: item.id,
   sectionRecordId: item.sectionRecordId,
@@ -66,15 +50,11 @@ const mapActivityRecord = (item) => ({
   classId: item.classId,
 });
 
-// ----------------------------------------------------------------
-// ĐÃ XÓA: getActivityById (Không còn cần thiết)
-// ----------------------------------------------------------------
 
-//endregion
+//#endregion
 
-//region Learning Sections APIs
+//#region Learning Sections APIs
 
-// get learning sections by class id and trainee id
 export const getLearningSectionsByClassIdAndTraineeId = async (classId, traineeId) => {
   const response = await api.get(`/SectionRecords/my-records/class/${classId}`);
   const arr = Array.isArray(response.data) ? response.data : [];
@@ -122,32 +102,25 @@ export const getPagedLearningSectionsByClassIdAndTraineeId = async (classId, tra
 
 //#endregion
 
-//region Activity Records
+//#region Activity Records
 
-/**
- * Get activity records for a class + section for the current trainee
- */
 export const getActivityRecordsByClassAndSection = async (classId, sectionId) => {
   const response = await api.get(`/ActivityRecords/my-records/class/${classId}/section/${sectionId}`);
   const arr = Array.isArray(response.data) ? response.data : [];
   return arr.map(mapActivityRecord);
 };
 
-//endregion
+//#endregion
 
 //#region Learning Section Mateirals APIs
 
-// --- API MỚI CỦA BẠN ---
-// Get materials for a specific activity
 export const getMaterialsByActivityId = async (activityId) => {
   if (activityId == null) throw new Error('activityId is required');
   const response = await api.get(`/Materials/activities/${activityId}/materials`);
   const arr = Array.isArray(response.data) ? response.data : [];
   return arr.map(mapMaterialFromActivity);
 };
-// --- KẾT THÚC API MỚI ---
 
-// Mark a section material as completed
 export const markSectionMaterialAsCompleted = async (partitionId, traineeId) => {
   try {
     // 'partitionId' ở đây được hiểu là activityId
@@ -159,7 +132,6 @@ export const markSectionMaterialAsCompleted = async (partitionId, traineeId) => 
   }
 };
 
-// Mark a section material as not completed
 export const markSectionMaterialAsNotCompleted = async (partitionId, traineeId) => {
   try {
     // 'partitionId' ở đây được hiểu là activityId

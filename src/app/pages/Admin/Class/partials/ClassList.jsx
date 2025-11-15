@@ -1,5 +1,6 @@
 import React from "react";
 import { Empty, Pagination, Table, Tag, Button, Space, Tooltip, Popconfirm } from "antd";
+import { getClassStatus } from "../../../../utils/classStatus";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import PMClassCard from "./PMClassCard";
 
@@ -58,12 +59,11 @@ const ClassTableView = ({
       title: "Status",
       dataIndex: "status",
       key: "status",
-      width: 100,
-      render: (status) => (
-        <Tag color={status === "1" ? "green" : "red"}>
-          {status === "1" ? "Active" : "Inactive"}
-        </Tag>
-      ),
+      width: 120,
+      render: (status) => {
+        const s = getClassStatus(status);
+        return <Tag color={s.color}>{s.label}</Tag>;
+      },
     },
     {
       title: "Actions",

@@ -1,5 +1,6 @@
 import React from "react";
 import { Tag, Divider, Card, Empty, Skeleton } from "antd";
+import { getClassStatus } from "../../../../utils/classStatus";
 
 const ClassDetailView = ({ classItem, loading }) => {
   if (loading) {
@@ -19,9 +20,10 @@ const ClassDetailView = ({ classItem, loading }) => {
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <h3 className="text-xl font-semibold">{classItem.name}</h3>
-          <Tag color={classItem.status === "1" ? 'green' : 'red'}>
-            {classItem.status === "1" ? 'Active' : 'Inactive'}
-          </Tag>
+          {(() => {
+            const s = getClassStatus(classItem.status);
+            return <Tag color={s.color}>{s.label}</Tag>;
+          })()}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600">
           <div>
@@ -111,15 +113,14 @@ const ClassDetailView = ({ classItem, loading }) => {
                     <td className="py-2 px-3">{m.trainee?.email || "N/A"}</td>
                     <td className="py-2 px-3">{m.trainee?.traineeCode}</td>
                     <td className="py-2 px-3">
-                      {m.status === "1" ? (
-                        <span className="text-green-600 font-semibold">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="text-red-600 font-semibold">
-                          Inactive
-                        </span>
-                      )}
+                      {(() => {
+                        const s = getClassStatus(m.status);
+                        return (
+                          <span className={`font-semibold ${s.color === 'green' ? 'text-green-600' : s.color === 'red' ? 'text-red-600' : ''}`}>
+                            {s.label}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="py-2 px-3">
                       {m.assignedDate?.slice(0, 10)}
