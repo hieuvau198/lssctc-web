@@ -1,14 +1,40 @@
-import { PlayCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Empty, Table, Pagination, Tooltip } from 'antd';
+import { PlayCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Card, Empty, Table, Pagination, Tooltip, Modal, message, App } from 'antd';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { deleteMaterial } from '../../../../apis/Instructor/MaterialsApi';
 import DrawerView from './DrawerView';
 
-export default function VideoMaterials({ materials = [], viewMode = 'table' }) {
+export default function VideoMaterials({ materials = [], viewMode = 'table', onDelete }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const { modal } = App.useApp();
+
+  const handleDelete = async (material) => {
+    modal.confirm({
+      title: 'Delete Material',
+      content: `Are you sure you want to delete "${material.name}"?`,
+      okText: 'Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          setDeleting(true);
+          await deleteMaterial(material.id);
+          message.success('Material deleted successfully');
+          onDelete?.();
+        } catch (e) {
+          console.error('Delete material error', e);
+          message.error(e?.message || 'Failed to delete material');
+        } finally {
+          setDeleting(false);
+        }
+      },
+    });
+  };
 
   if (!materials || materials.length === 0) {
     return (
@@ -42,11 +68,16 @@ export default function VideoMaterials({ materials = [], viewMode = 'table' }) {
     {
       title: 'Action',
       key: 'action',
-      width: 80,
+      width: 120,
       render: (_, record) => (
-        <Tooltip title="Open video">
-          <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(record); setDrawerVisible(true); }} />
-        </Tooltip>
+        <div className="flex gap-2">
+          <Tooltip title="Open video">
+            <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(record); setDrawerVisible(true); }} />
+          </Tooltip>
+          <Tooltip title="Delete material">
+            <Button danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} loading={deleting} />
+          </Tooltip>
+        </div>
       ),
     },
   ];
@@ -64,9 +95,12 @@ export default function VideoMaterials({ materials = [], viewMode = 'table' }) {
                     <div className="text-xs text-gray-500 mt-1">Video</div>
                     <div className="text-sm text-gray-700 mt-2 truncate">{m.description}</div>
                   </div>
-                  <div className="flex-shrink-0 ml-2">
+                  <div className="flex-shrink-0 ml-2 flex gap-1">
                     <Tooltip title="Open video">
                       <Button type="primary" shape="circle" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(m); setDrawerVisible(true); }} />
+                    </Tooltip>
+                    <Tooltip title="Delete material">
+                      <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleDelete(m)} loading={deleting} />
                     </Tooltip>
                   </div>
               </div>
@@ -108,4 +142,5 @@ export default function VideoMaterials({ materials = [], viewMode = 'table' }) {
 VideoMaterials.propTypes = {
   materials: PropTypes.array,
   viewMode: PropTypes.oneOf(['table', 'card']),
+  onDelete: PropTypes.func,
 };

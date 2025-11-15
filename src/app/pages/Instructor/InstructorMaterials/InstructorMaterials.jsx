@@ -97,9 +97,9 @@ export default function InstructorMaterials() {
       ) : (
         <div>
           {activeTab === 'videos' ? (
-            <VideoMaterials materials={videos} viewMode={viewMode} />
+            <VideoMaterials materials={videos} viewMode={viewMode} onDelete={() => setRefreshKey(prev => prev + 1)} />
           ) : (
-            <DocMaterials materials={docs} viewMode={viewMode} />
+            <DocMaterials materials={docs} viewMode={viewMode} onDelete={() => setRefreshKey(prev => prev + 1)} />
           )}
         </div>
       )}
