@@ -60,14 +60,14 @@ const CourseTableView = ({
     },
     {
       title: "Category",
-      dataIndex: "categoryName",
-      key: "categoryName",
+      dataIndex: "category",
+      key: "category",
       width: 120,
     },
     {
       title: "Level",
-      dataIndex: "levelName",
-      key: "levelName",
+      dataIndex: "level",
+      key: "level",
       width: 80,
     },
     {

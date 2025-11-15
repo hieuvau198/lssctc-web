@@ -62,10 +62,10 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
           </div>
           <div className="flex flex-wrap gap-4 text-sm text-slate-600">
             <span>
-              <span className="font-medium">Category:</span> {course.categoryName}
+              <span className="font-medium">Category:</span> {course.category}
             </span>
             <span>
-              <span className="font-medium">Level:</span> {course.levelName}
+              <span className="font-medium">Level:</span> {course.level}
             </span>
             <span>
               <span className="font-medium">Duration:</span> {course.durationHours}h

@@ -147,7 +147,7 @@ const Courses = () => {
       setTotal(data.totalCount || 0);
       closeDrawer();
     } catch (err) {
-      message.error(err.message || 'Delete failed');
+      message.error(err?.response?.data || err?.message || 'Delete failed');
     } finally {
       setDeletingId(null);
     }
@@ -345,8 +345,8 @@ const Courses = () => {
       </div>
 
       {/* Search and Controls */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="flex flex-col md:flex-row justify-end items-center gap-4 mb-4">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="col-span-3">
             <Input.Search
               placeholder="Search courses..."
@@ -397,7 +397,7 @@ const Courses = () => {
               <Option value={false}>Inactive</Option>
             </Select>
           </div>
-        </div>
+        </div> */}
         <div className="flex gap-2">
           <Button type="primary" icon={<Plus className="w-4 h-4" />} onClick={openCreate}>
             Add Course

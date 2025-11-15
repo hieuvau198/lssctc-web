@@ -1,8 +1,30 @@
-import React from "react";
-import { Tag, Divider, Card, Empty, Skeleton } from "antd";
-import ManagerCourseCard from "./ManagerCourseCard";
+import React, { useEffect, useState } from "react";
+import { Tag, Divider, Empty, Skeleton } from "antd";
+import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
+import CourseCard from "./CourseCard";
+import AssignCourse from "./AssignCourse";
 
 const ProgramDetailView = ({ program, loading }) => {
+  const [courses, setCourses] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+
+  useEffect(() => {
+    if (program?.id) {
+      setLoadingCourses(true);
+      fetchCoursesByProgram(program.id)
+        .then((data) => {
+          setCourses(data.items || []);
+        })
+        .catch((err) => {
+          console.error('Failed to fetch courses:', err);
+          setCourses([]);
+        })
+        .finally(() => {
+          setLoadingCourses(false);
+        });
+    }
+  }, [program?.id]);
+
   if (loading) {
     return <Skeleton active paragraph={{ rows: 8 }} />;
   }
@@ -41,7 +63,7 @@ const ProgramDetailView = ({ program, loading }) => {
           </div>
           <div>
             <div className="text-sm font-medium text-slate-800 mb-1">Description</div>
-            <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line max-h-20 md:max-h-40 overflow-auto pr-2">
+            <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line max-h-[120px] overflow-auto pr-2">
               {program.description}
             </div>
           </div>
@@ -51,18 +73,23 @@ const ProgramDetailView = ({ program, loading }) => {
       {/* Courses */}
       <div>
         <Divider orientation="left">Courses</Divider>
-        {program.courses && program.courses.length > 0 ? (
-          <div className="space-y-4">
-            {program.courses
-              .sort((a, b) => (a.courseOrder || 0) - (b.courseOrder || 0))
-              .map((course) => (
-                <ManagerCourseCard
-                  key={course.id}
-                  courseId={course.coursesId || course.id}
-                  order={course.courseOrder || 1}
-                  programCourseId={course.programCourseId || course.id}
-                />
-              ))}
+        <div className="ml-3">
+          <AssignCourse program={program} onAssigned={() => {
+            // refresh courses after assign
+            setLoadingCourses(true);
+            fetchCoursesByProgram(program.id)
+              .then((data) => setCourses(data.items || []))
+              .catch(() => setCourses([]))
+              .finally(() => setLoadingCourses(false));
+          }} />
+        </div>
+        {loadingCourses ? (
+          <Skeleton active paragraph={{ rows: 3 }} />
+        ) : courses && courses.length > 0 ? (
+          <div className="space-y-4 max-h-[360px] overflow-auto pr-2">
+            {courses.map((course) => (
+              <CourseCard key={course.id} course={course} />
+            ))}
           </div>
         ) : (
           <Empty description="No courses assigned" />
@@ -70,7 +97,7 @@ const ProgramDetailView = ({ program, loading }) => {
       </div>
 
       {/* Entry Requirements */}
-      <div>
+      {/* <div>
         <Divider orientation="left">Entry Requirements</Divider>
         {program.entryRequirements && program.entryRequirements.length > 0 ? (
           <ul className="list-disc ml-5 text-sm space-y-2">
@@ -94,7 +121,7 @@ const ProgramDetailView = ({ program, loading }) => {
         ) : (
           <Empty description="No entry requirements" />
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

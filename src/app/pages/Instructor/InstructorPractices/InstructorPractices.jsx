@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Table, Empty, Skeleton, Pagination, Tooltip, Button, message } from 'antd';
 import { Eye } from 'lucide-react';
 import { getPractices } from '../../../apis/Instructor/InstructorPractice';
+import { useNavigate } from 'react-router';
 
 export default function InstructorPractices() {
   const [loading, setLoading] = useState(true);
@@ -9,6 +10,7 @@ export default function InstructorPractices() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
+  const nav=useNavigate();
 
   const load = async (p = page, ps = pageSize) => {
     setLoading(true);
@@ -38,7 +40,7 @@ export default function InstructorPractices() {
       title: 'Actions', key: 'actions', width: 100, fixed: 'right', render: (_, record) => (
         <div className="flex justify-center">
           <Tooltip title="View">
-            <Button type="text" size="small" icon={<Eye className="w-4 h-4" />} onClick={() => message.info(`View practice ${record.practiceName}`)} />
+                <Button type="text" size="small" icon={<Eye className="w-4 h-4" />} onClick={() => nav(`/instructor/practices/${record.id}`)} />
           </Tooltip>
         </div>
       )
