@@ -2,13 +2,14 @@ import { ArrowLeftOutlined, BookOutlined, VideoCameraOutlined } from '@ant-desig
 import { Button, Card, Form, Input, Radio, Space, message } from 'antd';
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { createMaterial } from '../../../../apis/MaterialsApi';
 
 function useQuery() {
   const { search } = useLocation();
   return useMemo(() => new URLSearchParams(search), [search]);
 }
 
-export default function AddMaterials() {
+export default function AddMaterials({ onSuccess }) {
   const navigate = useNavigate();
   const query = useQuery();
   const sectionId = query.get('sectionId') || '';
@@ -18,9 +19,26 @@ export default function AddMaterials() {
 
   const onFinish = async (values) => {
     try {
+      const payload = {
+        name: values.title,
+        description: values.description,
+        materialUrl: values.url,
+        learningMaterialType: values.typeId === 1 ? 'Document' : 'Video',
+        sectionId: sectionId || undefined,
+        classId: classId || undefined,
+      };
+
+      await createMaterial(payload);
       message.success('Material created');
-      navigate('/instructor/materials');
+      
+      // Call onSuccess callback if provided, otherwise navigate
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate('/instructor/materials');
+      }
     } catch (e) {
+      console.error('Create material error', e);
       message.error(e?.message || 'Failed to create material');
     }
   };

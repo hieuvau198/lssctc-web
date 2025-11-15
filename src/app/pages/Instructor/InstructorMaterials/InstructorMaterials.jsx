@@ -1,7 +1,7 @@
 import { Alert, Button, Card, Skeleton } from 'antd';
-import { BookOpen, Video } from 'lucide-react';
+import { BookOpen, Video, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { getLearningMaterials } from '../../../apis/Instructor/InstructorSectionApi';
 import AddMaterials from './partials/AddMaterials';
 import DocMaterials from './partials/DocMaterials';
@@ -15,10 +15,12 @@ function useQuery() {
 export default function InstructorMaterials() {
   const query = useQuery();
   const isAddMode = query.get('mode') === 'add';
+  const navigate = useNavigate();
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('docs'); // 'videos' | 'docs'
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,7 +41,7 @@ export default function InstructorMaterials() {
     };
     load();
     return () => { cancelled = true; };
-  }, []);
+  }, [refreshKey]);
 
   // mapping: learningMaterialTypeId === 1 => doc, === 2 => video
   const docs = materials.filter((m) => Number(m.typeId) === 2);
@@ -47,7 +49,10 @@ export default function InstructorMaterials() {
   const [viewMode, setViewMode] = useState('table');
 
   if (isAddMode) {
-    return <AddMaterials />;
+    return <AddMaterials onSuccess={() => {
+      setRefreshKey(prev => prev + 1);
+      navigate('/instructor/materials');
+    }} />;
   }
 
   return (
@@ -57,6 +62,13 @@ export default function InstructorMaterials() {
           <span className="text-2xl">Materials</span>
         </div>
         <div className="flex items-center gap-3">
+          <Button 
+            type="primary" 
+            icon={<Plus className="w-4 h-4" />}
+            onClick={() => navigate('/instructor/materials?mode=add')}
+          >
+            Create Material
+          </Button>
           <Button.Group>
             <Button
               type={activeTab === 'docs' ? 'primary' : 'default'}
