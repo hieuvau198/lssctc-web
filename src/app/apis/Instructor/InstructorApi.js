@@ -95,4 +95,17 @@ export const getQuizzes = async ({ page = 1, pageSize = 20 } = {}) => {
   }
 };
 
+export const getInstructorClassById = async (classId) => {
+  if (!classId) {
+    return Promise.reject(new Error("Class ID is required."));
+  }
+  try {
+    const response = await apiClient.get(`/Classes/${classId}`);
+    return response.data; // Returns the class detail object directly
+  } catch (error) {
+    console.error(`Error fetching class detail for ID ${classId}:`, error);
+    throw error.response?.data || error;
+  }
+};
+
 //#endregion
