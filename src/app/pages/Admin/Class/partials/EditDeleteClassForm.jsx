@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import {
   Modal,
   Form,
@@ -43,6 +44,7 @@ const EditDeleteClassForm = ({
   onDeleted,
 }) => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -289,16 +291,20 @@ const EditDeleteClassForm = ({
           <Input.TextArea rows={3} placeholder="Description" showCount maxLength={500} allowClear />
         </Form.Item>
         <Form.Item>
-          <Space>
-            <Button onClick={onCancel || onClose}>Cancel</Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={embedded ? confirmLoading : saving}
-            >
-              Update Class
-            </Button>
-          </Space>
+            <Space>
+              <Button onClick={() => {
+                if (onCancel) return onCancel();
+                if (onClose) return onClose();
+                navigate(-1);
+              }}>Cancel</Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={embedded ? confirmLoading : saving}
+              >
+                Update Class
+              </Button>
+            </Space>
         </Form.Item>
       </Form>
       {!embedded && (

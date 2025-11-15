@@ -224,7 +224,6 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
                         { title: 'Full name', dataIndex: 'fullName' },
                         { title: 'Email', dataIndex: 'email' },
                         { title: 'Phone', dataIndex: 'phoneNumber', width: 160 },
-                        { title: 'Code', dataIndex: 'traineeCode', width: 140 },
                         {
                           title: 'Enroll Date',
                           dataIndex: 'enrollDate',
