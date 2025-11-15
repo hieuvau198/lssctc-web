@@ -19,7 +19,7 @@ const ClassDetailView = ({ classItem, loading }) => {
       {/* Basic Info */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-xl font-semibold">{classItem.name}</h3>
+          <span className="text-xl font-semibold">{classItem.name}</span>
           {(() => {
             const s = getClassStatus(classItem.status);
             return <Tag color={s.color}>{s.label}</Tag>;

@@ -86,7 +86,7 @@ const ProgramDetailView = ({ program, loading }) => {
         {loadingCourses ? (
           <Skeleton active paragraph={{ rows: 3 }} />
         ) : courses && courses.length > 0 ? (
-          <div className="space-y-4 max-h-[360px] overflow-auto pr-2">
+          <div className="space-y-4 max-h-[360px] overflow-auto">
             {courses.map((course) => (
               <CourseCard key={course.id} course={course} />
             ))}

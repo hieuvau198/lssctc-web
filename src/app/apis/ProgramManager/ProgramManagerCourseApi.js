@@ -46,6 +46,19 @@ export async function updateProgramCourses(id, courses) {
   }
 }
 
+// Add a single course to a program by POSTing to /Programs/{programId}/courses/{courseId}
+export async function addCourseToProgram(programId, courseId) {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/Programs/${programId}/courses/${courseId}`);
+    return response.data;
+  } catch (err) {
+    if (err.response && err.response.data && err.response.data.message) {
+      throw new Error(err.response.data.message);
+    }
+    throw err;
+  }
+}
+
 // Update program entry requirements
 export async function updateProgramEntryRequirements(id, requirements) {
   const response = await axios.put(

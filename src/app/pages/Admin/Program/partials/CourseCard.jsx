@@ -5,7 +5,7 @@ const CourseCard = ({ course }) => {
         <div className="mb-2">
             <Card
                 key={course.id}
-                className="shadow-md transition-shadow p-3 "
+                className="shadow-md transition-shadow"
                 role="button"
             >
                 <div className="flex gap-4">
