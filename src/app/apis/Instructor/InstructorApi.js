@@ -20,19 +20,6 @@ const mapClassFromApi = (item) => ({
 
 //#region Class APIs
 
-// export const getInstructorClasses = async (instructorId) => {
-//   try {
-//     const response = await api.get(`/Classes/by-instructor/${instructorId}`);
-//     // Support both back-end shapes: either { success: true, items: [...] } or direct paged response
-//     const payload = response.data || {};
-//     const rawItems = Array.isArray(payload.items) ? payload.items : (Array.isArray(payload) ? payload : []);
-//     return rawItems.map(mapClassFromApi);
-//   } catch (error) {
-//     console.error("Error fetching classes by instructor:", error);
-//     return [];
-//   }
-// };
-
 export const getInstructorClasses = async (instructorId, { page = 1, pageSize = 20 } = {}) => {
   if (instructorId == null) {
     return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
