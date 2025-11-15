@@ -1,13 +1,14 @@
-import { Alert, List, Skeleton, Tag } from 'antd';
+import { Alert, List, Skeleton, Tag, Button } from 'antd';
 import {
   BookOutlined,
   FileTextOutlined,
   LaptopOutlined,
-  LoadingOutlined,
   QuestionCircleOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import { getActivitiesBySectionId } from '../../../../apis/Instructor/InstructorSectionApi';
+import ManageMaterialModal from './Sections/ManageMaterialModal';
 
 // Helper to get icon and color for each activity type
 const getActivityTypeDetails = (type) => {
@@ -39,43 +40,51 @@ const getActivityTypeDetails = (type) => {
   }
 };
 
-const ActivityList = ({ sectionId }) => {
+const ActivityList = ({ sectionId, refreshKey }) => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const [isManageMaterialVisible, setIsManageMaterialVisible] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+
+  const fetchActivities = async () => {
     if (!sectionId) {
       setLoading(false);
       setError('No Section ID provided.');
       return;
     }
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getActivitiesBySectionId(sectionId);
+      setActivities(data || []);
+    } catch (err) {
+      setError(err.message || 'Failed to load activities');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // Uses new API function
-        const data = await getActivitiesBySectionId(sectionId);
-        if (!cancelled) {
-          setActivities(data || []);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err.message || 'Failed to load activities');
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    })();
+  useEffect(() => {
+    fetchActivities();
+  }, [sectionId, refreshKey]); // Refresh when key changes
 
-    return () => {
-      cancelled = true;
-    };
-  }, [sectionId]);
+  const openManageMaterial = (activity) => {
+    setSelectedActivity(activity);
+    setIsManageMaterialVisible(true);
+  };
+
+  const onModalUpdate = () => {
+    setIsManageMaterialVisible(false);
+    setSelectedActivity(null);
+    fetchActivities(); // Re-fetch activities to show changes
+  };
+
+  const onModalClose = () => {
+    setIsManageMaterialVisible(false);
+    setSelectedActivity(null);
+  };
 
   if (loading) {
     return (
@@ -94,37 +103,61 @@ const ActivityList = ({ sectionId }) => {
   }
 
   return (
-    <List
-      itemLayout="horizontal"
-      dataSource={activities}
-      renderItem={(item) => {
-        const typeDetails = getActivityTypeDetails(item.type); // Uses mapped property
-        return (
-          <List.Item>
-            <List.Item.Meta
-              avatar={
-                <Tag color={typeDetails.color} className="flex items-center justify-center w-10 h-10 text-lg">
-                  {typeDetails.icon}
-                </Tag>
-              }
-              title={
-                <span className="font-medium text-gray-800">
-                  {item.title} {/* Uses mapped property */}
-                </span>
-              }
-              description={
-                <div className="flex flex-col">
-                  <span>{item.description}</span> {/* Uses mapped property */}
-                  <span className="text-xs text-gray-500 mt-1">
-                    {typeDetails.label} • {item.duration} minutes {/* Uses mapped property */}
+    <>
+      <List
+        itemLayout="horizontal"
+        dataSource={activities}
+        renderItem={(item) => {
+          const typeDetails = getActivityTypeDetails(item.type);
+          const actions = [];
+
+          if (item.type?.toLowerCase() === 'material') {
+            actions.push(
+              <Button
+                type="link"
+                icon={<SettingOutlined />}
+                onClick={() => openManageMaterial(item)}
+              >
+                Manage Material
+              </Button>
+            );
+          }
+          // We can add "Manage Quiz" and "Manage Practice" buttons here later
+
+          return (
+            <List.Item actions={actions}>
+              <List.Item.Meta
+                avatar={
+                  <Tag color={typeDetails.color} className="flex items-center justify-center w-10 h-10 text-lg">
+                    {typeDetails.icon}
+                  </Tag>
+                }
+                title={
+                  <span className="font-medium text-gray-800">
+                    {item.title}
                   </span>
-                </div>
-              }
-            />
-          </List.Item>
-        );
-      }}
-    />
+                }
+                description={
+                  <div className="flex flex-col">
+                    <span>{item.description}</span>
+                    <span className="text-xs text-gray-500 mt-1">
+                      {typeDetails.label} • {item.duration} minutes
+                    </span>
+                  </div>
+                }
+              />
+            </List.Item>
+          );
+        }}
+      />
+
+      <ManageMaterialModal
+        activity={selectedActivity}
+        isVisible={isManageMaterialVisible}
+        onClose={onModalClose}
+        onUpdate={onModalUpdate}
+      />
+    </>
   );
 };
 

@@ -1,8 +1,9 @@
-import { Alert, Collapse, Skeleton, Space, Typography } from 'antd';
-import { ClockCircleOutlined, ReadOutlined } from '@ant-design/icons';
+import { Alert, Collapse, Skeleton, Space, Typography, Button, Tooltip } from 'antd';
+import { ClockCircleOutlined, ReadOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import { getSectionsByCourseId } from '../../../../apis/Instructor/InstructorSectionApi';
 import ActivityList from './ActivityList';
+import AddActivityModal from './Sections/AddActivityModal';
 
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -25,6 +26,11 @@ const ClassSections = ({ courseId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [currentSectionId, setCurrentSectionId] = useState(null);
+
+  const [activityRefreshKeys, setActivityRefreshKeys] = useState({});
+
   useEffect(() => {
     if (!courseId) {
       setLoading(false);
@@ -37,7 +43,6 @@ const ClassSections = ({ courseId }) => {
       setLoading(true);
       setError(null);
       try {
-        // Uses new API function
         const data = await getSectionsByCourseId(courseId);
         if (!cancelled) {
           setSections(data || []);
@@ -57,6 +62,21 @@ const ClassSections = ({ courseId }) => {
       cancelled = true;
     };
   }, [courseId]);
+
+  const openAddActivityModal = (sectionId) => {
+    setCurrentSectionId(sectionId);
+    setIsAddModalVisible(true);
+  };
+
+  const handleActivityAdded = () => {
+    // Trigger a refresh for the corresponding ActivityList
+    setActivityRefreshKeys(prev => ({
+      ...prev,
+      [currentSectionId]: (prev[currentSectionId] || 0) + 1,
+    }));
+    setIsAddModalVisible(false);
+    setCurrentSectionId(null);
+  };
 
   if (loading) {
     return (
@@ -79,26 +99,51 @@ const ClassSections = ({ courseId }) => {
   }
 
   return (
-    <div className="py-4">
-      <Collapse accordion bordered={false} className="bg-white">
-        {sections.map((section) => (
-          <Panel
-            key={section.id}
-            header={
-              <SectionHeader
-                title={section.title} // Uses mapped property
-                duration={section.duration} // Uses mapped property
+    <>
+      <div className="py-4">
+        <Collapse accordion bordered={false} className="bg-white">
+          {sections.map((section) => (
+            <Panel
+              key={section.id}
+              header={
+                <SectionHeader
+                  title={section.title}
+                  duration={section.duration}
+                />
+              }
+              // Add "Add Activity" button to the panel's extra section
+              extra={
+                <Tooltip title="Add Activity">
+                  <Button
+                    type="text"
+                    shape="circle"
+                    icon={<PlusOutlined />}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent collapse panel from toggling
+                      openAddActivityModal(section.id);
+                    }}
+                  />
+                </Tooltip>
+              }
+              className="mb-2 border rounded-lg shadow-sm"
+            >
+              <p className="pb-2 text-gray-700">{section.description}</p>
+              <ActivityList
+                sectionId={section.id}
+                refreshKey={activityRefreshKeys[section.id] || 0}
               />
-            }
-            className="mb-2 border rounded-lg shadow-sm"
-          >
-            <p className="pb-2 text-gray-700">{section.description}</p>
-            {/* ActivityList will fetch its own data when this panel is opened */}
-            <ActivityList sectionId={section.id} />
-          </Panel>
-        ))}
-      </Collapse>
-    </div>
+            </Panel>
+          ))}
+        </Collapse>
+      </div>
+
+      <AddActivityModal
+        sectionId={currentSectionId}
+        isVisible={isAddModalVisible}
+        onClose={() => setIsAddModalVisible(false)}
+        onActivityAdded={handleActivityAdded}
+      />
+    </>
   );
 };
 
