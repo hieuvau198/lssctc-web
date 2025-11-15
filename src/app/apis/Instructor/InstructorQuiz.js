@@ -196,3 +196,13 @@ export default {
   updateQuizQuestionOption,
   deleteQuizQuestion,
 };
+
+export async function getQuizDetail(quizId) {
+  try {
+    const { data } = await apiClient.get(`/Quizzes/${quizId}`);
+    return data;
+  } catch (err) {
+    console.error('Error fetching quiz detail:', err);
+    throw err;
+  }
+}
