@@ -206,3 +206,13 @@ export async function getQuizDetail(quizId) {
     throw err;
   }
 }
+
+export async function createQuizWithQuestions(payload) {
+  try {
+    const { data } = await apiClient.post(`/Quizzes/with-questions`, payload);
+    return data;
+  } catch (err) {
+    console.error('Error creating quiz:', err);
+    throw err;
+  }
+}
