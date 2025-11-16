@@ -14,6 +14,7 @@ import Program from '../../../pages/Trainee/Program/Program'
 import ProgramDetail from '../../../pages/Trainee/Program/partials/ProgramDetail'
 import SimulationPlatform from '../../../pages/Trainee/SimulationPlatform/SimulationPlatform'
 import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
+import MyEnrollments from '../../../pages/Trainee/MyEnrollments/MyEnrollments'
 
 export default function TraineeRoutes() {
   return (
@@ -66,6 +67,14 @@ export default function TraineeRoutes() {
           element={
             <PrivateRoute allowedroles={["Trainee"]} redirectUrl="/auth/login">
               <MyClassDetail />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="my-enrollments"
+          element={
+            <PrivateRoute allowedroles={["Trainee"]} redirectUrl="/auth/login">
+              <MyEnrollments />
             </PrivateRoute>
           }
         />

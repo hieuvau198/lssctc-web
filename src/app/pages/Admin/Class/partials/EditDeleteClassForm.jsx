@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
 import {
-  Modal,
+  Alert,
+  Button,
+  DatePicker,
   Form,
   Input,
   InputNumber,
-  DatePicker,
-  Button,
-  Alert,
+  Modal,
   Popconfirm,
-  Space,
   Select,
+  Space,
 } from "antd";
 import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import {
-  updateClass,
   deleteClass,
+  updateClass,
 } from "../../../../apis/ProgramManager/ClassApi";
-import { fetchPrograms } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
 import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
+import { fetchPrograms } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
 
 /**
  * @param {Object} props
@@ -291,20 +291,20 @@ const EditDeleteClassForm = ({
           <Input.TextArea rows={3} placeholder="Description" showCount maxLength={500} allowClear />
         </Form.Item>
         <Form.Item>
-            <Space>
-              <Button onClick={() => {
-                if (onCancel) return onCancel();
-                if (onClose) return onClose();
-                navigate(-1);
-              }}>Cancel</Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={embedded ? confirmLoading : saving}
-              >
-                Update Class
-              </Button>
-            </Space>
+          <Space>
+            <Button onClick={() => {
+              if (onCancel) return onCancel();
+              if (onClose) return onClose();
+              navigate(-1);
+            }}>Cancel</Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={embedded ? confirmLoading : saving}
+            >
+              Update Class
+            </Button>
+          </Space>
         </Form.Item>
       </Form>
       {!embedded && (

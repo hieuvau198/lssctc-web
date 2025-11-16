@@ -12,7 +12,7 @@ const ClassViewPage = () => {
   const [classItem, setClassItem] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadClassDetail = () => {
     if (!id) return;
     setLoading(true);
     fetchClassDetail(id)
@@ -21,31 +21,21 @@ const ClassViewPage = () => {
         message.error(err?.message || 'Failed to load class');
       })
       .finally(() => setLoading(false));
-  }, [id]);
+  };
 
+  useEffect(() => {
+    loadClassDetail();
+  }, [id]);
 
   if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
   if (!classItem) return null;
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <Button type="default" icon={<ArrowLeft size={16} />} onClick={() => navigate('/admin/class')}>Back</Button>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={() => navigate(`/admin/class/${id}/edit`)}>Edit</Button>
-          {/* <Popconfirm title="Delete class?" onConfirm={handleDelete}>
-            <Button danger>Delete</Button>
-          </Popconfirm> */}
-        </div>
-      </div>
       <ClassDetailView
         classItem={classItem}
         loading={loading}
-        onRefresh={() => {
-          fetchClassDetail(id).then(setClassItem);
-        }}
+        onRefresh={loadClassDetail}
       />
     </div>
   );

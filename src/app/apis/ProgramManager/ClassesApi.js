@@ -187,6 +187,46 @@ export async function removeInstructorFromClass(classId) {
 }
 
 /**
+ * Open class (change status to Open)
+ * PUT /api/Classes/{classId}/open
+ */
+export async function openClass(classId) {
+	if (classId == null) throw new Error("classId is required");
+	const { data } = await apiClient.put(`${CLASSES_BASE}/${classId}/open`);
+	return data;
+}
+
+/**
+ * Start class (change status to Started)
+ * PUT /api/Classes/{classId}/start
+ */
+export async function startClass(classId) {
+	if (classId == null) throw new Error("classId is required");
+	const { data } = await apiClient.put(`${CLASSES_BASE}/${classId}/start`);
+	return data;
+}
+
+/**
+ * Complete class (change status to Completed)
+ * PUT /api/Classes/{classId}/complete
+ */
+export async function completeClass(classId) {
+	if (classId == null) throw new Error("classId is required");
+	const { data } = await apiClient.put(`${CLASSES_BASE}/${classId}/complete`);
+	return data;
+}
+
+/**
+ * Cancel class (change status to Cancelled)
+ * PUT /api/Classes/{classId}/cancel
+ */
+export async function cancelClass(classId) {
+	if (classId == null) throw new Error("classId is required");
+	const { data } = await apiClient.put(`${CLASSES_BASE}/${classId}/cancel`);
+	return data;
+}
+
+/**
  * Get training progress list by ClassMemberId
  * GET /api/Classes/members/{memberId}/progress
  */
@@ -287,6 +327,10 @@ export const ClassesApi = {
 	fetchClassMembers,
 	fetchClassInstructor,
 	removeInstructorFromClass,
+	openClass,
+	startClass,
+	completeClass,
+	cancelClass,
 	fetchMemberProgress,
 	createTrainingProgress,
 	updateTrainingProgress,

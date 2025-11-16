@@ -35,6 +35,7 @@ export default function Avt({ onLogout }) {
   const items = [
     { key: 'profile', label: <NavLink to="/profile" target="_top">Profile</NavLink> },
     { key: 'my-classes', label: <NavLink to="/my-classes" target="_top">My Classes</NavLink> },
+    { key: 'my-enrollments', label: <NavLink to="/my-enrollments" target="_top">My Enrollments</NavLink> },
     { key: 'certificate', label: <NavLink to="/certificate" target="_top">Accomplishments</NavLink> },
     { type: 'divider' },
     { key: 'logout', label: <span className="text-red-600">Logout</span> },
