@@ -2,8 +2,6 @@
 
 import apiClient from '../../libs/axios';
 
-// Use apiClient which already sets baseURL to VITE_API_Program_Service_URL
-
 function buildQuery(params = {}) {
   const searchParams = new URLSearchParams();
   Object.entries(params).forEach(([k, v]) => {
@@ -55,6 +53,17 @@ const mapQuizFromApi = (item) => ({
   timelimitMinute: item.timelimitMinute,
   totalScore: item.totalScore,
   description: item.description,
+});
+
+const mapPracticeFromApi = (item) => ({
+  id: item.id,
+  practiceName: item.practiceName,
+  practiceDescription: item.practiceDescription,
+  estimatedDurationMinutes: item.estimatedDurationMinutes,
+  difficultyLevel: item.difficultyLevel,
+  maxAttempts: item.maxAttempts,
+  createdDate: item.createdDate,
+  isActive: item.isActive,
 });
 
 export const getSectionsByCourseId = async (courseId) => {
@@ -149,6 +158,34 @@ export const assignQuizToActivity = async (activityId, quizId) => {
     return response.data;
   } catch (error) {
     console.error(`Error assigning quiz ${quizId} to activity ${activityId}:`, error.response || error);
+    throw error.response?.data || error;
+  }
+};
+
+export const getPracticesByActivityId = async (activityId) => {
+  if (!activityId) {
+    console.warn('getPracticesByActivityId called without activityId');
+    return [];
+  }
+  try {
+    const response = await apiClient.get(`/Practices/activity/${activityId}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+    return data.map(mapPracticeFromApi);
+  } catch (error) {
+    console.error(`Error fetching practices for activity ${activityId}:`, error.response || error);
+    return [];
+  }
+};
+
+export const assignPracticeToActivity = async (activityId, practiceId) => {
+  if (!activityId || !practiceId) {
+    return Promise.reject(new Error('Activity ID and Practice ID are required.'));
+  }
+  try {
+    const response = await apiClient.post(`/Practices/activity/${activityId}/add/${practiceId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error assigning practice ${practiceId} to activity ${activityId}:`, error.response || error);
     throw error.response?.data || error;
   }
 };

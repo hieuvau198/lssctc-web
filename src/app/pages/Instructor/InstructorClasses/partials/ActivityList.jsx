@@ -10,8 +10,8 @@ import React, { useEffect, useState } from 'react';
 import { getActivitiesBySectionId } from '../../../../apis/Instructor/InstructorSectionApi';
 import ManageMaterialModal from './Sections/ManageMaterialModal';
 import ManageQuizModal from './Sections/ManageQuizModal';
+import ManagePracticeModal from './Sections/ManagePracticeModal'; // <-- IMPORT NEW MODAL
 
-// Helper to get icon and color for each activity type
 const getActivityTypeDetails = (type) => {
   switch (type?.toLowerCase()) {
     case 'material':
@@ -46,10 +46,10 @@ const ActivityList = ({ sectionId, refreshKey }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [isManageMaterialVisible, setIsManageMaterialVisible] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
-
+  const [isManageMaterialVisible, setIsManageMaterialVisible] = useState(false);
   const [isManageQuizVisible, setIsManageQuizVisible] = useState(false);
+  const [isManagePracticeVisible, setIsManagePracticeVisible] = useState(false);
 
   const fetchActivities = async () => {
     if (!sectionId) {
@@ -82,7 +82,7 @@ const ActivityList = ({ sectionId, refreshKey }) => {
   const onMaterialModalUpdate = () => {
     setIsManageMaterialVisible(false);
     setSelectedActivity(null);
-    fetchActivities(); // Re-fetch activities to show changes
+    fetchActivities();
   };
 
   const onMaterialModalClose = () => {
@@ -99,11 +99,28 @@ const ActivityList = ({ sectionId, refreshKey }) => {
   const onQuizModalUpdate = () => {
     setIsManageQuizVisible(false);
     setSelectedActivity(null);
-    fetchActivities(); // Re-fetch activities to show changes
+    fetchActivities();
   };
 
   const onQuizModalClose = () => {
     setIsManageQuizVisible(false);
+    setSelectedActivity(null);
+  };
+
+  // Practice Modal Handlers ---
+  const openManagePractice = (activity) => {
+    setSelectedActivity(activity);
+    setIsManagePracticeVisible(true);
+  };
+
+  const onPracticeModalUpdate = () => {
+    setIsManagePracticeVisible(false);
+    setSelectedActivity(null);
+    fetchActivities();
+  };
+
+  const onPracticeModalClose = () => {
+    setIsManagePracticeVisible(false);
     setSelectedActivity(null);
   };
 
@@ -131,7 +148,6 @@ const ActivityList = ({ sectionId, refreshKey }) => {
         renderItem={(item) => {
           const typeDetails = getActivityTypeDetails(item.type);
           const actions = [];
-
           if (item.type?.toLowerCase() === 'material') {
             actions.push(
               <Button
@@ -153,8 +169,17 @@ const ActivityList = ({ sectionId, refreshKey }) => {
               </Button>
             );
           }
-          // We can add "Manage Practice" buttons here later
-
+          else if (item.type?.toLowerCase() === 'practice') {
+            actions.push(
+              <Button
+                type="link"
+                icon={<SettingOutlined />}
+                onClick={() => openManagePractice(item)}
+              >
+                Manage Practice
+              </Button>
+            );
+          }
           return (
             <List.Item actions={actions}>
               <List.Item.Meta
@@ -181,19 +206,23 @@ const ActivityList = ({ sectionId, refreshKey }) => {
           );
         }}
       />
-
       <ManageMaterialModal
         activity={selectedActivity}
         isVisible={isManageMaterialVisible}
         onClose={onMaterialModalClose}
         onUpdate={onMaterialModalUpdate}
       />
-
       <ManageQuizModal
         activity={selectedActivity}
         isVisible={isManageQuizVisible}
         onClose={onQuizModalClose}
         onUpdate={onQuizModalUpdate}
+      />
+      <ManagePracticeModal
+        activity={selectedActivity}
+        isVisible={isManagePracticeVisible}
+        onClose={onPracticeModalClose}
+        onUpdate={onPracticeModalUpdate}
       />
     </>
   );
