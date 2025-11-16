@@ -88,6 +88,18 @@ export async function assignTrainee(payload) {
 }
 
 /**
+ * Enroll a Trainee to a Class
+ * POST /api/Enrollments
+ * @param {{classId:number,traineeId:number}} payload
+ */
+export async function enrollTrainee(payload) {
+	if (!payload.classId) throw new Error('classId is required');
+	if (!payload.traineeId) throw new Error('traineeId is required');
+	const { data } = await apiClient.post('/Enrollments', payload);
+	return data;
+}
+
+/**
  * Get enrollment by ClassId (first enrollment if multiple)
  * GET /api/Classes/{classId}/enrollment
  */
@@ -269,6 +281,7 @@ export const ClassesApi = {
 	assignInstructor,
 	addInstructorToClass,
 	assignTrainee,
+	enrollTrainee,
 	fetchClassEnrollment,
 	approveEnrollment,
 	fetchClassMembers,

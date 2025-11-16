@@ -1,59 +1,54 @@
 import { App, Button, Select } from 'antd';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { getInstructors } from '../../../../apis/Admin/AdminUser';
-import { addInstructorToClass } from '../../../../apis/ProgramManager/ClassesApi';
+import { getTrainees } from '../../../../apis/Admin/AdminUser';
+import { enrollTrainee } from '../../../../apis/ProgramManager/ClassesApi';
 
-// Component: Add/assign an instructor to a class (similar style to AssignCourse)
-export default function AddInstructor({ classItem, onAssigned }) {
+// Component: Add/enroll a trainee to a class (similar style to AddInstructor)
+export default function AddTrainee({ classItem, onAssigned }) {
   const { message } = App.useApp();
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [loadingInstructors, setLoadingInstructors] = useState(false);
-  const [instructors, setInstructors] = useState([]);
+  const [loadingTrainees, setLoadingTrainees] = useState(false);
+  const [trainees, setTrainees] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [error, setError] = useState(null);
 
-  // Load instructors only when entering edit mode
+  // Load trainees only when entering edit mode
   useEffect(() => {
     if (!editing) return;
     if (!classItem?.id) return;
     let active = true;
-    setLoadingInstructors(true);
-    // setError(null);
-    getInstructors({ page: 1, pageSize: 500 })
+    setLoadingTrainees(true);
+    getTrainees({ page: 1, pageSize: 500 })
       .then((data) => {
         if (!active) return;
-        setInstructors(Array.isArray(data?.items) ? data.items : []);
+        setTrainees(Array.isArray(data?.items) ? data.items : []);
       })
       .catch((err) => {
         if (!active) return;
-        console.error('Failed to fetch instructors:', err);
-        // setError(err?.message || 'Failed to load instructors');
-        message.error('Failed to load instructors');
+        console.error('Failed to fetch trainees:', err);
+        message.error('Failed to load trainees');
       })
-      .finally(() => active && setLoadingInstructors(false));
+      .finally(() => active && setLoadingTrainees(false));
     return () => { active = false; };
   }, [editing, classItem?.id, message]);
 
   const handleSave = async () => {
     if (!selected) {
-      // setError('Please select an instructor');
-      message.warning('Please select an instructor');
+      message.warning('Please select a trainee');
       return;
     }
     setLoading(true);
-    // setError(null);
     try {
-      await addInstructorToClass(classItem.id, { instructorId: selected });
-      message.success('Instructor assigned to class');
+      await enrollTrainee({ classId: classItem.id, traineeId: selected });
+      message.success('Trainee enrolled to class');
       setSelected(null);
       setEditing(false);
       onAssigned?.();
     } catch (err) {
-      console.error('Failed to assign instructor:', err);
+      console.error('Failed to enroll trainee:', err);
       const apiData = err?.response?.data;
-      const msg = (apiData && (apiData.message || apiData.error || String(apiData))) || err?.message || 'Failed to assign instructor';
+      const msg = (apiData && (apiData.message || apiData.error || String(apiData))) || err?.message || 'Failed to enroll trainee';
       message.error(msg);
     } finally {
       setLoading(false);
@@ -63,7 +58,6 @@ export default function AddInstructor({ classItem, onAssigned }) {
   const handleCancel = () => {
     setEditing(false);
     setSelected(null);
-    setError(null);
   };
 
   if (!classItem) return null;
@@ -75,10 +69,10 @@ export default function AddInstructor({ classItem, onAssigned }) {
           <Button
             type="primary"
             icon={<Plus size={20} />}
-            onClick={() => { setEditing(true); setError(null); }}
+            onClick={() => { setEditing(true); }}
             size="middle"
           >
-            Assign Instructor
+            Add Trainee
           </Button>
         </div>
       ) : (
@@ -86,9 +80,9 @@ export default function AddInstructor({ classItem, onAssigned }) {
           <div className="w-[350px]">
             <Select
               showSearch
-              placeholder="Select an instructor"
+              placeholder="Select a trainee"
               optionFilterProp="children"
-              loading={loadingInstructors}
+              loading={loadingTrainees}
               allowClear
               onChange={(val) => setSelected(val)}
               filterOption={(input, option) =>
@@ -97,27 +91,24 @@ export default function AddInstructor({ classItem, onAssigned }) {
               value={selected}
               style={{ width: '100%' }}
             >
-              {instructors.length === 0 && !loadingInstructors ? (
+              {trainees.length === 0 && !loadingTrainees ? (
                 <Select.Option disabled value="">
-                  No instructors available
+                  No trainees available
                 </Select.Option>
               ) : (
-                instructors.map((i) => (
-                  <Select.Option key={i.id} value={i.id}>
-                    {i.fullName || i.name || i.email}
+                trainees.map((t) => (
+                  <Select.Option key={t.id} value={t.id}>
+                    {t.fullName || t.name || t.email}
                   </Select.Option>
                 ))
               )}
             </Select>
-            {error && (
-              <div className="text-xs text-red-600 mt-1">{error}</div>
-            )}
           </div>
           <div className="flex gap-2">
             <Button type="primary" onClick={handleSave} loading={loading} size="middle">
               Save
             </Button>
-            <Button onClick={handleCancel} size="middle" disabled={loadingInstructors}>
+            <Button onClick={handleCancel} size="middle" disabled={loadingTrainees}>
               Cancel
             </Button>
           </div>

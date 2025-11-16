@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Tag, Divider, Card, Empty, Skeleton, Avatar, Table, Space, Typography, Pagination } from "antd";
 import { getClassStatus } from "../../../../utils/classStatus";
+import { getEnrollmentStatus } from "../../../../utils/enrollmentStatus";
+import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import AddInstructor from "./AddInstructor";
+import AddTrainee from "./AddTrainee";
 import { fetchClassInstructor, fetchClassTrainees } from "../../../../apis/ProgramManager/ClassesApi";
 
 const ClassDetailView = ({ classItem, loading, onRefresh }) => {
@@ -89,6 +92,25 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
     }
   };
 
+  const handleTraineeAdded = () => {
+    // parent refresh and reload trainees
+    onRefresh?.();
+    // reload trainees by resetting page to 1 and refetching
+    if (classItem?.id) {
+      setPage(1);
+      setTraineesLoading(true);
+      fetchClassTrainees(classItem.id, { page: 1, pageSize })
+        .then((data) => {
+          const items = Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : []);
+          setTrainees(items || []);
+          const total = typeof data?.totalCount === 'number' ? data.totalCount : (Array.isArray(data) ? data.length : (data?.items?.length || 0));
+          setTotalCount(total);
+        })
+        .catch((e) => console.error('Failed to reload trainees', e))
+        .finally(() => setTraineesLoading(false));
+    }
+  };
+
   if (loading) {
     return <Skeleton active paragraph={{ rows: 8 }} />;
   }
@@ -113,10 +135,12 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600">
           <div>
-            <span className="font-medium">Start Date:</span> {classItem.startDate?.slice(0, 10) || "-"}
+            <span className="font-medium">Start Date:</span>{' '}
+            <DayTimeFormat value={classItem.startDate} />
           </div>
           <div>
-            <span className="font-medium">End Date:</span> {classItem.endDate?.slice(0, 10) || "-"}
+            <span className="font-medium">End Date:</span>{' '}
+            <DayTimeFormat value={classItem.endDate} />
           </div>
           <div>
             <span className="font-medium">Capacity:</span> {classItem.capacity}
@@ -136,53 +160,66 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
       {/* Instructor */}
       <div>
         <Divider orientation="left">Instructor</Divider>
-          {/* only show AddInstructor if there is no instructor assigned */}
-          <div className="ml-3">
-            {!instructor && !instructorLoading && (
-              <AddInstructor classItem={classItem} onAssigned={handleAssigned} />
-            )}
-          </div>
-          {instructorLoading ? (
-            <Skeleton active paragraph={{ rows: 2 }} />
-          ) : instructor ? (
-            <Card size="small" className="border-slate-200">
-              <div className="flex items-start gap-4">
-                {instructor.avatarUrl ? (
-                  <Avatar src={instructor.avatarUrl} size={80} className="shadow-sm" />
-                ) : (
-                  <Avatar size={80} className="shadow-sm">{(instructor.fullname || instructor.fullName || instructor.name || 'I').charAt(0)}</Avatar>
-                )}
+        {/* only show AddInstructor if there is no instructor assigned */}
+        <div className="ml-3">
+          {!instructor && !instructorLoading && (
+            <AddInstructor classItem={classItem} onAssigned={handleAssigned} />
+          )}
+        </div>
+        {instructorLoading ? (
+          <Skeleton active paragraph={{ rows: 2 }} />
+        ) : instructor ? (
+          <Card size="small" className="border-slate-200">
+            <div className="flex items-start gap-4">
+              {instructor.avatarUrl ? (
+                <Avatar src={instructor.avatarUrl} size={80} className="shadow-sm" />
+              ) : (
+                <Avatar size={80} className="shadow-sm">{(instructor.fullname || instructor.fullName || instructor.name || 'I').charAt(0)}</Avatar>
+              )}
 
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-lg font-semibold">{instructor.fullname || instructor.fullName || instructor.name || 'N/A'}</div>
-                      <div className="text-sm text-slate-600">{instructor.email || 'No email'}</div>
-                    </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-lg font-semibold">{instructor.fullname || instructor.fullName || instructor.name || 'N/A'}</div>
+                    <div className="text-sm text-slate-600">{instructor.email || 'No email'}</div>
                   </div>
+                </div>
 
-                  <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-slate-600">
-                    <div>
-                      <span className="font-medium">Code:</span> {instructor.instructorCode || '-'}
-                    </div>
-                    <div>
-                      <span className="font-medium">Phone:</span> {instructor.phoneNumber || instructor.phone || '-'}
-                    </div>
-                    <div>
-                      <span className="font-medium">Hire Date:</span> {instructor.hireDate ? instructor.hireDate.slice(0,10) : '-'}
-                    </div>
+                <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-slate-600">
+                  <div>
+                    <span className="font-medium">Code:</span> {instructor.instructorCode || '-'}
+                  </div>
+                  <div>
+                    <span className="font-medium">Phone:</span> {instructor.phoneNumber || instructor.phone || '-'}
+                  </div>
+                  <div>
+                    <span className="font-medium">Hire Date:</span>{' '}
+                    <DayTimeFormat value={instructor.hireDate} />
                   </div>
                 </div>
               </div>
-            </Card>
-          ) : (
-            <Empty description="No instructor assigned" />
-          )}
+            </div>
+          </Card>
+        ) : (
+          <Empty description="No instructor assigned" />
+        )}
       </div>
 
       {/* Members / Trainees - Antd Table with pagination */}
       <div>
         <Divider orientation="left">Members ({totalCount})</Divider>
+        {/* Add Trainee button - only show when class is Draft */}
+        {(() => {
+          const s = getClassStatus(classItem.status);
+          if (s.key === 'Draft') {
+            return (
+              <div className="ml-3">
+                <AddTrainee classItem={classItem} onAssigned={handleTraineeAdded} />
+              </div>
+            );
+          }
+          return null;
+        })()}
         {traineesLoading ? (
           <Skeleton active paragraph={{ rows: 3 }} />
         ) : members.length === 0 ? (
@@ -217,7 +254,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
                           width: 80,
                           render: (src, record) => (
                             <Avatar src={src} alt={record.fullName} style={{ backgroundColor: '#f3f4f6' }}>
-                              {!src && (record.fullName || '-').split(' ').filter(Boolean).map(n=>n[0]).slice(0,2).join('')}
+                              {!src && (record.fullName || '-').split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('')}
                             </Avatar>
                           ),
                         },
@@ -227,12 +264,15 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
                         {
                           title: 'Enroll Date',
                           dataIndex: 'enrollDate',
-                          render: (d) => (d ? d.slice(0, 10) : '-'),
+                          render: (d) => <DayTimeFormat value={d} />,
                         },
                         {
                           title: 'Status',
                           dataIndex: 'status',
-                          render: (s) => <Tag color={s === 'Inprogress' || s === 'inprogress' ? 'blue' : s === 'active' ? 'green' : 'default'}>{s || '-'}</Tag>,
+                          render: (s) => {
+                            const st = getEnrollmentStatus(s);
+                            return <Tag color={st.color}>{st.label}</Tag>;
+                          },
                           width: 120,
                         },
                       ]}
