@@ -48,6 +48,15 @@ const mapActivityFromApi = (item) => ({
   duration: item.estimatedDurationMinutes,
 });
 
+const mapQuizFromApi = (item) => ({
+  id: item.id,
+  name: item.name,
+  passScoreCriteria: item.passScoreCriteria,
+  timelimitMinute: item.timelimitMinute,
+  totalScore: item.totalScore,
+  description: item.description,
+});
+
 export const getSectionsByCourseId = async (courseId) => {
   if (!courseId) {
     console.warn('getSectionsByCourseId called without courseId');
@@ -111,6 +120,35 @@ export const assignActivityToSection = async (sectionId, activityId) => {
     return response.data;
   } catch (error) {
     console.error(`Error assigning activity ${activityId} to section ${sectionId}:`, error.response || error);
+    throw error.response?.data || error;
+  }
+};
+
+export const getQuizzesByActivityId = async (activityId) => {
+  if (!activityId) {
+    console.warn('getQuizzesByActivityId called without activityId');
+    return [];
+  }
+  try {
+    const response = await apiClient.get(`/Quizzes/activity/${activityId}/quizzes`);
+    const data = Array.isArray(response.data) ? response.data : [];
+    return data.map(mapQuizFromApi);
+  } catch (error) {
+    console.error(`Error fetching quizzes for activity ${activityId}:`, error.response || error);
+    return [];
+  }
+};
+
+export const assignQuizToActivity = async (activityId, quizId) => {
+  if (!activityId || !quizId) {
+    return Promise.reject(new Error('Activity ID and Quiz ID are required.'));
+  }
+  try {
+    const payload = { quizId, activityId };
+    const response = await apiClient.post('/Quizzes/add-to-activity', payload);
+    return response.data;
+  } catch (error) {
+    console.error(`Error assigning quiz ${quizId} to activity ${activityId}:`, error.response || error);
     throw error.response?.data || error;
   }
 };
