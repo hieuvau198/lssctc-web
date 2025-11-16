@@ -26,8 +26,9 @@ export default function QuizCreateEdit() {
   const [loading, setLoading] = useState(id ? true : false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [scoreErrors, setScoreErrors] = useState({});
   const [questions, setQuestions] = useState([
-    { id: 1, name: '', description: '', isMultipleAnswers: false, questionScore: 1, options: [{ id: 1, name: '', isCorrect: true, explanation: '', optionScore: 1 }] },
+    { id: 1, name: '', description: '', isMultipleAnswers: false, questionScore: 10, options: [{ id: 1, name: '', isCorrect: true, explanation: '' }] },
   ]);
 
   const isEditMode = !!id;
@@ -90,6 +91,51 @@ export default function QuizCreateEdit() {
     });
   };
 
+  // Calculate option score based on question settings
+  const getOptionScore = (qIdx, isOptionCorrect) => {
+    const q = questions[qIdx];
+    if (!q.questionScore || !isOptionCorrect) return 0;
+
+    if (!q.isMultipleAnswers) {
+      // Single choice: correct option gets full question score
+      return q.questionScore;
+    } else {
+      // Multiple choice: divide score equally among correct options
+      const correctCount = q.options.filter(opt => opt.isCorrect).length;
+      if (correctCount === 0) return 0;
+      return q.questionScore / correctCount;
+    }
+  };
+
+  const validateQuestionScore = (qIdx, score) => {
+    if (!score || score <= 0) return null;
+
+    const q = questions[qIdx];
+    
+    // Check if score has too many decimal places (max 2)
+    const scoreStr = score.toString();
+    const decimalPart = scoreStr.split('.')[1];
+    if (decimalPart && decimalPart.length > 2) {
+      return `Score has too many decimal places (${score}). Max 2 decimal places allowed.`;
+    }
+
+    // Check if multiple answers divides evenly (max 2 decimals per answer)
+    if (q.isMultipleAnswers) {
+      const correctAnswers = q.options.filter(opt => opt.isCorrect).length;
+      if (correctAnswers > 1) {
+        const pointPerAnswer = score / correctAnswers;
+        const pointPerAnswerStr = pointPerAnswer.toString();
+        const pointDecimal = pointPerAnswerStr.split('.')[1];
+        
+        if (pointDecimal && pointDecimal.length > 2) {
+          return `Score ${score} ÷ ${correctAnswers} correct answers = ${pointPerAnswer.toFixed(3)} (uneven). Choose a score divisible by ${correctAnswers} with max 2 decimals.`;
+        }
+      }
+    }
+
+    return null;
+  };
+
   const onFinish = async (values) => {
     try {
       setError(null);
@@ -107,9 +153,43 @@ export default function QuizCreateEdit() {
           return;
         }
 
+        // Validate question score is valid
+        if (!q.questionScore || q.questionScore <= 0) {
+          showErrorModal('Validation Error', `Question "${q.name}" must have a valid score greater than 0`);
+          return;
+        }
+
+        // Check if score has too many decimal places (more than 2 decimals)
+        const scoreStr = q.questionScore.toString();
+        const decimalPart = scoreStr.split('.')[1];
+        if (decimalPart && decimalPart.length > 2) {
+          showErrorModal('Validation Error', `Question "${q.name}" score cannot have more than 2 decimal places. You entered: ${q.questionScore}`);
+          return;
+        }
+
         if (!q.options || q.options.length === 0) {
           showErrorModal('Validation Error', `Question "${q.name}" must have at least one option`);
           return;
+        }
+
+        // For multiple answer questions, check if score divides evenly
+        if (q.isMultipleAnswers) {
+          const correctAnswers = q.options.filter(opt => opt.isCorrect).length;
+          if (correctAnswers > 1) {
+            const pointPerAnswer = q.questionScore / correctAnswers;
+            const pointPerAnswerStr = pointPerAnswer.toString();
+            const pointDecimal = pointPerAnswerStr.split('.')[1];
+            
+            if (pointDecimal && pointDecimal.length > 1) {
+              showErrorModal(
+                'Validation Error',
+                `Question "${q.name}" has ${correctAnswers} correct answers. ` +
+                `Dividing ${q.questionScore} points by ${correctAnswers} answers = ${pointPerAnswer.toFixed(3)} points per answer (uneven distribution). ` +
+                `Please choose a score that divides evenly (e.g., 2, 4, 6, 8, 10 for multiple correct answers).`
+              );
+              return;
+            }
+          }
         }
 
         // Validate all options have text
@@ -128,6 +208,16 @@ export default function QuizCreateEdit() {
         }
       }
 
+      // Validate total score equals 10
+      const totalScore = questions.reduce((sum, q) => sum + (q.questionScore || 0), 0);
+      if (Math.abs(totalScore - 10) > 0.01) { // Allow small floating point errors
+        showErrorModal(
+          'Validation Error',
+          `Total quiz score must equal 10 points. Current total: ${totalScore.toFixed(2)} points`
+        );
+        return;
+      }
+
       setSubmitting(true);
 
       const payload = {
@@ -135,12 +225,11 @@ export default function QuizCreateEdit() {
         description: values.description?.trim() || '',
         passScoreCriteria: values.passScoreCriteria,
         timelimitMinute: values.timelimitMinute,
-        totalScore: values.totalScore,
         questions: questions.map(q => ({
           name: q.name.trim(),
           description: q.description?.trim() || '',
           isMultipleAnswers: q.isMultipleAnswers || false,
-          questionScore: q.questionScore || 1,
+          questionScore: q.questionScore || 10,
           imageUrl: '',
           options: q.options.map(opt => ({
             name: opt.name.trim(),
@@ -155,13 +244,25 @@ export default function QuizCreateEdit() {
       
       // Handle success response
       if (response?.status === 200) {
-        message.success(response?.message || 'Quiz created successfully');
-        setTimeout(() => {
-          navigate('/instructor/quizzes');
-        }, 500);
+        modal.success({
+          title: 'Success',
+          content: response?.message || 'Quiz created successfully',
+          okText: 'OK',
+          centered: true,
+          onOk: () => {
+            navigate('/instructor/quizzes');
+          }
+        });
       } else {
-        message.success(isEditMode ? 'Quiz updated successfully' : 'Quiz created successfully');
-        navigate('/instructor/quizzes');
+        modal.success({
+          title: 'Success',
+          content: isEditMode ? 'Quiz updated successfully' : 'Quiz created successfully',
+          okText: 'OK',
+          centered: true,
+          onOk: () => {
+            navigate('/instructor/quizzes');
+          }
+        });
       }
     } catch (e) {
       console.error('Error saving quiz:', e);
@@ -214,8 +315,8 @@ export default function QuizCreateEdit() {
         name: '',
         description: '',
         isMultipleAnswers: false,
-        questionScore: 1,
-        options: [{ id: 1, name: '', isCorrect: true, explanation: '', optionScore: 1 }],
+        questionScore: 10,
+        options: [{ id: 1, name: '', isCorrect: true, explanation: '' }],
       },
     ]);
   };
@@ -231,6 +332,16 @@ export default function QuizCreateEdit() {
   const updateQuestion = (qIdx, field, value) => {
     const newQuestions = [...questions];
     newQuestions[qIdx][field] = value;
+    
+    // If updating score or isMultipleAnswers, validate and update error state
+    if (field === 'questionScore' || field === 'isMultipleAnswers') {
+      const warning = validateQuestionScore(qIdx, newQuestions[qIdx].questionScore);
+      setScoreErrors(prev => ({
+        ...prev,
+        [qIdx]: warning
+      }));
+    }
+    
     setQuestions(newQuestions);
   };
 
@@ -242,7 +353,6 @@ export default function QuizCreateEdit() {
       name: '',
       isCorrect: false,
       explanation: '',
-      optionScore: 0,
     });
     setQuestions(newQuestions);
   };
@@ -254,12 +364,30 @@ export default function QuizCreateEdit() {
       return;
     }
     newQuestions[qIdx].options = newQuestions[qIdx].options.filter((_, idx) => idx !== oIdx);
+    
+    // Re-validate score after changing options
+    const warning = validateQuestionScore(qIdx, newQuestions[qIdx].questionScore);
+    setScoreErrors(prev => ({
+      ...prev,
+      [qIdx]: warning
+    }));
+    
     setQuestions(newQuestions);
   };
 
   const updateOption = (qIdx, oIdx, field, value) => {
     const newQuestions = [...questions];
     newQuestions[qIdx].options[oIdx][field] = value;
+    
+    // If updating isCorrect, re-validate score
+    if (field === 'isCorrect') {
+      const warning = validateQuestionScore(qIdx, newQuestions[qIdx].questionScore);
+      setScoreErrors(prev => ({
+        ...prev,
+        [qIdx]: warning
+      }));
+    }
+    
     setQuestions(newQuestions);
   };
 
@@ -317,7 +445,6 @@ export default function QuizCreateEdit() {
           initialValues={{
             passScoreCriteria: 5,
             timelimitMinute: 20,
-            totalScore: 10,
           }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -331,10 +458,12 @@ export default function QuizCreateEdit() {
 
             <Form.Item
               label="Total Score"
-              name="totalScore"
-              rules={[{ required: true, message: 'Please enter total score' }]}
             >
-              <InputNumber min={1} max={100} />
+              <Input 
+                value="10" 
+                disabled 
+                placeholder="Fixed at 10 points"
+              />
             </Form.Item>
 
             <Form.Item
@@ -365,6 +494,38 @@ export default function QuizCreateEdit() {
           </Form.Item>
 
           <Divider>Questions</Divider>
+
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <p className="text-xs text-gray-600 font-semibold">Total Questions</p>
+                <p className="text-2xl font-bold text-blue-600">{questions.length}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600 font-semibold">Total Quiz Score</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {questions.reduce((sum, q) => sum + (q.questionScore || 0), 0).toFixed(2)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600 font-semibold">Per Question Avg</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {questions.length > 0 ? (questions.reduce((sum, q) => sum + (q.questionScore || 0), 0) / questions.length).toFixed(2) : '0'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600 font-semibold">Remaining Score</p>
+                <p className="text-2xl font-bold" style={{
+                  color: Math.abs(questions.reduce((sum, q) => sum + (q.questionScore || 0), 0) - 10) < 0.01 ? '#22c55e' : '#ef4444'
+                }}>
+                  {(10 - questions.reduce((sum, q) => sum + (q.questionScore || 0), 0)).toFixed(2)}
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-3">
+              ℹ️ Total quiz score must equal exactly 10 points to create quiz
+            </p>
+          </div>
 
           <div className="space-y-4">
             {questions.map((question, qIdx) => (
@@ -400,10 +561,14 @@ export default function QuizCreateEdit() {
                         className="w-full"
                         value={question.questionScore}
                         onChange={(value) => updateQuestion(qIdx, 'questionScore', value)}
-                        min={0.25}
+                        min={0.1}
                         max={10}
-                        step={0.25}
+                        step={0.1}
+                        status={scoreErrors[qIdx] ? 'error' : ''}
                       />
+                      {scoreErrors[qIdx] && (
+                        <p className="text-xs text-red-600 mt-1">❌ {scoreErrors[qIdx]}</p>
+                      )}
                     </div>
                   </div>
 
@@ -442,7 +607,9 @@ export default function QuizCreateEdit() {
                     </div>
 
                     <div className="space-y-2">
-                      {question.options.map((option, oIdx) => (
+                      {question.options.map((option, oIdx) => {
+                        const optionScore = getOptionScore(qIdx, option.isCorrect);
+                        return (
                         <div key={oIdx} className="p-3 bg-white border border-gray-200 rounded">
                           <div className="mb-2">
                             <Input
@@ -452,20 +619,28 @@ export default function QuizCreateEdit() {
                             />
                           </div>
 
-                          <div className="mb-2 flex gap-2 items-center">
-                            <Checkbox
-                              checked={option.isCorrect}
-                              onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
-                            >
-                              Mark as Correct Answer
-                            </Checkbox>
-                            <Button
-                              type="text"
-                              danger
-                              size="small"
-                              icon={<DeleteOutlined />}
-                              onClick={() => removeOption(qIdx, oIdx)}
-                            />
+                          <div className="mb-2 flex gap-2 items-center justify-between">
+                            <div className="flex gap-2 items-center">
+                              <Checkbox
+                                checked={option.isCorrect}
+                                onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
+                              >
+                                Mark as Correct Answer
+                              </Checkbox>
+                              <Button
+                                type="text"
+                                danger
+                                size="small"
+                                icon={<DeleteOutlined />}
+                                onClick={() => removeOption(qIdx, oIdx)}
+                              />
+                            </div>
+                            <div className="text-sm font-semibold px-2 py-1 rounded" style={{
+                              backgroundColor: option.isCorrect ? '#d4edda' : '#f8f9fa',
+                              color: option.isCorrect ? '#155724' : '#6c757d'
+                            }}>
+                              Score: {optionScore.toFixed(2)}
+                            </div>
                           </div>
 
                           <Input.TextArea
@@ -475,7 +650,8 @@ export default function QuizCreateEdit() {
                             placeholder="Explanation for this answer (optional)"
                           />
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
