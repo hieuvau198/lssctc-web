@@ -1,6 +1,7 @@
-import { Tooltip } from 'antd';
-import { NavLink } from 'react-router';
-import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { Tooltip, App } from 'antd';
+import { NavLink, useNavigate } from 'react-router';
+import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, PanelLeft, LogOut } from 'lucide-react';
+import { logout } from '../../../apis/Auth/LogoutApi';
 
 const ITEMS = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -11,6 +12,8 @@ const ITEMS = [
 ];
 
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
+  const { message } = App.useApp();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -89,11 +92,48 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
           </ul>
         </nav>
 
-        {/* Footer / Mini info */}
-        {/* <div className="border-t p-3 text-xs text-gray-500 flex items-center justify-between">
-          {!collapsed && <span>v1.0.0</span>}
-          <span className="font-semibold text-gray-400">©</span>
-        </div> */}
+        {/* Footer - Logout */}
+        <div className="mt-auto p-3">
+          <div className="pt-2">
+            {collapsed ? (
+              <Tooltip placement="right" title="Logout">
+                <button
+                  onClick={async () => {
+                    try {
+                      await logout();
+                    } catch (e) {
+                      message.error('Logout failed.');
+                      console.error('Logout failed:', e);
+                    } finally {
+                      try { window.location.assign('/'); } catch { navigate('/'); }
+                    }
+                  }}
+                  className="w-full flex items-center justify-center rounded-md hover:bg-gray-100 p-2"
+                  aria-label="Logout"
+                >
+                  <LogOut className="w-5 h-5 text-red-600" />
+                </button>
+              </Tooltip>
+            ) : (
+              <button
+                onClick={async () => {
+                  try {
+                    await logout();
+                  } catch (e) {
+                    message.error('Logout failed.');
+                    console.error('Logout failed:', e);
+                  } finally {
+                    try { window.location.assign('/'); } catch { navigate('/'); }
+                  }
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-left text-red-600"
+              >
+                <LogOut className="w-5 h-5 text-red-600" />
+                <span className='text-red-600'>Logout</span>
+              </button>
+            )}
+          </div>
+        </div>
       </aside>
     </>
   );

@@ -9,6 +9,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { getActivitiesBySectionId } from '../../../../apis/Instructor/InstructorSectionApi';
 import ManageMaterialModal from './Sections/ManageMaterialModal';
+import ManageQuizModal from './Sections/ManageQuizModal';
 
 // Helper to get icon and color for each activity type
 const getActivityTypeDetails = (type) => {
@@ -48,6 +49,8 @@ const ActivityList = ({ sectionId, refreshKey }) => {
   const [isManageMaterialVisible, setIsManageMaterialVisible] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
 
+  const [isManageQuizVisible, setIsManageQuizVisible] = useState(false);
+
   const fetchActivities = async () => {
     if (!sectionId) {
       setLoading(false);
@@ -68,21 +71,39 @@ const ActivityList = ({ sectionId, refreshKey }) => {
 
   useEffect(() => {
     fetchActivities();
-  }, [sectionId, refreshKey]); // Refresh when key changes
+  }, [sectionId, refreshKey]);
 
+  // --- Material Modal Handlers ---
   const openManageMaterial = (activity) => {
     setSelectedActivity(activity);
     setIsManageMaterialVisible(true);
   };
 
-  const onModalUpdate = () => {
+  const onMaterialModalUpdate = () => {
     setIsManageMaterialVisible(false);
     setSelectedActivity(null);
     fetchActivities(); // Re-fetch activities to show changes
   };
 
-  const onModalClose = () => {
+  const onMaterialModalClose = () => {
     setIsManageMaterialVisible(false);
+    setSelectedActivity(null);
+  };
+
+  // --- Quiz Modal Handlers ---
+  const openManageQuiz = (activity) => {
+    setSelectedActivity(activity);
+    setIsManageQuizVisible(true);
+  };
+
+  const onQuizModalUpdate = () => {
+    setIsManageQuizVisible(false);
+    setSelectedActivity(null);
+    fetchActivities(); // Re-fetch activities to show changes
+  };
+
+  const onQuizModalClose = () => {
+    setIsManageQuizVisible(false);
     setSelectedActivity(null);
   };
 
@@ -121,8 +142,18 @@ const ActivityList = ({ sectionId, refreshKey }) => {
                 Manage Material
               </Button>
             );
+          } else if (item.type?.toLowerCase() === 'quiz') {
+            actions.push(
+              <Button
+                type="link"
+                icon={<SettingOutlined />}
+                onClick={() => openManageQuiz(item)}
+              >
+                Manage Quiz
+              </Button>
+            );
           }
-          // We can add "Manage Quiz" and "Manage Practice" buttons here later
+          // We can add "Manage Practice" buttons here later
 
           return (
             <List.Item actions={actions}>
@@ -154,8 +185,15 @@ const ActivityList = ({ sectionId, refreshKey }) => {
       <ManageMaterialModal
         activity={selectedActivity}
         isVisible={isManageMaterialVisible}
-        onClose={onModalClose}
-        onUpdate={onModalUpdate}
+        onClose={onMaterialModalClose}
+        onUpdate={onMaterialModalUpdate}
+      />
+
+      <ManageQuizModal
+        activity={selectedActivity}
+        isVisible={isManageQuizVisible}
+        onClose={onQuizModalClose}
+        onUpdate={onQuizModalUpdate}
       />
     </>
   );

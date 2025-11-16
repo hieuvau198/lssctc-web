@@ -58,13 +58,6 @@ const ProgramTableView = ({
       ),
     },
     {
-      title: "Duration",
-      dataIndex: "durationHours",
-      key: "durationHours",
-      width: 100,
-      render: (hours) => <span>{hours}h</span>,
-    },
-    {
       title: "Courses",
       dataIndex: "totalCourses",
       key: "totalCourses",
