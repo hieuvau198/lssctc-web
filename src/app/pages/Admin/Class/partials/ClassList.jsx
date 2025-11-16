@@ -89,7 +89,7 @@ const ClassTableView = ({
               disabled={getClassStatus(record.status).key !== 'Draft'}
             />
           </Tooltip>
-          {/* <Tooltip title="Delete Class">
+          <Tooltip title="Delete Class">
             <Popconfirm
               title="Delete class?"
               description="Are you sure you want to delete this class?"
@@ -102,9 +102,10 @@ const ClassTableView = ({
                 danger
                 icon={<DeleteOutlined />}
                 loading={deletingId === record.id}
+                disabled
               />
             </Popconfirm>
-          </Tooltip> */}
+          </Tooltip>
         </Space>
       ),
     },

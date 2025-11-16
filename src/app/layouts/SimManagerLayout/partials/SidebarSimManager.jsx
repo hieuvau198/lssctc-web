@@ -1,7 +1,8 @@
 import React from 'react';
-import { NavLink } from 'react-router';
-import { Tooltip } from 'antd';
-import { LayoutDashboard, FlaskConical, Sliders, Calendar, Settings, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router';
+import { Tooltip, App } from 'antd';
+import { LayoutDashboard, FlaskConical, Sliders, Calendar, Settings, PanelLeftClose, PanelLeft, LogOut } from 'lucide-react';
+import { logout } from '../../../apis/Auth/LogoutApi';
 
 const ITEMS = [
   { to: '/simulationManager/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -12,6 +13,20 @@ const ITEMS = [
 ];
 
 export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
+  const { message } = App.useApp();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (e) {
+      message.error('Logout failed.');
+      console.error('Logout failed:', e);
+    } finally {
+      try { window.location.assign('/'); } catch { navigate('/'); }
+    }
+  };
+
   return (
     <>
       {mobileOpen && (
@@ -79,6 +94,31 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
             ))}
           </ul>
         </nav>
+
+        {/* Footer - Logout button fixed at bottom */}
+        <div className="mt-auto p-3">
+          <div className="pt-2">
+            {collapsed ? (
+              <Tooltip placement="right" title="Logout">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center rounded-md hover:bg-gray-100 p-2"
+                  aria-label="Logout"
+                >
+                  <LogOut className="w-5 h-5 text-red-600" />
+                </button>
+              </Tooltip>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-left text-red-600"
+              >
+                <LogOut className="w-5 h-5 text-red-600" />
+                <span className="text-red-600">Logout</span>
+              </button>
+            )}
+          </div>
+        </div>
       </aside>
     </>
   );
