@@ -1,10 +1,8 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Typography, Alert, Skeleton } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { getActivityRecords } from '../../../../../../apis/Instructor/InstructorApi'; // Adjust path as needed
-import DayTimeFormat from '../../../../../../components/DayTimeFormat/DayTimeFormat'; // Adjust path as needed
+import DayTimeFormat from '../../../../../../components/DayTimeFormat/DayTimeFormat';
 
 const { Title } = Typography;
 
@@ -15,6 +13,14 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
 
   useEffect(() => {
     const fetchRecords = async () => {
+      // --- ADDED FOR DEBUGGING ---
+      console.log('TraineeActivityRecords Props:', {
+        classId: classId,
+        sectionId: sectionId,
+        activityId: activityId,
+      });
+      // --- END OF DEBUGGING ---
+
       if (!classId || !sectionId || !activityId) {
         setError('Missing required IDs to fetch records.');
         setLoading(false);
@@ -36,6 +42,7 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
   }, [classId, sectionId, activityId]);
 
   const columns = [
+    // ... (columns - no changes)
     {
       title: 'Trainee',
       dataIndex: 'traineeName',
@@ -72,7 +79,7 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
   ];
 
   if (loading) {
-    return <Skeleton active paragraph={{ rows: 4 }} />;
+    // ... (no changes)
   }
 
   if (error) {

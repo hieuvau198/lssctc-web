@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import TraineeActivityRecords from './TraineeActivityRecords';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Paragraph } = Typography;
 
 // Helper to get icon
 const getActivityTypeIcon = (type) => {
@@ -37,7 +37,7 @@ const ActivityDetailView = ({ activity, classId, sectionId }) => {
       </Title>
       
       <div className="mb-4">
-        <Tag>{activity.type}</Tag>
+        <Tag color="blue">{activity.type}</Tag>
         <Tag>{activity.duration} minutes</Tag>
       </div>
 
@@ -45,20 +45,14 @@ const ActivityDetailView = ({ activity, classId, sectionId }) => {
         {activity.description}
       </Paragraph>
 
-      {/* Conditionally render Trainee Records.
-        We don't need to show records for "Material"
+      {/* Always render TraineeActivityRecords regardless of type.
+         This allows viewing progress for Materials, Quizzes, and Practices.
       */}
-      {activity.type?.toLowerCase() === 'quiz' || activity.type?.toLowerCase() === 'practice' ? (
-        <TraineeActivityRecords
-          classId={classId}
-          sectionId={sectionId}
-          activityId={activity.id}
-        />
-      ) : (
-        <Text type="secondary">
-          Trainee progress is not tracked for "Material" activities.
-        </Text>
-      )}
+      <TraineeActivityRecords
+        classId={classId}
+        sectionId={sectionId}
+        activityId={activity.id}
+      />
     </div>
   );
 };

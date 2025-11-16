@@ -79,7 +79,7 @@ export default function InstructorClassDetail() {
       label: "Sections",
       // classDetail is now guaranteed to be non-null
       // We still use optional chaining just in case programCourseId is null
-      children: <ClassSections courseId={classDetail?.courseId} />,
+      children: <ClassSections courseId={classDetail?.courseId} classId={classId}/>,
     },
     {
       key: "members",
