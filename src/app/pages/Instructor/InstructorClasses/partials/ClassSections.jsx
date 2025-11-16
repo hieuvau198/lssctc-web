@@ -21,7 +21,7 @@ const SectionHeader = ({ title, duration }) => (
   </div>
 );
 
-const ClassSections = ({ courseId }) => {
+const ClassSections = ({ courseId, classId }) => {
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -69,7 +69,6 @@ const ClassSections = ({ courseId }) => {
   };
 
   const handleActivityAdded = () => {
-    // Trigger a refresh for the corresponding ActivityList
     setActivityRefreshKeys(prev => ({
       ...prev,
       [currentSectionId]: (prev[currentSectionId] || 0) + 1,
@@ -119,7 +118,7 @@ const ClassSections = ({ courseId }) => {
                     shape="circle"
                     icon={<PlusOutlined />}
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevent collapse panel from toggling
+                      e.stopPropagation();
                       openAddActivityModal(section.id);
                     }}
                   />
@@ -130,6 +129,7 @@ const ClassSections = ({ courseId }) => {
               <p className="pb-2 text-gray-700">{section.description}</p>
               <ActivityList
                 sectionId={section.id}
+                classId={classId}
                 refreshKey={activityRefreshKeys[section.id] || 0}
               />
             </Panel>

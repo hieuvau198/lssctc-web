@@ -1,4 +1,4 @@
-import { Alert, List, Skeleton, Tag, Button } from 'antd';
+import { Alert, List, Skeleton, Tag, Button, Drawer } from 'antd'; // <-- IMPORT Drawer
 import {
   BookOutlined,
   FileTextOutlined,
@@ -10,7 +10,8 @@ import React, { useEffect, useState } from 'react';
 import { getActivitiesBySectionId } from '../../../../apis/Instructor/InstructorSectionApi';
 import ManageMaterialModal from './Sections/ManageMaterialModal';
 import ManageQuizModal from './Sections/ManageQuizModal';
-import ManagePracticeModal from './Sections/ManagePracticeModal'; // <-- IMPORT NEW MODAL
+import ManagePracticeModal from './Sections/ManagePracticeModal';
+import ActivityDetailView from './Sections/ActivityDetail/ActivityDetailView'; 
 
 const getActivityTypeDetails = (type) => {
   switch (type?.toLowerCase()) {
@@ -41,15 +42,19 @@ const getActivityTypeDetails = (type) => {
   }
 };
 
-const ActivityList = ({ sectionId, refreshKey }) => {
+const ActivityList = ({ sectionId, classId, refreshKey }) => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [selectedActivity, setSelectedActivity] = useState(null);
+  // States for Modals
   const [isManageMaterialVisible, setIsManageMaterialVisible] = useState(false);
   const [isManageQuizVisible, setIsManageQuizVisible] = useState(false);
   const [isManagePracticeVisible, setIsManagePracticeVisible] = useState(false);
+
+  // --- ADDED: State for Detail Drawer ---
+  const [isDetailDrawerVisible, setIsDetailDrawerVisible] = useState(false);
 
   const fetchActivities = async () => {
     if (!sectionId) {
@@ -73,52 +78,57 @@ const ActivityList = ({ sectionId, refreshKey }) => {
     fetchActivities();
   }, [sectionId, refreshKey]);
 
-  // --- Material Modal Handlers ---
+  // --- ADDED: Handlers for Detail Drawer ---
+  const openDetailDrawer = (activity) => {
+    setSelectedActivity(activity);
+    setIsDetailDrawerVisible(true);
+  };
+  
+  const closeDetailDrawer = () => {
+    setIsDetailDrawerVisible(false);
+    setSelectedActivity(null);
+  };
+
+  // --- Material Modal Handlers (modified to use one selectedActivity state) ---
   const openManageMaterial = (activity) => {
     setSelectedActivity(activity);
     setIsManageMaterialVisible(true);
   };
-
   const onMaterialModalUpdate = () => {
     setIsManageMaterialVisible(false);
     setSelectedActivity(null);
-    fetchActivities();
+    fetchActivities(); 
   };
-
   const onMaterialModalClose = () => {
     setIsManageMaterialVisible(false);
     setSelectedActivity(null);
   };
 
-  // --- Quiz Modal Handlers ---
+  // --- Quiz Modal Handlers (modified) ---
   const openManageQuiz = (activity) => {
     setSelectedActivity(activity);
     setIsManageQuizVisible(true);
   };
-
   const onQuizModalUpdate = () => {
     setIsManageQuizVisible(false);
     setSelectedActivity(null);
     fetchActivities();
   };
-
   const onQuizModalClose = () => {
     setIsManageQuizVisible(false);
     setSelectedActivity(null);
   };
 
-  // Practice Modal Handlers ---
+  // --- Practice Modal Handlers (modified) ---
   const openManagePractice = (activity) => {
     setSelectedActivity(activity);
     setIsManagePracticeVisible(true);
   };
-
   const onPracticeModalUpdate = () => {
     setIsManagePracticeVisible(false);
     setSelectedActivity(null);
     fetchActivities();
   };
-
   const onPracticeModalClose = () => {
     setIsManagePracticeVisible(false);
     setSelectedActivity(null);
@@ -148,40 +158,35 @@ const ActivityList = ({ sectionId, refreshKey }) => {
         renderItem={(item) => {
           const typeDetails = getActivityTypeDetails(item.type);
           const actions = [];
+
+          // --- MODIFIED: Add "Manage" buttons based on type ---
           if (item.type?.toLowerCase() === 'material') {
             actions.push(
-              <Button
-                type="link"
-                icon={<SettingOutlined />}
-                onClick={() => openManageMaterial(item)}
-              >
+              <Button type="link" icon={<SettingOutlined />} onClick={(e) => { e.stopPropagation(); openManageMaterial(item); }}>
                 Manage Material
               </Button>
             );
           } else if (item.type?.toLowerCase() === 'quiz') {
             actions.push(
-              <Button
-                type="link"
-                icon={<SettingOutlined />}
-                onClick={() => openManageQuiz(item)}
-              >
+              <Button type="link" icon={<SettingOutlined />} onClick={(e) => { e.stopPropagation(); openManageQuiz(item); }}>
                 Manage Quiz
               </Button>
             );
-          }
-          else if (item.type?.toLowerCase() === 'practice') {
+          } else if (item.type?.toLowerCase() === 'practice') {
             actions.push(
-              <Button
-                type="link"
-                icon={<SettingOutlined />}
-                onClick={() => openManagePractice(item)}
-              >
+              <Button type="link" icon={<SettingOutlined />} onClick={(e) => { e.stopPropagation(); openManagePractice(item); }}>
                 Manage Practice
               </Button>
             );
           }
+
           return (
-            <List.Item actions={actions}>
+            <List.Item
+              actions={actions}
+              // --- MODIFIED: Make the item clickable to open the detail drawer ---
+              onClick={() => openDetailDrawer(item)}
+              className="hover:bg-gray-50 cursor-pointer"
+            >
               <List.Item.Meta
                 avatar={
                   <Tag color={typeDetails.color} className="flex items-center justify-center w-10 h-10 text-lg">
@@ -206,24 +211,48 @@ const ActivityList = ({ sectionId, refreshKey }) => {
           );
         }}
       />
-      <ManageMaterialModal
-        activity={selectedActivity}
-        isVisible={isManageMaterialVisible}
-        onClose={onMaterialModalClose}
-        onUpdate={onMaterialModalUpdate}
-      />
-      <ManageQuizModal
-        activity={selectedActivity}
-        isVisible={isManageQuizVisible}
-        onClose={onQuizModalClose}
-        onUpdate={onQuizModalUpdate}
-      />
-      <ManagePracticeModal
-        activity={selectedActivity}
-        isVisible={isManagePracticeVisible}
-        onClose={onPracticeModalClose}
-        onUpdate={onPracticeModalUpdate}
-      />
+
+      {/* --- ADDED: Detail Drawer --- */}
+      <Drawer
+        title="Activity Details"
+        placement="right"
+        width={720}
+        onClose={closeDetailDrawer}
+        visible={isDetailDrawerVisible}
+        bodyStyle={{ paddingBottom: 80 }}
+      >
+        <ActivityDetailView
+          activity={selectedActivity}
+          classId={classId}
+          sectionId={sectionId}
+        />
+      </Drawer>
+
+      {/* --- All Modals (no structural changes) --- */}
+      {selectedActivity && (
+        <>
+          <ManageMaterialModal
+            activity={selectedActivity}
+            isVisible={isManageMaterialVisible}
+            onClose={onMaterialModalClose}
+            onUpdate={onMaterialModalUpdate}
+          />
+
+          <ManageQuizModal
+            activity={selectedActivity}
+            isVisible={isManageQuizVisible}
+            onClose={onQuizModalClose}
+            onUpdate={onQuizModalUpdate}
+          />
+          
+          <ManagePracticeModal
+            activity={selectedActivity}
+            isVisible={isManagePracticeVisible}
+            onClose={onPracticeModalClose}
+            onUpdate={onPracticeModalUpdate}
+          />
+        </>
+      )}
     </>
   );
 };
