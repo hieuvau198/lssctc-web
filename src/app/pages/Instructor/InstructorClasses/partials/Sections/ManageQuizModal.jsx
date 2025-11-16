@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Alert, Select, Spin, Empty, Typography, Tag } from 'antd';
 import { getQuizzes } from '../../../../../apis/Instructor/InstructorQuiz';
-import { getQuizzesByActivityId, assignQuizToActivity } from '../../../../../apis/Instructor/InstructorSectionApi';
+import { 
+  getQuizzesByActivityId, 
+  assignQuizToActivity,
+  removeQuizFromActivity 
+} from '../../../../../apis/Instructor/InstructorSectionApi';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -13,17 +17,16 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
   const [quizLibrary, setQuizLibrary] = useState([]);
   const [selectedQuizId, setSelectedQuizId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false); 
 
   const fetchData = async () => {
     if (!activity) return;
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch currently assigned quizzes
       const assigned = await getQuizzesByActivityId(activity.id);
-      setAssignedQuiz(assigned[0] || null); // Assuming one quiz per activity for now
+      setAssignedQuiz(assigned[0] || null); 
 
-      // 2. Fetch all available quizzes from the library
       const library = await getQuizzes({ pageIndex: 1, pageSize: 1000 });
       setQuizLibrary(library.items || []);
     } catch (err) {
@@ -42,6 +45,8 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
       setQuizLibrary([]);
       setSelectedQuizId(null);
       setError(null);
+      setIsSubmitting(false);
+      setIsRemoving(false);
     }
   }, [isVisible, activity]);
 
@@ -51,13 +56,28 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
     setError(null);
     try {
       await assignQuizToActivity(activity.id, selectedQuizId);
-      onUpdate(); // Trigger refresh
+      onUpdate(); 
     } catch (err) {
       setError(err.message || 'Failed to assign quiz');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const handleRemove = async () => {
+    if (!assignedQuiz) return;
+    setIsRemoving(true);
+    setError(null);
+    try {
+      await removeQuizFromActivity(activity.id, assignedQuiz.id);
+      onUpdate();
+    } catch (err) {
+      setError(err.message || 'Failed to remove quiz');
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+  // --- END OF NEW FUNCTION ---
 
   const renderContent = () => {
     if (loading) {
@@ -69,14 +89,25 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
         <div>
           <Title level={5}>Assigned Quiz</Title>
           <div className="p-4 border rounded-md bg-gray-50">
-            <Text strong>{assignedQuiz.name}</Text>
-            <br />
-            <Text type="secondary">{assignedQuiz.description}</Text>
-            <br />
-            <Tag color="green" className="mt-2">
-              {assignedQuiz.timelimitMinute} min • {assignedQuiz.totalScore} pts
-            </Tag>
-            {/* No "Remove" button as the API endpoint was not provided */}
+            <div className="flex justify-between items-start">
+              <div>
+                <Text strong>{assignedQuiz.name}</Text>
+                <br />
+                <Text type="secondary">{assignedQuiz.description}</Text>
+                <br />
+                <Tag color="green" className="mt-2">
+                  {assignedQuiz.timelimitMinute} min • {assignedQuiz.totalScore} pts
+                </Tag>
+              </div>
+              <Button
+                type="primary"
+                danger
+                loading={isRemoving}
+                onClick={handleRemove}
+              >
+                Remove
+              </Button>
+            </div>
           </div>
         </div>
       );

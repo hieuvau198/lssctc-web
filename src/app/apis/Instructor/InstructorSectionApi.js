@@ -140,7 +140,7 @@ export const getQuizzesByActivityId = async (activityId) => {
   }
   try {
     const response = await apiClient.get(`/Quizzes/activity/${activityId}/quizzes`);
-    const data = Array.isArray(response.data) ? response.data : [];
+    const data = Array.isArray(response.data.data) ? response.data.data : [];
     return data.map(mapQuizFromApi);
   } catch (error) {
     console.error(`Error fetching quizzes for activity ${activityId}:`, error.response || error);
@@ -158,6 +158,19 @@ export const assignQuizToActivity = async (activityId, quizId) => {
     return response.data;
   } catch (error) {
     console.error(`Error assigning quiz ${quizId} to activity ${activityId}:`, error.response || error);
+    throw error.response?.data || error;
+  }
+};
+
+export const removeQuizFromActivity = async (activityId, quizId) => {
+  if (!activityId || !quizId) {
+    return Promise.reject(new Error('Activity ID and Quiz ID are required.'));
+  }
+  try {
+    const response = await apiClient.delete(`/Quizzes/activity/${activityId}/quiz/${quizId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error removing quiz ${quizId} from activity ${activityId}:`, error.response || error);
     throw error.response?.data || error;
   }
 };
@@ -186,6 +199,19 @@ export const assignPracticeToActivity = async (activityId, practiceId) => {
     return response.data;
   } catch (error) {
     console.error(`Error assigning practice ${practiceId} to activity ${activityId}:`, error.response || error);
+    throw error.response?.data || error;
+  }
+};
+
+export const removePracticeFromActivity = async (activityId, practiceId) => {
+  if (!activityId || !practiceId) {
+    return Promise.reject(new Error('Activity ID and Practice ID are required.'));
+  }
+  try {
+    const response = await apiClient.delete(`/Practices/activity/${activityId}/remove/${practiceId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error removing practice ${practiceId} from activity ${activityId}:`, error.response || error);
     throw error.response?.data || error;
   }
 };

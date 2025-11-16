@@ -3,7 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Alert, Select, Spin, Empty, Typography, Tag } from 'antd';
 import { getPractices } from '../../../../../apis/Instructor/InstructorPractice';
-import { getPracticesByActivityId, assignPracticeToActivity } from '../../../../../apis/Instructor/InstructorSectionApi';
+import { 
+  getPracticesByActivityId, 
+  assignPracticeToActivity,
+  removePracticeFromActivity // <-- IMPORT NEW FUNCTION
+} from '../../../../../apis/Instructor/InstructorSectionApi';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -15,17 +19,17 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
   const [practiceLibrary, setPracticeLibrary] = useState([]);
   const [selectedPracticeId, setSelectedPracticeId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false); // <-- STATE FOR REMOVE BUTTON
 
   const fetchData = async () => {
+    // ... (no changes)
     if (!activity) return;
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch currently assigned practices
       const assigned = await getPracticesByActivityId(activity.id);
-      setAssignedPractice(assigned[0] || null); // Assuming one practice per activity
+      setAssignedPractice(assigned[0] || null); 
 
-      // 2. Fetch all available practices from the library
       const library = await getPractices({ page: 1, pageSize: 1000 });
       setPracticeLibrary(library.items || []);
     } catch (err) {
@@ -44,22 +48,41 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
       setPracticeLibrary([]);
       setSelectedPracticeId(null);
       setError(null);
+      setIsSubmitting(false);
+      setIsRemoving(false); // <-- RESET STATE
     }
   }, [isVisible, activity]);
 
   const handleAssign = async () => {
+    // ... (no changes)
     if (!selectedPracticeId) return;
     setIsSubmitting(true);
     setError(null);
     try {
       await assignPracticeToActivity(activity.id, selectedPracticeId);
-      onUpdate(); // Trigger refresh
+      onUpdate(); 
     } catch (err) {
       setError(err.message || 'Failed to assign practice');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // --- NEWLY ADDED FUNCTION ---
+  const handleRemove = async () => {
+    if (!assignedPractice) return;
+    setIsRemoving(true);
+    setError(null);
+    try {
+      await removePracticeFromActivity(activity.id, assignedPractice.id);
+      onUpdate(); // Trigger refresh
+    } catch (err) {
+      setError(err.message || 'Failed to remove practice');
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+  // --- END OF NEW FUNCTION ---
 
   const renderContent = () => {
     if (loading) {
@@ -71,14 +94,26 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
         <div>
           <Title level={5}>Assigned Practice</Title>
           <div className="p-4 border rounded-md bg-gray-50">
-            <Text strong>{assignedPractice.practiceName}</Text>
-            <br />
-            <Text type="secondary">{assignedPractice.practiceDescription}</Text>
-            <br />
-            <Tag color="purple" className="mt-2">
-              {assignedPractice.estimatedDurationMinutes} min • {assignedPractice.difficultyLevel}
-            </Tag>
-            {/* No "Remove" button as the API endpoint was not provided */}
+            {/* --- MODIFIED FOR LAYOUT --- */}
+            <div className="flex justify-between items-start">
+              <div>
+                <Text strong>{assignedPractice.practiceName}</Text>
+                <br />
+                <Text type="secondary">{assignedPractice.practiceDescription}</Text>
+                <br />
+                <Tag color="purple" className="mt-2">
+                  {assignedPractice.estimatedDurationMinutes} min • {assignedPractice.difficultyLevel}
+                </Tag>
+              </div>
+              <Button
+                type="primary"
+                danger
+                loading={isRemoving}
+                onClick={handleRemove}
+              >
+                Remove
+              </Button>
+            </div>
           </div>
         </div>
       );
