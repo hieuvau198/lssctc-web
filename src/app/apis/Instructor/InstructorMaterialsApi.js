@@ -2,11 +2,7 @@ import apiClient from '../../libs/axios';
 
 //#region Mapping Functions
 
-/**
- * Maps material data from the API to a frontend-friendly object.
- * @param {object} item - The material object from the API.
- * @returns {object} The mapped material object.
- */
+
 const mapMaterialFromApi = (item) => ({
   id: item.id,
   activityId: item.activityId, // This might be null for library materials
@@ -21,17 +17,12 @@ const mapMaterialFromApi = (item) => ({
 
 //#region Original Material CRUD Methods (Refactored to apiClient)
 
-/**
- * Fetches a paged list of all available materials in the system.
- * Corresponds to: GET /api/Materials/paged
- */
 export const getMaterials = async ({ page = 1, pageSize = 1000 } = {}) => {
   try {
     const qs = `?page=${encodeURIComponent(page)}&pageSize=${encodeURIComponent(pageSize)}`;
     const response = await apiClient.get(`/Materials/paged${qs}`);
     const data = response.data || {};
 
-    // Handle paged response
     const rawItems = Array.isArray(data.items) ? data.items : [];
     const items = rawItems.map(mapMaterialFromApi);
 
@@ -49,10 +40,6 @@ export const getMaterials = async ({ page = 1, pageSize = 1000 } = {}) => {
   }
 };
 
-/**
- * Creates a new learning material in the system.
- * Corresponds to: POST /api/Materials
- */
 export const createMaterial = async (payload) => {
   try {
     const response = await apiClient.post('/Materials', payload);
@@ -63,10 +50,6 @@ export const createMaterial = async (payload) => {
   }
 };
 
-/**
- * Deletes a learning material from the system.
- * Corresponds to: DELETE /api/Materials/{materialId}
- */
 export const deleteMaterial = async (materialId) => {
   if (!materialId) {
     return Promise.reject(new Error('Material ID is required.'));
@@ -80,10 +63,6 @@ export const deleteMaterial = async (materialId) => {
   }
 };
 
-/**
- * Updates an existing learning material.
- * Corresponds to: PUT /api/Materials/{materialId}
- */
 export const updateMaterial = async (materialId, payload) => {
   if (!materialId) {
     return Promise.reject(new Error('Material ID is required.'));
@@ -99,12 +78,8 @@ export const updateMaterial = async (materialId, payload) => {
 
 //#endregion
 
-//#region NEW Activity-Material Methods
+//#region Activity-Material Methods
 
-/**
- * Fetches all materials assigned to a specific activity.
- * Corresponds to: GET /api/Materials/activities/{activityId}/materials
- */
 export const getMaterialsByActivityId = async (activityId) => {
   if (!activityId) {
     console.warn('getMaterialsByActivityId called without activityId');
@@ -120,10 +95,6 @@ export const getMaterialsByActivityId = async (activityId) => {
   }
 };
 
-/**
- * Assigns an existing material to an activity.
- * Corresponds to: POST /api/Materials/activities/{activityId}/materials/{materialId}
- */
 export const assignMaterialToActivity = async (activityId, materialId) => {
   if (!activityId || !materialId) {
     return Promise.reject(new Error('Activity ID and Material ID are required.'));
@@ -137,10 +108,6 @@ export const assignMaterialToActivity = async (activityId, materialId) => {
   }
 };
 
-/**
- * Removes (un-assigns) a material from an activity.
- * Corresponds to: DELETE /api/Materials/activities/{activityId}/materials/{materialId}
- */
 export const removeMaterialFromActivity = async (activityId, materialId) => {
   if (!activityId || !materialId) {
     return Promise.reject(new Error('Activity ID and Material ID are required.'));

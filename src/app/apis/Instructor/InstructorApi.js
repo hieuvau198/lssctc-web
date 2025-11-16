@@ -17,6 +17,23 @@ const mapClassFromApi = (item) => ({
   status: item.status,
 });
 
+const mapActivityRecordFromApi = (item) => ({
+  id: item.id,
+  sectionRecordId: item.sectionRecordId,
+  activityId: item.activityId,
+  activityName: item.activityName,
+  status: item.status,
+  score: item.score,
+  isCompleted: item.isCompleted,
+  completedDate: item.completedDate,
+  activityType: item.activityType,
+  learningProgressId: item.learningProgressId,
+  sectionId: item.sectionId,
+  traineeId: item.traineeId,
+  traineeName: item.traineeName,
+  classId: item.classId,
+});
+
 //#endregion
 
 //#region Class APIs
@@ -106,6 +123,21 @@ export const getInstructorClassById = async (classId) => {
   } catch (error) {
     console.error(`Error fetching class detail for ID ${classId}:`, error);
     throw error.response?.data || error;
+  }
+};
+
+export const getActivityRecords = async (classId, sectionId, activityId) => {
+  if (!classId || !sectionId || !activityId) {
+    console.warn('getActivityRecords called without required IDs');
+    return [];
+  }
+  try {
+    const response = await apiClient.get(`/ActivityRecords/class/${classId}/section/${sectionId}/activity/${activityId}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+    return data.map(mapActivityRecordFromApi);
+  } catch (error) {
+    console.error(`Error fetching activity records:`, error.response || error);
+    return [];
   }
 };
 
