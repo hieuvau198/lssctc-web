@@ -1,20 +1,19 @@
-import React from "react";
-import { Empty, Pagination, Table, Tag, Button, Space, Tooltip, Popconfirm } from "antd";
+import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { Button, Empty, Pagination, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
 import { getClassStatus } from "../../../../utils/classStatus";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import PMClassCard from "./PMClassCard";
 
 // Table View Component
-const ClassTableView = ({ 
-  classes, 
-  page, 
-  pageSize, 
-  total, 
-  onPageChange, 
-  onView, 
-  onEdit, 
-  onDelete, 
-  deletingId 
+const ClassTableView = ({
+  classes,
+  page,
+  pageSize,
+  total,
+  onPageChange,
+  onView,
+  onEdit,
+  onDelete,
+  deletingId
 }) => {
   const tableColumns = [
     {
@@ -138,24 +137,24 @@ const ClassTableView = ({
 };
 
 // Card View Component  
-const ClassCardView = ({ 
-  classes, 
-  page, 
-  pageSize, 
-  total, 
-  onPageChange, 
-  onView, 
-  onEdit, 
-  onDelete, 
-  deletingId 
+const ClassCardView = ({
+  classes,
+  page,
+  pageSize,
+  total,
+  onPageChange,
+  onView,
+  onEdit,
+  onDelete,
+  deletingId
 }) => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {classes.map((classItem) => (
-          <PMClassCard 
-            key={classItem.id} 
-            classItem={classItem} 
+          <PMClassCard
+            key={classItem.id}
+            classItem={classItem}
             onDetail={onView}
             onEdit={onEdit}
             onDelete={onDelete}
@@ -181,14 +180,14 @@ const ClassCardView = ({
 };
 
 // Main ClassList component
-const ClassList = ({ 
-  classes, 
+const ClassList = ({
+  classes,
   viewMode = "table",
-  page = 1, 
-  pageSize = 10, 
-  total = 0, 
+  page = 1,
+  pageSize = 10,
+  total = 0,
   onPageChange,
-  onView, 
+  onView,
   onEdit,
   onDelete,
   deletingId
