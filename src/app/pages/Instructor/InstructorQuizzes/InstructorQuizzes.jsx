@@ -176,6 +176,12 @@ export default function InstructorQuizzes() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-2xl">Quizzes</span>
+        <Button 
+          type="primary" 
+          onClick={() => navigate('/instructor/quizzes/create')}
+        >
+          + Create Quiz
+        </Button>
       </div>
 
       {/* Search and Controls */}
