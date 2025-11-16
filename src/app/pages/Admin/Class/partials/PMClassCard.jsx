@@ -65,11 +65,12 @@ const PMClassCard = ({ classItem, onDetail, onEdit, onDelete, deletingId, compac
           onClick={() => onDetail && onDetail(classItem)}
         />
       </Tooltip>,
-      <Tooltip title="Edit Class" key="edit">
+      <Tooltip title={getClassStatus(classItem.status).key !== 'Draft' ? 'Cannot edit non-draft class' : 'Edit Class'} key="edit">
         <Button
           type="text"
           icon={<EditOutlined />}
           onClick={() => onEdit && onEdit(classItem)}
+          disabled={getClassStatus(classItem.status).key !== 'Draft'}
         />
       </Tooltip>,
       <Tooltip title="Delete Class" key="delete">

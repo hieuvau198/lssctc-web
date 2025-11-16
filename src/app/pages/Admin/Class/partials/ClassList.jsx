@@ -86,9 +86,10 @@ const ClassTableView = ({
               size="small"
               icon={<EditOutlined />}
               onClick={() => onEdit(record)}
+              disabled={getClassStatus(record.status).key !== 'Draft'}
             />
           </Tooltip>
-          <Tooltip title="Delete Class">
+          {/* <Tooltip title="Delete Class">
             <Popconfirm
               title="Delete class?"
               description="Are you sure you want to delete this class?"
@@ -103,7 +104,7 @@ const ClassTableView = ({
                 loading={deletingId === record.id}
               />
             </Popconfirm>
-          </Tooltip>
+          </Tooltip> */}
         </Space>
       ),
     },
