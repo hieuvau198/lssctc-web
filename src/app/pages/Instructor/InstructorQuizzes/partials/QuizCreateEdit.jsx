@@ -126,13 +126,6 @@ export default function QuizCreateEdit() {
           showErrorModal('Validation Error', `Question "${q.name}" must have at least one correct answer`);
           return;
         }
-
-        // Validate option scores sum correctly
-        const totalOptionScore = q.options.reduce((sum, opt) => sum + (opt.optionScore || 0), 0);
-        if (totalOptionScore !== q.questionScore) {
-          showErrorModal('Validation Error', `Question "${q.name}" option scores must sum to ${q.questionScore}`);
-          return;
-        }
       }
 
       setSubmitting(true);
@@ -154,14 +147,22 @@ export default function QuizCreateEdit() {
             description: '',
             isCorrect: opt.isCorrect || false,
             explanation: opt.explanation?.trim() || '',
-            optionScore: opt.optionScore || 0,
           })),
         })),
       };
 
-      await createQuizWithQuestions(payload);
-      message.success(isEditMode ? 'Quiz updated successfully' : 'Quiz created successfully');
-      navigate('/instructor/quizzes');
+      const response = await createQuizWithQuestions(payload);
+      
+      // Handle success response
+      if (response?.status === 200) {
+        message.success(response?.message || 'Quiz created successfully');
+        setTimeout(() => {
+          navigate('/instructor/quizzes');
+        }, 500);
+      } else {
+        message.success(isEditMode ? 'Quiz updated successfully' : 'Quiz created successfully');
+        navigate('/instructor/quizzes');
+      }
     } catch (e) {
       console.error('Error saving quiz:', e);
       
@@ -443,20 +444,11 @@ export default function QuizCreateEdit() {
                     <div className="space-y-2">
                       {question.options.map((option, oIdx) => (
                         <div key={oIdx} className="p-3 bg-white border border-gray-200 rounded">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+                          <div className="mb-2">
                             <Input
                               value={option.name}
                               onChange={(e) => updateOption(qIdx, oIdx, 'name', e.target.value)}
                               placeholder={`Option ${oIdx + 1}`}
-                              className="md:col-span-2"
-                            />
-                            <InputNumber
-                              className="w-full"
-                              value={option.optionScore}
-                              onChange={(value) => updateOption(qIdx, oIdx, 'optionScore', value)}
-                              placeholder="Points"
-                              min={0}
-                              max={10}
                             />
                           </div>
 

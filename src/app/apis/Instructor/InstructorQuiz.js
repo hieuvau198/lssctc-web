@@ -167,17 +167,24 @@ export async function getQuizQuestions(quizId, { page = 1, pageSize = 10 } = {})
 export async function getQuizzes({ pageIndex = 1, pageSize = 10 } = {}) {
   try {
     const qs = buildQuery({ pageIndex, pageSize });
-  const { data } = await apiClient.get(`/Quizzes${qs}`);
-    if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
+    const { data } = await apiClient.get(`/Quizzes${qs}`);
     
-    const items = Array.isArray(data.items) ? data.items.map(mapQuizFromApi) : [];
+    // Handle new API response format with wrapper
+    let responseData = data;
+    if (data?.data) {
+      responseData = data.data;
+    }
+    
+    if (!responseData) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
+    
+    const items = Array.isArray(responseData.items) ? responseData.items.map(mapQuizFromApi) : [];
     return {
       items,
-      totalCount: Number(data.totalCount) || items.length,
-      page: Number(data.page) || pageIndex,
-      pageSize: Number(data.pageSize) || pageSize,
-      totalPages: Number(data.totalPages) || 1,
-      raw: data,
+      totalCount: Number(responseData.totalCount) || items.length,
+      page: Number(responseData.page) || pageIndex,
+      pageSize: Number(responseData.pageSize) || pageSize,
+      totalPages: Number(responseData.totalPages) || 1,
+      raw: responseData,
     };
   } catch (err) {
     console.error('Error fetching quizzes:', err);
@@ -200,7 +207,8 @@ export default {
 export async function getQuizDetail(quizId) {
   try {
     const { data } = await apiClient.get(`/Quizzes/${quizId}`);
-    return data;
+    // Handle both old format (direct) and new format (with wrapper)
+    return data?.data || data;
   } catch (err) {
     console.error('Error fetching quiz detail:', err);
     throw err;
@@ -210,6 +218,7 @@ export async function getQuizDetail(quizId) {
 export async function createQuizWithQuestions(payload) {
   try {
     const { data } = await apiClient.post(`/Quizzes/with-questions`, payload);
+    // Return full response including status, message, data
     return data;
   } catch (err) {
     console.error('Error creating quiz:', err);
