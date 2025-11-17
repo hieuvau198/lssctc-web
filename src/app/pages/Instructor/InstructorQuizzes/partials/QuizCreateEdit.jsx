@@ -96,15 +96,8 @@ export default function QuizCreateEdit() {
     const q = questions[qIdx];
     if (!q.questionScore || !isOptionCorrect) return 0;
 
-    if (!q.isMultipleAnswers) {
-      // Single choice: correct option gets full question score
-      return q.questionScore;
-    } else {
-      // Multiple choice: divide score equally among correct options
-      const correctCount = q.options.filter(opt => opt.isCorrect).length;
-      if (correctCount === 0) return 0;
-      return q.questionScore / correctCount;
-    }
+    // Single choice: correct option gets full question score
+    return q.questionScore;
   };
 
   const validateQuestionScore = (qIdx, score) => {
@@ -117,20 +110,6 @@ export default function QuizCreateEdit() {
     const decimalPart = scoreStr.split('.')[1];
     if (decimalPart && decimalPart.length > 2) {
       return `Score has too many decimal places (${score}). Max 2 decimal places allowed.`;
-    }
-
-    // Check if multiple answers divides evenly (max 2 decimals per answer)
-    if (q.isMultipleAnswers) {
-      const correctAnswers = q.options.filter(opt => opt.isCorrect).length;
-      if (correctAnswers > 1) {
-        const pointPerAnswer = score / correctAnswers;
-        const pointPerAnswerStr = pointPerAnswer.toString();
-        const pointDecimal = pointPerAnswerStr.split('.')[1];
-        
-        if (pointDecimal && pointDecimal.length > 2) {
-          return `Score ${score} ÷ ${correctAnswers} correct answers = ${pointPerAnswer.toFixed(3)} (uneven). Choose a score divisible by ${correctAnswers} with max 2 decimals.`;
-        }
-      }
     }
 
     return null;
@@ -172,24 +151,15 @@ export default function QuizCreateEdit() {
           return;
         }
 
-        // For multiple answer questions, check if score divides evenly
-        if (q.isMultipleAnswers) {
-          const correctAnswers = q.options.filter(opt => opt.isCorrect).length;
-          if (correctAnswers > 1) {
-            const pointPerAnswer = q.questionScore / correctAnswers;
-            const pointPerAnswerStr = pointPerAnswer.toString();
-            const pointDecimal = pointPerAnswerStr.split('.')[1];
-            
-            if (pointDecimal && pointDecimal.length > 1) {
-              showErrorModal(
-                'Validation Error',
-                `Question "${q.name}" has ${correctAnswers} correct answers. ` +
-                `Dividing ${q.questionScore} points by ${correctAnswers} answers = ${pointPerAnswer.toFixed(3)} points per answer (uneven distribution). ` +
-                `Please choose a score that divides evenly (e.g., 2, 4, 6, 8, 10 for multiple correct answers).`
-              );
-              return;
-            }
-          }
+        // For single choice questions, validate only 1 correct answer
+        const correctAnswers = q.options.filter(opt => opt.isCorrect).length;
+        if (correctAnswers === 0) {
+          showErrorModal('Validation Error', `Question "${q.name}" must have at least one correct answer`);
+          return;
+        }
+        if (correctAnswers > 1) {
+          showErrorModal('Validation Error', `Question "${q.name}" can only have one correct answer (single choice)`);
+          return;
         }
 
         // Validate all options have text
@@ -200,12 +170,7 @@ export default function QuizCreateEdit() {
           }
         }
 
-        // Validate at least one correct option
-        const hasCorrect = q.options.some(opt => opt.isCorrect);
-        if (!hasCorrect) {
-          showErrorModal('Validation Error', `Question "${q.name}" must have at least one correct answer`);
-          return;
-        }
+        // Validate at least one correct option (already validated above)
       }
 
       // Validate total score equals 10
@@ -228,7 +193,7 @@ export default function QuizCreateEdit() {
         questions: questions.map(q => ({
           name: q.name.trim(),
           description: q.description?.trim() || '',
-          isMultipleAnswers: q.isMultipleAnswers || false,
+          isMultipleAnswers: false,
           questionScore: q.questionScore || 10,
           imageUrl: '',
           options: q.options.map(opt => ({
@@ -377,7 +342,16 @@ export default function QuizCreateEdit() {
 
   const updateOption = (qIdx, oIdx, field, value) => {
     const newQuestions = [...questions];
-    newQuestions[qIdx].options[oIdx][field] = value;
+    
+    // If marking as correct answer, uncheck all other options in same question
+    if (field === 'isCorrect' && value === true) {
+      newQuestions[qIdx].options = newQuestions[qIdx].options.map((opt, idx) => ({
+        ...opt,
+        isCorrect: idx === oIdx ? true : false
+      }));
+    } else {
+      newQuestions[qIdx].options[oIdx][field] = value;
+    }
     
     // If updating isCorrect, re-validate score
     if (field === 'isCorrect') {
@@ -580,15 +554,6 @@ export default function QuizCreateEdit() {
                       onChange={(e) => updateQuestion(qIdx, 'description', e.target.value)}
                       placeholder="Optional question description"
                     />
-                  </div>
-
-                  <div>
-                    <Checkbox
-                      checked={question.isMultipleAnswers}
-                      onChange={(e) => updateQuestion(qIdx, 'isMultipleAnswers', e.target.checked)}
-                    >
-                      Allow Multiple Answers
-                    </Checkbox>
                   </div>
 
                   <Divider className="my-3" />
