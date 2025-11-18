@@ -1,4 +1,3 @@
-// src\app\pages\Trainee\MyClasses\partials\CourseOverview.jsx
 
 import React from 'react';
 import { Card } from 'antd';
