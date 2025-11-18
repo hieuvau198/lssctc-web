@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined, BookOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Radio, Space, message } from 'antd';
+import { Button, Card, Form, Input, Radio, Space, message, App } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { updateMaterial, getMaterials } from '../../../../apis/Instructor/InstructorMaterialsApi';
@@ -11,6 +11,7 @@ function useQuery() {
 
 export default function EditMaterials({ onSuccess }) {
   const navigate = useNavigate();
+  const { modal } = App.useApp();
   const { id } = useParams();
   const query = useQuery();
   const sectionId = query.get('sectionId') || '';
@@ -70,16 +71,47 @@ export default function EditMaterials({ onSuccess }) {
       };
 
       await updateMaterial(id, payload);
-      message.success('Material updated successfully');
       
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate('/instructor/materials');
-      }
+      modal.success({
+        title: 'Success',
+        content: 'Material updated successfully',
+        okText: 'OK',
+        centered: true,
+        onOk: () => {
+          // Always navigate back and let parent component refresh
+          navigate('/instructor/materials', { replace: true });
+        }
+      });
     } catch (e) {
       console.error('Update material error', e);
-      message.error(e?.message || 'Failed to update material');
+      
+      let errorMsg = e?.message || 'Failed to update material';
+      // Handle API error responses
+      if (e?.response?.data) {
+        const data = e.response.data;
+        if (data.errors && typeof data.errors === 'object') {
+          const errorList = [];
+          for (const [field, messages] of Object.entries(data.errors)) {
+            if (Array.isArray(messages)) {
+              errorList.push(`${field}: ${messages[0]}`);
+            }
+          }
+          if (errorList.length > 0) {
+            errorMsg = errorList.join('\n');
+          }
+        } else if (data.message) {
+          errorMsg = data.message;
+        } else if (data.title) {
+          errorMsg = data.title;
+        }
+      }
+      
+      modal.error({
+        title: 'Error Updating Material',
+        content: errorMsg,
+        okText: 'Close',
+        centered: true,
+      });
     } finally {
       setSubmitting(false);
     }

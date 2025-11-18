@@ -19,23 +19,25 @@ const mapMaterialFromApi = (item) => ({
 
 export const getMaterials = async ({ page = 1, pageSize = 1000 } = {}) => {
   try {
-    const qs = `?page=${encodeURIComponent(page)}&pageSize=${encodeURIComponent(pageSize)}`;
-    const response = await apiClient.get(`/Materials/paged${qs}`);
-    const data = response.data || {};
-
-    const rawItems = Array.isArray(data.items) ? data.items : [];
-    const items = rawItems.map(mapMaterialFromApi);
+    // API returns direct array, not paginated response
+    const response = await apiClient.get(`/Materials`);
+    const rawItems = Array.isArray(response.data) ? response.data : [];
+    
+    // Manual pagination on client side
+    const startIdx = (page - 1) * pageSize;
+    const paginatedItems = rawItems.slice(startIdx, startIdx + pageSize);
+    const items = paginatedItems.map(mapMaterialFromApi);
 
     return {
       items,
-      totalCount: Number(data.totalCount) || items.length,
-      page: Number(data.page) || page,
-      pageSize: Number(data.pageSize) || pageSize,
-      totalPages: Number(data.totalPages) || (pageSize > 0 ? Math.ceil(items.length / pageSize) : 1),
-      raw: data,
+      totalCount: rawItems.length,
+      page: Number(page),
+      pageSize: Number(pageSize),
+      totalPages: Math.ceil(rawItems.length / pageSize),
+      raw: rawItems,
     };
   } catch (error) {
-    console.error('Error fetching paged materials:', error.response || error);
+    console.error('Error fetching materials:', error.response || error);
     return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
   }
 };
