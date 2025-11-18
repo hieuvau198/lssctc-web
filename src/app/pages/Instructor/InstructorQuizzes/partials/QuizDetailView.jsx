@@ -4,6 +4,23 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router';
 import { getQuizDetail } from '../../../../apis/Instructor/InstructorQuiz';
 
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+  } catch (e) {
+    return dateString;
+  }
+};
+
 export default function QuizDetailView() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -179,6 +196,19 @@ export default function QuizDetailView() {
               <p className="text-gray-600 text-sm font-semibold">Total Questions</p>
               <p className="text-2xl font-bold text-orange-600">{quiz.questions?.length || 0}</p>
               <p className="text-xs text-gray-500 mt-1">questions in this quiz</p>
+            </div>
+          </div>
+
+          <Divider />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <p className="text-gray-600 text-sm font-semibold">Created At</p>
+              <p className="text-gray-800 text-sm mt-2">{formatDate(quiz.createdAt)}</p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <p className="text-gray-600 text-sm font-semibold">Last Updated</p>
+              <p className="text-gray-800 text-sm mt-2">{formatDate(quiz.updatedAt)}</p>
             </div>
           </div>
 

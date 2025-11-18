@@ -225,3 +225,14 @@ export async function createQuizWithQuestions(payload) {
     throw err;
   }
 }
+
+export async function updateQuizWithQuestions(quizId, payload) {
+  try {
+    const { data } = await apiClient.put(`/Quizzes/${quizId}/with-questions`, payload);
+    // Return full response including status, message, data
+    return data;
+  } catch (err) {
+    console.error('Error updating quiz:', err);
+    throw err;
+  }
+}

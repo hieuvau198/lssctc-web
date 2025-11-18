@@ -62,7 +62,20 @@ export default function InstructorQuizzes() {
 
   const columns = [
     { title: '#', key: 'index', width: 60, render: (_, __, idx) => (page - 1) * pageSize + idx + 1 },
-    { title: 'Name', dataIndex: 'name', key: 'name', ellipsis: true },
+    { 
+      title: 'Name', 
+      dataIndex: 'name', 
+      key: 'name', 
+      ellipsis: true,
+      render: (text, record) => (
+        <button
+          onClick={() => handleView(record)}
+          className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left"
+        >
+          {text}
+        </button>
+      )
+    },
     { title: 'Pass (pts)', dataIndex: 'passScoreCriteria', key: 'passScoreCriteria', width: 100, align: 'center' },
     { title: 'Time (min)', dataIndex: 'timelimitMinute', key: 'timelimitMinute', width: 120, align: 'center' },
     { title: 'Total Score (pts)', dataIndex: 'totalScore', key: 'totalScore', width: 120, align: 'center' },

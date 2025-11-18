@@ -16,7 +16,7 @@ import {
 } from 'antd';
 import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router';
-import { createQuizWithQuestions, getQuizDetail } from '../../../../apis/Instructor/InstructorQuiz';
+import { createQuizWithQuestions, updateQuizWithQuestions, getQuizDetail } from '../../../../apis/Instructor/InstructorQuiz';
 
 export default function QuizCreateEdit() {
   const navigate = useNavigate();
@@ -205,13 +205,16 @@ export default function QuizCreateEdit() {
         })),
       };
 
-      const response = await createQuizWithQuestions(payload);
+      // Call create or update API based on mode
+      const response = isEditMode 
+        ? await updateQuizWithQuestions(id, payload)
+        : await createQuizWithQuestions(payload);
       
       // Handle success response
       if (response?.status === 200) {
         modal.success({
           title: 'Success',
-          content: response?.message || 'Quiz created successfully',
+          content: response?.message || (isEditMode ? 'Quiz updated successfully' : 'Quiz created successfully'),
           okText: 'OK',
           centered: true,
           onOk: () => {
