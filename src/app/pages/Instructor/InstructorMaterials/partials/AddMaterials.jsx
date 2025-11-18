@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined, BookOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Radio, Space, message } from 'antd';
+import { Button, Card, Form, Input, Radio, Space, message, App, Modal } from 'antd';
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { createMaterial } from '../../../../apis/Instructor/InstructorMaterialsApi';
@@ -11,6 +11,7 @@ function useQuery() {
 
 export default function AddMaterials({ onSuccess }) {
   const navigate = useNavigate();
+  const { modal } = App.useApp();
   const query = useQuery();
   const sectionId = query.get('sectionId') || '';
   const classId = query.get('classId') || '';
@@ -29,17 +30,47 @@ export default function AddMaterials({ onSuccess }) {
       };
 
       await createMaterial(payload);
-      message.success('Material created');
       
-      // Call onSuccess callback if provided, otherwise navigate
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate('/instructor/materials');
-      }
+      modal.success({
+        title: 'Success',
+        content: 'Material created successfully',
+        okText: 'OK',
+        centered: true,
+        onOk: () => {
+          // Always navigate back and let parent component refresh
+          navigate('/instructor/materials', { replace: true });
+        }
+      });
     } catch (e) {
       console.error('Create material error', e);
-      message.error(e?.message || 'Failed to create material');
+      
+      let errorMsg = e?.message || 'Failed to create material';
+      // Handle API error responses
+      if (e?.response?.data) {
+        const data = e.response.data;
+        if (data.errors && typeof data.errors === 'object') {
+          const errorList = [];
+          for (const [field, messages] of Object.entries(data.errors)) {
+            if (Array.isArray(messages)) {
+              errorList.push(`${field}: ${messages[0]}`);
+            }
+          }
+          if (errorList.length > 0) {
+            errorMsg = errorList.join('\n');
+          }
+        } else if (data.message) {
+          errorMsg = data.message;
+        } else if (data.title) {
+          errorMsg = data.title;
+        }
+      }
+      
+      modal.error({
+        title: 'Error Creating Material',
+        content: errorMsg,
+        okText: 'Close',
+        centered: true,
+      });
     }
   };
 

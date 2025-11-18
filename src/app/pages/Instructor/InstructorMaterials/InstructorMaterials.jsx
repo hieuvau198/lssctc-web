@@ -43,7 +43,9 @@ export default function InstructorMaterials() {
       }
     };
     
-    // Luôn load materials khi refreshKey thay đổi hoặc khi quay lại từ edit/add mode
+    // Load materials when:
+    // 1. refreshKey changes (from add/edit success)
+    // 2. When not in add/edit mode (after navigating back)
     if (!isAddMode && !isEditMode) {
       load();
     }
