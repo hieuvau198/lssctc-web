@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
-    "@tailwindcss/vite": "^4.1.17",
     "antd": "^5.27.1",
     "apexcharts": "^4.0.0",
     "axios": "^1.12.2",
@@ -39,6 +38,7 @@
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.22",
+    "@tailwindcss/postcss": "^4.1.13",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
