@@ -9,6 +9,11 @@ export default defineConfig({
     react(), 
     tailwind(),
   ],
+  // ADDED: Explicitly set the CSS transformer to 'postcss' 
+  // to bypass the problematic native 'lightningcss' module.
+  css: {
+    transformer: 'postcss', 
+  },
   server: {
     open: true,
   },
