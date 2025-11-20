@@ -34,6 +34,8 @@ const cookieStorage = {
 const initialState = {
   token: null,
   name: null,
+  fullName: null,
+  avatarUrl: null,
   jti: null,
   nameid: null,
   role: null,
@@ -51,6 +53,8 @@ const useAuthStore = create(
       setFromClaims: (claims = {}) => {
         set({
           name: claims.name || claims.sub || null,
+          fullName: claims.FullName || claims.fullName || claims.full_name || claims.name || null,
+          avatarUrl: claims.AvatarUrl || claims.avatarUrl || claims.picture || claims.avatar || null,
           jti: claims.jti || null,
           nameid: claims.nameid || claims.nameId || null,
           role: claims.role || null,

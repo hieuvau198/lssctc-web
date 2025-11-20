@@ -10,6 +10,7 @@ import {
   persistRememberedCredentials,
 } from '../../../libs/crypto';
 import useAuthStore from '../../../store/authStore';
+import { decodeToken } from '../../../libs/jwtDecode';
 
 export default function Login() {
   const { message } = App.useApp();
@@ -96,14 +97,25 @@ export default function Login() {
       // Set token in authStore (this will also save to cookies automatically)
       setToken(accessToken, tokenOptions);
 
-      // Get role from authStore after token is set and decoded
-      const authState = useAuthStore.getState();
-      const userRole = authState.role;
-      
-      console.log('User role after login:', userRole);
+      // Decode token and ensure authStore has the latest claims
+      try {
+        const claims = decodeToken(accessToken) || {};
+        const store = useAuthStore.getState();
+        if (store && typeof store.setFromClaims === 'function') {
+          store.setFromClaims(claims);
+        }
 
-      // Redirect based on user role
-      redirectByRole(userRole);
+        // Determine role from store (or fallback to token claims)
+        const userRole = store.role || claims.role || claims.roles || '';
+        console.log('User role after login:', userRole);
+
+        // Redirect based on user role
+        redirectByRole(userRole);
+      } catch (err) {
+        // Fallback: redirect to home
+        console.warn('Failed to refresh auth store claims:', err);
+        redirectByRole();
+      }
       message.success('Login successful');
     } catch (err) {
       // show notification and error block
