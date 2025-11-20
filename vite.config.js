@@ -1,18 +1,28 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react';
-import tailwind from '@tailwindcss/vite';
+// Remove or comment out this import: import tailwind from '@tailwindcss/vite'; 
 
-// https://vite.dev/config/
+// ADD these imports for PostCSS plugins
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
+
+// https://vitejs.dev/config/
 export default defineConfig({
   base: './',
   plugins: [
     react(), 
-    tailwind(),
+    // REMOVE the plugin call: tailwind(),
   ],
-  // ADDED: Explicitly set the CSS transformer to 'postcss' 
-  // to bypass the problematic native 'lightningcss' module.
+  // REMOVED: css: { transformer: 'postcss', },
+
+  // ADD this block to explicitly use Tailwind via PostCSS
   css: {
-    transformer: 'postcss', 
+    postcss: {
+      plugins: [
+        tailwindcss(), // Manually load Tailwind as a PostCSS plugin
+        autoprefixer(),
+      ],
+    },
   },
   server: {
     open: true,
