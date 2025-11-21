@@ -4,6 +4,7 @@ import { Card, Form, Input, Button, message, Spin, Alert, Divider, InputNumber }
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../../store/authStore';
+import { setAvatarUrl } from '../../../store/userAvatar';
 import { getAuthToken } from '../../../libs/cookies';
 import { getInstructorProfileByUserId, updateInstructorProfileByUserId } from '../../../apis/Instructor/InstructorProfileApi';
 
@@ -99,6 +100,18 @@ export default function EditInstructorProfile() {
       console.log('📤 Submitting update:', updateData);
       
       await updateInstructorProfileByUserId(profileData.userId, updateData, token);
+
+      // Cập nhật avatar ngay lập tức vào Signify store để sidebar phản ứng
+      if (updateData.avatarUrl) {
+        setAvatarUrl(updateData.avatarUrl);
+        try {
+          // Đồng bộ vào authStore để các nơi khác dùng store.avatarUrl không lệ thuộc chỉ Signify
+          const auth = useAuthStore.getState ? useAuthStore.getState() : useAuthStore();
+          if (auth && auth.setFromClaims) {
+            auth.setFromClaims({ avatarUrl: updateData.avatarUrl, fullName: updateData.fullname, name: updateData.fullname });
+          }
+        } catch (_) {}
+      }
       
       message.success('Cập nhật hồ sơ thành công!');
       
