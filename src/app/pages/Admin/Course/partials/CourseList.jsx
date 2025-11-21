@@ -71,11 +71,11 @@ const CourseTableView = ({
       width: 80,
     },
     {
-      title: "Duration",
+      title: "Duration (h)",
       dataIndex: "durationHours",
       key: "durationHours",
       width: 100,
-      render: (hours) => <span>{hours}h</span>,
+      render: (hours) => <span>{hours}</span>,
     },
     {
       title: "Status",

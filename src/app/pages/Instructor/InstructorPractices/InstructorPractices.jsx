@@ -32,6 +32,7 @@ export default function InstructorPractices() {
 
   const columns = [
     { title: '#', key: 'idx', width: 60, render: (_, __, idx) => (page - 1) * pageSize + idx + 1 },
+    { title: 'Practice Code', dataIndex: 'practiceCode', key: 'practiceCode', width: 120, align: 'center' }, // Added
     { title: 'Practice Name', dataIndex: 'practiceName', key: 'practiceName', ellipsis: true },
     { title: 'Duration (min)', dataIndex: 'estimatedDurationMinutes', key: 'duration', width: 140, align: 'center' },
     { title: 'Difficulty', dataIndex: 'difficultyLevel', key: 'difficulty', width: 120, align: 'center' },

@@ -15,6 +15,7 @@ function buildQuery(params = {}) {
 const mapPracticeFromApi = (item) => ({
   id: item.id,
   practiceName: item.practiceName,
+  practiceCode: item.practiceCode, // Added
   practiceDescription: item.practiceDescription,
   estimatedDurationMinutes: item.estimatedDurationMinutes,
   difficultyLevel: item.difficultyLevel,
@@ -45,7 +46,7 @@ export async function getPractices({ page = 1, pageSize = 10 } = {}) {
 }
 
 /**
- * Get tasks by practice ID
+ * Get tasks by practice ID. Assumes task DTO includes taskCode.
  * GET /api/Tasks/practice/{practiceId}
  * @param {number} practiceId
  * @param {string} token
@@ -66,7 +67,107 @@ export async function getTasksByPracticeId(practiceId, token) {
   }
 }
 
+/**
+ * Update a practice
+ * PUT /api/Practices/{id}
+ */
+export async function updatePractice(id, data, token) {
+  try {
+    const { data: updatedPractice } = await axios.put(`${BASE}/Practices/${id}`, data, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return updatedPractice;
+  } catch (err) {
+    console.error('Error updating practice:', err);
+    throw err;
+  }
+}
+
+/**
+ * Update a task (SimTask)
+ * PUT /api/Tasks/{id}
+ */
+export async function updateTask(id, data, token) {
+  try {
+    const { data: updatedTask } = await axios.put(`${BASE}/Tasks/${id}`, data, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return updatedTask;
+  } catch (err) {
+    console.error('Error updating task:', err);
+    throw err;
+  }
+}
+
+/**
+ * Add a task to a practice
+ * POST /api/Tasks/practice/{practiceId}/add/{taskId}
+ */
+export async function addTaskToPractice(practiceId, taskId, token) {
+  try {
+    const { data } = await axios.post(`${BASE}/Tasks/practice/${practiceId}/add/${taskId}`, null, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return data;
+  } catch (err) {
+    console.error('Error adding task to practice:', err);
+    throw err;
+  }
+}
+
+/**
+ * Remove a task from a practice
+ * DELETE /api/Tasks/practice/{practiceId}/remove/{taskId}
+ */
+export async function removeTaskFromPractice(practiceId, taskId, token) {
+  try {
+    const { data } = await axios.delete(`${BASE}/Tasks/practice/${practiceId}/remove/${taskId}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return data;
+  } catch (err) {
+    console.error('Error removing task from practice:', err);
+    throw err;
+  }
+}
+
+/**
+ * Get all tasks (SimTask)
+ * GET /api/Tasks
+ */
+export async function getAllTasks(token) {
+  try {
+    const { data } = await axios.get(`${BASE}/Tasks`, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.error('Error fetching all tasks:', err);
+    throw err;
+  }
+}
+
 export default {
   getPractices,
   getTasksByPracticeId,
+  updatePractice,
+  updateTask,
+  addTaskToPractice,
+  removeTaskFromPractice,
+  getAllTasks,
 };
