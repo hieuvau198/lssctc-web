@@ -6,6 +6,7 @@ import { logout } from '../../../apis/Auth/LogoutApi';
 import useAuthStore from '../../../store/authStore';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
+import { sAvatarUrl, setAvatarUrl, clearAvatarUrl } from '../../../store/userAvatar';
 
 const ITEMS = [
   { to: '/simulationManager/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -113,6 +114,7 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
                 <Menu onClick={async ({ key }) => {
                   if (key === 'logout') {
                     try { await logout(); } catch (e) { message.error('Logout failed.'); }
+                    clearAvatarUrl();
                     try { window.location.assign('/'); } catch { navigate('/'); }
                   } else if (key === 'profile') {
                     navigate('/simmanager/profile');
@@ -129,11 +131,16 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
                     <div className="cursor-pointer">
                       <Tooltip placement="right" title={<div className="text-sm text-left"><div className="font-semibold">{fullName}</div><div className="text-xs text-gray-400">{role}</div></div>}>
                         <div className="flex items-center justify-center">
-                          {avatarUrl ? (
-                            <Avatar size={28} src={avatarUrl} />
-                          ) : (
-                            <Avatar size={28} style={{ backgroundColor: '#87d068' }}>{avatarContent}</Avatar>
-                          )}
+                          {(() => {
+                            const persisted = sAvatarUrl.use();
+                            const resolvedAvatar = avatarUrl || persisted;
+                            if (avatarUrl && avatarUrl !== persisted) setAvatarUrl(avatarUrl);
+                            return resolvedAvatar ? (
+                              <Avatar size={28} src={resolvedAvatar} />
+                            ) : (
+                              <Avatar size={28} style={{ backgroundColor: '#87d068' }}>{avatarContent}</Avatar>
+                            );
+                          })()}
                         </div>
                       </Tooltip>
                     </div>
@@ -143,11 +150,16 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
                 <div className="w-full flex items-center justify-center px-3">
                   <div className="bg-white shadow-2xl ring-1 ring-gray-200 rounded-lg w-full flex items-center justify-between px-2 py-1 transform -translate-y-1 z-10">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {avatarUrl ? (
-                        <Avatar size={36} src={avatarUrl} />
-                      ) : (
-                        <Avatar size={36} style={{ backgroundColor: '#87d068' }}>{avatarContent}</Avatar>
-                      )}
+                      {(() => {
+                        const persisted = sAvatarUrl.use();
+                        const resolvedAvatar = avatarUrl || persisted;
+                        if (avatarUrl && avatarUrl !== persisted) setAvatarUrl(avatarUrl);
+                        return resolvedAvatar ? (
+                          <Avatar size={36} src={resolvedAvatar} />
+                        ) : (
+                          <Avatar size={36} style={{ backgroundColor: '#87d068' }}>{avatarContent}</Avatar>
+                        );
+                      })()}
                       <div className="flex-1 min-w-0">
                         <div className="font-semibold truncate">{fullName}</div>
                         <div className="text-xs text-gray-500 truncate">{role}</div>

@@ -52,6 +52,15 @@ export async function fetchCourseDetail(id) {
   return response.json();
 }
 
+// Fetch courses for a program
+export async function fetchCoursesByProgram(programId) {
+  const response = await fetch(`${COURSE_BASE_URL}/program/${programId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch courses for program');
+  }
+  return response.json();
+}
+
 // Fetch programs a trainee is enrolled in (placeholder endpoint - adjust to real API path if different)
 export async function fetchTraineePrograms({ pageNumber = 1, pageSize = 10, status } = {}) {
   const q = new URLSearchParams({ PageNumber: String(pageNumber), PageSize: String(pageSize) });

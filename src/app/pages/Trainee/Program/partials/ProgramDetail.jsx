@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { fetchProgramDetail } from "../../../../apis/Trainee/TraineeProgramApi";
+import { fetchProgramDetail, fetchCoursesByProgram } from "../../../../apis/Trainee/TraineeProgramApi";
 import { Skeleton, Alert, Tag, Empty, Button } from "antd";
 import { InfoCircleOutlined, ClockCircleOutlined, BookOutlined, UserOutlined } from "@ant-design/icons";
-import ProgramCourseCard from "./ProgramCourseCard"; // still may be used elsewhere
-import CurriculumCourseItem from "./CurriculumCourseItem";
+import CourseCard from '../../../../components/CourseCard/CourseCard';
 import { useNavigate, useParams } from "react-router";
 import PageNav from "../../../../components/PageNav/PageNav";
 
@@ -12,20 +11,26 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
   const navigate = useNavigate();
   const id = idProp ?? idParam;
   const [program, setProgram] = useState(null);
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     setLoading(true);
-    fetchProgramDetail(id)
-      .then((data) => {
-        setProgram(data);
-        setLoading(false);
+    // Load program detail and its courses
+    Promise.allSettled([fetchProgramDetail(id), fetchCoursesByProgram(id)])
+      .then((results) => {
+        const [progRes, coursesRes] = results;
+        if (progRes.status === 'fulfilled') setProgram(progRes.value);
+        else setError(progRes.reason?.message || 'Failed to load program');
+
+        if (coursesRes.status === 'fulfilled') setCourses(Array.isArray(coursesRes.value) ? coursesRes.value : []);
+        else setCourses([]);
       })
       .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+        setError(err.message || 'Failed to load program data');
+      })
+      .finally(() => setLoading(false));
   }, [id]);
 
   if (loading) {
@@ -107,7 +112,11 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
             {/* Left content */}
             <div className="flex-1 min-w-0">
               <h1 className="text-4xl font-bold mb-5 leading-tight text-slate-900 max-w-3xl">{program.name}</h1>
-              <p className="text-lg text-slate-600 mb-6 max-w-2xl">{program.description}</p>
+              <div className="text-lg text-slate-600 mb-6 max-w-2xl">
+                <div className="overflow-y-auto" style={{ maxHeight: '4.5rem' }}>
+                  <p className="whitespace-pre-line">{program.description}</p>
+                </div>
+              </div>
               <div className="flex flex-wrap gap-6 text-sm text-slate-700 mb-6">
                 <span className="flex items-center"><ClockCircleOutlined className="mr-2 text-slate-500" />{program.durationHours} hours</span>
                 <span className="flex items-center"><BookOutlined className="mr-2 text-slate-500" />{program.totalCourses} courses</span>
@@ -120,7 +129,7 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
                   </h4>
                   <ul className="list-disc ml-6 space-y-1 text-slate-700 text-sm">
                     {program.prerequisites.map((pre, idx) => (
-                      <li key={idx}><span className="font-medium text-slate-900">{pre.name}:</span> {pre.description}</li>
+                      <li key={idx}><span className="text-slate-900">{pre.name}:</span> {pre.description}</li>
                     ))}
                   </ul>
                 </div>
@@ -153,17 +162,29 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
       <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 py-10">
           <h2 className="text-3xl font-semibold mb-6">Curriculum</h2>
-          {program.courses && program.courses.length > 0 ? (
-            <div className="bg-white rounded-xl border border-slate-200 px-4 sm:px-6 divide-y">
-              {[...program.courses]
-                .sort((a, b) => a.courseOrder - b.courseOrder)
-                .map((course) => (
-                  <CurriculumCourseItem
-                    key={course.id}
-                    courseId={course.coursesId}
-                    order={course.courseOrder}
+          {courses && courses.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {courses.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => navigate(`/course/${c.id}`)}
+                  className="text-left"
+                >
+                  <CourseCard
+                    course={{
+                      id: c.id,
+                      title: c.title || c.name,
+                      provider: c.provider || 'LSSCTC Academy',
+                      level: c.levelName || c.level || null,
+                      duration: c.duration || c.durationHours || null,
+                      thumbnail: c.imageUrl,
+                      tags: c.tags || c.keywords || [c.category].filter(Boolean),
+                      price: c.price,
+                    }}
                   />
-                ))}
+                </button>
+              ))}
             </div>
           ) : (
             <Empty description="No courses in this program." />
