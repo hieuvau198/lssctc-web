@@ -7,7 +7,7 @@ import {
   deletePractice,
   getTasksByPracticeId
 } from "../../../../apis/SimulationManager/SimulationManagerPracticeApi";
-import { updateTask, createTask } from "../../../../apis/SimulationManager/SimulationManagerTaskApi";
+import { updateTask, createTask, deleteTaskFromPractice } from "../../../../apis/SimulationManager/SimulationManagerTaskApi";
 import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen, ListTodo, X, Edit, Plus } from "lucide-react";
 
 export default function PracticeDetail() {
@@ -33,6 +33,8 @@ export default function PracticeDetail() {
   const [showTaskEditModal, setShowTaskEditModal] = useState(false);
   const [showTaskCreateModal, setShowTaskCreateModal] = useState(false);
   const [creatingTask, setCreatingTask] = useState(false);
+  const [deletingTaskId, setDeletingTaskId] = useState(null);
+  const [showDeleteTaskConfirm, setShowDeleteTaskConfirm] = useState(false);
 
   // Fetch practice details
   useEffect(() => {
@@ -376,6 +378,62 @@ export default function PracticeDetail() {
         setError(errorMsg);
         setModalType("error");
         setCreatingTask(false);
+      });
+  };
+
+  // Task delete handler
+  const handleDeleteTask = () => {
+    if (!deletingTaskId) return;
+
+    setDeletingTaskId(null);
+    
+    deleteTaskFromPractice(id, deletingTaskId)
+      .then(() => {
+        // Remove task from the list
+        setTasks((prevTasks) =>
+          prevTasks.filter((t) => t.id !== deletingTaskId)
+        );
+        setSuccessMessage("Task removed successfully!");
+        setModalType("success");
+        setShowDeleteTaskConfirm(false);
+      })
+      .catch((err) => {
+        let errorMsg = "Delete failed. Please try again.";
+        
+        // Handle new API error format
+        if (err.response?.data?.error) {
+          const error = err.response.data.error;
+          if (error.details?.exceptionMessage) {
+            errorMsg = error.details.exceptionMessage;
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+        }
+        // Handle validation errors from API (old format)
+        else if (err.response?.data?.errors) {
+          const errors = err.response.data.errors;
+          const errorMessages = [];
+          
+          Object.values(errors).forEach((error) => {
+            if (Array.isArray(error)) {
+              errorMessages.push(...error);
+            } else {
+              errorMessages.push(error);
+            }
+          });
+          
+          if (errorMessages.length > 0) {
+            errorMsg = errorMessages[0];
+          }
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        
+        setError(errorMsg);
+        setModalType("error");
+        setShowDeleteTaskConfirm(false);
       });
   };
 
@@ -794,14 +852,24 @@ export default function PracticeDetail() {
                     )}
                   </div>
 
-                  {/* Edit Button */}
-                  <div className="flex-shrink-0">
+                  {/* Edit & Delete Buttons */}
+                  <div className="flex-shrink-0 flex gap-2">
                     <button
                       onClick={() => handleOpenTaskEdit(task)}
                       className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-100 hover:border-blue-400 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
                     >
                       <Edit className="h-4 w-4" />
                       <span className="text-xs font-medium">Edit</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDeletingTaskId(task.id);
+                        setShowDeleteTaskConfirm(true);
+                      }}
+                      className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 border border-red-300 rounded-lg hover:bg-red-100 hover:border-red-400 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="text-xs font-medium">Delete</span>
                     </button>
                   </div>
                 </div>
@@ -838,6 +906,42 @@ export default function PracticeDetail() {
                     className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                   >
                     {deleting ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Task Confirmation Modal */}
+      {showDeleteTaskConfirm && deletingTaskId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-red-200">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Task</h3>
+                <p className="text-gray-600 text-sm mb-6">
+                  Are you sure you want to delete this task? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowDeleteTaskConfirm(false);
+                      setDeletingTaskId(null);
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteTask}
+                    className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                  >
+                    Delete
                   </button>
                 </div>
               </div>

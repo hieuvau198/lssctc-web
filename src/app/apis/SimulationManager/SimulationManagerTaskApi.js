@@ -37,3 +37,11 @@ export const deleteTask = (id) =>
     }
     return res.data;
   });
+
+export const deleteTaskFromPractice = (practiceId, taskId) =>
+  axios.delete(`${API_BASE}/Tasks/practice/${practiceId}/remove/${taskId}`).then(res => {
+    if (res.data.success && res.data.data) {
+      return res.data.data;
+    }
+    return res.data;
+  });
