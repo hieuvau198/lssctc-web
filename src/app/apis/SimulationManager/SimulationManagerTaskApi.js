@@ -14,6 +14,14 @@ export const getTaskById = (id) =>
     return res.data;
   });
 
+export const createTask = (practiceCode, data) =>
+  axios.post(`${API_BASE}/Tasks/practice/${practiceCode}`, data).then(res => {
+    if (res.data.success && res.data.data) {
+      return res.data.data;
+    }
+    return res.data;
+  });
+
 export const updateTask = (id, data) =>
   axios.put(`${API_BASE}/Tasks/${id}`, data).then(res => {
     if (res.data.success && res.data.data) {

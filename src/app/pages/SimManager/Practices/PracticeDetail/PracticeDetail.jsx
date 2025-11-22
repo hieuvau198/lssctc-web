@@ -7,8 +7,8 @@ import {
   deletePractice,
   getTasksByPracticeId
 } from "../../../../apis/SimulationManager/SimulationManagerPracticeApi";
-import { updateTask } from "../../../../apis/SimulationManager/SimulationManagerTaskApi";
-import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen, ListTodo, X, Edit } from "lucide-react";
+import { updateTask, createTask } from "../../../../apis/SimulationManager/SimulationManagerTaskApi";
+import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen, ListTodo, X, Edit, Plus } from "lucide-react";
 
 export default function PracticeDetail() {
   const { id } = useParams();
@@ -31,6 +31,8 @@ export default function PracticeDetail() {
   const [taskForm, setTaskForm] = useState({});
   const [updatingTask, setUpdatingTask] = useState(false);
   const [showTaskEditModal, setShowTaskEditModal] = useState(false);
+  const [showTaskCreateModal, setShowTaskCreateModal] = useState(false);
+  const [creatingTask, setCreatingTask] = useState(false);
 
   // Fetch practice details
   useEffect(() => {
@@ -293,6 +295,90 @@ export default function PracticeDetail() {
       });
   };
 
+  // Task create handlers
+  const handleOpenTaskCreate = () => {
+    setTaskForm({
+      taskName: "",
+      taskCode: "",
+      taskDescription: "",
+      expectedResult: "",
+    });
+    setShowTaskCreateModal(true);
+  };
+
+  const handleTaskCreate = () => {
+    // Validation
+    if (!taskForm.taskName?.trim()) {
+      setError("Task name is required");
+      setModalType("error");
+      return;
+    }
+    if (!taskForm.taskCode?.trim()) {
+      setError("Task code is required");
+      setModalType("error");
+      return;
+    }
+
+    setCreatingTask(true);
+    setError(null);
+
+    const payload = {
+      taskName: taskForm.taskName,
+      taskCode: taskForm.taskCode,
+      taskDescription: taskForm.taskDescription || "",
+      expectedResult: taskForm.expectedResult || "",
+    };
+
+    createTask(form.practiceCode, payload)
+      .then((newTask) => {
+        // Add new task to the list
+        setTasks((prevTasks) => [...prevTasks, newTask]);
+        setSuccessMessage("Task created successfully!");
+        setModalType("success");
+        setShowTaskCreateModal(false);
+        setTaskForm({});
+        setCreatingTask(false);
+      })
+      .catch((err) => {
+        let errorMsg = "Create failed. Please try again.";
+        
+        // Handle new API error format: { success: false, error: { code, message, details } }
+        if (err.response?.data?.error) {
+          const error = err.response.data.error;
+          if (error.details?.exceptionMessage) {
+            errorMsg = error.details.exceptionMessage;
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+        }
+        // Handle validation errors from API (old format)
+        else if (err.response?.data?.errors) {
+          const errors = err.response.data.errors;
+          const errorMessages = [];
+          
+          Object.values(errors).forEach((error) => {
+            if (Array.isArray(error)) {
+              errorMessages.push(...error);
+            } else {
+              errorMessages.push(error);
+            }
+          });
+          
+          if (errorMessages.length > 0) {
+            errorMsg = errorMessages[0];
+          }
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        
+        setError(errorMsg);
+        setModalType("error");
+        setCreatingTask(false);
+      });
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -392,7 +478,7 @@ export default function PracticeDetail() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 font-medium shadow-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
@@ -562,7 +648,7 @@ export default function PracticeDetail() {
             {/* Action Buttons */}
             <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
               <button
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
                 onClick={handleUpdate}
                 disabled={updating}
               >
@@ -570,7 +656,7 @@ export default function PracticeDetail() {
                 {updating ? "Saving..." : "Save Changes"}
               </button>
               <button
-                className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-300 rounded-lg hover:bg-red-100 hover:border-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={deleting}
               >
@@ -653,6 +739,13 @@ export default function PracticeDetail() {
           <span className="ml-auto text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
             {tasks.length} tasks
           </span>
+          <button
+            onClick={handleOpenTaskCreate}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 active:scale-95 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+          >
+            <Plus className="h-4 w-4" />
+            Add Task
+          </button>
         </div>
 
         {tasksLoading ? (
@@ -705,7 +798,7 @@ export default function PracticeDetail() {
                   <div className="flex-shrink-0">
                     <button
                       onClick={() => handleOpenTaskEdit(task)}
-                      className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                      className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-100 hover:border-blue-400 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
                     >
                       <Edit className="h-4 w-4" />
                       <span className="text-xs font-medium">Edit</span>
@@ -735,14 +828,14 @@ export default function PracticeDetail() {
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
                     disabled={deleting}
-                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
-                    className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                   >
                     {deleting ? "Deleting..." : "Delete"}
                   </button>
@@ -766,7 +859,7 @@ export default function PracticeDetail() {
                 <p className="text-gray-600 text-sm mb-4">{successMessage}</p>
                 <button
                   onClick={() => setModalType(null)}
-                  className="w-full px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors font-medium"
+                  className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
                 >
                   OK
                 </button>
@@ -778,7 +871,7 @@ export default function PracticeDetail() {
 
       {/* Error Modal */}
       {modalType === "error" && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
           <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-red-200">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
@@ -789,7 +882,7 @@ export default function PracticeDetail() {
                 <p className="text-gray-600 text-sm mb-4">{error}</p>
                 <button
                   onClick={() => setModalType(null)}
-                  className="w-full px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium"
+                  className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
                 >
                   OK
                 </button>
@@ -895,17 +988,128 @@ export default function PracticeDetail() {
                   setTaskForm({});
                 }}
                 disabled={updatingTask}
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
               >
                 Cancel
               </button>
               <button
                 onClick={handleTaskUpdate}
                 disabled={updatingTask}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
               >
                 <Save className="h-4 w-4" />
                 {updatingTask ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Task Create Modal */}
+      {showTaskCreateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Plus className="h-5 w-5 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900">Create New Task</h3>
+              </div>
+              <button
+                onClick={() => {
+                  setShowTaskCreateModal(false);
+                  setTaskForm({});
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {/* Task Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Task Name
+                </label>
+                <input
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  value={taskForm.taskName || ""}
+                  onChange={(e) =>
+                    setTaskForm((f) => ({ ...f, taskName: e.target.value }))
+                  }
+                  placeholder="Enter task name"
+                />
+              </div>
+
+              {/* Task Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Task Code
+                </label>
+                <input
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  value={taskForm.taskCode || ""}
+                  onChange={(e) =>
+                    setTaskForm((f) => ({ ...f, taskCode: e.target.value }))
+                  }
+                  placeholder="Enter task code"
+                />
+              </div>
+
+              {/* Task Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                  rows="3"
+                  value={taskForm.taskDescription || ""}
+                  onChange={(e) =>
+                    setTaskForm((f) => ({ ...f, taskDescription: e.target.value }))
+                  }
+                  placeholder="Enter task description"
+                />
+              </div>
+
+              {/* Expected Result */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expected Result
+                </label>
+                <textarea
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                  rows="3"
+                  value={taskForm.expectedResult || ""}
+                  onChange={(e) =>
+                    setTaskForm((f) => ({ ...f, expectedResult: e.target.value }))
+                  }
+                  placeholder="Enter expected result"
+                />
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
+              <button
+                onClick={() => {
+                  setShowTaskCreateModal(false);
+                  setTaskForm({});
+                }}
+                disabled={creatingTask}
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleTaskCreate}
+                disabled={creatingTask}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+              >
+                <Plus className="h-4 w-4" />
+                {creatingTask ? "Creating..." : "Create Task"}
               </button>
             </div>
           </div>
