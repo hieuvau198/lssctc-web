@@ -7,7 +7,8 @@ import {
   deletePractice,
   getTasksByPracticeId
 } from "../../../../apis/SimulationManager/SimulationManagerPracticeApi";
-import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen, ListTodo, X } from "lucide-react";
+import { updateTask } from "../../../../apis/SimulationManager/SimulationManagerTaskApi";
+import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen, ListTodo, X, Edit } from "lucide-react";
 
 export default function PracticeDetail() {
   const { id } = useParams();
@@ -24,6 +25,12 @@ export default function PracticeDetail() {
   const [successMessage, setSuccessMessage] = useState("");
   const [modalType, setModalType] = useState(null); // 'success', 'error', or null
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Delete confirmation modal
+  
+  // Task edit state
+  const [editingTask, setEditingTask] = useState(null);
+  const [taskForm, setTaskForm] = useState({});
+  const [updatingTask, setUpdatingTask] = useState(false);
+  const [showTaskEditModal, setShowTaskEditModal] = useState(false);
 
   // Fetch practice details
   useEffect(() => {
@@ -193,6 +200,96 @@ export default function PracticeDetail() {
         setModalType("error");
         setShowDeleteConfirm(false);
         setDeleting(false);
+      });
+  };
+
+  // Task edit handlers
+  const handleOpenTaskEdit = (task) => {
+    setEditingTask(task);
+    setTaskForm({
+      taskName: task.taskName || "",
+      taskCode: task.taskCode || "",
+      taskDescription: task.taskDescription || "",
+      expectedResult: task.expectedResult || "",
+    });
+    setShowTaskEditModal(true);
+  };
+
+  const handleTaskUpdate = () => {
+    // Validation
+    if (!taskForm.taskName?.trim()) {
+      setError("Task name is required");
+      setModalType("error");
+      return;
+    }
+    if (!taskForm.taskCode?.trim()) {
+      setError("Task code is required");
+      setModalType("error");
+      return;
+    }
+
+    setUpdatingTask(true);
+    setError(null);
+
+    const payload = {
+      taskName: taskForm.taskName,
+      taskCode: taskForm.taskCode,
+      taskDescription: taskForm.taskDescription || "",
+      expectedResult: taskForm.expectedResult || "",
+    };
+
+    updateTask(editingTask.id, payload)
+      .then(() => {
+        // Update task in the list
+        setTasks((prevTasks) =>
+          prevTasks.map((t) =>
+            t.id === editingTask.id ? { ...t, ...payload } : t
+          )
+        );
+        setSuccessMessage("Task updated successfully!");
+        setModalType("success");
+        setShowTaskEditModal(false);
+        setEditingTask(null);
+        setTaskForm({});
+        setUpdatingTask(false);
+      })
+      .catch((err) => {
+        let errorMsg = "Update failed. Please try again.";
+        
+        // Handle new API error format: { success: false, error: { code, message, details } }
+        if (err.response?.data?.error) {
+          const error = err.response.data.error;
+          if (error.details?.exceptionMessage) {
+            errorMsg = error.details.exceptionMessage;
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+        }
+        // Handle validation errors from API (old format)
+        else if (err.response?.data?.errors) {
+          const errors = err.response.data.errors;
+          const errorMessages = [];
+          
+          Object.values(errors).forEach((error) => {
+            if (Array.isArray(error)) {
+              errorMessages.push(...error);
+            } else {
+              errorMessages.push(error);
+            }
+          });
+          
+          if (errorMessages.length > 0) {
+            errorMsg = errorMessages[0];
+          }
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        
+        setError(errorMsg);
+        setModalType("error");
+        setUpdatingTask(false);
       });
   };
 
@@ -603,6 +700,17 @@ export default function PracticeDetail() {
                       </div>
                     )}
                   </div>
+
+                  {/* Edit Button */}
+                  <div className="flex-shrink-0">
+                    <button
+                      onClick={() => handleOpenTaskEdit(task)}
+                      className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span className="text-xs font-medium">Edit</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -686,6 +794,119 @@ export default function PracticeDetail() {
                   OK
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Task Edit Modal */}
+      {showTaskEditModal && editingTask && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Edit className="h-5 w-5 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900">Edit Task</h3>
+              </div>
+              <button
+                onClick={() => {
+                  setShowTaskEditModal(false);
+                  setEditingTask(null);
+                  setTaskForm({});
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {/* Task Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Task Name
+                </label>
+                <input
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  value={taskForm.taskName}
+                  onChange={(e) =>
+                    setTaskForm((f) => ({ ...f, taskName: e.target.value }))
+                  }
+                  placeholder="Enter task name"
+                />
+              </div>
+
+              {/* Task Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Task Code
+                </label>
+                <input
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  value={taskForm.taskCode}
+                  onChange={(e) =>
+                    setTaskForm((f) => ({ ...f, taskCode: e.target.value }))
+                  }
+                  placeholder="Enter task code"
+                />
+              </div>
+
+              {/* Task Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  rows="3"
+                  value={taskForm.taskDescription}
+                  onChange={(e) =>
+                    setTaskForm((f) => ({ ...f, taskDescription: e.target.value }))
+                  }
+                  placeholder="Enter task description"
+                />
+              </div>
+
+              {/* Expected Result */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expected Result
+                </label>
+                <textarea
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  rows="3"
+                  value={taskForm.expectedResult}
+                  onChange={(e) =>
+                    setTaskForm((f) => ({ ...f, expectedResult: e.target.value }))
+                  }
+                  placeholder="Enter expected result"
+                />
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
+              <button
+                onClick={() => {
+                  setShowTaskEditModal(false);
+                  setEditingTask(null);
+                  setTaskForm({});
+                }}
+                disabled={updatingTask}
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleTaskUpdate}
+                disabled={updatingTask}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              >
+                <Save className="h-4 w-4" />
+                {updatingTask ? "Saving..." : "Save"}
+              </button>
             </div>
           </div>
         </div>
