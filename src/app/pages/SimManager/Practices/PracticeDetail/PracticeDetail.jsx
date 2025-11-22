@@ -4,10 +4,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   getPracticeById,
   updatePractice,
-  deletePractice
+  deletePractice,
+  getTasksByPracticeId
 } from "../../../../apis/SimulationManager/SimulationManagerPracticeApi";
-import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen } from "lucide-react";
-import PracticeSteps from "./PracticeStep/PracticeSteps";
+import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen, ListTodo, X } from "lucide-react";
 
 export default function PracticeDetail() {
   const { id } = useParams();
@@ -15,12 +15,16 @@ export default function PracticeDetail() {
 
   // Practice info
   const [form, setForm] = useState(null);
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [tasksLoading, setTasksLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [modalType, setModalType] = useState(null); // 'success', 'error', or null
 
+  // Fetch practice details
   useEffect(() => {
     setLoading(true);
     getPracticeById(id)
@@ -34,17 +38,106 @@ export default function PracticeDetail() {
       });
   }, [id]);
 
-  // Practice update
-  const handleUpdate = () => {
-    setUpdating(true);
-    updatePractice(id, form)
-      .then(() => {
-        setSuccessMessage("Practice updated successfully!");
-        setTimeout(() => setSuccessMessage(""), 3000);
-        setUpdating(false);
+  // Fetch tasks
+  useEffect(() => {
+    if (!id) return;
+    setTasksLoading(true);
+    getTasksByPracticeId(id)
+      .then((data) => {
+        setTasks(Array.isArray(data) ? data : []);
+        setTasksLoading(false);
       })
       .catch(() => {
-        setError("Update failed");
+        console.error("Could not fetch tasks");
+        setTasksLoading(false);
+      });
+  }, [id]);
+
+  // Practice update
+  const handleUpdate = () => {
+    // Validation
+    if (!form.practiceName?.trim()) {
+      setError("Practice name is required");
+      setModalType("error");
+      return;
+    }
+    if (!form.practiceCode?.trim()) {
+      setError("Practice code is required");
+      setModalType("error");
+      return;
+    }
+    if (!form.difficultyLevel) {
+      setError("Difficulty level is required");
+      setModalType("error");
+      return;
+    }
+    if (form.estimatedDurationMinutes < 0) {
+      setError("Duration must be a positive number");
+      setModalType("error");
+      return;
+    }
+    if (form.maxAttempts < 1) {
+      setError("Max attempts must be at least 1");
+      setModalType("error");
+      return;
+    }
+    if (form.maxAttempts > 2147483647) {
+      setError("Max attempts cannot exceed 2147483647");
+      setModalType("error");
+      return;
+    }
+
+    setUpdating(true);
+    setError(null);
+
+    const payload = {
+      practiceName: form.practiceName,
+      practiceCode: form.practiceCode,
+      practiceDescription: form.practiceDescription,
+      estimatedDurationMinutes: Math.max(0, parseInt(form.estimatedDurationMinutes) || 0),
+      difficultyLevel: form.difficultyLevel,
+      maxAttempts: Math.max(1, parseInt(form.maxAttempts) || 1),
+      isActive: form.isActive,
+    };
+
+    updatePractice(id, payload)
+      .then(() => {
+        setSuccessMessage("Practice updated successfully!");
+        setModalType("success");
+        setError(null);
+        setUpdating(false);
+        // Auto close after 2 seconds
+        setTimeout(() => {
+          setModalType(null);
+        }, 2000);
+      })
+      .catch((err) => {
+        let errorMsg = "Update failed. Please try again.";
+        
+        // Handle validation errors from API
+        if (err.response?.data?.errors) {
+          const errors = err.response.data.errors;
+          const errorMessages = [];
+          
+          Object.values(errors).forEach((error) => {
+            if (Array.isArray(error)) {
+              errorMessages.push(...error);
+            } else {
+              errorMessages.push(error);
+            }
+          });
+          
+          if (errorMessages.length > 0) {
+            errorMsg = errorMessages[0];
+          }
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        
+        setError(errorMsg);
+        setModalType("error");
         setUpdating(false);
       });
   };
@@ -91,9 +184,81 @@ export default function PracticeDetail() {
 
   if (!form) return null;
 
+  // Modal Component
+  const Modal = ({ type, message, onClose }) => {
+    if (!type) return null;
+
+    const isSuccess = type === "success";
+
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className={`bg-white rounded-lg shadow-2xl p-8 max-w-md w-full transform transition-all ${
+          isSuccess ? 'border-t-4 border-green-500' : 'border-t-4 border-red-500'
+        }`}>
+          {/* Icon */}
+          <div className="flex justify-center mb-4">
+            {isSuccess ? (
+              <div className="p-3 bg-green-100 rounded-full">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+            ) : (
+              <div className="p-3 bg-red-100 rounded-full">
+                <AlertCircle className="h-8 w-8 text-red-600" />
+              </div>
+            )}
+          </div>
+
+          {/* Title & Message */}
+          <h3 className={`text-lg font-bold text-center mb-2 ${
+            isSuccess ? 'text-green-800' : 'text-red-800'
+          }`}>
+            {isSuccess ? 'Success!' : 'Error!'}
+          </h3>
+          <p className="text-gray-700 text-center text-sm mb-6">
+            {message}
+          </p>
+
+          {/* Actions */}
+          <div className="flex gap-3">
+            {isSuccess ? (
+              <>
+                <button
+                  onClick={() => {
+                    setModalType(null);
+                    navigate(-1);
+                  }}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                >
+                  Back to Practices
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setModalType(null);
+                    setError(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                >
+                  OK
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
-      {/* Back Button & Header */}
+      {/* Modal */}
+      <Modal
+        type={modalType}
+        message={modalType === "success" ? successMessage : error}
+        onClose={() => setModalType(null)}
+      />
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate(-1)}
@@ -107,14 +272,6 @@ export default function PracticeDetail() {
           <p className="text-gray-600 mt-1">{form.practiceCode}</p>
         </div>
       </div>
-
-      {/* Success Message */}
-      {successMessage && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3 text-green-800">
-          <CheckCircle className="h-5 w-5 flex-shrink-0" />
-          <p className="font-medium">{successMessage}</p>
-        </div>
-      )}
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-3 gap-6">
@@ -326,9 +483,68 @@ export default function PracticeDetail() {
         </div>
       </div>
 
-      {/* Steps section */}
-      <div>
-        <PracticeSteps practiceId={id} />
+      {/* Tasks Section */}
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-purple-100 rounded-lg">
+            <ListTodo className="h-5 w-5 text-purple-600" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900">Practice Tasks</h2>
+          <span className="ml-auto text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+            {tasks.length} tasks
+          </span>
+        </div>
+
+        {tasksLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
+              <p className="text-gray-600 text-sm">Loading tasks...</p>
+            </div>
+          </div>
+        ) : tasks.length === 0 ? (
+          <div className="py-8 text-center bg-gray-50 rounded-lg">
+            <ListTodo className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+            <p className="text-gray-600">No tasks found for this practice</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {tasks.map((task, idx) => (
+              <div
+                key={task.id}
+                className="p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-all duration-150"
+              >
+                <div className="flex items-start gap-4">
+                  {/* Task Number */}
+                  <div className="flex-shrink-0 h-8 w-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <span className="text-sm font-semibold text-purple-600">{idx + 1}</span>
+                  </div>
+
+                  {/* Task Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <h3 className="text-sm font-semibold text-gray-900">{task.taskName}</h3>
+                      <span className="text-xs font-mono bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+                        {task.taskCode}
+                      </span>
+                    </div>
+                    
+                    {task.taskDescription && (
+                      <p className="text-sm text-gray-600 mb-2">{task.taskDescription}</p>
+                    )}
+
+                    {task.expectedResult && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-800">
+                        <p className="font-medium">Expected Result:</p>
+                        <p>{task.expectedResult}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
