@@ -23,6 +23,7 @@ export default function PracticeDetail() {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [modalType, setModalType] = useState(null); // 'success', 'error', or null
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Delete confirmation modal
 
   // Fetch practice details
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function PracticeDetail() {
       })
       .catch(() => {
         setError("Could not fetch practice");
+        setModalType("error");
         setLoading(false);
       });
   }, [id]);
@@ -61,8 +63,23 @@ export default function PracticeDetail() {
       setModalType("error");
       return;
     }
+    if (form.practiceName.length > 200) {
+      setError("Practice name must be less than 200 characters");
+      setModalType("error");
+      return;
+    }
+    if (form.practiceDescription && form.practiceDescription.length > 1000) {
+      setError("Practice description must be less than 1000 characters");
+      setModalType("error");
+      return;
+    }
     if (!form.practiceCode?.trim()) {
       setError("Practice code is required");
+      setModalType("error");
+      return;
+    }
+    if (form.practiceCode.length > 50) {
+      setError("Practice code must be less than 50 characters");
       setModalType("error");
       return;
     }
@@ -71,18 +88,23 @@ export default function PracticeDetail() {
       setModalType("error");
       return;
     }
-    if (form.estimatedDurationMinutes < 0) {
-      setError("Duration must be a positive number");
+    if (!form.estimatedDurationMinutes || form.estimatedDurationMinutes < 1) {
+      setError("Duration must be greater than 0 minutes");
       setModalType("error");
       return;
     }
-    if (form.maxAttempts < 1) {
+    if (form.estimatedDurationMinutes > 600) {
+      setError("Duration must be less than 600 minutes");
+      setModalType("error");
+      return;
+    }
+    if (!form.maxAttempts || form.maxAttempts < 1) {
       setError("Max attempts must be at least 1");
       setModalType("error");
       return;
     }
-    if (form.maxAttempts > 2147483647) {
-      setError("Max attempts cannot exceed 2147483647");
+    if (form.maxAttempts > 10) {
+      setError("Max attempts cannot exceed 10");
       setModalType("error");
       return;
     }
@@ -106,10 +128,6 @@ export default function PracticeDetail() {
         setModalType("success");
         setError(null);
         setUpdating(false);
-        // Auto close after 2 seconds
-        setTimeout(() => {
-          setModalType(null);
-        }, 2000);
       })
       .catch((err) => {
         let errorMsg = "Update failed. Please try again.";
@@ -144,14 +162,27 @@ export default function PracticeDetail() {
 
   // Practice delete
   const handleDelete = () => {
-    if (!window.confirm("Are you sure you want to delete this practice?")) return;
     setDeleting(true);
     deletePractice(id)
       .then(() => {
-        navigate("/sim-manager/practices");
+        setSuccessMessage("Practice deleted successfully!");
+        setModalType("success");
+        setShowDeleteConfirm(false);
+        // Navigate back to practices list after 1.5 seconds
+        setTimeout(() => {
+          navigate("/simulationManager/practices");
+        }, 1500);
       })
-      .catch(() => {
-        setError("Delete failed");
+      .catch((err) => {
+        let errorMsg = "Delete failed. Please try again.";
+        if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        setError(errorMsg);
+        setModalType("error");
+        setShowDeleteConfirm(false);
         setDeleting(false);
       });
   };
@@ -168,21 +199,19 @@ export default function PracticeDetail() {
     );
   }
 
-  if (error) {
+  if (!form) {
     return (
       <div className="p-6 bg-red-50 border border-red-200 rounded-lg text-red-700">
         <div className="flex items-center gap-3">
           <AlertCircle className="h-5 w-5" />
           <div>
             <p className="font-semibold">Error</p>
-            <p>{error}</p>
+            <p>{error || "Practice not found"}</p>
           </div>
         </div>
       </div>
     );
   }
-
-  if (!form) return null;
 
   // Modal Component
   const Modal = ({ type, message, onClose }) => {
@@ -254,11 +283,6 @@ export default function PracticeDetail() {
   return (
     <div className="space-y-6">
       {/* Modal */}
-      <Modal
-        type={modalType}
-        message={modalType === "success" ? successMessage : error}
-        onClose={() => setModalType(null)}
-      />
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate(-1)}
@@ -300,6 +324,27 @@ export default function PracticeDetail() {
                   }
                   placeholder="Enter practice name"
                 />
+                <div className="mt-1 text-xs text-gray-500">
+                  {form.practiceName?.length || 0} / 200 characters
+                </div>
+              </div>
+
+              {/* Practice Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Practice Code
+                </label>
+                <input
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  value={form.practiceCode || ""}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, practiceCode: e.target.value }))
+                  }
+                  placeholder="Enter practice code"
+                />
+                <div className="mt-1 text-xs text-gray-500">
+                  {form.practiceCode?.length || 0} / 50 characters
+                </div>
               </div>
 
               {/* Description */}
@@ -316,6 +361,9 @@ export default function PracticeDetail() {
                   }
                   placeholder="Enter practice description"
                 />
+                <div className="mt-1 text-xs text-gray-500">
+                  {form.practiceDescription?.length || 0} / 1000 characters
+                </div>
               </div>
 
               {/* Duration & Difficulty Row */}
@@ -338,6 +386,9 @@ export default function PracticeDetail() {
                       }
                       placeholder="0"
                     />
+                  </div>
+                  <div className="mt-1 text-xs text-gray-500">
+                    1 - 600 minutes
                   </div>
                 </div>
                 <div>
@@ -380,6 +431,9 @@ export default function PracticeDetail() {
                       placeholder="0"
                     />
                   </div>
+                  <div className="mt-1 text-xs text-gray-500">
+                    1 - 10 attempts
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -411,7 +465,7 @@ export default function PracticeDetail() {
               </button>
               <button
                 className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-                onClick={handleDelete}
+                onClick={() => setShowDeleteConfirm(true)}
                 disabled={deleting}
               >
                 <Trash2 className="h-4 w-4" />
@@ -546,6 +600,87 @@ export default function PracticeDetail() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-red-200">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Practice</h3>
+                <p className="text-gray-600 text-sm mb-6">
+                  Are you sure you want to delete this practice? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    disabled={deleting}
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {deleting ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {modalType === "success" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-green-200">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Success</h3>
+                <p className="text-gray-600 text-sm mb-4">{successMessage}</p>
+                <button
+                  onClick={() => setModalType(null)}
+                  className="w-full px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors font-medium"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {modalType === "error" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-red-200">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Error</h3>
+                <p className="text-gray-600 text-sm mb-4">{error}</p>
+                <button
+                  onClick={() => setModalType(null)}
+                  className="w-full px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
