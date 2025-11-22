@@ -1,8 +1,8 @@
 // src\app\pages\SimManager\Practices\Practices.jsx
 import React, { useEffect, useState } from 'react';
-import { getPractices } from '../../../apis/SimulationManager/SimulationManagerPracticeApi';
+import { getPractices, deletePractice } from '../../../apis/SimulationManager/SimulationManagerPracticeApi';
 import { Link } from 'react-router-dom';
-import { Clock, Zap, BookOpen, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Clock, Zap, BookOpen, Eye, ChevronLeft, ChevronRight, Plus, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function Practices() {
   const [practices, setPractices] = useState([]);
@@ -11,6 +11,10 @@ export default function Practices() {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize] = useState(10);
   const [meta, setMeta] = useState({ page: 1, pageSize: 10, totalCount: 0, totalPages: 1 });
+  const [deleting, setDeleting] = useState(null); // ID of practice being deleted
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null); // ID of practice to confirm delete
+  const [modalType, setModalType] = useState(null); // 'success', 'error', or null
+  const [modalMessage, setModalMessage] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -59,6 +63,43 @@ export default function Practices() {
     }
   };
 
+  const handleDelete = (id, name) => {
+    setDeleting(id);
+    deletePractice(id)
+      .then(() => {
+        setModalMessage(`Practice "${name}" deleted successfully!`);
+        setModalType("success");
+        setDeleting(null);
+        setShowDeleteConfirm(null);
+        // Refresh the list
+        setTimeout(() => {
+          setPageNumber(1);
+        }, 1500);
+      })
+      .catch((err) => {
+        let errorMsg = "Delete failed. Please try again.";
+        
+        // Handle new API error format
+        if (err.response?.data?.error) {
+          const error = err.response.data.error;
+          if (error.details?.exceptionMessage) {
+            errorMsg = error.details.exceptionMessage;
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        
+        setModalMessage(errorMsg);
+        setModalType("error");
+        setDeleting(null);
+        setShowDeleteConfirm(null);
+      });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -96,9 +137,18 @@ export default function Practices() {
           <h1 className="text-3xl font-bold text-gray-900">Simulation Practices</h1>
           <p className="text-gray-600 mt-1">Manage and view all available practice modules</p>
         </div>
-        <div className="text-right">
-          <div className="text-3xl font-bold text-blue-600">{meta.totalCount}</div>
-          <p className="text-gray-600 text-sm">Total Practices</p>
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <div className="text-3xl font-bold text-blue-600">{meta.totalCount}</div>
+            <p className="text-gray-600 text-sm">Total Practices</p>
+          </div>
+          <Link
+            to="./create"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium"
+          >
+            <Plus className="h-5 w-5" />
+            Create Practice
+          </Link>
         </div>
       </div>
 
@@ -127,7 +177,12 @@ export default function Practices() {
                         <span className="text-sm font-semibold text-blue-600">{idx + 1}</span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{p.practiceName}</p>
+                        <Link
+                          to={`../practices/${p.id}`}
+                          className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          {p.practiceName}
+                        </Link>
                         {p.practiceDescription && (
                           <p className="text-xs text-gray-500 mt-1 line-clamp-2">{p.practiceDescription}</p>
                         )}
@@ -181,13 +236,23 @@ export default function Practices() {
 
                   {/* Action */}
                   <td className="px-6 py-4 text-center">
-                    <Link
-                      to={`../practices/${p.id}`}
-                      className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-150 text-sm font-medium"
-                    >
-                      <Eye className="h-4 w-4" />
-                      View
-                    </Link>
+                    <div className="flex items-center justify-center gap-2">
+                      <Link
+                        to={`../practices/${p.id}`}
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-150 text-sm font-medium"
+                      >
+                        <Eye className="h-4 w-4" />
+                        View
+                      </Link>
+                      <button
+                        onClick={() => setShowDeleteConfirm(p.id)}
+                        disabled={deleting === p.id}
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 text-sm font-medium"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -280,6 +345,90 @@ export default function Practices() {
           </button>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-red-200">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Practice</h3>
+                <p className="text-gray-600 text-sm mb-6">
+                  Are you sure you want to delete this practice? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDeleteConfirm(null)}
+                    disabled={deleting}
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      const practice = practices.find(p => p.id === showDeleteConfirm);
+                      handleDelete(showDeleteConfirm, practice?.practiceName || 'Practice');
+                    }}
+                    disabled={deleting}
+                    className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {deleting === showDeleteConfirm ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {modalType === "success" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-green-200">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Success</h3>
+                <p className="text-gray-600 text-sm mb-4">{modalMessage}</p>
+                <button
+                  onClick={() => setModalType(null)}
+                  className="w-full px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors font-medium"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {modalType === "error" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-red-200">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Error</h3>
+                <p className="text-gray-600 text-sm mb-4">{modalMessage}</p>
+                <button
+                  onClick={() => setModalType(null)}
+                  className="w-full px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,62 +1,31 @@
-// src\app\pages\SimManager\Practices\PracticeDetail\PracticeDetail.jsx
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+// src\app\pages\SimManager\Practices\CreatePractice\CreatePractice.jsx
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  getPracticeById,
-  updatePractice,
-  deletePractice,
-  getTasksByPracticeId
+  createPractice,
 } from "../../../../apis/SimulationManager/SimulationManagerPracticeApi";
-import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen, ListTodo, X } from "lucide-react";
+import { ArrowLeft, Save, Clock, Zap, AlertCircle, CheckCircle, BookOpen } from "lucide-react";
 
-export default function PracticeDetail() {
-  const { id } = useParams();
+export default function CreatePractice() {
   const navigate = useNavigate();
 
-  // Practice info
-  const [form, setForm] = useState(null);
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [tasksLoading, setTasksLoading] = useState(false);
-  const [updating, setUpdating] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  // Form state
+  const [form, setForm] = useState({
+    practiceName: "",
+    practiceCode: "",
+    practiceDescription: "",
+    estimatedDurationMinutes: 1,
+    difficultyLevel: "",
+    maxAttempts: 1,
+    isActive: true,
+  });
+
+  const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [modalType, setModalType] = useState(null); // 'success', 'error', or null
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Delete confirmation modal
 
-  // Fetch practice details
-  useEffect(() => {
-    setLoading(true);
-    getPracticeById(id)
-      .then((data) => {
-        setForm(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Could not fetch practice");
-        setModalType("error");
-        setLoading(false);
-      });
-  }, [id]);
-
-  // Fetch tasks
-  useEffect(() => {
-    if (!id) return;
-    setTasksLoading(true);
-    getTasksByPracticeId(id)
-      .then((data) => {
-        setTasks(Array.isArray(data) ? data : []);
-        setTasksLoading(false);
-      })
-      .catch(() => {
-        console.error("Could not fetch tasks");
-        setTasksLoading(false);
-      });
-  }, [id]);
-
-  // Practice update
-  const handleUpdate = () => {
+  const handleCreate = () => {
     // Validation
     if (!form.practiceName?.trim()) {
       setError("Practice name is required");
@@ -109,28 +78,32 @@ export default function PracticeDetail() {
       return;
     }
 
-    setUpdating(true);
+    setCreating(true);
     setError(null);
 
     const payload = {
       practiceName: form.practiceName,
       practiceCode: form.practiceCode,
       practiceDescription: form.practiceDescription,
-      estimatedDurationMinutes: Math.max(0, parseInt(form.estimatedDurationMinutes) || 0),
+      estimatedDurationMinutes: Math.max(1, parseInt(form.estimatedDurationMinutes) || 1),
       difficultyLevel: form.difficultyLevel,
       maxAttempts: Math.max(1, parseInt(form.maxAttempts) || 1),
       isActive: form.isActive,
     };
 
-    updatePractice(id, payload)
-      .then(() => {
-        setSuccessMessage("Practice updated successfully!");
+    createPractice(payload)
+      .then((data) => {
+        setSuccessMessage("Practice created successfully!");
         setModalType("success");
         setError(null);
-        setUpdating(false);
+        setCreating(false);
+        // Navigate back to practices list after 1.5 seconds
+        setTimeout(() => {
+          navigate("/simulationManager/practices");
+        }, 1500);
       })
       .catch((err) => {
-        let errorMsg = "Update failed. Please try again.";
+        let errorMsg = "Create failed. Please try again.";
         
         // Handle new API error format: { success: false, error: { code, message, details } }
         if (err.response?.data?.error) {
@@ -165,133 +138,12 @@ export default function PracticeDetail() {
         
         setError(errorMsg);
         setModalType("error");
-        setUpdating(false);
+        setCreating(false);
       });
-  };
-
-  // Practice delete
-  const handleDelete = () => {
-    setDeleting(true);
-    deletePractice(id)
-      .then(() => {
-        setSuccessMessage("Practice deleted successfully!");
-        setModalType("success");
-        setShowDeleteConfirm(false);
-        // Navigate back to practices list after 1.5 seconds
-        setTimeout(() => {
-          navigate("/simulationManager/practices");
-        }, 1500);
-      })
-      .catch((err) => {
-        let errorMsg = "Delete failed. Please try again.";
-        if (err.response?.data?.message) {
-          errorMsg = err.response.data.message;
-        } else if (err.message) {
-          errorMsg = err.message;
-        }
-        setError(errorMsg);
-        setModalType("error");
-        setShowDeleteConfirm(false);
-        setDeleting(false);
-      });
-  };
-
-  // Loading state
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading practice details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!form) {
-    return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-lg text-red-700">
-        <div className="flex items-center gap-3">
-          <AlertCircle className="h-5 w-5" />
-          <div>
-            <p className="font-semibold">Error</p>
-            <p>{error || "Practice not found"}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Modal Component
-  const Modal = ({ type, message, onClose }) => {
-    if (!type) return null;
-
-    const isSuccess = type === "success";
-
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className={`bg-white rounded-lg shadow-2xl p-8 max-w-md w-full transform transition-all ${
-          isSuccess ? 'border-t-4 border-green-500' : 'border-t-4 border-red-500'
-        }`}>
-          {/* Icon */}
-          <div className="flex justify-center mb-4">
-            {isSuccess ? (
-              <div className="p-3 bg-green-100 rounded-full">
-                <CheckCircle className="h-8 w-8 text-green-600" />
-              </div>
-            ) : (
-              <div className="p-3 bg-red-100 rounded-full">
-                <AlertCircle className="h-8 w-8 text-red-600" />
-              </div>
-            )}
-          </div>
-
-          {/* Title & Message */}
-          <h3 className={`text-lg font-bold text-center mb-2 ${
-            isSuccess ? 'text-green-800' : 'text-red-800'
-          }`}>
-            {isSuccess ? 'Success!' : 'Error!'}
-          </h3>
-          <p className="text-gray-700 text-center text-sm mb-6">
-            {message}
-          </p>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            {isSuccess ? (
-              <>
-                <button
-                  onClick={() => {
-                    setModalType(null);
-                    navigate(-1);
-                  }}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                >
-                  Back to Practices
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => {
-                    setModalType(null);
-                    setError(null);
-                  }}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-                >
-                  OK
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    );
   };
 
   return (
     <div className="space-y-6">
-      {/* Modal */}
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate(-1)}
@@ -301,8 +153,8 @@ export default function PracticeDetail() {
           Back
         </button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{form.practiceName}</h1>
-          <p className="text-gray-600 mt-1">{form.practiceCode}</p>
+          <h1 className="text-3xl font-bold text-gray-900">Create New Practice</h1>
+          <p className="text-gray-600 mt-1">Add a new simulation practice module</p>
         </div>
       </div>
 
@@ -345,7 +197,7 @@ export default function PracticeDetail() {
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  value={form.practiceCode || ""}
+                  value={form.practiceCode}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, practiceCode: e.target.value }))
                   }
@@ -364,7 +216,7 @@ export default function PracticeDetail() {
                 <textarea
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                   rows="4"
-                  value={form.practiceDescription || ""}
+                  value={form.practiceDescription}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, practiceDescription: e.target.value }))
                   }
@@ -386,7 +238,7 @@ export default function PracticeDetail() {
                     <input
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       type="number"
-                      value={form.estimatedDurationMinutes || ""}
+                      value={form.estimatedDurationMinutes}
                       onChange={(e) =>
                         setForm((f) => ({
                           ...f,
@@ -406,12 +258,12 @@ export default function PracticeDetail() {
                   </label>
                   <select
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    value={form.difficultyLevel || ""}
+                    value={form.difficultyLevel}
                     onChange={(e) =>
                       setForm((f) => ({ ...f, difficultyLevel: e.target.value }))
                     }
                   >
-                    <option value="">Select difficulty...</option>
+                    <option value="">-- Select Difficulty --</option>
                     <option value="Entry">Entry</option>
                     <option value="Intermediate">Intermediate</option>
                     <option value="Advanced">Advanced</option>
@@ -430,7 +282,7 @@ export default function PracticeDetail() {
                     <input
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       type="number"
-                      value={form.maxAttempts || ""}
+                      value={form.maxAttempts}
                       onChange={(e) =>
                         setForm((f) => ({
                           ...f,
@@ -450,13 +302,13 @@ export default function PracticeDetail() {
                   </label>
                   <select
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    value={form.isActive ? "true" : "false"}
+                    value={form.isActive ? "active" : "inactive"}
                     onChange={(e) =>
-                      setForm((f) => ({ ...f, isActive: e.target.value === "true" }))
+                      setForm((f) => ({ ...f, isActive: e.target.value === "active" }))
                     }
                   >
-                    <option value="true">Active</option>
-                    <option value="false">Inactive</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
                   </select>
                 </div>
               </div>
@@ -466,26 +318,18 @@ export default function PracticeDetail() {
             <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
               <button
                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-                onClick={handleUpdate}
-                disabled={updating}
+                onClick={handleCreate}
+                disabled={creating}
               >
                 <Save className="h-4 w-4" />
-                {updating ? "Saving..." : "Save Changes"}
-              </button>
-              <button
-                className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-                onClick={() => setShowDeleteConfirm(true)}
-                disabled={deleting}
-              >
-                <Trash2 className="h-4 w-4" />
-                {deleting ? "Deleting..." : "Delete"}
+                {creating ? "Creating..." : "Create Practice"}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Right Column - Info Card */}
-        <div className="col-span-1">
+        {/* Right Column - Summary Card */}
+        <div>
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200 p-6 sticky top-6">
             <h3 className="text-lg font-semibold text-blue-900 mb-4">Summary</h3>
             
@@ -506,12 +350,14 @@ export default function PracticeDetail() {
                 <div className={`p-2 rounded-lg ${
                   form.difficultyLevel === 'Entry' ? 'bg-green-200' :
                   form.difficultyLevel === 'Intermediate' ? 'bg-yellow-200' :
-                  'bg-red-200'
+                  form.difficultyLevel === 'Advanced' ? 'bg-red-200' :
+                  'bg-gray-200'
                 }`}>
                   <Zap className={`h-5 w-5 ${
                     form.difficultyLevel === 'Entry' ? 'text-green-700' :
                     form.difficultyLevel === 'Intermediate' ? 'text-yellow-700' :
-                    'text-red-700'
+                    form.difficultyLevel === 'Advanced' ? 'text-red-700' :
+                    'text-gray-700'
                   }`} />
                 </div>
                 <div>
@@ -545,105 +391,6 @@ export default function PracticeDetail() {
           </div>
         </div>
       </div>
-
-      {/* Tasks Section */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-purple-100 rounded-lg">
-            <ListTodo className="h-5 w-5 text-purple-600" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900">Practice Tasks</h2>
-          <span className="ml-auto text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-            {tasks.length} tasks
-          </span>
-        </div>
-
-        {tasksLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
-              <p className="text-gray-600 text-sm">Loading tasks...</p>
-            </div>
-          </div>
-        ) : tasks.length === 0 ? (
-          <div className="py-8 text-center bg-gray-50 rounded-lg">
-            <ListTodo className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-600">No tasks found for this practice</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {tasks.map((task, idx) => (
-              <div
-                key={task.id}
-                className="p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-all duration-150"
-              >
-                <div className="flex items-start gap-4">
-                  {/* Task Number */}
-                  <div className="flex-shrink-0 h-8 w-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <span className="text-sm font-semibold text-purple-600">{idx + 1}</span>
-                  </div>
-
-                  {/* Task Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <h3 className="text-sm font-semibold text-gray-900">{task.taskName}</h3>
-                      <span className="text-xs font-mono bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-                        {task.taskCode}
-                      </span>
-                    </div>
-                    
-                    {task.taskDescription && (
-                      <p className="text-sm text-gray-600 mb-2">{task.taskDescription}</p>
-                    )}
-
-                    {task.expectedResult && (
-                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-800">
-                        <p className="font-medium">Expected Result:</p>
-                        <p>{task.expectedResult}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-red-200">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <AlertCircle className="h-6 w-6 text-red-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Practice</h3>
-                <p className="text-gray-600 text-sm mb-6">
-                  Are you sure you want to delete this practice? This action cannot be undone.
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    disabled={deleting}
-                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {deleting ? "Deleting..." : "Delete"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Success Modal */}
       {modalType === "success" && (
