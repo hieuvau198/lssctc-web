@@ -9,7 +9,7 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
-  withCredentials: false,
+  withCredentials: true,
 });
 
 // Request interceptor: add Authorization header from cookies on each request

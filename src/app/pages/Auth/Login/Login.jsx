@@ -11,6 +11,7 @@ import {
 } from '../../../libs/crypto';
 import useAuthStore from '../../../store/authStore';
 import { decodeToken } from '../../../libs/jwtDecode';
+import useLoginGoogle from '../../../hooks/useLoginGoogle';
 
 export default function Login() {
   const { message } = App.useApp();
@@ -21,6 +22,8 @@ export default function Login() {
   const [error, setError] = useState('');
   const nav = useNavigate();
   const { setToken } = useAuthStore();
+  
+  const { handleLoginGoogle, isPendingGoogle } = useLoginGoogle();
 
   // Role-based redirect function
   const redirectByRole = (role) => {
@@ -193,6 +196,25 @@ export default function Login() {
             {loading ? 'Signing in…' : 'Sign in'}
           </Button>
         </form>
+
+        <button
+              type="button"
+              onClick={() => handleLoginGoogle()}
+              className={`block w-[100%] rounded-md py-2 bg-white border border-gray-400 hover:bg-gray-300`}
+            >
+              <div className="relative">
+                <figure className="absolute top-1/2 -translate-y-1/2 left-[38%]">
+                  <img
+                    src={"/Google-icon.svg"}
+                    alt="Login with Google"
+                    width={25}
+                    height={25}
+                    className="block"
+                  />
+                </figure>
+                <span className="text-base text-gray-700">Google</span>
+              </div>
+            </button>
           <p className="pt-4 text-center text-xs text-gray-400">By continuing you agree to our <a href="#" className="underline hover:text-blue-600">Terms</a> & <a href="#" className="underline hover:text-blue-600">Privacy Policy</a>.</p>
         </div>
       </div>
