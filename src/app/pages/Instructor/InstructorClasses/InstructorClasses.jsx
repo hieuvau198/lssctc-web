@@ -27,7 +27,8 @@ export default function InstructorClasses() {
   
   const navigate = useNavigate();
 
-  const instructorIdFromStore = useAuthStore((s) => s.nameid);
+  const authState = useAuthStore();
+  const instructorIdFromStore = authState.nameid;
   const [instructorId, setInstructorId] = useState(null);
 
   useEffect(() => {

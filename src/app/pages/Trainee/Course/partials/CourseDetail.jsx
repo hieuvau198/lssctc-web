@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import { Alert, Skeleton, Button } from 'antd';
-import PageNav from '../../../../components/PageNav/PageNav';
+import { Alert, Skeleton } from 'antd';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router';
 import { fetchCourseDetail } from '../../../../apis/ProgramManager/CourseApi';
+import PageNav from '../../../../components/PageNav/PageNav';
 
 export default function CourseDetail() {
   const { id } = useParams();
@@ -10,6 +10,7 @@ export default function CourseDetail() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     let cancelled = false;
@@ -29,11 +30,19 @@ export default function CourseDetail() {
     return () => { cancelled = true; };
   }, [id]);
 
-  const pageNameMap = { course: 'Courses', [id]: data?.name || '...' };
+  // If navigated from a Program page, location.state.fromProgram should be set.
+  const fromProgram = location?.state?.fromProgram;
+  const breadcrumbItems = fromProgram
+    ? [
+        { title: 'Programs', href: '/program' },
+        { title: fromProgram.name || 'Program', href: `/program/${fromProgram.id}` },
+        { title: data?.name || 'Course' },
+      ]
+    : [ { title: 'Courses', href: '/course' }, { title: data?.name || 'Course' } ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <PageNav nameMap={pageNameMap} />
+      <PageNav items={breadcrumbItems} />
       {error && (
         <div className="mt-4">
           <Alert type="error" showIcon message="Error" description={error} />
@@ -99,14 +108,14 @@ export default function CourseDetail() {
               <p className="text-sm leading-relaxed text-slate-700 whitespace-pre-line mb-6 line-clamp-6 md:line-clamp-none">
                 {data.description || 'No description provided.'}
               </p>
-              <div className="flex flex-wrap gap-3">
+              {/* <div className="flex flex-wrap gap-3">
                 <Button type="primary" size="large" onClick={() => navigate(-1)}>
                   Back
                 </Button>
                 <Button size="large" disabled>
                   Enroll (coming soon)
                 </Button>
-              </div>
+              </div> */}
             </div>
           </div>
         </>

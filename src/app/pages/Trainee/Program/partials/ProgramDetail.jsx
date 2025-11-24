@@ -97,9 +97,9 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
     <div className="w-full">
       {/* Two-column hero */}
       <div className="bg-gradient-to-br from-slate-50 to-slate-100 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="max-w-7xl mx-auto px-4 py-10">
           <PageNav
-            className="mb-6"
+            className="mb-4"
             items={[
               { title: 'Programs', href: '/program' },
               { title: program.name },
@@ -111,14 +111,14 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
           <div className="flex flex-col-reverse lg:flex-row gap-12 items-stretch">
             {/* Left content */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-4xl font-bold mb-5 leading-tight text-slate-900 max-w-3xl">{program.name}</h1>
+              <h1 className="text-3xl font-bold mb-5 leading-tight text-slate-900 max-w-3xl">{program.name}</h1>
               <div className="text-lg text-slate-600 mb-6 max-w-2xl">
-                <div className="overflow-y-auto" style={{ maxHeight: '4.5rem' }}>
-                  <p className="whitespace-pre-line">{program.description}</p>
+                <div className="overflow-y-scroll" style={{ minHeight:'7rem',maxHeight: '7rem' }}>
+                  <p className="whitespace-pre-line text-sm">{program.description}</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-slate-700 mb-6">
-                <span className="flex items-center"><ClockCircleOutlined className="mr-2 text-slate-500" />{program.durationHours} hours</span>
+                {/* <span className="flex items-center"><ClockCircleOutlined className="mr-2 text-slate-500" />{program.durationHours} hours</span> */}
                 <span className="flex items-center"><BookOutlined className="mr-2 text-slate-500" />{program.totalCourses} courses</span>
                 <Tag color={program.isActive ? 'green' : 'default'} className="m-0">{program.isActive ? 'Active' : 'Inactive'}</Tag>
               </div>
@@ -159,16 +159,16 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
         </div>
       </div>
       {/* Curriculum */}
-      <div className="bg-white">
+      <div className="bg-white min-h-screen">
         <div className="max-w-7xl mx-auto px-4 py-10">
-          <h2 className="text-3xl font-semibold mb-6">Curriculum</h2>
+          <h2 className="text-2xl font-semibold mb-6">Curriculum</h2>
           {courses && courses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {courses.map((c) => (
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => navigate(`/course/${c.id}`)}
+                  onClick={() => navigate(`/course/${c.id}`, { state: { fromProgram: { id, name: program?.name } } })}
                   className="text-left"
                 >
                   <CourseCard

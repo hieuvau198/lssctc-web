@@ -1,29 +1,23 @@
 import { App, Dropdown } from 'antd';
 import { NavLink, useNavigate } from 'react-router';
 import { logout } from '../../../apis/Auth/LogoutApi';
+import useAuthStore from '../../../store/authStore';
+import { sAvatarUrl, clearAvatarUrl } from '../../../store/userAvatar';
 
 /**
  * Simple Avatar placeholder for authenticated user.
- * Reads optional display name/email from localStorage for initial fallback.
+ * Reads optional display name/email from authStore and persisted avatar.
  */
 export default function Avt({ onLogout }) {
-  let initial = 'U';
-  let userName = 'User';
-  let avatarUrl = null;
   const { message } = App.useApp();
   const nav = useNavigate();
   
-  try {
-    const rawUser = localStorage.getItem('user');
-    const parsed = rawUser ? JSON.parse(rawUser) : null;
-    const name = parsed?.fullName || parsed?.name || parsed?.email;
-    if (typeof name === 'string' && name.trim()) {
-      userName = name.trim();
-      initial = userName.charAt(0).toUpperCase();
-    }
-    // Check for user avatar
-    avatarUrl = parsed?.avatarUrl || parsed?.avatar || null;
-  } catch {}
+  const authState = useAuthStore();
+  const persistedAvatar = sAvatarUrl.use();
+  
+  const userName = authState.fullName || authState.name || 'User';
+  const initial = userName.charAt(0).toUpperCase();
+  const avatarUrl = authState.avatarUrl || persistedAvatar || null;
 
   // Generate default avatar URL if no avatar provided
   const getAvatarUrl = () => {
@@ -48,6 +42,7 @@ export default function Avt({ onLogout }) {
       (async () => {
         try {
           await logout();
+          clearAvatarUrl(); // Clear persisted avatar on logout
         } catch (e) {
           message.error('Logout failed. Please try again.');
           console.error('Logout failed:', e);

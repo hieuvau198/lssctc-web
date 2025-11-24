@@ -7,8 +7,7 @@ import { Edit, Trash2, Plus, X, ArrowLeft, Clock, Zap, AlertCircle, CheckCircle,
 import { 
   getPractices, getTasksByPracticeId, 
   updatePractice, updateTask, 
-  addTaskToPractice, removeTaskFromPractice, 
-  getAllTasks 
+  removeTaskFromPractice 
 } from '../../../../apis/Instructor/InstructorPractice';
 import { getAuthToken } from '../../../../libs/cookies';
 
@@ -316,27 +315,22 @@ export default function PracticeDetail() {
     fetchData();
   }, [fetchData]);
 
-  // Handlers for Practice Update
+  // --- Handlers for Practice ---
+  const handleEditPractice = () => {
+    setIsUpdateModalVisible(true);
+  };
+
   const handleUpdatePractice = async (values) => {
     if (!practice) return;
 
     setUpdateLoading(true);
     try {
-      const apiPayload = {
-        practiceName: values.practiceName,
-        practiceCode: values.practiceCode,
-        practiceDescription: values.practiceDescription,
-        estimatedDurationMinutes: values.estimatedDurationMinutes,
-        difficultyLevel: values.difficultyLevel,
-        maxAttempts: values.maxAttempts,
-        isActive: values.isActive,
-      };
-
-      const updated = await updatePractice(practice.id, apiPayload, token);
+      // The backend DTO already handles the nullability for optional fields
+      const updated = await updatePractice(practice.id, values, token);
       
       message.success('Practice updated successfully.');
       setIsUpdateModalVisible(false);
-      // Manually update state for immediate feedback
+      // Update state immediately
       setPractice({ ...practice, ...updated }); 
     } catch (e) {
       console.error('Error updating practice:', e);
@@ -346,7 +340,7 @@ export default function PracticeDetail() {
     }
   };
 
-  // Handlers for Task Update
+  // --- Handlers for Task CRUD (Update/Remove) ---
   const handleEditTask = (task) => {
     setCurrentTaskToUpdate(task);
     setIsTaskUpdateModalVisible(true);
@@ -357,18 +351,11 @@ export default function PracticeDetail() {
     
     setUpdateLoading(true);
     try {
-      const apiPayload = {
-        taskName: values.taskName,
-        taskCode: values.taskCode,
-        taskDescription: values.taskDescription,
-        expectedResult: values.expectedResult,
-      };
-
-      const updatedTaskResult = await updateTask(currentTaskToUpdate.id, apiPayload, token);
+      const updatedTaskResult = await updateTask(currentTaskToUpdate.id, values, token);
       
       message.success('Task updated successfully.');
       setIsTaskUpdateModalVisible(false);
-      // Update the local tasks state
+      // Update the local tasks state for instant feedback
       setTasks(tasks.map(t => 
         t.id === currentTaskToUpdate.id ? { ...t, ...updatedTaskResult } : t
       ));
@@ -381,11 +368,10 @@ export default function PracticeDetail() {
     }
   };
 
-  // Handlers for Task Assignment/Removal
   const handleRemoveTask = async (taskId) => {
     Modal.confirm({
       title: 'Confirm Removal',
-      content: 'Are you sure you want to remove this task from the practice? This action only unlinks it from this practice.',
+      content: 'Are you sure you want to remove this task from the practice? This action only unlinks it from this practice, it does not delete the task permanently.',
       okText: 'Yes, Remove',
       okType: 'danger',
       onOk: async () => {
@@ -401,6 +387,7 @@ export default function PracticeDetail() {
     });
   };
 
+  // --- Render Logic ---
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -482,7 +469,7 @@ export default function PracticeDetail() {
           onCancel={() => setIsManageTasksModalVisible(false)}
           practiceId={practice.id}
           currentTasks={tasks}
-          reloadTasks={fetchData}
+          reloadTasks={fetchData} // Re-fetch all data after assignment/unassignment
           token={token}
         />
       )}
