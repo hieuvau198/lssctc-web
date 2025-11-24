@@ -10,13 +10,17 @@ const { Text } = Typography;
 
 const SectionHeader = ({ title, duration }) => (
   <div className="flex justify-between items-center w-full">
-    <Text strong className="text-base">
-      <ReadOutlined className="mr-2" />
-      {title}
-    </Text>
-    <Space size="small" className="text-sm text-gray-600 pr-2">
-      <ClockCircleOutlined />
-      <span>{duration} minutes</span>
+    <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
+        <ReadOutlined className="text-blue-600" />
+      </div>
+      <Text strong className="text-base text-slate-800">
+        {title}
+      </Text>
+    </div>
+    <Space size="small" className="text-sm text-slate-600 pr-2">
+      <ClockCircleOutlined className="text-slate-500" />
+      <span className="font-medium">{duration} minutes</span>
     </Space>
   </div>
 );
@@ -79,29 +83,52 @@ const ClassSections = ({ courseId, classId }) => {
 
   if (loading) {
     return (
-      <div className="p-4">
-        <Skeleton active paragraph={{ rows: 4 }} />
+      <div className="p-6 space-y-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="bg-white rounded-lg border border-slate-200 p-4">
+            <Skeleton active paragraph={{ rows: 3 }} />
+          </div>
+        ))}
       </div>
     );
   }
 
   if (error) {
-    return <Alert message="Error" description={error} type="error" showIcon className="m-4" />;
+    return (
+      <div className="p-6">
+        <Alert 
+          message="Error Loading Sections" 
+          description={error} 
+          type="error" 
+          showIcon 
+          className="rounded-lg"
+        />
+      </div>
+    );
   }
 
   if (sections.length === 0) {
     return (
-      <div className="p-4">
-        <Alert message="No Sections" description="There are no sections available for this course yet." type="info" showIcon />
+      <div className="p-6">
+        <div className="bg-slate-50 rounded-lg border border-slate-200 p-8 text-center">
+          <ReadOutlined className="text-4xl text-slate-400 mb-3" />
+          <p className="text-slate-600 font-medium mb-1">No Sections Available</p>
+          <p className="text-sm text-slate-500">There are no sections available for this course yet.</p>
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <div className="py-4">
-        <Collapse accordion bordered={false} className="bg-white">
-          {sections.map((section) => (
+      <div className="p-6 space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto">
+        <Collapse 
+          accordion 
+          bordered={false} 
+          className="bg-transparent"
+          expandIconPosition="end"
+        >
+          {sections.map((section, index) => (
             <Panel
               key={section.id}
               header={
@@ -110,23 +137,27 @@ const ClassSections = ({ courseId, classId }) => {
                   duration={section.duration}
                 />
               }
-              // Add "Add Activity" button to the panel's extra section
               extra={
                 <Tooltip title="Add Activity">
                   <Button
-                    type="text"
+                    type="primary"
+                    size="small"
                     shape="circle"
                     icon={<PlusOutlined />}
                     onClick={(e) => {
                       e.stopPropagation();
                       openAddActivityModal(section.id);
                     }}
+                    className="hover:scale-110 transition-transform"
                   />
                 </Tooltip>
               }
-              className="mb-2 border rounded-lg shadow-sm"
+              className="mb-3 rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-shadow bg-white"
+              style={{ borderRadius: '12px' }}
             >
-              <p className="pb-2 text-gray-700">{section.description}</p>
+              <div className="bg-slate-50 -mx-6 -mt-4 px-6 py-3 mb-4 border-b border-slate-200">
+                <p className="text-slate-700 leading-relaxed">{section.description}</p>
+              </div>
               <ActivityList
                 sectionId={section.id}
                 classId={classId}

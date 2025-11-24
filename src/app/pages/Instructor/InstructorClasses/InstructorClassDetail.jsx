@@ -92,7 +92,7 @@ export default function InstructorClassDetail() {
     <div className="max-w-7xl mx-auto px-4 py-4">
       <div className="flex justify-start items-center mb-4">
         <BackButton />
-        <Breadcrumb
+        {/* <Breadcrumb
           className="text-lg"
           items={[
             {
@@ -102,7 +102,7 @@ export default function InstructorClassDetail() {
               title: classDetail.courseName || "Class Detail",
             },
           ]}
-        />
+        /> */}
       </div>
 
       <div className="bg-white rounded-lg shadow-sm p-6">
