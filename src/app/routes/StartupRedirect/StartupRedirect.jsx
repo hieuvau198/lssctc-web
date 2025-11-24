@@ -19,11 +19,7 @@ export default function StartupRedirect() {
       case 'trainee':
         return '/';
       case 'simulationmanager':
-      case 'simulation-manager':
-        return '/simulation-manager/dashboard';
-      case 'programmanager':
-      case 'program-manager':
-        return '/program-manager/dashboard';
+        return '/simulationManager/dashboard';
       default:
         return '/';
     }
