@@ -129,11 +129,11 @@ export default function Header() {
                   Programs
                 </NavLink>
               </li>
-              <li>
+              {/* <li>
                 <NavLink to="/course" className={getLinkClass}>
                   Courses
                 </NavLink>
-              </li>
+              </li> */}
               <li>
                 <NavLink to="/simulator" className={getLinkClass}>
                   Simulator
