@@ -1,60 +1,63 @@
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Input, App } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
+import { App } from 'antd';
+import { 
+  GoogleOutlined, 
+  FacebookFilled, 
+  GithubOutlined, 
+  LinkedinFilled,
+  KeyOutlined,
+  MailOutlined,
+  NumberOutlined
+} from '@ant-design/icons';
+
+import './Login.css';
+
+// Import APIs and Stores
 import { loginEmail, loginUsername } from '../../../apis/Auth/LoginApi';
-import PageNav from '../../../components/PageNav/PageNav';
 import {
   clearRememberedCredentials,
   loadRememberedCredentials,
   persistRememberedCredentials,
 } from '../../../libs/crypto';
 import useAuthStore from '../../../store/authStore';
-import { decodeToken } from '../../../libs/jwtDecode';
-import useLoginGoogle from '../../../hooks/useLoginGoogle';
 
 export default function Login() {
   const { message } = App.useApp();
-  const [identity, setIdentity] = useState(''); // email or username
+  const nav = useNavigate();
+  const { setToken } = useAuthStore();
+
+  // --- States for Login ---
+  const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const nav = useNavigate();
-  const { setToken } = useAuthStore();
   
-  const { handleLoginGoogle, isPendingGoogle } = useLoginGoogle();
+  // --- State for Animation Toggle (True = Hiển thị form Forgot Password) ---
+  const [isActive, setIsActive] = useState(false);
 
-  // Role-based redirect function
+  // --- States for Forgot Password Logic ---
+  const [forgotStep, setForgotStep] = useState(1); // 1: Nhập Email, 2: Nhập OTP
+  const [resetEmail, setResetEmail] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+
+  // --- Role Based Redirect ---
   const redirectByRole = (role) => {
     switch (role) {
-      case 'Admin':
-        nav('/admin/dashboard');
-        break;
-      case 'Instructor':
-        nav('/instructor/dashboard');
-        break;
-      case 'Trainee':
-        nav('/');
-        break;
-      case 'SimulationManager':
-        nav('/simulationManager/dashboard');
-        break;
-      case 'ProgramManager':
-        nav('/programManager/dashboard');
-        break;
-      default:
-        // Default redirect if role is unknown or not set
-        nav('/');
-        break;
+      case 'Admin': nav('/admin/dashboard'); break;
+      case 'Instructor': nav('/instructor/dashboard'); break;
+      case 'Trainee': nav('/'); break;
+      case 'SimulationManager': nav('/simulationManager/dashboard'); break;
+      case 'ProgramManager': nav('/programManager/dashboard'); break;
+      default: nav('/'); break;
     }
   };
 
-  // Restore remembered credentials
+  // --- Restore Credentials ---
   useEffect(() => {
     const creds = loadRememberedCredentials();
     if (creds) {
-      // previous stored object used `email` field — map to identity
       setIdentity(creds.email || creds.username || '');
       setPassword(creds.password);
       setRemember(true);
@@ -66,17 +69,15 @@ export default function Login() {
       clearRememberedCredentials();
       return;
     }
-    // keep legacy `email` key for backward compatibility
     persistRememberedCredentials({ email: id, username: id, password: pw, remember: shouldRemember });
   }, []);
 
-  const handleSubmit = async (e) => {
+  // --- Handle Login Submit ---
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
     
     try {
-      // Decide whether identity is email or username (simple heuristic)
       const isEmail = identity.includes('@');
       let response;
       if (isEmail) {
@@ -90,134 +91,189 @@ export default function Login() {
       }
 
       const { accessToken } = response;
-
-      // Save credentials if remember me is checked (pass remember state explicitly)
       persistCredentials(identity, password, remember);
-
-      // Set token options based on remember me checkbox
-      const tokenOptions = remember ? { expires: 7 } : {}; // 7 days if remember me, session cookie otherwise
-
-      // Set token in authStore (this will also save to cookies automatically)
+      const tokenOptions = remember ? { expires: 7 } : {};
       setToken(accessToken, tokenOptions);
 
-      // Decode token and ensure authStore has the latest claims
-      try {
-        const claims = decodeToken(accessToken) || {};
-        const store = useAuthStore.getState();
-        if (store && typeof store.setFromClaims === 'function') {
-          store.setFromClaims(claims);
-        }
-
-        // Determine role from store (or fallback to token claims)
-        const userRole = store.role || claims.role || claims.roles || '';
-        console.log('User role after login:', userRole);
-
-        // Redirect based on user role
-        redirectByRole(userRole);
-      } catch (err) {
-        // Fallback: redirect to home
-        console.warn('Failed to refresh auth store claims:', err);
-        redirectByRole();
-      }
+      const authState = useAuthStore.getState();
+      redirectByRole(authState.role);
       message.success('Login successful');
     } catch (err) {
-      // show notification and error block
-      // use message.error from Ant Design message API
-      try {
-        message.error(err.response?.data?.message || err.message || 'Đăng nhập thất bại');
-      } catch (e) {
-        // ignore if message api not available
-      }
       console.error('Login error:', err);
-      setError(err.response?.data?.message || err.message || 'Đăng nhập thất bại');
+      message.error(err.response?.data?.message || 'Đăng nhập thất bại');
     } finally {
       setLoading(false);
     }
   };
 
+  // --- Handle Forgot Password Flow ---
+  
+  // Bước 1: Gửi mã OTP về Email
+  const handleSendCode = (e) => {
+    e.preventDefault();
+    if (!resetEmail) {
+        message.warning('Please enter your email address');
+        return;
+    }
+    // TODO: Gọi API gửi OTP tại đây
+    // await sendOtpApi(resetEmail);
+    
+    message.success(`OTP code sent to ${resetEmail}`);
+    setForgotStep(2); // Chuyển sang bước nhập OTP
+  };
+
+  // Bước 2: Xác nhận OTP và đổi mật khẩu
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (otpCode.length !== 6) {
+        message.error('Code must be 6 digits');
+        return;
+    }
+    // TODO: Gọi API verify OTP và đổi pass tại đây
+    // await resetPasswordApi(resetEmail, otpCode, newPassword);
+
+    message.success('Password reset successfully!');
+    setForgotStep(1); // Reset form
+    setResetEmail('');
+    setOtpCode('');
+    setNewPassword('');
+    setIsActive(false); // Trượt về màn hình Login
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
-      <div className="max-w-7xl mx-auto px-4 pt-4">
-        <PageNav items={[{ title: 'Login' }]} className="pb-2" />
-      </div>
-      <div className="flex items-center justify-center px-4 py-10">
-        <div className="w-full max-w-md bg-white/90 backdrop-blur border border-blue-100 shadow-sm rounded-lg p-8">
-        <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">Sign in</h1>
-        <p className="text-gray-500 text-sm mb-6 text-center">Access your LSSCTC training</p>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="identity">Email or Username</label>
-            <Input
-              id="identity"
-              type="text"
-              size="large"
-              placeholder="you@example.com or username"
+    <div className="login-page-wrapper">
+      <div className={`login-container ${isActive ? 'active' : ''}`} id="container">
+        
+        {/* --- FORGOT PASSWORD PANEL (Thay thế vị trí Sign Up cũ - Bên Trái) --- */}
+        <div className="form-container sign-up">
+          {forgotStep === 1 ? (
+            // Form Bước 1: Nhập Email
+            <form onSubmit={handleSendCode}>
+              <h1>Recovery Password</h1>
+              <div className="social-icons">
+                <span className="icon"><MailOutlined style={{fontSize: '20px'}}/></span>
+              </div>
+              <span style={{textAlign: 'center', marginBottom: '10px'}}>
+                Enter your email address to receive a verification code
+              </span>
+              <input 
+                type="email" 
+                placeholder="Email Address" 
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                required 
+              />
+              <button type="submit">Send Code</button>
+            </form>
+          ) : (
+            // Form Bước 2: Nhập OTP & Pass mới
+            <form onSubmit={handleVerifyOtp}>
+              <h1>Verification</h1>
+              <div className="social-icons">
+                <span className="icon"><KeyOutlined style={{fontSize: '20px'}}/></span>
+              </div>
+              <span>Enter the 6-digit code sent to your email</span>
+              
+              <input 
+                type="text" 
+                placeholder="6-Digit Code" 
+                maxLength={6}
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value)}
+                required 
+                style={{textAlign: 'center', letterSpacing: '5px', fontWeight: 'bold'}}
+              />
+              <input 
+                type="password" 
+                placeholder="New Password" 
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required 
+              />
+              
+              <button type="submit" style={{marginTop: '10px'}}>Reset Password</button>
+              
+              {/* Nút quay lại bước 1 nếu nhập sai email */}
+              <a href="#" onClick={(e) => {e.preventDefault(); setForgotStep(1)}} style={{marginTop: '15px', fontSize: '12px'}}>
+                Wrong email? Back
+              </a>
+            </form>
+          )}
+        </div>
+
+        {/* --- LOGIN FORM (Bên Phải) --- */}
+        <div className="form-container sign-in">
+          <form onSubmit={handleLoginSubmit}>
+            <h1>Sign In</h1>
+            <div className="social-icons">
+              <a href="#" className="icon"><GoogleOutlined /></a>
+              <a href="#" className="icon"><FacebookFilled /></a>
+              <a href="#" className="icon"><GithubOutlined /></a>
+              <a href="#" className="icon"><LinkedinFilled /></a>
+            </div>
+            <span>or use your account</span>
+            
+            <input 
+              type="text" 
+              placeholder="Email or Username" 
               value={identity}
               onChange={(e) => setIdentity(e.target.value)}
-              disabled={loading}
-              autoComplete="username email"
               required
             />
-            <p className="text-xs text-gray-400 mt-1">You can sign in with your email address or username.</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">Password</label>
-            <Input.Password
-              id="password"
-              size="large"
-              placeholder="••••••••"
+            <input 
+              type="password" 
+              placeholder="Password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              autoComplete="current-password"
-              iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
               required
             />
-          </div>
-          <div className="flex items-center justify-between">
-            <Checkbox
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-              disabled={loading}
-            >
-              Remember me
-            </Checkbox>
-            <div onClick={() => nav('/auth/forgot-password')} className="text-sm text-blue-600 hover:text-blue-700 cursor-pointer">Forgot password?</div>
-          </div>
-          <Button
-            type="primary"
-            htmlType="submit"
-            size="large"
-            loading={loading}
-            disabled={loading}
-            className="w-full h-11"
-            style={{ backgroundColor: '#2563eb', borderColor: '#2563eb' }}
-          >
-            {loading ? 'Signing in…' : 'Sign in'}
-          </Button>
-        </form>
-
-        <button
-              type="button"
-              onClick={() => handleLoginGoogle()}
-              className={`block w-[100%] rounded-md py-2 bg-white border border-gray-400 hover:bg-gray-300`}
-            >
-              <div className="relative">
-                <figure className="absolute top-1/2 -translate-y-1/2 left-[38%]">
-                  <img
-                    src={"/Google-icon.svg"}
-                    alt="Login with Google"
-                    width={25}
-                    height={25}
-                    className="block"
+            
+            <div className="flex justify-between w-full px-1 mt-2 text-xs" style={{display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: '8px'}}>
+                <label className="flex items-center cursor-pointer" style={{display: 'flex', alignItems: 'center'}}>
+                  <input 
+                    type="checkbox" 
+                    checked={remember} 
+                    onChange={(e) => setRemember(e.target.checked)}
+                    style={{width: 'auto', margin: '0 5px 0 0'}} 
                   />
-                </figure>
-                <span className="text-base text-gray-700">Google</span>
-              </div>
+                  Remember me
+                </label>
+                {/* Link nhỏ này cũng kích hoạt hiệu ứng trượt */}
+                <a href="#" onClick={(e) => { e.preventDefault(); setIsActive(true); }}>
+                  Forgot Password?
+                </a>
+            </div>
+
+            <button type="submit" disabled={loading} style={{marginTop: '15px'}}>
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
-          <p className="pt-4 text-center text-xs text-gray-400">By continuing you agree to our <a href="#" className="underline hover:text-blue-600">Terms</a> & <a href="#" className="underline hover:text-blue-600">Privacy Policy</a>.</p>
+          </form>
+        </div>
+
+        {/* --- OVERLAY (Phần trượt che chắn) --- */}
+        <div className="toggle-container">
+          <div className="toggle">
+            {/* Panel trái (Hiện khi đang ở trang Forgot Pass -> Bấm để về Login) */}
+            <div className="toggle-panel toggle-left">
+              <h1>Remember Password?</h1>
+              <p>If you already have an account, just sign in to continue your journey.</p>
+              <button className="hidden" onClick={() => setIsActive(false)}>
+                Sign In
+              </button>
+            </div>
+            
+            {/* Panel phải (Hiện khi đang ở trang Login -> Bấm để sang Forgot Pass) */}
+            <div className="toggle-panel toggle-right">
+              <h1>Forgot Password?</h1>
+              <p>Don't worry! Enter your email to receive a recovery code and reset your password.</p>
+              <button className="hidden" onClick={() => setIsActive(true)}>
+                Reset Password
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
