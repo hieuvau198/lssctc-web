@@ -26,18 +26,25 @@ const mapPracticeFromApi = (item) => ({
 
 export async function getPractices({ page = 1, pageSize = 10 } = {}) {
   try {
-    const qs = buildQuery({ page, pageSize });
-    const { data } = await axios.get(`${BASE}/Practices/paged${qs}`);
-    if (!data) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
+    const qs = buildQuery({ pageNumber: page, pageSize });
+    const res = await axios.get(`${BASE}/Practices/paged${qs}`);
+    
+    // Handle new response format
+    let responseData = res.data;
+    if (res.data.success && res.data.data) {
+      responseData = res.data.data;
+    }
+    
+    if (!responseData) return { items: [], totalCount: 0, page: 1, pageSize, totalPages: 0 };
 
-    const items = Array.isArray(data.items) ? data.items.map(mapPracticeFromApi) : [];
+    const items = Array.isArray(responseData.items) ? responseData.items.map(mapPracticeFromApi) : [];
     return {
       items,
-      totalCount: Number(data.totalCount) || items.length,
-      page: Number(data.page) || page,
-      pageSize: Number(data.pageSize) || pageSize,
-      totalPages: Number(data.totalPages) || 1,
-      raw: data,
+      totalCount: Number(responseData.totalCount) || items.length,
+      page: Number(responseData.page) || page,
+      pageSize: Number(responseData.pageSize) || pageSize,
+      totalPages: Number(responseData.totalPages) || 1,
+      raw: responseData,
     };
   } catch (err) {
     console.error('Error fetching practices:', err);
@@ -54,13 +61,20 @@ export async function getPractices({ page = 1, pageSize = 10 } = {}) {
  */
 export async function getTasksByPracticeId(practiceId, token) {
   try {
-    const { data } = await axios.get(`${BASE}/Tasks/practice/${practiceId}`, {
+    const res = await axios.get(`${BASE}/Tasks/practice/${practiceId}`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
     });
-    return Array.isArray(data) ? data : [];
+    
+    // Handle new response format
+    let responseData = res.data;
+    if (res.data.success && res.data.data) {
+      responseData = res.data.data;
+    }
+    
+    return Array.isArray(responseData) ? responseData : [];
   } catch (err) {
     console.error('Error fetching tasks by practiceId:', err);
     throw err;
@@ -73,13 +87,18 @@ export async function getTasksByPracticeId(practiceId, token) {
  */
 export async function updatePractice(id, data, token) {
   try {
-    const { data: updatedPractice } = await axios.put(`${BASE}/Practices/${id}`, data, {
+    const res = await axios.put(`${BASE}/Practices/${id}`, data, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
     });
-    return updatedPractice;
+    
+    // Handle new response format
+    if (res.data.success && res.data.data) {
+      return res.data.data;
+    }
+    return res.data;
   } catch (err) {
     console.error('Error updating practice:', err);
     throw err;
@@ -92,13 +111,18 @@ export async function updatePractice(id, data, token) {
  */
 export async function updateTask(id, data, token) {
   try {
-    const { data: updatedTask } = await axios.put(`${BASE}/Tasks/${id}`, data, {
+    const res = await axios.put(`${BASE}/Tasks/${id}`, data, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
     });
-    return updatedTask;
+    
+    // Handle new response format
+    if (res.data.success && res.data.data) {
+      return res.data.data;
+    }
+    return res.data;
   } catch (err) {
     console.error('Error updating task:', err);
     throw err;
@@ -111,13 +135,18 @@ export async function updateTask(id, data, token) {
  */
 export async function addTaskToPractice(practiceId, taskId, token) {
   try {
-    const { data } = await axios.post(`${BASE}/Tasks/practice/${practiceId}/add/${taskId}`, null, {
+    const res = await axios.post(`${BASE}/Tasks/practice/${practiceId}/add/${taskId}`, null, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
     });
-    return data;
+    
+    // Handle new response format
+    if (res.data.success && res.data.data) {
+      return res.data.data;
+    }
+    return res.data;
   } catch (err) {
     console.error('Error adding task to practice:', err);
     throw err;
@@ -130,13 +159,18 @@ export async function addTaskToPractice(practiceId, taskId, token) {
  */
 export async function removeTaskFromPractice(practiceId, taskId, token) {
   try {
-    const { data } = await axios.delete(`${BASE}/Tasks/practice/${practiceId}/remove/${taskId}`, {
+    const res = await axios.delete(`${BASE}/Tasks/practice/${practiceId}/remove/${taskId}`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
     });
-    return data;
+    
+    // Handle new response format
+    if (res.data.success && res.data.data) {
+      return res.data.data;
+    }
+    return res.data;
   } catch (err) {
     console.error('Error removing task from practice:', err);
     throw err;
@@ -149,13 +183,20 @@ export async function removeTaskFromPractice(practiceId, taskId, token) {
  */
 export async function getAllTasks(token) {
   try {
-    const { data } = await axios.get(`${BASE}/Tasks`, {
+    const res = await axios.get(`${BASE}/Tasks`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
     });
-    return Array.isArray(data) ? data : [];
+    
+    // Handle new response format
+    let responseData = res.data;
+    if (res.data.success && res.data.data) {
+      responseData = res.data.data;
+    }
+    
+    return Array.isArray(responseData) ? responseData : [];
   } catch (err) {
     console.error('Error fetching all tasks:', err);
     throw err;
