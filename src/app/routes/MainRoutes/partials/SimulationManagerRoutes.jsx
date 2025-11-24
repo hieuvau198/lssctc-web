@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router'
 import SimManagerLayout from '../../../layouts/SimManagerLayout/SimManagerLayout'
 import SimDashboard from '../../../pages/SimManager/Dashboard/Dashboard'
+import CreatePractice from '../../../pages/SimManager/Practices/CreatePractice/CreatePractice'
 import PracticeDetail from '../../../pages/SimManager/Practices/PracticeDetail/PracticeDetail'
 import PracticeStepDetail from '../../../pages/SimManager/Practices/PracticeDetail/PracticeStep/PracticeStepDetail/PracticeStepDetail'
 import Practices from '../../../pages/SimManager/Practices/Practices'
@@ -22,6 +23,7 @@ export default function SimulationManagerRoutes() {
         <Route index element={<SimDashboard />} />
         <Route path="/dashboard" element={<SimDashboard />} />
         <Route path="/practices" element={<Practices />} />
+        <Route path="/practices/create" element={<CreatePractice />} />
         <Route path="/practices/:id" element={<PracticeDetail />} />
         <Route path="/practices/:practiceId/steps/:stepId" element={<PracticeStepDetail />} />
         <Route path="/configs" element={<SimulatorConfigs />} />
