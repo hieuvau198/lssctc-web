@@ -94,6 +94,16 @@ export async function fetchCourseCategories() {
   }
 }
 
+export async function fetchClassesByCourse(courseId) {
+  try {
+    const resp = await apiClient.get(`${import.meta.env.VITE_API_Program_Service_URL}/Classes/course/${courseId}`);
+    return Array.isArray(resp.data) ? resp.data : [];
+  } catch (err) {
+    console.error('Error fetching classes by course:', err);
+    throw err;
+  }
+}
+
 export async function fetchCourseLevels() {
   try {
     const resp = await apiClient.get(`${BASE_URL}/levels`);

@@ -134,9 +134,6 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
                   </ul>
                 </div>
               )}
-              <Button type="primary" size="large" icon={<UserOutlined />}>
-                Enroll Now
-              </Button>
             </div>
             {/* Right image panel */}
             <div className="w-full lg:w-96 flex-shrink-0">
