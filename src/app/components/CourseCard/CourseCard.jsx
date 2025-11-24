@@ -28,14 +28,18 @@ export default function CourseCard({ course }) {
         {(level || duration) && (
           <div className="absolute left-2 top-2 flex gap-2">
             {level && (
-              <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/90 text-slate-700 border border-slate-200 shadow-sm">
-                {level}
-              </span>
+              <div className="flex items-center">
+                <span className="px-2 py-1 rounded-md text-[11px] font-medium bg-white/90 text-slate-700 border border-slate-200 shadow-sm">
+                  {level}
+                </span>
+              </div>
             )}
             {duration && (
-              <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-600/90 text-white shadow-sm">
-                {duration}
-              </span>
+              <div className="flex items-center">
+                <span className="px-2 py-1 items-center rounded-md text-[11px] font-medium bg-blue-600/90 text-white shadow-sm">
+                  {duration} hrs
+                </span>
+              </div>
             )}
           </div>
         )}
@@ -67,20 +71,14 @@ export default function CourseCard({ course }) {
           </div>
         )}
 
-        <div className="mt-4 flex items-center justify-between">
+        {/* <div className="mt-4 flex items-center justify-between">
           <button
             type="button"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
           >
             Enroll
           </button>
-          <button
-            type="button"
-            className="text-blue-700 hover:text-blue-800 text-sm font-medium"
-          >
-            Details
-          </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
