@@ -21,7 +21,8 @@ export default function CourseSection() {
   const classId = courseId;
 
   // --- LOGIC TRAINEE ID MỚI ---
-  const traineeIdFromStore = useAuthStore((s) => s.nameid);
+  const authState = useAuthStore();
+  const traineeIdFromStore = authState.nameid;
   const [traineeId, setTraineeId] = useState(null);
   // --- KẾT THÚC LOGIC TRAINEE ID MỚI ---
 

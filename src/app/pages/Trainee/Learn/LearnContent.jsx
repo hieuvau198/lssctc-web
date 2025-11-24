@@ -28,7 +28,8 @@ export default function LearnContent() {
   const { courseId, sectionId, partitionId } = useParams();
   const activityId = parseInt(partitionId, 10);
 
-  const traineeIdFromStore = useAuthStore((s) => s.nameid);
+  const authState = useAuthStore();
+  const traineeIdFromStore = authState.nameid;
   const [traineeId, setTraineeId] = useState(null);
 
   const [activityRecord, setActivityRecord] = useState(null);

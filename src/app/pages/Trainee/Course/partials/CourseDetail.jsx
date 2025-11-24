@@ -1,14 +1,17 @@
-import { Alert, Skeleton } from 'antd';
+import { Alert, Skeleton, Card, Tag, Empty } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router';
-import { fetchCourseDetail } from '../../../../apis/ProgramManager/CourseApi';
+import { fetchCourseDetail, fetchClassesByCourse } from '../../../../apis/ProgramManager/CourseApi';
 import PageNav from '../../../../components/PageNav/PageNav';
+import { CalendarOutlined, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
 export default function CourseDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
+  const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [classesLoading, setClassesLoading] = useState(true);
   const [error, setError] = useState(null);
   const location = useLocation();
 
@@ -16,16 +19,23 @@ export default function CourseDetail() {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    fetchCourseDetail(id)
-      .then((res) => {
+    
+    Promise.all([
+      fetchCourseDetail(id),
+      fetchClassesByCourse(id).catch(() => [])
+    ])
+      .then(([courseRes, classesRes]) => {
         if (cancelled) return;
-        setData(res);
+        setData(courseRes);
+        setClasses(classesRes);
         setLoading(false);
+        setClassesLoading(false);
       })
       .catch((err) => {
         if (cancelled) return;
         setError(err.message || 'Failed to load course');
         setLoading(false);
+        setClassesLoading(false);
       });
     return () => { cancelled = true; };
   }, [id]);
@@ -108,15 +118,78 @@ export default function CourseDetail() {
               <p className="text-sm leading-relaxed text-slate-700 whitespace-pre-line mb-6 line-clamp-6 md:line-clamp-none">
                 {data.description || 'No description provided.'}
               </p>
-              {/* <div className="flex flex-wrap gap-3">
-                <Button type="primary" size="large" onClick={() => navigate(-1)}>
-                  Back
-                </Button>
-                <Button size="large" disabled>
-                  Enroll (coming soon)
-                </Button>
-              </div> */}
             </div>
+          </div>
+
+          {/* Classes Section */}
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold text-slate-900 mb-6">Available Classes</h2>
+            {classesLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Card key={i} className="rounded-lg">
+                    <Skeleton active paragraph={{ rows: 3 }} />
+                  </Card>
+                ))}
+              </div>
+            ) : classes.length === 0 ? (
+              <Empty description="No classes available for this course yet" className="py-8" />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {classes.map((cls) => (
+                  <Card
+                    key={cls.id}
+                    hoverable
+                    className="rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    onClick={() => navigate(`/class/${cls.id}`)}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <h3 className="font-semibold text-slate-900 line-clamp-2 flex-1">
+                          {cls.name || cls.className || 'Unnamed Class'}
+                        </h3>
+                        <Tag color={cls.isActive ? 'green' : 'default'} className="ml-2">
+                          {cls.isActive ? 'Active' : 'Inactive'}
+                        </Tag>
+                      </div>
+                      
+                      {cls.classCode && (
+                        <div className="text-xs text-slate-500">
+                          Code: <span className="font-mono font-medium">{cls.classCode}</span>
+                        </div>
+                      )}
+
+                      <div className="space-y-2 text-sm text-slate-600">
+                        {cls.startDate && (
+                          <div className="flex items-center gap-2">
+                            <CalendarOutlined className="text-slate-400" />
+                            <span>Start: {new Date(cls.startDate).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                        {cls.endDate && (
+                          <div className="flex items-center gap-2">
+                            <CalendarOutlined className="text-slate-400" />
+                            <span>End: {new Date(cls.endDate).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                        {cls.instructorName && (
+                          <div className="flex items-center gap-2">
+                            <UserOutlined className="text-slate-400" />
+                            <span>{cls.instructorName}</span>
+                          </div>
+                        )}
+                        {cls.totalTrainee != null && (
+                          <div className="flex items-center gap-2">
+                            <UserOutlined className="text-slate-400" />
+                            <span>{cls.totalTrainee} trainees</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         </>
       )}

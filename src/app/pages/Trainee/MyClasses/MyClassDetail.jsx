@@ -16,7 +16,8 @@ import { getLearningSectionsByClassIdAndTraineeId } from '../../../apis/Trainee/
 
 export default function MyClassDetail() {
   const { id } = useParams();
-  const traineeIdFromStore = useAuthStore((s) => s.nameid);
+  const authState = useAuthStore();
+  const traineeIdFromStore = authState.nameid;
 
   const [classData, setClassData] = useState(null);
   const [sections, setSections] = useState([]);
