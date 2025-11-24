@@ -6,7 +6,7 @@ import { getLearningClassesByTraineeId } from '../../../apis/Trainee/TraineeClas
 import PageNav from '../../../components/PageNav/PageNav';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
-import useAuthStore from '../../../store/authStore'; // <-- IMPORT AUTH STORE
+import useAuthStore from '../../../store/authStore';
 import { getClassStatus } from '../../../utils/classStatus';
 
 
@@ -15,7 +15,8 @@ export default function MyClasses() {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const traineeIdFromStore = useAuthStore((state) => state.nameid); // <-- USE ID FROM STORE
+  const authState = useAuthStore();
+  const traineeIdFromStore = authState.nameid;
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -114,12 +115,12 @@ export default function MyClasses() {
                                 <div className="text-xs text-slate-500 mb-0.5">
                                   {p.provider}
                                 </div>
-                                {p.badge && (() => {
-                                  const s = getClassStatus(p.badge);
+                                {p._statusMapped && (() => {
+                                  const s = getClassStatus(p._statusMapped);
                                   return (
-                                    <span className={`text-[10px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded-full text-white`} style={{ background: s.color === 'default' ? undefined : undefined }}>
+                                    <Tag color={s.color} className="text-[10px] uppercase tracking-wide font-semibold m-0">
                                       {s.label}
-                                    </span>
+                                    </Tag>
                                   );
                                 })()}
                               </div>
