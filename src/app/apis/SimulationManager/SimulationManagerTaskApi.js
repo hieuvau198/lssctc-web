@@ -37,3 +37,27 @@ export const deleteTask = (id) =>
     }
     return res.data;
   });
+
+export const deleteTaskFromPractice = (practiceId, taskId) =>
+  axios.delete(`${API_BASE}/Tasks/practice/${practiceId}/remove/${taskId}`).then(res => {
+    if (res.data.success && res.data.data) {
+      return res.data.data;
+    }
+    return res.data;
+  });
+
+export const getAllTasks = (pageNumber = 1, pageSize = 10) =>
+  axios.get(`${API_BASE}/Tasks/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`).then(res => {
+    if (res.data.success && res.data.data) {
+      return res.data.data;
+    }
+    return res.data;
+  });
+
+export const addTaskToPractice = (practiceId, taskId) =>
+  axios.post(`${API_BASE}/Tasks/practice/${practiceId}/add/${taskId}`).then(res => {
+    if (res.data.success && res.data.data) {
+      return res.data.data;
+    }
+    return res.data;
+  });

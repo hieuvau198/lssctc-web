@@ -7,7 +7,7 @@ import {
   deletePractice,
   getTasksByPracticeId
 } from "../../../../apis/SimulationManager/SimulationManagerPracticeApi";
-import { updateTask, createTask } from "../../../../apis/SimulationManager/SimulationManagerTaskApi";
+import { updateTask, createTask, deleteTaskFromPractice, getAllTasks, addTaskToPractice, deleteTask } from "../../../../apis/SimulationManager/SimulationManagerTaskApi";
 import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen, ListTodo, X, Edit, Plus } from "lucide-react";
 
 export default function PracticeDetail() {
@@ -33,6 +33,16 @@ export default function PracticeDetail() {
   const [showTaskEditModal, setShowTaskEditModal] = useState(false);
   const [showTaskCreateModal, setShowTaskCreateModal] = useState(false);
   const [creatingTask, setCreatingTask] = useState(false);
+  const [deletingTaskId, setDeletingTaskId] = useState(null);
+  const [showDeleteTaskConfirm, setShowDeleteTaskConfirm] = useState(false);
+  const [showChooseTaskModal, setShowChooseTaskModal] = useState(false);
+  const [systemTasks, setSystemTasks] = useState([]);
+  const [systemTasksLoading, setSystemTasksLoading] = useState(false);
+  const [systemTasksPage, setSystemTasksPage] = useState(1);
+  const [systemTasksTotalPages, setSystemTasksTotalPages] = useState(1);
+  const [selectedSystemTaskId, setSelectedSystemTaskId] = useState(null);
+  const [deletingSystemTaskId, setDeletingSystemTaskId] = useState(null);
+  const [showDeleteSystemTaskConfirm, setShowDeleteSystemTaskConfirm] = useState(false);
 
   // Fetch practice details
   useEffect(() => {
@@ -376,6 +386,205 @@ export default function PracticeDetail() {
         setError(errorMsg);
         setModalType("error");
         setCreatingTask(false);
+      });
+  };
+
+  // Task delete handler
+  const handleDeleteTask = () => {
+    if (!deletingTaskId) return;
+
+    setDeletingTaskId(null);
+    
+    deleteTaskFromPractice(id, deletingTaskId)
+      .then(() => {
+        // Remove task from the list
+        setTasks((prevTasks) =>
+          prevTasks.filter((t) => t.id !== deletingTaskId)
+        );
+        setSuccessMessage("Task removed successfully!");
+        setModalType("success");
+        setShowDeleteTaskConfirm(false);
+      })
+      .catch((err) => {
+        let errorMsg = "Delete failed. Please try again.";
+        
+        // Handle new API error format
+        if (err.response?.data?.error) {
+          const error = err.response.data.error;
+          if (error.details?.exceptionMessage) {
+            errorMsg = error.details.exceptionMessage;
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+        }
+        // Handle validation errors from API (old format)
+        else if (err.response?.data?.errors) {
+          const errors = err.response.data.errors;
+          const errorMessages = [];
+          
+          Object.values(errors).forEach((error) => {
+            if (Array.isArray(error)) {
+              errorMessages.push(...error);
+            } else {
+              errorMessages.push(error);
+            }
+          });
+          
+          if (errorMessages.length > 0) {
+            errorMsg = errorMessages[0];
+          }
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        
+        setError(errorMsg);
+        setModalType("error");
+        setShowDeleteTaskConfirm(false);
+      });
+  };
+
+  // Open choose task modal
+  const handleOpenChooseTaskModal = () => {
+    setSystemTasksPage(1);
+    setShowChooseTaskModal(true);
+    fetchSystemTasks(1);
+  };
+
+  // Fetch system tasks
+  const fetchSystemTasks = (page) => {
+    setSystemTasksLoading(true);
+    getAllTasks(page, 10)
+      .then((data) => {
+        setSystemTasks(data.items || []);
+        setSystemTasksTotalPages(data.totalPages || 1);
+        setSystemTasksPage(page);
+        setSystemTasksLoading(false);
+      })
+      .catch(() => {
+        console.error("Could not fetch system tasks");
+        setSystemTasksLoading(false);
+      });
+  };
+
+  // Add selected task to practice
+  const handleAddSelectedTask = () => {
+    if (!selectedSystemTaskId) {
+      setError("Please select a task first");
+      setModalType("error");
+      return;
+    }
+
+    const selectedTask = systemTasks.find(t => t.id === selectedSystemTaskId);
+    if (!selectedTask) return;
+
+    // Check if task already exists in practice
+    if (tasks.some(t => t.id === selectedSystemTaskId)) {
+      setError("This task is already added to the practice");
+      setModalType("error");
+      return;
+    }
+
+    // Call API to add task to practice
+    addTaskToPractice(id, selectedSystemTaskId)
+      .then(() => {
+        // Add task to practice list
+        setTasks((prevTasks) => [...prevTasks, selectedTask]);
+        setSuccessMessage("Task added to practice successfully!");
+        setModalType("success");
+        setShowChooseTaskModal(false);
+        setSelectedSystemTaskId(null);
+      })
+      .catch((err) => {
+        let errorMsg = "Failed to add task. Please try again.";
+        
+        // Handle new API error format
+        if (err.response?.data?.error) {
+          const error = err.response.data.error;
+          if (error.details?.exceptionMessage) {
+            errorMsg = error.details.exceptionMessage;
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+        }
+        // Handle validation errors from API (old format)
+        else if (err.response?.data?.errors) {
+          const errors = err.response.data.errors;
+          const errorMessages = [];
+          
+          Object.values(errors).forEach((error) => {
+            if (Array.isArray(error)) {
+              errorMessages.push(...error);
+            } else {
+              errorMessages.push(error);
+            }
+          });
+          
+          if (errorMessages.length > 0) {
+            errorMsg = errorMessages[0];
+          }
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        
+        setError(errorMsg);
+        setModalType("error");
+      });
+  };
+
+  const handleDeleteSystemTask = () => {
+    if (!deletingSystemTaskId) return;
+
+    deleteTask(deletingSystemTaskId)
+      .then(() => {
+        // Remove task from system tasks list
+        setSystemTasks((prevTasks) =>
+          prevTasks.filter((t) => t.id !== deletingSystemTaskId)
+        );
+        setSuccessMessage("Task deleted successfully!");
+        setModalType("success");
+        setShowDeleteSystemTaskConfirm(false);
+        setDeletingSystemTaskId(null);
+      })
+      .catch((err) => {
+        let errorMsg = "Failed to delete task. Please try again.";
+        
+        // Handle new API error format
+        if (err.response?.data?.error) {
+          const error = err.response.data.error;
+          if (error.details?.exceptionMessage) {
+            errorMsg = error.details.exceptionMessage;
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+        }
+        // Handle validation errors from API (old format)
+        else if (err.response?.data?.errors) {
+          const errors = err.response.data.errors;
+          const errorMessages = [];
+          
+          Object.values(errors).forEach((error) => {
+            if (Array.isArray(error)) {
+              errorMessages.push(...error);
+            } else {
+              errorMessages.push(error);
+            }
+          });
+          
+          if (errorMessages.length > 0) {
+            errorMsg = errorMessages[0];
+          }
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        
+        setError(errorMsg);
+        setModalType("error");
       });
   };
 
@@ -744,7 +953,14 @@ export default function PracticeDetail() {
             className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 active:scale-95 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
           >
             <Plus className="h-4 w-4" />
-            Add Task
+            Add New Task
+          </button>
+          <button
+            onClick={handleOpenChooseTaskModal}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 active:scale-95 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+          >
+            <Plus className="h-4 w-4" />
+            Choose Task From System
           </button>
         </div>
 
@@ -794,14 +1010,24 @@ export default function PracticeDetail() {
                     )}
                   </div>
 
-                  {/* Edit Button */}
-                  <div className="flex-shrink-0">
+                  {/* Edit & Delete Buttons */}
+                  <div className="flex-shrink-0 flex gap-2">
                     <button
                       onClick={() => handleOpenTaskEdit(task)}
                       className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-100 hover:border-blue-400 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
                     >
                       <Edit className="h-4 w-4" />
                       <span className="text-xs font-medium">Edit</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDeletingTaskId(task.id);
+                        setShowDeleteTaskConfirm(true);
+                      }}
+                      className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 border border-red-300 rounded-lg hover:bg-red-100 hover:border-red-400 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="text-xs font-medium">Delete</span>
                     </button>
                   </div>
                 </div>
@@ -846,6 +1072,42 @@ export default function PracticeDetail() {
         </div>
       )}
 
+      {/* Delete Task Confirmation Modal */}
+      {showDeleteTaskConfirm && deletingTaskId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-red-200">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Task</h3>
+                <p className="text-gray-600 text-sm mb-6">
+                  Are you sure you want to delete this task? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowDeleteTaskConfirm(false);
+                      setDeletingTaskId(null);
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteTask}
+                    className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Success Modal */}
       {modalType === "success" && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -871,7 +1133,7 @@ export default function PracticeDetail() {
 
       {/* Error Modal */}
       {modalType === "error" && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[99999] p-4">
           <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border border-red-200">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
@@ -1110,6 +1372,179 @@ export default function PracticeDetail() {
               >
                 <Plus className="h-4 w-4" />
                 {creatingTask ? "Creating..." : "Create Task"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Choose Task From System Modal */}
+      {showChooseTaskModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-2xl max-w-3xl w-full p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Plus className="h-5 w-5 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900">Choose Task From System</h3>
+              </div>
+              <button
+                onClick={() => {
+                  setShowChooseTaskModal(false);
+                  setSelectedSystemTaskId(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {systemTasksLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                  <p className="text-gray-600 text-sm">Loading tasks...</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-2 max-h-96 overflow-y-auto mb-6">
+                  {systemTasks.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500">
+                      No tasks available in the system
+                    </div>
+                  ) : (
+                    systemTasks.map((task) => {
+                      const isAlreadyAdded = tasks.some(t => t.id === task.id);
+                      const isSelected = selectedSystemTaskId === task.id;
+                      
+                      return (
+                        <div
+                          key={task.id}
+                          onClick={() => !isAlreadyAdded && setSelectedSystemTaskId(task.id)}
+                          className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
+                            isAlreadyAdded
+                              ? "bg-gray-100 border-gray-300 opacity-50 cursor-not-allowed"
+                              : isSelected
+                              ? "border-blue-500 bg-blue-50"
+                              : "border-gray-200 hover:border-blue-400 hover:bg-blue-50"
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`h-5 w-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                              isSelected ? "bg-blue-500 border-blue-500" : "border-gray-300"
+                            }`}>
+                              {isSelected && <CheckCircle className="h-4 w-4 text-white" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-gray-900 text-sm">{task.taskName}</h4>
+                              <p className="text-xs text-gray-600 mt-1">{task.taskCode}</p>
+                              {task.taskDescription && (
+                                <p className="text-xs text-gray-500 mt-1">{task.taskDescription}</p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              {isAlreadyAdded && (
+                                <span className="text-xs font-medium text-gray-500">Added</span>
+                              )}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDeletingSystemTaskId(task.id);
+                                  setShowDeleteSystemTaskConfirm(true);
+                                }}
+                                className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                title="Delete task"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Pagination */}
+                {systemTasksTotalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mb-6 py-4 border-t border-gray-200">
+                    <button
+                      onClick={() => fetchSystemTasks(systemTasksPage - 1)}
+                      disabled={systemTasksPage === 1}
+                      className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-sm text-gray-600">
+                      Page {systemTasksPage} of {systemTasksTotalPages}
+                    </span>
+                    <button
+                      onClick={() => fetchSystemTasks(systemTasksPage + 1)}
+                      disabled={systemTasksPage === systemTasksTotalPages}
+                      className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+
+                {/* Modal Actions */}
+                <div className="flex gap-3 pt-6 border-t border-gray-200">
+                  <button
+                    onClick={() => {
+                      setShowChooseTaskModal(false);
+                      setSelectedSystemTaskId(null);
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleAddSelectedTask}
+                    disabled={!selectedSystemTaskId}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Select Task
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Delete System Task Confirmation Modal */}
+      {showDeleteSystemTaskConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-red-100 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Delete Task</h3>
+            </div>
+            <p className="text-gray-600 text-sm mb-6">
+              Are you sure you want to delete this task from the system? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteSystemTaskConfirm(false);
+                  setDeletingSystemTaskId(null);
+                }}
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteSystemTask}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 active:scale-95 transition-all duration-200 font-semibold"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
               </button>
             </div>
           </div>

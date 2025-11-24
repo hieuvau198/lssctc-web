@@ -30,7 +30,16 @@ export async function loginUsername(username, password) {
   return response.data;
 }
 
+export async function loginGoogle(googleToken) {
+  const response = await apiClient.post('/Authens/login-google', {
+    accessToken: googleToken,
+  });
+
+  return response.data;
+}
+
 export default {
   loginEmail,
   loginUsername,
+  loginGoogle
 };
