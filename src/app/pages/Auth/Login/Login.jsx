@@ -2,18 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { App } from 'antd';
 import { 
-  GoogleOutlined, 
-  FacebookFilled, 
-  GithubOutlined, 
-  LinkedinFilled,
+  GoogleOutlined,
   KeyOutlined,
   MailOutlined,
-  NumberOutlined
+  ArrowLeftOutlined
 } from '@ant-design/icons';
 
+// Make sure you have this CSS file created as per previous instructions
 import './Login.css';
 
-// Import APIs and Stores
 import { loginEmail, loginUsername } from '../../../apis/Auth/LoginApi';
 import {
   clearRememberedCredentials,
@@ -21,6 +18,7 @@ import {
   persistRememberedCredentials,
 } from '../../../libs/crypto';
 import useAuthStore from '../../../store/authStore';
+import useLoginGoogle from '../../../hooks/useLoginGoogle';
 
 export default function Login() {
   const { message } = App.useApp();
@@ -33,16 +31,17 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  // --- State for Animation Toggle (True = Hiển thị form Forgot Password) ---
+  // --- State for Animation Toggle ---
+  // false = Login Form Visible
+  // true = Forgot Password Form Visible
   const [isActive, setIsActive] = useState(false);
 
   // --- States for Forgot Password Logic ---
-  const [forgotStep, setForgotStep] = useState(1); // 1: Nhập Email, 2: Nhập OTP
+  const [forgotStep, setForgotStep] = useState(1); // 1: Input Email, 2: Input OTP & New Pass
   const [resetEmail, setResetEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
-  // --- Role Based Redirect ---
   const redirectByRole = (role) => {
     switch (role) {
       case 'Admin': nav('/admin/dashboard'); break;
@@ -54,7 +53,8 @@ export default function Login() {
     }
   };
 
-  // --- Restore Credentials ---
+  const { handleLoginGoogle, isPendingGoogle } = useLoginGoogle();
+
   useEffect(() => {
     const creds = loadRememberedCredentials();
     if (creds) {
@@ -72,7 +72,6 @@ export default function Login() {
     persistRememberedCredentials({ email: id, username: id, password: pw, remember: shouldRemember });
   }, []);
 
-  // --- Handle Login Submit ---
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -106,54 +105,50 @@ export default function Login() {
     }
   };
 
-  // --- Handle Forgot Password Flow ---
-  
-  // Bước 1: Gửi mã OTP về Email
+  // --- Forgot Password Handlers ---
   const handleSendCode = (e) => {
     e.preventDefault();
     if (!resetEmail) {
         message.warning('Please enter your email address');
         return;
     }
-    // TODO: Gọi API gửi OTP tại đây
-    // await sendOtpApi(resetEmail);
-    
+    // Simulate API Call
+    console.log("Sending code to:", resetEmail);
     message.success(`OTP code sent to ${resetEmail}`);
-    setForgotStep(2); // Chuyển sang bước nhập OTP
+    setForgotStep(2); 
   };
 
-  // Bước 2: Xác nhận OTP và đổi mật khẩu
   const handleVerifyOtp = (e) => {
     e.preventDefault();
     if (otpCode.length !== 6) {
         message.error('Code must be 6 digits');
         return;
     }
-    // TODO: Gọi API verify OTP và đổi pass tại đây
-    // await resetPasswordApi(resetEmail, otpCode, newPassword);
-
+    // Simulate API Call
+    console.log("Verifying:", otpCode, newPassword);
     message.success('Password reset successfully!');
-    setForgotStep(1); // Reset form
+    
+    // Reset states and slide back to login
+    setForgotStep(1);
     setResetEmail('');
     setOtpCode('');
     setNewPassword('');
-    setIsActive(false); // Trượt về màn hình Login
+    setIsActive(false); 
   };
 
   return (
     <div className="login-page-wrapper">
       <div className={`login-container ${isActive ? 'active' : ''}`} id="container">
         
-        {/* --- FORGOT PASSWORD PANEL (Thay thế vị trí Sign Up cũ - Bên Trái) --- */}
+        {/* --- RECOVERY FORM (Takes the place of Sign Up) --- */}
         <div className="form-container sign-up">
           {forgotStep === 1 ? (
-            // Form Bước 1: Nhập Email
             <form onSubmit={handleSendCode}>
               <h1>Recovery Password</h1>
               <div className="social-icons">
                 <span className="icon"><MailOutlined style={{fontSize: '20px'}}/></span>
               </div>
-              <span style={{textAlign: 'center', marginBottom: '10px'}}>
+              <span className="text-center mb-4 text-xs text-gray-500">
                 Enter your email address to receive a verification code
               </span>
               <input 
@@ -163,20 +158,21 @@ export default function Login() {
                 onChange={(e) => setResetEmail(e.target.value)}
                 required 
               />
-              <button type="submit">Send Code</button>
+              <button type="submit" style={{marginTop: '15px'}}>Send Code</button>
             </form>
           ) : (
-            // Form Bước 2: Nhập OTP & Pass mới
             <form onSubmit={handleVerifyOtp}>
               <h1>Verification</h1>
               <div className="social-icons">
                 <span className="icon"><KeyOutlined style={{fontSize: '20px'}}/></span>
               </div>
-              <span>Enter the 6-digit code sent to your email</span>
+              <span className="text-center mb-4 text-xs text-gray-500">
+                Enter the 6-digit code sent to your email
+              </span>
               
               <input 
                 type="text" 
-                placeholder="6-Digit Code" 
+                placeholder="000000" 
                 maxLength={6}
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value)}
@@ -193,23 +189,30 @@ export default function Login() {
               
               <button type="submit" style={{marginTop: '10px'}}>Reset Password</button>
               
-              {/* Nút quay lại bước 1 nếu nhập sai email */}
-              <a href="#" onClick={(e) => {e.preventDefault(); setForgotStep(1)}} style={{marginTop: '15px', fontSize: '12px'}}>
-                Wrong email? Back
-              </a>
+              <div 
+                onClick={() => setForgotStep(1)} 
+                className="mt-4 text-xs text-blue-600 cursor-pointer hover:underline flex items-center gap-1"
+              >
+                <ArrowLeftOutlined /> Back to Email
+              </div>
             </form>
           )}
         </div>
 
-        {/* --- LOGIN FORM (Bên Phải) --- */}
+        {/* --- LOGIN FORM --- */}
         <div className="form-container sign-in">
           <form onSubmit={handleLoginSubmit}>
             <h1>Sign In</h1>
             <div className="social-icons">
-              <a href="#" className="icon"><GoogleOutlined /></a>
-              <a href="#" className="icon"><FacebookFilled /></a>
-              <a href="#" className="icon"><GithubOutlined /></a>
-              <a href="#" className="icon"><LinkedinFilled /></a>
+              <a
+                href="#"
+                className="icon"
+                aria-label="Sign in with Google"
+                onClick={(e) => { e.preventDefault(); if (!isPendingGoogle) handleLoginGoogle(); }}
+                style={{ cursor: isPendingGoogle ? 'not-allowed' : 'pointer' }}
+              >
+                <GoogleOutlined style={{ fontSize: '34px' }} />
+              </a>
             </div>
             <span>or use your account</span>
             
@@ -228,18 +231,18 @@ export default function Login() {
               required
             />
             
-            <div className="flex justify-between w-full px-1 mt-2 text-xs" style={{display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: '8px'}}>
-                <label className="flex items-center cursor-pointer" style={{display: 'flex', alignItems: 'center'}}>
+            <div className="flex justify-between w-full px-1 mt-2 text-xs">
+                <label className="flex items-center cursor-pointer gap-2">
                   <input 
                     type="checkbox" 
                     checked={remember} 
                     onChange={(e) => setRemember(e.target.checked)}
-                    style={{width: 'auto', margin: '0 5px 0 0'}} 
+                    className="w-auto m-0"
                   />
                   Remember me
                 </label>
-                {/* Link nhỏ này cũng kích hoạt hiệu ứng trượt */}
-                <a href="#" onClick={(e) => { e.preventDefault(); setIsActive(true); }}>
+                {/* Optional: Text link also triggers the slide */}
+                <a href="#" onClick={(e) => { e.preventDefault(); setIsActive(true); }} className="hover:text-blue-600">
                   Forgot Password?
                 </a>
             </div>
@@ -250,28 +253,33 @@ export default function Login() {
           </form>
         </div>
 
-        {/* --- OVERLAY (Phần trượt che chắn) --- */}
+        {/* --- OVERLAY / TOGGLE PANELS --- */}
         <div className="toggle-container">
           <div className="toggle">
-            {/* Panel trái (Hiện khi đang ở trang Forgot Pass -> Bấm để về Login) */}
+            
+            {/* Panel Left: Visible when on Recovery Page */}
             <div className="toggle-panel toggle-left">
               <h1>Remember Password?</h1>
               <p>If you already have an account, just sign in to continue your journey.</p>
-              <button className="hidden" onClick={() => setIsActive(false)}>
+              {/* BUTTON SIGN IN: Moves back to Login */}
+              <button onClick={() => setIsActive(false)} aria-label="Sign In">
                 Sign In
               </button>
             </div>
             
-            {/* Panel phải (Hiện khi đang ở trang Login -> Bấm để sang Forgot Pass) */}
+            {/* Panel Right: Visible when on Login Page */}
             <div className="toggle-panel toggle-right">
               <h1>Forgot Password?</h1>
               <p>Don't worry! Enter your email to receive a recovery code and reset your password.</p>
-              <button className="hidden" onClick={() => setIsActive(true)}>
-                Reset Password
+              {/* BUTTON RECOVERY: Moves to Recovery Form */}
+              <button onClick={() => setIsActive(true)} aria-label="Recovery">
+                Recovery
               </button>
             </div>
+
           </div>
         </div>
+
       </div>
     </div>
   );
