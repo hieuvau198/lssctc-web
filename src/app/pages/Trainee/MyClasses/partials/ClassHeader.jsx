@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, Progress } from 'antd';
+import { Card, Progress, Tag } from 'antd';
 import { BookOpen, Clock, Users } from 'lucide-react';
+import { getClassStatus } from '../../../../utils/classStatus';
 
 export default function ClassHeader({ classData }) {
 	if (!classData) return null;
@@ -14,11 +15,19 @@ export default function ClassHeader({ classData }) {
 						<div className="flex-1">
 							<div className="flex items-center gap-2 flex-wrap mb-2">
 								<div className="text-sm text-slate-500">{"LSSCTC"}</div>
-								{classData.badge && (
-									<span className="text-xs uppercase tracking-wide font-semibold bg-slate-900 text-white px-2 py-1 rounded-full">
-										{classData.badge}
-									</span>
-								)}
+									{(() => {
+										const s = getClassStatus(classData.status ?? classData._statusMapped);
+										return (
+											<Tag color={s.color} className="text-xs uppercase tracking-wide font-semibold m-0">
+												{s.label}
+											</Tag>
+										);
+									})()}
+									{classData.badge && (
+										<span className="text-xs uppercase tracking-wide font-semibold bg-slate-900 text-white px-2 py-1 rounded-full ml-2">
+											{classData.badge}
+										</span>
+									)}
 							</div>
 							<h1 className="text-2xl font-bold text-slate-900 leading-tight mb-3">
 								{classData.name}
