@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router'; // Thêm Link để điều hướng về Home
 import { App } from 'antd';
 import { 
-  GoogleOutlined,
+  GoogleOutlined, 
+  FacebookFilled, 
+  GithubOutlined, 
+  LinkedinFilled,
   KeyOutlined,
   MailOutlined,
   ArrowLeftOutlined
 } from '@ant-design/icons';
 
-// Make sure you have this CSS file created as per previous instructions
+// Import CSS
 import './Login.css';
 
+// Import APIs and Stores
 import { loginEmail, loginUsername } from '../../../apis/Auth/LoginApi';
 import {
   clearRememberedCredentials,
@@ -32,16 +36,17 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   
   // --- State for Animation Toggle ---
-  // false = Login Form Visible
-  // true = Forgot Password Form Visible
+  // false = Login Form Visible (Panel Phải)
+  // true = Forgot Password Form Visible (Panel Trái)
   const [isActive, setIsActive] = useState(false);
 
   // --- States for Forgot Password Logic ---
-  const [forgotStep, setForgotStep] = useState(1); // 1: Input Email, 2: Input OTP & New Pass
+  const [forgotStep, setForgotStep] = useState(1); // 1: Nhập Email, 2: Nhập OTP & Pass mới
   const [resetEmail, setResetEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
+  // --- Redirect Logic ---
   const redirectByRole = (role) => {
     switch (role) {
       case 'Admin': nav('/admin/dashboard'); break;
@@ -53,8 +58,7 @@ export default function Login() {
     }
   };
 
-  const { handleLoginGoogle, isPendingGoogle } = useLoginGoogle();
-
+  // --- Restore Credentials ---
   useEffect(() => {
     const creds = loadRememberedCredentials();
     if (creds) {
@@ -72,6 +76,7 @@ export default function Login() {
     persistRememberedCredentials({ email: id, username: id, password: pw, remember: shouldRemember });
   }, []);
 
+  // --- Handle Login ---
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -105,6 +110,8 @@ export default function Login() {
     }
   };
 
+  const { handleLoginGoogle, isPendingGoogle } = useLoginGoogle();
+
   // --- Forgot Password Handlers ---
   const handleSendCode = (e) => {
     e.preventDefault();
@@ -112,8 +119,7 @@ export default function Login() {
         message.warning('Please enter your email address');
         return;
     }
-    // Simulate API Call
-    console.log("Sending code to:", resetEmail);
+    // Simulate API Call here
     message.success(`OTP code sent to ${resetEmail}`);
     setForgotStep(2); 
   };
@@ -124,8 +130,7 @@ export default function Login() {
         message.error('Code must be 6 digits');
         return;
     }
-    // Simulate API Call
-    console.log("Verifying:", otpCode, newPassword);
+    // Simulate API Call here
     message.success('Password reset successfully!');
     
     // Reset states and slide back to login
@@ -138,9 +143,22 @@ export default function Login() {
 
   return (
     <div className="login-page-wrapper">
+      
+      {/* --- HEADER PHONG CÁCH SHOPEE --- */}
+        <header className="shopee-header">
+        <div className="header-content">
+          {/* Click Logo về Home */}
+          <Link to="/" className="brand-wrap">
+            <img src="/crane-truck.png" alt="LSSCTC Logo" className="header-logo" />
+            <span className="brand-name">LSSCTC</span>
+          </Link>
+          <span className="page-title">Sign In</span>
+        </div>
+        </header>
+
       <div className={`login-container ${isActive ? 'active' : ''}`} id="container">
         
-        {/* --- RECOVERY FORM (Takes the place of Sign Up) --- */}
+        {/* --- FORM QUÊN MẬT KHẨU (Thay thế vị trí Sign Up cũ) --- */}
         <div className="form-container sign-up">
           {forgotStep === 1 ? (
             <form onSubmit={handleSendCode}>
@@ -148,9 +166,7 @@ export default function Login() {
               <div className="social-icons">
                 <span className="icon"><MailOutlined style={{fontSize: '20px'}}/></span>
               </div>
-              <span className="text-center mb-4 text-xs text-gray-500">
-                Enter your email address to receive a verification code
-              </span>
+              <span className="text-desc">Enter your email to receive verification code</span>
               <input 
                 type="email" 
                 placeholder="Email Address" 
@@ -166,9 +182,7 @@ export default function Login() {
               <div className="social-icons">
                 <span className="icon"><KeyOutlined style={{fontSize: '20px'}}/></span>
               </div>
-              <span className="text-center mb-4 text-xs text-gray-500">
-                Enter the 6-digit code sent to your email
-              </span>
+              <span className="text-desc">Enter the 6-digit code sent to your email</span>
               
               <input 
                 type="text" 
@@ -177,7 +191,7 @@ export default function Login() {
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value)}
                 required 
-                style={{textAlign: 'center', letterSpacing: '5px', fontWeight: 'bold'}}
+                className="otp-input"
               />
               <input 
                 type="password" 
@@ -189,17 +203,14 @@ export default function Login() {
               
               <button type="submit" style={{marginTop: '10px'}}>Reset Password</button>
               
-              <div 
-                onClick={() => setForgotStep(1)} 
-                className="mt-4 text-xs text-blue-600 cursor-pointer hover:underline flex items-center gap-1"
-              >
+              <div onClick={() => setForgotStep(1)} className="back-link">
                 <ArrowLeftOutlined /> Back to Email
               </div>
             </form>
           )}
         </div>
 
-        {/* --- LOGIN FORM --- */}
+        {/* --- FORM ĐĂNG NHẬP (Bên phải) --- */}
         <div className="form-container sign-in">
           <form onSubmit={handleLoginSubmit}>
             <h1>Sign In</h1>
@@ -211,7 +222,7 @@ export default function Login() {
                 onClick={(e) => { e.preventDefault(); if (!isPendingGoogle) handleLoginGoogle(); }}
                 style={{ cursor: isPendingGoogle ? 'not-allowed' : 'pointer' }}
               >
-                <GoogleOutlined style={{ fontSize: '34px' }} />
+                <GoogleOutlined style={{ fontSize: '30px' }} />
               </a>
             </div>
             <span>or use your account</span>
@@ -231,18 +242,17 @@ export default function Login() {
               required
             />
             
-            <div className="flex justify-between w-full px-1 mt-2 text-xs">
-                <label className="flex items-center cursor-pointer gap-2">
+            <div className="form-actions">
+                <label className="remember-me">
                   <input 
                     type="checkbox" 
                     checked={remember} 
                     onChange={(e) => setRemember(e.target.checked)}
-                    className="w-auto m-0"
                   />
                   Remember me
                 </label>
-                {/* Optional: Text link also triggers the slide */}
-                <a href="#" onClick={(e) => { e.preventDefault(); setIsActive(true); }} className="hover:text-blue-600">
+                {/* Link kích hoạt hiệu ứng trượt */}
+                <a href="#" onClick={(e) => { e.preventDefault(); setIsActive(true); }}>
                   Forgot Password?
                 </a>
             </div>
@@ -253,27 +263,25 @@ export default function Login() {
           </form>
         </div>
 
-        {/* --- OVERLAY / TOGGLE PANELS --- */}
+        {/* --- OVERLAY TRƯỢT --- */}
         <div className="toggle-container">
           <div className="toggle">
             
-            {/* Panel Left: Visible when on Recovery Page */}
+            {/* Panel Trái: Hiện khi đang ở trang Forgot Password */}
             <div className="toggle-panel toggle-left">
               <h1>Remember Password?</h1>
               <p>If you already have an account, just sign in to continue your journey.</p>
-              {/* BUTTON SIGN IN: Moves back to Login */}
-              <button onClick={() => setIsActive(false)} aria-label="Sign In">
+              <button onClick={() => setIsActive(false)} aria-label="Go to Sign In">
                 Sign In
               </button>
             </div>
             
-            {/* Panel Right: Visible when on Login Page */}
+            {/* Panel Phải: Hiện khi đang ở trang Login */}
             <div className="toggle-panel toggle-right">
               <h1>Forgot Password?</h1>
               <p>Don't worry! Enter your email to receive a recovery code and reset your password.</p>
-              {/* BUTTON RECOVERY: Moves to Recovery Form */}
-              <button onClick={() => setIsActive(true)} aria-label="Recovery">
-                Recovery
+              <button onClick={() => setIsActive(true)} aria-label="Go to Recovery">
+                Recovery Password
               </button>
             </div>
 
