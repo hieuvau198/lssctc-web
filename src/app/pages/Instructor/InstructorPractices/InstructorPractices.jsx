@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Empty, Skeleton, Pagination, Tooltip, Button, message } from 'antd';
-import { Eye, Clock, Zap } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Clock, BookOpen, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { getPractices } from '../../../apis/Instructor/InstructorPractice';
-import { useNavigate } from 'react-router';
 
 export default function InstructorPractices() {
   const [loading, setLoading] = useState(true);
@@ -20,7 +19,6 @@ export default function InstructorPractices() {
       setTotal(res.totalCount || 0);
     } catch (e) {
       console.error('Failed to load practices', e);
-      message.error('Failed to load practices');
       setPractices([]);
       setTotal(0);
     } finally {
@@ -30,182 +28,247 @@ export default function InstructorPractices() {
 
   useEffect(() => { load(); }, []);
 
+  const totalPages = Math.ceil(total / pageSize) || 1;
+
   const getDifficultyColor = (level) => {
-    const colors = { 'Entry': '#22c55e', 'Intermediate': '#f59e0b', 'Advanced': '#ef4444' };
-    return colors[level] || '#6b7280';
-  };
-
-  const getDifficultyIcon = (level) => {
-    if (level === 'Entry') return '⭐';
-    if (level === 'Intermediate') return '⭐⭐';
-    if (level === 'Advanced') return '⭐⭐⭐';
-    return '';
-  };
-
-  const columns = [
-    { 
-      title: '#', 
-      key: 'idx', 
-      width: 50, 
-      align: 'center',
-      render: (_, __, idx) => (page - 1) * pageSize + idx + 1 
-    },
-    { 
-      title: 'Practice Name', 
-      dataIndex: 'practiceName', 
-      key: 'practiceName',
-      render: (text, record) => (
-        <div>
-          <div className="font-semibold text-gray-900">{text}</div>
-          <div className="text-sm text-gray-500">{record.practiceCode}</div>
-        </div>
-      )
-    },
-    { 
-      title: 'Duration', 
-      dataIndex: 'estimatedDurationMinutes', 
-      key: 'duration', 
-      width: 120,
-      align: 'center',
-      render: (min) => (
-        <div className="flex items-center justify-center gap-1">
-          <Clock className="w-4 h-4 text-blue-500" />
-          <span>{min} min</span>
-        </div>
-      )
-    },
-    { 
-      title: 'Difficulty', 
-      dataIndex: 'difficultyLevel', 
-      key: 'difficulty', 
-      width: 150,
-      align: 'center',
-      render: (level) => (
-        <div className="flex items-center justify-center gap-1">
-          <span 
-            className="px-3 py-1 rounded-full text-white text-sm font-medium"
-            style={{ backgroundColor: getDifficultyColor(level) }}
-          >
-            {level}
-          </span>
-          <span className="text-lg">{getDifficultyIcon(level)}</span>
-        </div>
-      )
-    },
-    { 
-      title: 'Max Attempts', 
-      dataIndex: 'maxAttempts', 
-      key: 'maxAttempts', 
-      width: 120,
-      align: 'center',
-      render: (attempts) => (
-        <div className="flex items-center justify-center gap-1">
-          <Zap className="w-4 h-4 text-yellow-500" />
-          <span>{attempts}</span>
-        </div>
-      )
-    },
-    {
-      title: 'Status', 
-      dataIndex: 'isActive', 
-      key: 'status', 
-      width: 100,
-      align: 'center',
-      render: (isActive) => (
-        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-          isActive 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-gray-100 text-gray-800'
-        }`}>
-          {isActive ? 'Active' : 'Inactive'}
-        </span>
-      )
-    },
-    {
-      title: 'Actions', 
-      key: 'actions', 
-      width: 80, 
-      fixed: 'right', 
-      align: 'center',
-      render: (_, record) => (
-        <Tooltip title="View Details">
-          <Button 
-            type="primary" 
-            size="small" 
-            icon={<Eye className="w-4 h-4" />} 
-            onClick={() => nav(`/instructor/practices/${record.id}`)}
-            className="hover:scale-110 transition-transform"
-          />
-        </Tooltip>
-      )
+    switch (level) {
+      case 'Entry':
+        return 'bg-emerald-100 text-emerald-800 ring-1 ring-emerald-600/20';
+      case 'Intermediate':
+        return 'bg-amber-100 text-amber-800 ring-1 ring-amber-600/20';
+      case 'Advanced':
+        return 'bg-rose-100 text-rose-800 ring-1 ring-rose-600/20';
+      default:
+        return 'bg-gray-100 text-gray-800 ring-1 ring-gray-600/20';
     }
-  ];
+  };
 
-  if (loading) return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 px-0">
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-8">
-        <h1 className="text-3xl font-bold">Practices Management</h1>
-        <p className="text-blue-100 mt-2">View and manage all teaching practices</p>
-      </div>
-      <div className="px-6 py-4">
-        <Card>
-          <Skeleton active paragraph={{ rows: 6 }} />
-        </Card>
-      </div>
-    </div>
-  );
+  const getPageNumbers = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      if (page > 3) {
+        pages.push('...');
+      }
+      let start = Math.max(2, page - 1);
+      let end = Math.min(totalPages - 1, page + 1);
+      if (page <= 3) {
+        end = 4;
+      }
+      if (page >= totalPages - 2) {
+        start = totalPages - 3;
+      }
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      if (page < totalPages - 2) {
+        pages.push('...');
+      }
+      pages.push(totalPages);
+    }
+    return pages;
+  };
 
-  if (!practices || practices.length === 0) return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 px-0">
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-8">
-        <h1 className="text-3xl font-bold">Practices Management</h1>
-        <p className="text-blue-100 mt-2">View and manage all teaching practices</p>
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    load(newPage, pageSize);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading practices...</p>
+        </div>
       </div>
-      <div className="px-6 py-4">
-        <Card title="Practices">
-          <Empty description="No practices found." />
-        </Card>
+    );
+  }
+
+  if (!practices || practices.length === 0) {
+    return (
+      <div className="p-8 text-center bg-slate-50 rounded-lg border border-slate-200">
+        <BookOpen className="h-12 w-12 text-slate-400 mx-auto mb-3" />
+        <p className="text-slate-600 font-medium">No practices found</p>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 px-0">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-8">
-        <h1 className="text-3xl font-bold">Practices Management</h1>
-        <p className="text-blue-100 mt-2">View and manage all teaching practices</p>
+    <div className="min-h-screen bg-gray-50/50 p-8 font-sans animate-in fade-in duration-500">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-1">
+            <span className="uppercase tracking-wider text-xs">Instructor</span>
+            <ChevronRight className="h-4 w-4" />
+            <span className="uppercase tracking-wider text-xs">Practices</span>
+          </div>
+          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+            Practices Management
+          </h1>
+          <p className="text-lg text-gray-500 max-w-2xl">
+            View and manage all teaching practices.
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="hidden md:block text-right px-6 py-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div className="text-2xl font-bold text-gray-900">{total}</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Modules</div>
+          </div>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="px-6 py-6">
-        <Card className="shadow-lg rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table 
-              columns={columns} 
-              dataSource={practices} 
-              rowKey="id" 
-              pagination={false} 
-              size="middle"
-              className="bg-white"
-              rowClassName="hover:bg-blue-50 transition-colors"
-            />
+      {/* Main Content Card */}
+      <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+        {/* Table Header */}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50/30">
+                <th className="px-8 py-6 text-center text-xs font-bold text-gray-400 uppercase tracking-widest w-20">#</th>
+                <th className="px-8 py-6 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Practice Name</th>
+                <th className="px-8 py-6 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Code</th>
+                <th className="px-8 py-6 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Duration</th>
+                <th className="px-8 py-6 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Difficulty</th>
+                <th className="px-8 py-6 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Attempts</th>
+                <th className="px-8 py-6 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Status</th>
+                <th className="px-8 py-6 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {practices.map((p, idx) => (
+                <tr 
+                  key={p.id} 
+                  className="group hover:bg-blue-50/30 transition-colors duration-300"
+                >
+                  {/* Index */}
+                  <td className="px-8 py-6 text-center">
+                    <span className="text-sm font-bold text-gray-500">
+                      {(page - 1) * pageSize + idx + 1}
+                    </span>
+                  </td>
+
+                  {/* Name */}
+                  <td className="px-8 py-6">
+                    <div className="min-w-0">
+                      <Link
+                        to={`/instructor/practices/${p.id}`}
+                        className="text-lg font-bold text-gray-900 hover:text-blue-600 transition-colors block truncate mb-1"
+                      >
+                        {p.practiceName}
+                      </Link>
+                      <p className="text-sm text-gray-500 truncate max-w-xs font-medium">
+                        {p.practiceCode}
+                      </p>
+                    </div>
+                  </td>
+
+                  {/* Code */}
+                  <td className="px-8 py-6">
+                    <span className="inline-flex px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-sm font-mono font-medium border border-gray-200">
+                      {p.practiceCode}
+                    </span>
+                  </td>
+
+                  {/* Duration */}
+                  <td className="px-8 py-6 text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-bold">
+                      <Clock className="h-4 w-4" />
+                      <span>{p.estimatedDurationMinutes}m</span>
+                    </div>
+                  </td>
+
+                  {/* Difficulty */}
+                  <td className="px-8 py-6 text-center">
+                    <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${getDifficultyColor(p.difficultyLevel)}`}>
+                      {p.difficultyLevel}
+                    </span>
+                  </td>
+
+                  {/* Max Attempts */}
+                  <td className="px-8 py-6 text-center">
+                    <div className="flex flex-col items-center">
+                      <span className="text-lg font-bold text-gray-900">{p.maxAttempts}</span>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Max Tries</span>
+                    </div>
+                  </td>
+
+                  {/* Status */}
+                  <td className="px-8 py-6 text-center">
+                    <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border ${
+                      p.isActive 
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
+                        : 'bg-gray-50 text-gray-600 border-gray-200'
+                    }`}>
+                      <span className={`h-2 w-2 rounded-full ${p.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`}></span>
+                      {p.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+
+                  {/* Action */}
+                  <td className="px-8 py-6 text-center">
+                    <div className="flex items-center justify-center gap-3 opacity-60 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                      <Link
+                        to={`/instructor/practices/${p.id}`}
+                        className="p-3 rounded-xl text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-600/20 transition-all duration-300"
+                        title="View Details"
+                      >
+                        <Eye className="h-5 w-5" />
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="px-8 py-6 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-end gap-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handlePageChange(Math.max(1, page - 1))}
+              disabled={page === 1}
+              className="p-2.5 rounded-xl border border-transparent hover:border-gray-200 text-gray-500 hover:bg-white hover:text-blue-600 hover:shadow-sm disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-transparent disabled:hover:text-gray-500 transition-all duration-200"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+
+            <div className="flex items-center gap-1 bg-white/50 p-1 rounded-xl border border-gray-100">
+              {getPageNumbers().map((p, index) => (
+                typeof p === 'number' ? (
+                  <button
+                    key={index}
+                    onClick={() => handlePageChange(p)}
+                    className={`w-10 h-10 rounded-lg text-sm font-bold transition-all duration-300 flex items-center justify-center ${
+                      p === page
+                        ? 'bg-blue-600 !text-white shadow-lg shadow-blue-600/30 scale-105'
+                        : 'text-gray-500 hover:bg-blue-500 hover:text-white hover:shadow-md active:text-white'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ) : (
+                  <span key={index} className="w-10 h-10 flex items-center justify-center text-gray-300 font-bold select-none">...</span>
+                )
+              ))}
+            </div>
+
+            <button
+              onClick={() => handlePageChange(Math.min(totalPages, page + 1))}
+              disabled={page === totalPages}
+              className="p-2.5 rounded-xl border border-transparent hover:border-gray-200 text-gray-500 hover:bg-white hover:text-blue-600 hover:shadow-sm disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-transparent disabled:hover:text-gray-500 transition-all duration-200"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
           </div>
-          
-          {/* Pagination */}
-          <div className="pt-6 border-t border-gray-200 flex justify-center items-center">
-            <Pagination 
-              current={page} 
-              pageSize={pageSize} 
-              total={total} 
-              showSizeChanger 
-              pageSizeOptions={["10", "20", "50"]}
-              onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }} 
-              showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} practices`}
-              className="py-2"
-            />
-          </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
