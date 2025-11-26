@@ -254,7 +254,7 @@
 .toggle-right { right: 0; transform: translateX(0); }
 .login-container.active .toggle-right { transform: translateX(200%); }
 
-.social-icons { margin: 20px 0; }
+/* .social-icons { margin: 0 0; } */
 .social-icons .icon {
     border: 1px solid #cbd5e1; /* slate-300 */
     border-radius: 20%;
