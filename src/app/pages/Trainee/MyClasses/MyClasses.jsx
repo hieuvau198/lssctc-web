@@ -131,14 +131,6 @@ export default function MyClasses() {
                                 <BookOpen className="w-4 h-4" />
                                 <span>{p.progress}% complete</span>
                               </div>
-                              <div className="mt-3">
-                                <Progress
-                                  percent={p.progress}
-                                  showInfo={false}
-                                  strokeColor="#0f766e"
-                                  trailColor="#e2e8f0"
-                                />
-                              </div>
                             </div>
                           </div>
                           <div className="ml-4">

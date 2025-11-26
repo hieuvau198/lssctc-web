@@ -23,7 +23,7 @@ export async function fetchPrograms({
   if (MinDurationHours != null) q.append('MinDurationHours', String(MinDurationHours));
   if (MaxDurationHours != null) q.append('MaxDurationHours', String(MaxDurationHours));
 
-  const response = await fetch(`${API_BASE_URL}/Programs?${q.toString()}`);
+  const response = await fetch(`${API_BASE_URL}/Programs/paged?${q.toString()}`);
   if (!response.ok) {
     throw new Error("Failed to fetch programs");
   }
