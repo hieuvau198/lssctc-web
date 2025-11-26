@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router'; // Thêm Link để điều hướng về Home
-import { App } from 'antd';
+import { App, Divider, Input } from 'antd';
 import { 
-  GoogleOutlined, 
+  
   FacebookFilled, 
   GithubOutlined, 
   LinkedinFilled,
@@ -34,6 +34,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
   
   // --- State for Animation Toggle ---
   // false = Login Form Visible (Panel Phải)
@@ -115,19 +116,24 @@ export default function Login() {
   // --- Forgot Password Handlers ---
   const handleSendCode = (e) => {
     e.preventDefault();
+    setSending(true);
     if (!resetEmail) {
         message.warning('Please enter your email address');
+        setSending(false);
         return;
     }
     // Simulate API Call here
     message.success(`OTP code sent to ${resetEmail}`);
     setForgotStep(2); 
+    setSending(false);
   };
 
   const handleVerifyOtp = (e) => {
     e.preventDefault();
+    setSending(true);
     if (otpCode.length !== 6) {
         message.error('Code must be 6 digits');
+        setSending(false);
         return;
     }
     // Simulate API Call here
@@ -139,6 +145,7 @@ export default function Login() {
     setOtpCode('');
     setNewPassword('');
     setIsActive(false); 
+    setSending(false);
   };
 
   return (
@@ -167,12 +174,13 @@ export default function Login() {
                 <span className="icon"><MailOutlined style={{fontSize: '20px'}}/></span>
               </div>
               <span className="text-desc">Enter your email to receive verification code</span>
-              <input 
-                type="email" 
-                placeholder="Email Address" 
+              <Input
+                type="email"
+                placeholder="Email Address"
                 value={resetEmail}
                 onChange={(e) => setResetEmail(e.target.value)}
-                required 
+                required
+                disabled={sending}
               />
               <button type="submit" style={{marginTop: '15px'}}>Send Code</button>
             </form>
@@ -184,21 +192,24 @@ export default function Login() {
               </div>
               <span className="text-desc">Enter the 6-digit code sent to your email</span>
               
-              <input 
-                type="text" 
-                placeholder="000000" 
+              <Input
+                placeholder="000000"
                 maxLength={6}
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value)}
-                required 
+                required
+                size='small'
                 className="otp-input"
+                style={{ textAlign: 'center' }}
+                disabled={sending}
               />
-              <input 
-                type="password" 
-                placeholder="New Password" 
+              <Input.Password
+                placeholder="New Password"
                 value={newPassword}
+                size='small'
                 onChange={(e) => setNewPassword(e.target.value)}
-                required 
+                required
+                disabled={sending}
               />
               
               <button type="submit" style={{marginTop: '10px'}}>Reset Password</button>
@@ -214,32 +225,22 @@ export default function Login() {
         <div className="form-container sign-in">
           <form onSubmit={handleLoginSubmit}>
             <h1>Sign In</h1>
-            <div className="social-icons">
-              <a
-                href="#"
-                className="icon"
-                aria-label="Sign in with Google"
-                onClick={(e) => { e.preventDefault(); if (!isPendingGoogle) handleLoginGoogle(); }}
-                style={{ cursor: isPendingGoogle ? 'not-allowed' : 'pointer' }}
-              >
-                <GoogleOutlined style={{ fontSize: '30px' }} />
-              </a>
-            </div>
-            <span>or use your account</span>
             
-            <input 
-              type="text" 
-              placeholder="Email or Username" 
+            <Input
+              placeholder="Email or Username"
               value={identity}
+              size="small"
               onChange={(e) => setIdentity(e.target.value)}
               required
+              disabled={loading}
             />
-            <input 
-              type="password" 
-              placeholder="Password" 
+            <Input.Password
+              placeholder="Password"
+              size="small"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={loading}
             />
             
             <div className="form-actions">
@@ -248,6 +249,7 @@ export default function Login() {
                     type="checkbox" 
                     checked={remember} 
                     onChange={(e) => setRemember(e.target.checked)}
+                    disabled={loading}
                   />
                   Remember me
                 </label>
@@ -260,6 +262,25 @@ export default function Login() {
             <button type="submit" disabled={loading} style={{marginTop: '15px'}}>
               {loading ? 'Signing In...' : 'Sign In'}
             </button>
+
+            <Divider style={{ margin: '10px', fontSize: '12px', color: '#94a3b8' }}>OR</Divider>
+
+            <div className="social-icons">
+              <a
+                href="#"
+                className="icon"
+                aria-label="Sign in with Google"
+                onClick={(e) => { e.preventDefault(); if (!isPendingGoogle && !loading) handleLoginGoogle(); }}
+                style={{ cursor: isPendingGoogle || loading ? 'not-allowed' : 'pointer' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 533.5 544.3" role="img" aria-label="Google logo">
+                  <path fill="#4285F4" d="M533.5 278.4c0-18.6-1.6-37-4.7-54.6H272v103.3h146.9c-6.3 34-25.2 62.8-53.9 82.1v68.2h87.1c51-47 80.4-116.2 80.4-198.9z"/>
+                  <path fill="#34A853" d="M272 544.3c72.7 0 133.8-24.1 178.5-65.5l-87.1-68.2c-24.2 16.2-55.4 25.9-91.4 25.9-70.3 0-129.8-47.4-151.2-111.2H36.2v69.9C80.7 483.2 169.8 544.3 272 544.3z"/>
+                  <path fill="#FBBC05" d="M120.8 325.3c-10.8-32.4-10.8-67.5 0-99.9V155.5H36.2c-39.2 76.4-39.2 166.6 0 243l84.6-72.2z"/>
+                  <path fill="#EA4335" d="M272 107.7c39.6 0 75.4 13.6 103.6 40.5l77.8-77.8C403.8 24.9 341.9 0 272 0 169.8 0 80.7 61.1 36.2 155.5l84.6 69.9C142.2 155.1 201.7 107.7 272 107.7z"/>
+                </svg>
+              </a>
+            </div>
           </form>
         </div>
 

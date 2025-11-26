@@ -9,6 +9,7 @@ import SimSettings from '../../../pages/SimManager/Settings/Settings'
 import SimulatorConfigs from '../../../pages/SimManager/SimulatorConfigs/SimulatorConfigs'
 import NotFound from '../../../layouts/NotFound'
 import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
+import BrandModel from '../../../pages/SimManager/BrandModel/BrandModel'
 
 export default function SimulationManagerRoutes() {
   return (
@@ -27,6 +28,7 @@ export default function SimulationManagerRoutes() {
         <Route path="/practices/:id" element={<PracticeDetail />} />
         <Route path="/practices/:practiceId/steps/:stepId" element={<PracticeStepDetail />} />
         <Route path="/configs" element={<SimulatorConfigs />} />
+        <Route path="/brand-models" element={<BrandModel />} />
         <Route path="/settings" element={<SimSettings />} />
       </Route>
       <Route path="*" element={<NotFound />} />
