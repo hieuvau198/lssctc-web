@@ -1,97 +1,187 @@
-import React from 'react';
-import { Button, Card, Divider } from 'antd';
-import { Award, Download } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Card, Empty, Skeleton, Tag, message } from 'antd';
+import { Award, Calendar, GraduationCap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import PageNav from '../../../components/PageNav/PageNav';
+// import { getTraineeCertificates } from '../../../apis/Trainee/TraineeCertificateApi';
+// import { getAuthToken } from '../../../libs/cookies';
+// import { decodeToken } from '../../../libs/jwtDecode';
+// import useAuthStore from '../../../store/authStore';
+import { getMockCertificates } from '../../../mocks/certificates';
 
 export default function CertificateView() {
-	const cert = {
-		learnerName: 'Nguyen Van A',
-		certificateId: 'LSS-2025-0001',
-		course: 'Seaport Crane Basic',
-		issueDate: new Date('2025-09-10'),
-		expireDate: new Date('2027-09-10'),
-		issuerName: 'John Anderson',
-		issuerTitle: 'Training Director',
-		grade: 92,
+	// const authState = useAuthStore();
+	// const traineeIdFromStore = authState.nameid;
+	const [certificates, setCertificates] = useState([]);
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		// Simulate loading with mock data
+		setLoading(true);
+		setTimeout(() => {
+			const mockData = getMockCertificates();
+			setCertificates(mockData);
+			setLoading(false);
+		}, 500);
+	}, []);
+
+	// Real API version (commented for now)
+	// useEffect(() => {
+	// 	let mounted = true;
+	// 	async function fetchCertificates() {
+	// 		const token = getAuthToken();
+	// 		const decoded = token ? decodeToken(token) : null;
+	// 		const resolvedTraineeId = traineeIdFromStore || decoded?.nameid || decoded?.nameId || decoded?.sub || null;
+
+	// 		if (!resolvedTraineeId) {
+	// 			if (mounted) {
+	// 				message.error('Trainee id not available');
+	// 			}
+	// 			return;
+	// 		}
+
+	// 		setLoading(true);
+	// 		try {
+	// 			const data = await getTraineeCertificates(resolvedTraineeId);
+	// 			if (mounted) {
+	// 				setCertificates(data);
+	// 			}
+	// 		} catch (err) {
+	// 			console.error('Failed to fetch certificates:', err);
+	// 			if (mounted) {
+	// 				message.error('Không tải được danh sách chứng chỉ');
+	// 				setCertificates([]);
+	// 			}
+	// 		} finally {
+	// 			if (mounted) setLoading(false);
+	// 		}
+	// 	}
+
+	// 	fetchCertificates();
+	// 	return () => { mounted = false; };
+	// }, [traineeIdFromStore]);
+
+	const getStatusColor = (expireDate) => {
+		if (!expireDate) return 'blue';
+		const exp = new Date(expireDate);
+		const now = new Date();
+		if (exp < now) return 'red';
+		const daysLeft = Math.floor((exp - now) / (1000 * 60 * 60 * 24));
+		if (daysLeft < 90) return 'orange';
+		return 'green';
 	};
 
-	const issueDateText = cert.issueDate?.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
-	const expireDateText = cert.expireDate?.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
-
-	const downloadPdf = () => {
-		window.print();
+	const getStatusText = (expireDate) => {
+		if (!expireDate) return 'Valid';
+		const exp = new Date(expireDate);
+		const now = new Date();
+		if (exp < now) return 'Expired';
+		const daysLeft = Math.floor((exp - now) / (1000 * 60 * 60 * 24));
+		if (daysLeft < 90) return 'Expiring Soon';
+		return 'Valid';
 	};
 
-	return (
-		<div className="max-w-7xl mx-auto px-4 py-6 min-h-screen flex flex-col">
-			<PageNav nameMap={{ certificate: 'Certificate' }} />
-			<style>{`
-				@media print {
-					@page { size: A4 landscape; margin: 12mm; }
-					body * { visibility: hidden; }
-					.print-area, .print-area * { visibility: visible; }
-					.print-area { position: absolute; inset: 0; margin: 0; }
-				}
-			`}</style>
-
-			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border rounded-xl p-4 mb-4 print:hidden">
-				<div className="flex items-center gap-2">
-					<Award className="w-6 h-6 text-blue-600" />
-					<h1 className="text-lg font-semibold text-slate-800 m-0">Your Certificate</h1>
-				</div>
-				<div className="sm:ml-auto">
-					<Button type="primary" icon={<Download className="w-4 h-4" />} onClick={downloadPdf}>
-						Download PDF
-					</Button>
+	if (loading) {
+		return (
+			<div className="max-w-7xl mx-auto px-4 py-8">
+				<PageNav items={[{ title: 'Certificates' }]} />
+				<div className="mt-4">
+					<Skeleton active paragraph={{ rows: 6 }} />
 				</div>
 			</div>
+		);
+	}
 
-			<div className="flex-1 w-full flex items-center justify-center">
-				<Card className="justify-center border-slate-200 max-w-[980px] w-full print-area">
-				<div className="border-2 border-slate-200 rounded-2xl p-10 bg-white relative overflow-hidden">
-					<div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-50 rounded-full" />
-					<div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-50 rounded-full" />
-					<div className="relative">
-						<div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 mb-2 text-center">
-							<Award className="w-10 h-10 text-blue-600" />
-							<h2 className="text-2xl sm:text-3xl font-bold text-slate-800">Certificate of Completion</h2>
-						</div>
-						<p className="text-center text-slate-600 mb-6">This is to certify that</p>
-
-						<div className="text-center">
-							<div className="text-2xl sm:text-3xl font-semibold text-slate-900">{cert.learnerName}</div>
-							<p className="text-slate-600 mt-2">has successfully completed</p>
-							<div className="text-xl sm:text-2xl font-medium text-blue-700">{cert.course}</div>
-							<p className="text-slate-600 mt-2">
-								on <span className="font-medium text-slate-800">{issueDateText}</span>
-								{expireDateText ? (
-									<>
-										{' '}• valid until <span className="font-medium text-slate-800">{expireDateText}</span>
-									</>
-								) : null}
-							</p>
-							{cert.grade != null && (
-								<p className="text-slate-700">Score: <span className="font-semibold">{cert.grade}</span></p>
-							)}
-						</div>
-
-						<Divider className="!my-8" />
-						<div className="flex items-end justify-between">
-							<div className="text-sm text-slate-600">
-								Certificate ID
-								<div className="font-semibold text-slate-800">{cert.certificateId}</div>
-							</div>
-							<div className="text-center">
-								<div className="h-12" />
-								<div className="border-t border-slate-300 pt-1 text-sm text-slate-700">
-									{cert.issuerName}
-									<div className="text-slate-500">{cert.issuerTitle}</div>
-								</div>
-							</div>
-						</div>
-					</div>
+	return (
+		<div className="max-w-7xl mx-auto px-4 py-8">
+			<PageNav nameMap={{ certificate: 'Certificates' }} />
+			<div className="mt-2 space-y-6">
+				<div>
+					<h1 className="text-2xl font-semibold text-slate-900 mb-4">My Certificates</h1>
 				</div>
-				</Card>
+
+			{certificates.length === 0 ? (
+				<div className='min-h-screen '>
+					<Card className="rounded-xl shadow-md">
+						<Empty
+							description="Bạn chưa có chứng chỉ nào"
+							image={Empty.PRESENTED_IMAGE_SIMPLE}
+						/>
+					</Card>
+				</div>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{certificates.map((cert) => {
+						const issueDate = cert.issueDate ? new Date(cert.issueDate) : null;
+						const expireDate = cert.expireDate ? new Date(cert.expireDate) : null;
+						const statusColor = getStatusColor(cert.expireDate);
+						const statusText = getStatusText(cert.expireDate);
+
+						return (
+							<Link
+								key={cert.id}
+								to={`/certificate/${cert.id}`}
+								className="block"
+							>
+								<Card
+									hoverable
+									className="rounded-xl shadow-md hover:shadow-xl transition-all duration-300 h-full"
+									cover={
+										<div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 flex items-center justify-center relative">
+											<Award className="w-16 h-16 text-white" />
+											<Tag
+												color={statusColor}
+												className="absolute top-3 right-3"
+											>
+												{statusText}
+											</Tag>
+										</div>
+									}
+								>
+									<div className="space-y-3">
+										<div>
+											<h3 className="font-semibold text-slate-900 text-lg mb-1 line-clamp-2">
+												{cert.courseName || cert.course || 'Certificate'}
+											</h3>
+											<p className="text-sm text-slate-600">
+												{cert.certificateCode || cert.certificateId || 'N/A'}
+											</p>
+										</div>
+
+										<div className="space-y-2 pt-2 border-t border-slate-100">
+											<div className="flex items-center gap-2 text-sm text-slate-600">
+												<GraduationCap className="w-4 h-4" />
+												<span className="line-clamp-1">{cert.traineeName || cert.learnerName || 'N/A'}</span>
+											</div>
+											{issueDate && (
+												<div className="flex items-center gap-2 text-sm text-slate-600">
+													<Calendar className="w-4 h-4" />
+													<span>Issued: {issueDate.toLocaleDateString()}</span>
+												</div>
+											)}
+											{expireDate && (
+												<div className="flex items-center gap-2 text-sm text-slate-600">
+													<Calendar className="w-4 h-4" />
+													<span>Expires: {expireDate.toLocaleDateString()}</span>
+												</div>
+											)}
+										</div>
+
+										{cert.grade != null && (
+											<div className="pt-2 border-t border-slate-100">
+												<div className="text-center">
+													<span className="text-2xl font-bold text-blue-600">{cert.grade}</span>
+													<span className="text-slate-500 ml-1">/ 100</span>
+												</div>
+											</div>
+										)}
+									</div>
+								</Card>
+							</Link>
+						);
+					})}
+				</div>
+			)}
 			</div>
 		</div>
 	);
