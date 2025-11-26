@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Skeleton, Empty, Pagination, Alert, Button, Tooltip, message, Popconfirm } from 'antd';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { message } from 'antd';
 import { getQuizzes, deleteQuiz } from '../../../apis/Instructor/InstructorQuiz';
 import QuizFilters from './partials/QuizFilters';
+import QuizHeader from './partials/QuizHeader';
+import QuizTable from './partials/QuizTable';
+import QuizPagination from './partials/QuizPagination';
+import QuizEmptyState from './partials/QuizEmptyState';
+import QuizLoading from './partials/QuizLoading';
 
 export default function InstructorQuizzes() {
   const navigate = useNavigate();
@@ -60,145 +64,35 @@ export default function InstructorQuizzes() {
     }
   };
 
-  const columns = [
-    { title: '#', key: 'index', width: 60, render: (_, __, idx) => (page - 1) * pageSize + idx + 1 },
-    { 
-      title: 'Name', 
-      dataIndex: 'name', 
-      key: 'name', 
-      ellipsis: true,
-      render: (text, record) => (
-        <button
-          onClick={() => handleView(record)}
-          className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left"
-        >
-          {text}
-        </button>
-      )
-    },
-    { title: 'Pass (pts)', dataIndex: 'passScoreCriteria', key: 'passScoreCriteria', width: 100, align: 'center' },
-    { title: 'Time (min)', dataIndex: 'timelimitMinute', key: 'timelimitMinute', width: 120, align: 'center' },
-    { title: 'Total Score (pts)', dataIndex: 'totalScore', key: 'totalScore', width: 120, align: 'center' },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: 120,
-      fixed: 'right',
-      render: (_, record) => (
-        <div className="flex justify-center gap-1">
-          <Tooltip title="View Details">
-            <Button
-              type="text"
-              size="small"
-              icon={<Eye className="w-4 h-4" />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleView(record);
-              }}
-              className="hover:bg-blue-50 hover:text-blue-600"
-            />
-          </Tooltip>
-          <Tooltip title="Edit Quiz">
-            <Button
-              type="text"
-              size="small"
-              icon={<Pencil className="w-4 h-4" />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleEdit(record);
-              }}
-              className="hover:bg-yellow-50 hover:text-yellow-600"
-            />
-          </Tooltip>
-          <Tooltip title="Delete Quiz">
-            <Popconfirm
-              title="Delete Quiz"
-              description={`Are you sure you want to delete "${record.name}"?`}
-              onConfirm={(e) => {
-                e?.stopPropagation();
-                handleDelete(record);
-              }}
-              okText="Yes"
-              cancelText="No"
-              okButtonProps={{ danger: true }}
-            >
-              <Button
-                type="text"
-                size="small"
-                icon={<Trash2 className="w-4 h-4" />}
-                onClick={(e) => e.stopPropagation()}
-                danger
-              />
-            </Popconfirm>
-          </Tooltip>
+  const totalPages = Math.ceil(total / pageSize) || 1;
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    load(newPage, pageSize);
+  };
+
+  if (loading) {
+    return <QuizLoading />;
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="p-8 text-center bg-red-50 rounded-lg border border-red-200">
+          <p className="text-red-600 font-medium">{error}</p>
         </div>
-      ),
-    },
-  ];
-
-  if (loading) return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      {/* Header Skeleton */}
-      <div className="flex items-center justify-between mb-4">
-        <Skeleton.Button style={{ width: 200, height: 32 }} active />
       </div>
-
-      {/* Search Skeleton */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <Skeleton.Input style={{ width: 320, height: 40 }} active />
-      </div>
-
-      {/* Content Skeleton */}
-      <Card>
-        <Skeleton active paragraph={{ rows: 6 }} />
-      </Card>
-    </div>
-  );
-
-  if (error) return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">Quizzes</span>
-      </div>
-      <Alert type="error" message="Error" description={error} />
-    </div>
-  );
-
-  if (!quizzes || quizzes.length === 0) return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">Quizzes</span>
-      </div>
-
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <QuizFilters
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-          onSearch={handleSearch}
-        />
-      </div>
-
-      <Card title="Quizzes">
-        <Empty description="No quizzes found." />
-      </Card>
-    </div>
-  );
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">Quizzes</span>
-        <Button 
-          type="primary" 
-          onClick={() => navigate('/instructor/quizzes/create')}
-        >
-          + Create Quiz
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gray-50/50 p-8 font-sans animate-in fade-in duration-500">
+      <QuizHeader
+        total={total}
+        onCreate={() => navigate('/instructor/quizzes/create')}
+      />
 
-      {/* Search and Controls */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+      <div className="mb-6">
         <QuizFilters
           searchValue={searchValue}
           setSearchValue={setSearchValue}
@@ -206,23 +100,26 @@ export default function InstructorQuizzes() {
         />
       </div>
 
-      {/* Content */}
-      <Card title="Quizzes">
-        <div className="overflow-auto h-[350px]">
-          <Table
-            columns={columns}
-            dataSource={quizzes}
-            rowKey="id"
-            pagination={false}
-            size="middle"
-            // scroll={{ y: 560 }}
+      {(!quizzes || quizzes.length === 0) ? (
+        <QuizEmptyState />
+      ) : (
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+          <QuizTable
+            quizzes={quizzes}
+            page={page}
+            pageSize={pageSize}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+
+          <QuizPagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
           />
         </div>
-        <div className="pt-4 border-t border-gray-200 flex justify-center">
-          <Pagination current={page} pageSize={pageSize} total={total} showSizeChanger pageSizeOptions={["10", "20", "50"]}
-            onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }} showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} quizzes`} />
-        </div>
-      </Card>
+      )}
     </div>
   );
 }
