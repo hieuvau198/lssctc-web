@@ -12,7 +12,6 @@ import ClassSchedule from './partials/ClassSchedule';
 import InstructorInfo from './partials/InstructorInfo';
 import Sections from './partials/Sections';
 import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
-import { getLearningSectionsByClassIdAndTraineeId } from '../../../apis/Trainee/TraineeLearningApi';
 
 export default function MyClassDetail() {
   const { id } = useParams();
@@ -20,19 +19,8 @@ export default function MyClassDetail() {
   const traineeIdFromStore = authState.nameid;
 
   const [classData, setClassData] = useState(null);
-  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const mockInstructor = {
-    id: 1,
-    name: 'John Smith',
-    email: 'john.smith@lssctc.edu',
-    phone: '+84 123 456 789',
-    specialization: 'Mobile Crane Operations',
-    yearsOfExperience: 15,
-    certifications: ['Certified Crane Operator', 'Safety Training Specialist', 'OSHA 30-Hour'],
-  };
 
   useEffect(() => {
     const fetchClassDetailAndSections = async () => {
@@ -68,9 +56,6 @@ export default function MyClassDetail() {
           badge: 'Foundational',
           color: 'from-cyan-500 to-blue-600',
         });
-
-        const sectionsRes = await getLearningSectionsByClassIdAndTraineeId(id, resolvedTraineeId);
-        setSections(Array.isArray(sectionsRes) ? sectionsRes : []);
       } catch (err) {
         console.error('Failed to fetch class detail:', err);
         setError('Unable to load class details. Please try again later.');
@@ -108,11 +93,11 @@ export default function MyClassDetail() {
         <ClassHeader classData={classData} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <ClassOverview classData={classData} />
-            <Sections sections={sections} classId={classData.id} />
+            {/* <ClassOverview classData={classData} /> */}
+            <Sections classId={classData.id} />
           </div>
           <div className="space-y-8">
-            <InstructorInfo mockInstructor={mockInstructor} />
+            <InstructorInfo classId={classData.id}/>
             <ClassSchedule classData={classData} />
           </div>
         </div>
