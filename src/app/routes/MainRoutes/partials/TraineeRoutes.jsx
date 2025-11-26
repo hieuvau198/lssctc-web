@@ -4,6 +4,7 @@ import NotFound from '../../../layouts/NotFound'
 import TraineeLayout from '../../../layouts/TraineeLayout/TraineeLayout'
 import Home from '../../../pages/Home/Home'
 import CertificateView from '../../../pages/Trainee/Certificate/Certificate'
+import CertificateCourse from '../../../pages/Trainee/Certificate/partials/CertificateCourse'
 import Course from '../../../pages/Trainee/Course/Course'
 import CourseDetail from '../../../pages/Trainee/Course/partials/CourseDetail'
 import MyClassDetail from '../../../pages/Trainee/MyClasses/MyClassDetail'
@@ -51,6 +52,14 @@ export default function TraineeRoutes() {
           element={
             <PrivateRoute allowedroles={["Trainee"]} redirectUrl="/auth/login">
               <CertificateView />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="certificate/:id"
+          element={
+            <PrivateRoute allowedroles={["Trainee"]} redirectUrl="/auth/login">
+              <CertificateCourse />
             </PrivateRoute>
           }
         />
