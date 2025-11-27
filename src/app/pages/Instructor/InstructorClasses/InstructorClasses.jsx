@@ -1,17 +1,14 @@
-// src\app\pages\Instructor\InstructorClasses\InstructorClasses.jsx
-import {
-  Alert,
-  Skeleton
-} from "antd";
+import { Alert, Skeleton } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { getInstructorClasses } from "../../../apis/Instructor/InstructorApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import ClassFilters from "./partials/ClassFilters";
 import ClassList from "./partials/ClassList";
-import useAuthStore from "../../../store/authStore"; // 1. Import the auth store
-import { getAuthToken } from "../../../libs/cookies"; // 2. Import token utils
-import { decodeToken } from "../../../libs/jwtDecode"; // 3. Import token utils
+import useAuthStore from "../../../store/authStore";
+import { getAuthToken } from "../../../libs/cookies";
+import { decodeToken } from "../../../libs/jwtDecode";
+import { ChevronRight } from "lucide-react";
 
 export default function InstructorClasses() {
   const [classes, setClasses] = useState([]);
@@ -24,7 +21,7 @@ export default function InstructorClasses() {
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState(undefined);
   const [viewMode, setViewMode] = useState("table");
-  
+
   const navigate = useNavigate();
 
   const authState = useAuthStore();
@@ -63,7 +60,7 @@ export default function InstructorClasses() {
           pageSize,
         });
         if (cancelled) return;
-        
+
         if (res && Array.isArray(res.items)) {
           setClasses(res.items);
           setTotal(Number(res.totalCount) || res.items.length || 0);
@@ -105,34 +102,9 @@ export default function InstructorClasses() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Header Skeleton */}
-        <div className="flex items-center justify-between mb-6">
-          <Skeleton.Button style={{ width: 200, height: 32 }} active />
-        </div>
-
-        {/* Search and Controls Skeleton */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-          <Skeleton.Input style={{ width: 320, height: 40 }} active />
-          <div className="flex gap-2">
-            <Skeleton.Button style={{ width: 80, height: 40 }} active />
-          </div>
-        </div>
-
-        {/* Content Skeleton */}
-        <div className="bg-white rounded-lg shadow p-6">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="flex items-center gap-4 p-4 border-b border-slate-100 last:border-b-0">
-              <Skeleton.Avatar size={48} shape="square" active />
-              <div className="flex-1">
-                <Skeleton.Input style={{ width: '60%', height: 20, marginBottom: 8 }} active />
-                <Skeleton.Input style={{ width: '40%', height: 16 }} active />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton.Button size="small" active />
-              </div>
-            </div>
-          ))}
+      <div className="min-h-screen bg-gray-50/50 p-8 font-sans">
+        <div className="bg-white rounded-[2rem] p-8 shadow-xl shadow-gray-200/50 border border-gray-100">
+          <Skeleton active paragraph={{ rows: 6 }} />
         </div>
       </div>
     );
@@ -147,10 +119,29 @@ export default function InstructorClasses() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">My Classes</span>
+    <div className="min-h-screen bg-gray-50/50 p-8 font-sans animate-in fade-in duration-500">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-1">
+            <span className="uppercase tracking-wider text-xs">Instructor</span>
+            <ChevronRight className="h-4 w-4" />
+            <span className="uppercase tracking-wider text-xs">Classes</span>
+          </div>
+          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+            My Classes
+          </h1>
+          <p className="text-lg text-gray-500 max-w-2xl">
+            View and manage your assigned classes.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="hidden md:block text-right px-6 py-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div className="text-2xl font-bold text-gray-900">{total}</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Classes</div>
+          </div>
+        </div>
       </div>
 
       {/* Search and Controls */}
@@ -163,9 +154,9 @@ export default function InstructorClasses() {
           onSearch={handleSearch}
         />
         <div className="flex gap-2">
-          <ViewModeToggle 
-            viewMode={viewMode} 
-            onViewModeChange={setViewMode} 
+          <ViewModeToggle
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
           />
         </div>
       </div>
@@ -179,7 +170,7 @@ export default function InstructorClasses() {
         total={total}
         onPageChange={handlePageChange}
         onView={handleViewClass}
-      />      
+      />
     </div>
   );
 }
