@@ -1,31 +1,24 @@
-// src\app\apis\SimulationManager\SimulationManagerComponentApi.js
+// src/app/apis/SimulationManager/SimulationManagerComponentApi.js
+import apiClient from '../../libs/axios';
 
-const API_BASE = import.meta.env.VITE_API_Simulation_Service_URL;
-
-// get components
-export async function getComponents(page = 1, pageSize = 10) {
-  const API_BASE = import.meta.env.VITE_API_Simulation_Service_URL;
-  const response = await fetch(`${API_BASE}/Components?page=${page}&pageSize=${pageSize}`);
-  if (!response.ok) throw new Error('Failed to fetch components');
-  return response.json();
+// Cho phép truyền token nếu cần override hoặc dùng token khác
+function withAuth(headers = {}, token) {
+  if (token) return { ...headers, Authorization: `Bearer ${token}` };
+  return headers;
 }
 
-
-// get components by component id
-export async function getComponentById(id) {
-  const response = await fetch(`${API_BASE}/Components/${id}`);
-  if (!response.ok) throw new Error('Failed to fetch component');
-  return response.json();
+export async function getComponents(page = 1, pageSize = 10, token) {
+  const qs = new URLSearchParams({ page, pageSize }).toString();
+  const res = await apiClient.get(`/Components?${qs}`, { headers: withAuth({}, token) });
+  return res.data;
 }
 
-// update component by id and dto data
-export async function updateComponent(id, data) {
-  const API_BASE = import.meta.env.VITE_API_Simulation_Service_URL;
-  const response = await fetch(`${API_BASE}/Components/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) throw new Error('Failed to update component');
-  return response.json();
+export async function getComponentById(id, token) {
+  const res = await apiClient.get(`/Components/${id}`, { headers: withAuth({}, token) });
+  return res.data;
+}
+
+export async function updateComponent(id, data, token) {
+  const res = await apiClient.put(`/Components/${id}`, data, { headers: withAuth({}, token) });
+  return res.data;
 }

@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Empty, Skeleton, Pagination, Tooltip, Button, message } from 'antd';
+import { Table, Empty, Skeleton, Tooltip, Button, App } from 'antd';
 import { Eye, Clock, Zap } from 'lucide-react';
 import { getPractices } from '../../../apis/Instructor/InstructorPractice';
 import { useNavigate } from 'react-router';
 
+// Trang thực hành Instructor chuyển sang phong cách tương tự Course Admin (chỉ bảng)
 export default function InstructorPractices() {
+  const { message } = App.useApp();
   const [loading, setLoading] = useState(true);
   const [practices, setPractices] = useState([]);
-  const [page, setPage] = useState(1);
+  const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const nav = useNavigate();
 
-  const load = async (p = page, ps = pageSize) => {
+  const load = async (p = pageNumber, ps = pageSize) => {
     setLoading(true);
     try {
       const res = await getPractices({ page: p, pageSize: ps });
@@ -20,7 +22,7 @@ export default function InstructorPractices() {
       setTotal(res.totalCount || 0);
     } catch (e) {
       console.error('Failed to load practices', e);
-      message.error('Failed to load practices');
+      message.error('Load practices thất bại');
       setPractices([]);
       setTotal(0);
     } finally {
@@ -30,183 +32,145 @@ export default function InstructorPractices() {
 
   useEffect(() => { load(); }, []);
 
-  const getDifficultyColor = (level) => {
-    const colors = { 'Entry': '#22c55e', 'Intermediate': '#f59e0b', 'Advanced': '#ef4444' };
-    return colors[level] || '#6b7280';
-  };
-
-  const getDifficultyIcon = (level) => {
-    if (level === 'Entry') return '⭐';
-    if (level === 'Intermediate') return '⭐⭐';
-    if (level === 'Advanced') return '⭐⭐⭐';
-    return '';
+  const difficultyBadge = (level) => {
+    const map = {
+      Entry: { cls: 'bg-green-100 text-green-700', stars: '⭐' },
+      Intermediate: { cls: 'bg-amber-100 text-amber-700', stars: '⭐⭐' },
+      Advanced: { cls: 'bg-red-100 text-red-700', stars: '⭐⭐⭐' },
+    };
+    const d = map[level] || { cls: 'bg-slate-100 text-slate-600', stars: '' };
+    return (
+      <div className="flex items-center justify-center gap-1">
+        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${d.cls}`}>{level}</span>
+        <span className="text-sm leading-none">{d.stars}</span>
+      </div>
+    );
   };
 
   const columns = [
-    { 
-      title: '#', 
-      key: 'idx', 
-      width: 50, 
+    {
+      title: '#',
+      key: 'idx',
+      width: 60,
       align: 'center',
-      render: (_, __, idx) => (page - 1) * pageSize + idx + 1 
+      render: (_, __, idx) => (pageNumber - 1) * pageSize + idx + 1,
     },
-    { 
-      title: 'Practice Name', 
-      dataIndex: 'practiceName', 
+    {
+      title: 'Practice Name',
+      dataIndex: 'practiceName',
       key: 'practiceName',
       render: (text, record) => (
-        <div>
-          <div className="font-semibold text-gray-900">{text}</div>
-          <div className="text-sm text-gray-500">{record.practiceCode}</div>
+        <div className="flex flex-col">
+          <span className="font-medium text-slate-800">{text}</span>
+          <span className="text-xs text-slate-500">{record.practiceCode}</span>
         </div>
-      )
+      ),
     },
-    { 
-      title: 'Duration', 
-      dataIndex: 'estimatedDurationMinutes', 
-      key: 'duration', 
+    {
+      title: 'Duration',
+      dataIndex: 'estimatedDurationMinutes',
+      key: 'duration',
       width: 120,
       align: 'center',
       render: (min) => (
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-1 text-slate-700">
           <Clock className="w-4 h-4 text-blue-500" />
           <span>{min} min</span>
         </div>
-      )
+      ),
     },
-    { 
-      title: 'Difficulty', 
-      dataIndex: 'difficultyLevel', 
-      key: 'difficulty', 
-      width: 150,
+    {
+      title: 'Difficulty',
+      dataIndex: 'difficultyLevel',
+      key: 'difficultyLevel',
+      width: 140,
       align: 'center',
-      render: (level) => (
-        <div className="flex items-center justify-center gap-1">
-          <span 
-            className="px-3 py-1 rounded-full text-white text-sm font-medium"
-            style={{ backgroundColor: getDifficultyColor(level) }}
-          >
-            {level}
-          </span>
-          <span className="text-lg">{getDifficultyIcon(level)}</span>
-        </div>
-      )
+      render: difficultyBadge,
     },
-    { 
-      title: 'Max Attempts', 
-      dataIndex: 'maxAttempts', 
-      key: 'maxAttempts', 
+    {
+      title: 'Max Attempts',
+      dataIndex: 'maxAttempts',
+      key: 'maxAttempts',
       width: 120,
       align: 'center',
-      render: (attempts) => (
-        <div className="flex items-center justify-center gap-1">
+      render: (v) => (
+        <div className="flex items-center justify-center gap-1 text-slate-700">
           <Zap className="w-4 h-4 text-yellow-500" />
-          <span>{attempts}</span>
+          <span>{v}</span>
         </div>
-      )
+      ),
     },
     {
-      title: 'Status', 
-      dataIndex: 'isActive', 
-      key: 'status', 
-      width: 100,
+      title: 'Status',
+      dataIndex: 'isActive',
+      key: 'isActive',
+      width: 110,
       align: 'center',
       render: (isActive) => (
-        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-          isActive 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-gray-100 text-gray-800'
-        }`}>
-          {isActive ? 'Active' : 'Inactive'}
-        </span>
-      )
+        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{isActive ? 'Active' : 'Inactive'}</span>
+      ),
     },
     {
-      title: 'Actions', 
-      key: 'actions', 
-      width: 80, 
-      fixed: 'right', 
+      title: 'Actions',
+      key: 'actions',
+      width: 90,
+      fixed: 'right',
       align: 'center',
       render: (_, record) => (
-        <Tooltip title="View Details">
-          <Button 
-            type="primary" 
-            size="small" 
-            icon={<Eye className="w-4 h-4" />} 
+        <Tooltip title="Xem chi tiết">
+          <Button
+            type="primary"
+            size="small"
+            icon={<Eye className="w-4 h-4" />}
             onClick={() => nav(`/instructor/practices/${record.id}`)}
-            className="hover:scale-110 transition-transform"
           />
         </Tooltip>
-      )
-    }
+      ),
+    },
   ];
 
   if (loading) return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 px-0">
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-8">
-        <h1 className="text-3xl font-bold">Practices Management</h1>
-        <p className="text-blue-100 mt-2">View and manage all teaching practices</p>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <Skeleton.Button style={{ width: 200, height: 32 }} active />
       </div>
-      <div className="px-6 py-4">
-        <Card>
-          <Skeleton active paragraph={{ rows: 6 }} />
-        </Card>
-      </div>
-    </div>
-  );
-
-  if (!practices || practices.length === 0) return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 px-0">
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-8">
-        <h1 className="text-3xl font-bold">Practices Management</h1>
-        <p className="text-blue-100 mt-2">View and manage all teaching practices</p>
-      </div>
-      <div className="px-6 py-4">
-        <Card title="Practices">
-          <Empty description="No practices found." />
-        </Card>
+      <div className="bg-white rounded-lg shadow p-4">
+        <Skeleton active paragraph={{ rows: 8 }} />
       </div>
     </div>
   );
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 px-0">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-8">
-        <h1 className="text-3xl font-bold">Practices Management</h1>
-        <p className="text-blue-100 mt-2">View and manage all teaching practices</p>
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-2xl">Practice Management</span>
       </div>
 
       {/* Content */}
-      <div className="px-6 py-6">
-        <Card className="shadow-lg rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table 
-              columns={columns} 
-              dataSource={practices} 
-              rowKey="id" 
-              pagination={false} 
-              size="middle"
-              className="bg-white"
-              rowClassName="hover:bg-blue-50 transition-colors"
-            />
-          </div>
-          
-          {/* Pagination */}
-          <div className="pt-6 border-t border-gray-200 flex justify-center items-center">
-            <Pagination 
-              current={page} 
-              pageSize={pageSize} 
-              total={total} 
-              showSizeChanger 
-              pageSizeOptions={["10", "20", "50"]}
-              onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }} 
-              showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} practices`}
-              className="py-2"
-            />
-          </div>
-        </Card>
-      </div>
+      {(!practices || practices.length === 0) ? (
+        <Empty description="Không có practice" className="mt-16" />
+      ) : (
+        <div className="bg-white rounded-lg shadow">
+          <Table
+            columns={columns}
+            dataSource={practices}
+            rowKey="id"
+            size="middle"
+            pagination={{
+              current: pageNumber,
+              pageSize,
+              total,
+              showSizeChanger: true,
+              pageSizeOptions: ['10','20','50'],
+              onChange: (p, ps) => { setPageNumber(p); setPageSize(ps); load(p, ps); },
+              showTotal: (t) => `${t} practices`,
+            }}
+            className="overflow-x-auto"
+            rowClassName="hover:bg-blue-50 transition-colors"
+          />
+        </div>
+      )}
     </div>
   );
 }
