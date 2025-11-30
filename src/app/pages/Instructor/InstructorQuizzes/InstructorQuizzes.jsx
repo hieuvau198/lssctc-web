@@ -8,6 +8,7 @@ import QuizTable from './partials/QuizTable';
 import QuizPagination from './partials/QuizPagination';
 import QuizEmptyState from './partials/QuizEmptyState';
 import QuizLoading from './partials/QuizLoading';
+import ImportQuizModal from './partials/ImportQuizModal';
 
 export default function InstructorQuizzes() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function InstructorQuizzes() {
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [importModalVisible, setImportModalVisible] = useState(false);
 
   const load = async (p = page, ps = pageSize) => {
     setLoading(true);
@@ -64,6 +66,11 @@ export default function InstructorQuizzes() {
     }
   };
 
+  const handleImportSuccess = () => {
+    setImportModalVisible(false);
+    load(); // Reload list after successful import
+  };
+
   const totalPages = Math.ceil(total / pageSize) || 1;
 
   const handlePageChange = (newPage) => {
@@ -90,6 +97,7 @@ export default function InstructorQuizzes() {
       <QuizHeader
         total={total}
         onCreate={() => navigate('/instructor/quizzes/create')}
+        onImport={() => setImportModalVisible(true)}
       />
 
       <div className="mb-6">
@@ -120,6 +128,12 @@ export default function InstructorQuizzes() {
           />
         </div>
       )}
+
+      <ImportQuizModal
+        visible={importModalVisible}
+        onCancel={() => setImportModalVisible(false)}
+        onSuccess={handleImportSuccess}
+      />
     </div>
   );
 }

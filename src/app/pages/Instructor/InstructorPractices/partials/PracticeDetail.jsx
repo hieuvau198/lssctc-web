@@ -203,9 +203,9 @@ export default function PracticeDetail() {
                   </div>
 
                   {practice.createdDate && (
-                    <div className="pt-4 border-t border-blue-200">
+                    <div className="p-4 bg-white/60 rounded-2xl">
                       <p className="text-xs font-bold text-blue-600 uppercase tracking-wide mb-1">Created</p>
-                      <p className="text-sm text-blue-900 font-medium">
+                      <p className="text-2xl font-bold text-blue-900">
                         {new Date(practice.createdDate).toLocaleDateString()}
                       </p>
                     </div>

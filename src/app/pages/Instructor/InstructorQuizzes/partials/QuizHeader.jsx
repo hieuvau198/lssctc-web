@@ -1,7 +1,7 @@
 import React from 'react';
-import { ChevronRight, Plus } from 'lucide-react';
+import { ChevronRight, Plus, FileSpreadsheet } from 'lucide-react';
 
-export default function QuizHeader({ total, onCreate }) {
+export default function QuizHeader({ total, onCreate, onImport }) {
     return (
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
             <div className="space-y-2">
@@ -19,6 +19,13 @@ export default function QuizHeader({ total, onCreate }) {
             </div>
 
             <div className="flex items-center gap-4">
+                <button
+                    onClick={onImport}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 hover:shadow-lg hover:shadow-green-600/30 transition-all duration-300 transform hover:-translate-y-0.5"
+                >
+                    <FileSpreadsheet className="w-5 h-5" />
+                    <span>Import from Excel</span>
+                </button>
                 <button
                     onClick={onCreate}
                     className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-300 transform hover:-translate-y-0.5"
