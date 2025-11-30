@@ -2,58 +2,79 @@ import React from 'react';
 import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 
-const PracticeTable = ({
-  practices = [],
+const ClassTable = ({
+  classes = [],
   pageNumber = 1,
   pageSize = 10,
   total = 0,
   onPageChange = () => {},
   onView = () => {},
 }) => {
+  const getStatusColor = (status) => {
+    const map = {
+      'NotStarted': 'default',
+      'InProgress': 'blue',
+      'Completed': 'green',
+      'Cancelled': 'red',
+    };
+    return map[status] || 'default';
+  };
+
   const tableColumns = [
     {
-      title: 'Practice Code',
-      dataIndex: 'practiceCode',
-      key: 'practiceCode',
-      width: 140,
+      title: 'Class Code',
+      dataIndex: 'classCode',
+      key: 'classCode',
+      width: 80,
+      fixed: 'left',
     },
     {
       title: 'Name',
-      dataIndex: 'practiceName',
-      key: 'practiceName',
+      dataIndex: 'name',
+      key: 'name',
       width: 260,
       render: (name, record) => (
         <div
           className="font-medium text-blue-600 cursor-pointer hover:underline"
           onClick={() => onView(record)}
         >
-          {name}
+          {name || record.className || 'N/A'}
         </div>
       ),
     },
     {
-      title: 'Duration (min)',
-      dataIndex: 'estimatedDurationMinutes',
-      key: 'estimatedDurationMinutes',
-      width: 130,
-      align: 'center',
-      render: (v) => <span>{v}</span>,
+      title: 'Start Date',
+      dataIndex: 'startDate',
+      key: 'startDate',
+      width: 120,
+      render: (date) => date ? new Date(date).toLocaleDateString() : '-',
     },
     {
-      title: 'Difficulty',
-      dataIndex: 'difficultyLevel',
-      key: 'difficultyLevel',
-      width: 140,
-      align: 'center',
-      render: (level) => <Tag color={level === 'Entry' ? 'green' : level === 'Intermediate' ? 'orange' : 'red'}>{level || 'N/A'}</Tag>,
+      title: 'End Date',
+      dataIndex: 'endDate',
+      key: 'endDate',
+      width: 120,
+      render: (date) => date ? new Date(date).toLocaleDateString() : '-',
     },
     {
-      title: 'Max Attempts',
-      dataIndex: 'maxAttempts',
-      key: 'maxAttempts',
+      title: 'Trainees',
+      dataIndex: 'traineeCount',
+      key: 'traineeCount',
+      width: 100,
+      align: 'center',
+      render: (count) => <span>{count ?? 0}</span>,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
       width: 120,
       align: 'center',
-      render: (v) => <span>{v}</span>,
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>
+          {status || 'N/A'}
+        </Tag>
+      ),
     },
     {
       title: 'Actions',
@@ -76,8 +97,8 @@ const PracticeTable = ({
       <div className="overflow-hidden min-h-[500px]">
         <Table
           columns={tableColumns}
-          dataSource={practices}
-          rowKey="id"
+          dataSource={classes}
+          rowKey={(r) => r.id || r.classId}
           pagination={false}
           scroll={{ y: 450 }}
           size="middle"
@@ -92,11 +113,11 @@ const PracticeTable = ({
           onChange={onPageChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} practices`}
+          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} classes`}
         />
       </div>
     </div>
   );
 };
 
-export default PracticeTable;
+export default ClassTable;

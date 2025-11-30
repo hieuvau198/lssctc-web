@@ -1,29 +1,26 @@
 // src\app\pages\Instructor\InstructorClasses\InstructorClasses.jsx
 import {
   Alert,
-  Skeleton
+  Skeleton,
+  Empty,
+  App
 } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { getInstructorClasses } from "../../../apis/Instructor/InstructorApi";
-import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
-import ClassFilters from "./partials/ClassFilters";
-import ClassList from "./partials/ClassList";
-import useAuthStore from "../../../store/authStore"; // 1. Import the auth store
-import { getAuthToken } from "../../../libs/cookies"; // 2. Import token utils
-import { decodeToken } from "../../../libs/jwtDecode"; // 3. Import token utils
+import ClassTable from "./partials/ClassTable";
+import useAuthStore from "../../../store/authStore";
+import { getAuthToken } from "../../../libs/cookies";
+import { decodeToken } from "../../../libs/jwtDecode";
 
 export default function InstructorClasses() {
+  const { message } = App.useApp();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchValue, setSearchValue] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
-  const [status, setStatus] = useState(undefined);
-  const [viewMode, setViewMode] = useState("table");
   
   const navigate = useNavigate();
 
@@ -50,52 +47,40 @@ export default function InstructorClasses() {
   }, [instructorIdFromStore]);
 
   useEffect(() => {
-    if (!instructorId) {
-      return;
+    if (instructorId) {
+      load();
     }
+  }, [instructorId]);
 
-    let cancelled = false;
+  const load = async (p = pageNumber, ps = pageSize) => {
+    if (!instructorId) return;
+    
     setLoading(true);
-    (async () => {
-      try {
-        const res = await getInstructorClasses(instructorId, {
-          page: pageNumber,
-          pageSize,
-        });
-        if (cancelled) return;
-        
-        if (res && Array.isArray(res.items)) {
-          setClasses(res.items);
-          setTotal(Number(res.totalCount) || res.items.length || 0);
-        } else if (Array.isArray(res)) {
-          setClasses(res);
-          setTotal(res.length || 0);
-        } else {
-          setClasses([]);
-          setTotal(0);
-        }
-      } catch (err) {
-        if (cancelled) return;
-        setError(err?.message || "Failed to load classes");
-      } finally {
-        if (cancelled) return;
-        setLoading(false);
+    try {
+      const res = await getInstructorClasses(instructorId, {
+        page: p,
+        pageSize: ps,
+      });
+      
+      if (res && Array.isArray(res.items)) {
+        setClasses(res.items);
+        setTotal(Number(res.totalCount) || res.items.length || 0);
+      } else if (Array.isArray(res)) {
+        setClasses(res);
+        setTotal(res.length || 0);
+      } else {
+        setClasses([]);
+        setTotal(0);
       }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [instructorId, pageNumber, pageSize]);
-
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-    setPageNumber(1);
-  };
-
-  const handlePageChange = (page, size) => {
-    setPageNumber(page);
-    setPageSize(size);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load classes', err);
+      message.error('Load classes thất bại');
+      setClasses([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleViewClass = (classItem) => {
@@ -105,34 +90,12 @@ export default function InstructorClasses() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Header Skeleton */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <Skeleton.Button style={{ width: 200, height: 32 }} active />
         </div>
-
-        {/* Search and Controls Skeleton */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-          <Skeleton.Input style={{ width: 320, height: 40 }} active />
-          <div className="flex gap-2">
-            <Skeleton.Button style={{ width: 80, height: 40 }} active />
-          </div>
-        </div>
-
-        {/* Content Skeleton */}
-        <div className="bg-white rounded-lg shadow p-6">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="flex items-center gap-4 p-4 border-b border-slate-100 last:border-b-0">
-              <Skeleton.Avatar size={48} shape="square" active />
-              <div className="flex-1">
-                <Skeleton.Input style={{ width: '60%', height: 20, marginBottom: 8 }} active />
-                <Skeleton.Input style={{ width: '40%', height: 16 }} active />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton.Button size="small" active />
-              </div>
-            </div>
-          ))}
+        <div className="bg-white rounded-lg shadow p-4">
+          <Skeleton active paragraph={{ rows: 8 }} />
         </div>
       </div>
     );
@@ -140,46 +103,36 @@ export default function InstructorClasses() {
 
   if (error) {
     return (
-      <div className="max-w-md mx-auto mt-10">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <Alert message="Error" description={error} type="error" showIcon />
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="max-w-7xl mx-auto px-4 py-2">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-2xl">My Classes</span>
       </div>
 
-      {/* Search and Controls */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <ClassFilters
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-          status={status}
-          setStatus={setStatus}
-          onSearch={handleSearch}
-        />
-        <div className="flex gap-2">
-          <ViewModeToggle 
-            viewMode={viewMode} 
-            onViewModeChange={setViewMode} 
-          />
-        </div>
-      </div>
-
       {/* Content */}
-      <ClassList
-        classes={classes}
-        viewMode={viewMode}
-        pageNumber={pageNumber}
-        pageSize={pageSize}
-        total={total}
-        onPageChange={handlePageChange}
-        onView={handleViewClass}
-      />      
+      {(!classes || classes.length === 0) ? (
+        <Empty description="Không có class" className="mt-16" />
+      ) : (
+        <div className="bg-white rounded-lg shadow">
+          <div className="overflow-hidden">
+            <ClassTable
+              classes={classes}
+              pageNumber={pageNumber}
+              pageSize={pageSize}
+              total={total}
+              onPageChange={(p, ps) => { setPageNumber(p); setPageSize(ps); load(p, ps); }}
+              onView={handleViewClass}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

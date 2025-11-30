@@ -46,7 +46,7 @@ export default function InstructorPractices() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-2">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-2xl">Practices</span>
@@ -57,7 +57,6 @@ export default function InstructorPractices() {
         <Empty description="Không có practice" className="mt-16" />
       ) : (
         <div className="bg-white rounded-lg shadow">
-          {/* fixed-height container so page doesn't grow; table body will scroll */}
           <div className="overflow-hidden">
             <PracticeTable
               practices={practices}
