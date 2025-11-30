@@ -10,6 +10,7 @@ import {
 } from '../../../../apis/Instructor/InstructorPractice';
 import { getAuthToken } from '../../../../libs/cookies';
 import PracticeTaskList from './PracticeTaskList';
+import { ArrowLeft } from 'lucide-react';
 
 const { Option } = Select;
 
@@ -186,7 +187,7 @@ export default function PracticeDetail() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-2">
       {/* Modals */}
       {practice && (
         <UpdatePracticeForm
@@ -209,7 +210,8 @@ export default function PracticeDetail() {
       {/* Back Button & Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
-          <div>
+          <div className="flex items-center gap-2">
+            <Button type="default" icon={<ArrowLeft size={16} />} onClick={() => navigate(-1)}/>
             <span className="text-2xl text-slate-900">Practice Details</span>
           </div>
         </div>

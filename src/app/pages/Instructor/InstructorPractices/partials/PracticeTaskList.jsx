@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Card, Button, Modal, Form, Input, Select, message, Tooltip, Empty, Spin } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Card, Button, Modal, Form, Input, Select, message, Empty, Spin } from 'antd';
 import { 
   getTasksByPracticeId, 
   updateTask, 
   removeTaskFromPractice 
 } from '../../../../apis/Instructor/InstructorPractice';
+import TaskCard from './TaskCard';
+import { Plus } from 'lucide-react';
 
 const { Option } = Select;
 
@@ -303,68 +304,25 @@ export default function PracticeTaskList({ practiceId, token }) {
         className="shadow"
         extra={
           <Button type="primary" onClick={() => setIsManageTasksModalVisible(true)}>
-            Assign Task
+            <Plus />Assign Task
           </Button>
         }
       >
         {tasks.length === 0 ? (
           <Empty description="No tasks assigned" />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tasks.map((task, idx) => (
-              <Card
-                key={task.id}
-                size="small"
-                className="hover:shadow-md transition-shadow"
-                title={
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
-                      {idx + 1}
-                    </span>
-                    <span className="text-sm font-medium truncate">{task.taskName}</span>
-                  </div>
-                }
-                extra={
-                  <div className="flex gap-1">
-                    <Tooltip title="Edit">
-                      <Button 
-                        type="text" 
-                        size="small" 
-                        icon={<EditOutlined />} 
-                        onClick={() => handleEditTask(task)}
-                      />
-                    </Tooltip>
-                    <Tooltip title="Remove">
-                      <Button 
-                        type="text" 
-                        size="small" 
-                        danger
-                        icon={<DeleteOutlined />} 
-                        onClick={() => handleRemoveTask(task.id)}
-                      />
-                    </Tooltip>
-                  </div>
-                }
-              >
-                <div className="space-y-2">
-                  {task.taskCode && (
-                    <div className="text-xs text-slate-500">
-                      Code: <span className="ml-1 px-2 py-0.5 bg-slate-100 rounded">{task.taskCode}</span>
-                    </div>
-                  )}
-                  {task.taskDescription && (
-                    <p className="text-xs text-slate-600 line-clamp-2">
-                      {task.taskDescription}
-                    </p>
-                  )}
-                  {task.expectedResult && (
-                    <div className="text-xs bg-green-50 border border-green-200 rounded p-2 text-green-800">
-                      <strong>Expected:</strong> {task.expectedResult}
-                    </div>
-                  )}
-                </div>
-              </Card>
-            ))}
+          <div className="max-h-[600px] overflow-y-auto pr-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min">
+              {tasks.map((task, idx) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  index={idx}
+                  onEdit={handleEditTask}
+                  onRemove={handleRemoveTask}
+                />
+              ))}
+            </div>
           </div>
         )}
       </Card>
