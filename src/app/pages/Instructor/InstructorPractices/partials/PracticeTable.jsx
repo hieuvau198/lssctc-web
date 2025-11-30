@@ -79,7 +79,7 @@ const PracticeTable = ({
           dataSource={practices}
           rowKey="id"
           pagination={false}
-          scroll={{ y: 420 }}
+          scroll={{ y: 450 }}
           size="middle"
         />
       </div>
