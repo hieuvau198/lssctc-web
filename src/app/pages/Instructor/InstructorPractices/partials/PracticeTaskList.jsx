@@ -5,7 +5,7 @@ import {
   updateTask, 
   removeTaskFromPractice 
 } from '../../../../apis/Instructor/InstructorPractice';
-import TaskCard from './TaskCard';
+import TaskCard from '../../../../components/TaskCard/TaskCard';
 import { Plus } from 'lucide-react';
 
 const { Option } = Select;
