@@ -32,23 +32,27 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
                             />
                         </Tooltip>
                     )}
-                    <Tooltip title="Edit">
-                        <Button
-                            type="text"
-                            size="small"
-                            icon={<EditOutlined />}
-                            onClick={() => onEdit(task)}
-                        />
-                    </Tooltip>
-                    <Tooltip title={onRemove ? "Remove" : "Delete"}>
-                        <Button
-                            type="text"
-                            size="small"
-                            danger
-                            icon={<DeleteOutlined />}
-                            onClick={() => handleDelete(onRemove ? task.id : task)}
-                        />
-                    </Tooltip>
+                    {onEdit && (
+                        <Tooltip title="Edit">
+                            <Button
+                                type="text"
+                                size="small"
+                                icon={<EditOutlined />}
+                                onClick={() => onEdit(task)}
+                            />
+                        </Tooltip>
+                    )}
+                    {(onDelete || onRemove) && (
+                        <Tooltip title={onRemove ? "Remove" : "Delete"}>
+                            <Button
+                                type="text"
+                                size="small"
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={() => handleDelete(onRemove ? task.id : task)}
+                            />
+                        </Tooltip>
+                    )}
                 </div>
             }
         >
