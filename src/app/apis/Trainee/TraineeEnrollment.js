@@ -38,8 +38,20 @@ export async function getMyEnrollmentsPaged({ page = 1, pageSize = 10 } = {}) {
 	return data;
 }
 
+/**
+ * Enroll trainee to a class
+ * POST /api/Enrollments/my-enrollments
+ * @param {{classId:number}} payload
+ */
+export async function enrollMyClass(payload) {
+	if (!payload.classId) throw new Error('classId is required');
+	const { data } = await apiClient.post(`${ENROLLMENTS_BASE}/my-enrollments`, payload);
+	return data;
+}
+
 // Export grouped object (optional convenience)
 export const TraineeEnrollmentApi = {
 	getMyEnrollments,
 	getMyEnrollmentsPaged,
+	enrollMyClass,
 };

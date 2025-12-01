@@ -80,8 +80,6 @@ export default function Sections({ classId }) {
 								<div className="flex items-start justify-between p-5 border border-slate-200 rounded-lg bg-slate-50/30 hover:bg-slate-50 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer">
 									<div className="flex-1">
 										<div className="flex items-start gap-3">
-											{/* <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-xs font-semibold">
-								</div> */}
 											<div className="flex-1">
 												<div className="flex items-center justify-between gap-2 mb-1">
 													<h4 className="font-semibold text-slate-900 text-base">{section.sectionName}</h4>

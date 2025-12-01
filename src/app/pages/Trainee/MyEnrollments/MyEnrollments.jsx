@@ -88,8 +88,7 @@ export default function MyEnrollments() {
                 return (
                   <div className="my-4" key={enrollment.id}>
                     <Card
-                      className="group rounded-2xl shadow-xl border hover:shadow-lg transition-all duration-300 overflow-hidden relative cursor-pointer"
-                      onClick={() => navigate(`/trainee/classes/${enrollment.classId}`)}
+                      className="group rounded-2xl shadow-xl border hover:shadow-lg transition-all duration-300 overflow-hidden relative"                      
                     >
                       <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r opacity-80 from-transparent via-slate-200 to-transparent" />
                       <div className="flex">
