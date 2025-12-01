@@ -55,9 +55,6 @@ const ProgramDetailView = ({ program, loading }) => {
           </div>
           <div className="flex flex-wrap gap-4 text-sm text-slate-600">
             <span>
-              <span className="font-medium">Duration:</span> {program.durationHours}h
-            </span>
-            <span>
               <span className="font-medium">Total Courses:</span> {program.totalCourses || 0}
             </span>
           </div>

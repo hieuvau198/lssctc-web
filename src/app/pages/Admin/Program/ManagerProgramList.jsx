@@ -11,6 +11,7 @@ import {
   Skeleton
 } from "antd";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   createProgram,
   deleteProgram,
@@ -27,13 +28,14 @@ import ProgramTableView from "./partials/ProgramTableView";
 
 const ManagerProgramList = () => {
   const { message } = App.useApp();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageNumber, setPageNumber] = useState(parseInt(searchParams.get('page')) || 1);
+  const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [total, setTotal] = useState(0);
   const [deletingId, setDeletingId] = useState(null);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
@@ -68,11 +70,13 @@ const ManagerProgramList = () => {
   const handleSearch = (value) => {
     setSearchTerm(value);
     setPageNumber(1);
+    setSearchParams({ page: '1', pageSize: pageSize.toString() });
   };
 
   const handlePageChange = (page, size) => {
     setPageNumber(page);
     setPageSize(size);
+    setSearchParams({ page: page.toString(), pageSize: size.toString() });
   };
 
   const handleDelete = async (id) => {
@@ -253,9 +257,9 @@ const ManagerProgramList = () => {
     );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-2 py-2">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <span className="text-2xl">Program Management</span>
       </div>
 

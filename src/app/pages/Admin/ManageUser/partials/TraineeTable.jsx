@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Table, Tag, Pagination, Empty, Avatar, Button } from 'antd';
+import { useSearchParams } from 'react-router-dom';
+import { Table, Tag, Pagination, Empty, Avatar } from 'antd';
 import { getTrainees } from '../../../../apis/Admin/AdminUser';
-import { Plus } from 'lucide-react';
-import DrawerAdd from './DrawerAdd';
 
 const getInitials = (name = '') => {
   return name
@@ -14,7 +13,7 @@ const getInitials = (name = '') => {
 };
 
 const COLUMNS = [
-  { title: '#', dataIndex: 'idx', width: 60 },
+  { title: '#', dataIndex: 'idx', width: 60, align: 'center' },
   {
     title: 'Avatar',
     dataIndex: 'avatar',
@@ -39,9 +38,9 @@ const COLUMNS = [
 ];
 
 export default function TraineeTable() {
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
+  const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -79,10 +78,7 @@ export default function TraineeTable() {
 
   return (
     <div>
-      <div className="min-h-[410px] overflow-auto">
-        <div className="flex justify-end mb-4">
-          <Button type="primary" icon={<Plus size={24}/>} onClick={() => setDrawerVisible(true)}>Add Trainee</Button>
-        </div>
+      <div className="min-h-[430px] overflow-auto">
         {data.length === 0 && !loading ? (
           <Empty description="No trainees" />
         ) : (
@@ -92,28 +88,21 @@ export default function TraineeTable() {
             pagination={false}
             rowKey="key"
             loading={loading}
-            scroll={{ y: 320 }}
+            scroll={{ y: 380 }}
           />
         )}
       </div>
-      <div className="p-4 bg-white flex justify-center">
+      <div className="py-3 border-t border-t-slate-300 bg-white flex justify-center">
         <Pagination
           current={page}
           pageSize={pageSize}
           total={total}
-          onChange={(p, s) => { setPage(p); setPageSize(s); }}
+          onChange={(p, s) => { setPage(p); setPageSize(s); setSearchParams({ page: p.toString(), pageSize: s.toString() }); }}
           showSizeChanger
-          pageSizeOptions={["5", "8", "10", "20"]}
+          pageSizeOptions={["10", "20", "50"]}
           showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} trainees`}
         />
       </div>
-
-      <DrawerAdd
-        visible={drawerVisible}
-        onClose={() => setDrawerVisible(false)}
-        role="trainee"
-        onCreated={() => fetchData(page, pageSize)}
-      />
     </div>
   );
 }

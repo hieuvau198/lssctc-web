@@ -1,7 +1,7 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Alert, App, Button, Drawer, Empty, Form, Input, Skeleton } from "antd";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createClass, deleteClass, fetchClasses } from "../../../apis/ProgramManager/ClassApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import ClassList from "./partials/ClassList";
@@ -9,13 +9,14 @@ import AddClassForm from "./partials/AddClassForm";
 
 const PMClasses = () => {
   const { message } = App.useApp();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
+  const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [total, setTotal] = useState(0);
   const [deletingId, setDeletingId] = useState(null);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
@@ -45,11 +46,13 @@ const PMClasses = () => {
   const handleSearch = (value) => {
     setSearchTerm(value);
     setPage(1);
+    setSearchParams({ page: '1', pageSize: pageSize.toString() });
   };
 
   const handlePageChange = (newPage, newPageSize) => {
     setPage(newPage);
     setPageSize(newPageSize);
+    setSearchParams({ page: newPage.toString(), pageSize: newPageSize.toString() });
   };
 
   const handleDelete = async (id) => {

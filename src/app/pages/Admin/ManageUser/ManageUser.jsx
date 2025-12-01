@@ -3,9 +3,11 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { App, Menu } from 'antd';
+import { App, Menu, Button } from 'antd';
 import { Outlet, Link, useLocation } from 'react-router';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { Plus } from 'lucide-react';
+import DrawerAdd from './partials/DrawerAdd';
 
 const MENU_ITEMS = [
   { key: 'trainees', icon: <TeamOutlined />, label: 'Trainee', to: 'trainees' },
@@ -18,6 +20,8 @@ export default function ManageUser() {
   const location = useLocation();
 
   // derive active key from current pathname (last segment)
+  const [drawerVisible, setDrawerVisible] = useState(false);
+
   const activeKey = useMemo(() => {
     const parts = location.pathname.split('/').filter(Boolean);
     const last = parts[parts.length - 1] || '';
@@ -30,10 +34,25 @@ export default function ManageUser() {
     return last;
   }, [location.pathname]);
 
+  const getButtonLabel = () => {
+    if (activeKey === 'trainees') return 'Add Trainee';
+    if (activeKey === 'simulation-managers') return 'Add Simulation Manager';
+    return 'Add Instructor';
+  };
+
+  const getRole = () => {
+    if (activeKey === 'trainees') return 'trainee';
+    if (activeKey === 'simulation-managers') return 'simulation-manager';
+    return 'instructor';
+  };
+
   return (
-    <div className="max-w-[1380px] mx-auto">
-      <div className="mb-4">
+    <div className="max-w-7xl mx-auto px-2 py-2">
+      <div className="mb-4 flex justify-between items-center">
         <span className="text-2xl">Manage Users</span>
+        <Button type="primary" icon={<Plus size={18}/>} onClick={() => setDrawerVisible(true)}>
+          {getButtonLabel()}
+        </Button>
       </div>
 
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
@@ -51,9 +70,15 @@ export default function ManageUser() {
 
         <div className="p-4">
           {/* Render the nested route (trainees, instructors, simulation-managers) */}
-          <Outlet />
+          <Outlet context={{ setDrawerVisible }} />
         </div>
       </div>
+
+      <DrawerAdd
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        role={getRole()}
+      />
     </div>
   );
 }
