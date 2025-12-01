@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Skeleton, Empty, Pagination, Alert, Button, Tooltip, message, Popconfirm } from 'antd';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Trash2, FileSpreadsheet } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { getQuizzes, deleteQuiz } from '../../../apis/Instructor/InstructorQuiz';
 import QuizFilters from './partials/QuizFilters';
+import ImportQuizModal from './partials/ImportQuizModal';
 
 export default function InstructorQuizzes() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function InstructorQuizzes() {
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [importModalVisible, setImportModalVisible] = useState(false);
 
   const load = async (p = page, ps = pageSize) => {
     setLoading(true);
@@ -60,12 +62,17 @@ export default function InstructorQuizzes() {
     }
   };
 
+  const handleImportSuccess = () => {
+    setImportModalVisible(false);
+    load(1, pageSize);
+  };
+
   const columns = [
     { title: '#', key: 'index', width: 60, render: (_, __, idx) => (page - 1) * pageSize + idx + 1 },
-    { 
-      title: 'Name', 
-      dataIndex: 'name', 
-      key: 'name', 
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       ellipsis: true,
       render: (text, record) => (
         <button
@@ -189,12 +196,21 @@ export default function InstructorQuizzes() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-2xl">Quizzes</span>
-        <Button 
-          type="primary" 
-          onClick={() => navigate('/instructor/quizzes/create')}
-        >
-          + Create Quiz
-        </Button>
+        <div>
+          <Button
+            icon={<FileSpreadsheet className="w-4 h-4" />}
+            onClick={() => setImportModalVisible(true)}
+            className="mr-2"
+          >
+            Import Excel
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => navigate('/instructor/quizzes/create')}
+          >
+            + Create Quiz
+          </Button>
+        </div>
       </div>
 
       {/* Search and Controls */}
@@ -204,10 +220,10 @@ export default function InstructorQuizzes() {
           setSearchValue={setSearchValue}
           onSearch={handleSearch}
         />
-      </div>
+      </div >
 
       {/* Content */}
-      <Card title="Quizzes">
+      < Card title="Quizzes" >
         <div className="overflow-auto h-[350px]">
           <Table
             columns={columns}
@@ -215,14 +231,20 @@ export default function InstructorQuizzes() {
             rowKey="id"
             pagination={false}
             size="middle"
-            // scroll={{ y: 560 }}
+          // scroll={{ y: 560 }}
           />
         </div>
         <div className="pt-4 border-t border-gray-200 flex justify-center">
           <Pagination current={page} pageSize={pageSize} total={total} showSizeChanger pageSizeOptions={["10", "20", "50"]}
             onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }} showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} quizzes`} />
         </div>
-      </Card>
-    </div>
+      </Card >
+
+      <ImportQuizModal
+        visible={importModalVisible}
+        onCancel={() => setImportModalVisible(false)}
+        onSuccess={handleImportSuccess}
+      />
+    </div >
   );
 }
