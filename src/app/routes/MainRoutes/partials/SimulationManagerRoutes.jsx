@@ -1,15 +1,15 @@
 import { Route, Routes } from 'react-router'
+import NotFound from '../../../layouts/NotFound'
 import SimManagerLayout from '../../../layouts/SimManagerLayout/SimManagerLayout'
+import BrandModel from '../../../pages/SimManager/BrandModel/BrandModel'
 import SimDashboard from '../../../pages/SimManager/Dashboard/Dashboard'
 import CreatePractice from '../../../pages/SimManager/Practices/CreatePractice/CreatePractice'
-import PracticeDetail from '../../../pages/SimManager/Practices/PracticeDetail/PracticeDetail'
+import PracticeDetail from '../../../pages/SimManager/Practices/partials/PracticeDetail'
 import PracticeStepDetail from '../../../pages/SimManager/Practices/PracticeDetail/PracticeStep/PracticeStepDetail/PracticeStepDetail'
 import Practices from '../../../pages/SimManager/Practices/Practices'
 import SimSettings from '../../../pages/SimManager/Settings/Settings'
-import SimulatorConfigs from '../../../pages/SimManager/SimulatorConfigs/SimulatorConfigs'
-import NotFound from '../../../layouts/NotFound'
+import TaskPractice from '../../../pages/SimManager/TaskPractice/TaskPractice'
 import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
-import BrandModel from '../../../pages/SimManager/BrandModel/BrandModel'
 
 export default function SimulationManagerRoutes() {
   return (
@@ -27,7 +27,7 @@ export default function SimulationManagerRoutes() {
         <Route path="/practices/create" element={<CreatePractice />} />
         <Route path="/practices/:id" element={<PracticeDetail />} />
         <Route path="/practices/:practiceId/steps/:stepId" element={<PracticeStepDetail />} />
-        <Route path="/configs" element={<SimulatorConfigs />} />
+        <Route path="/tasks" element={<TaskPractice />} />
         <Route path="/brand-models" element={<BrandModel />} />
         <Route path="/settings" element={<SimSettings />} />
       </Route>

@@ -10,7 +10,7 @@ import { clearAvatarUrl, sAvatarUrl, setAvatarUrl } from '../../../store/userAva
 const ITEMS = [
   { to: '/simulationManager/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
   { to: '/simulationManager/practices', label: 'Practices', icon: <FlaskConical className="w-5 h-5" /> },
-  { to: '/simulationManager/configs', label: 'Simulator Configs', icon: <Sliders className="w-5 h-5" /> },
+  { to: '/simulationManager/tasks', label: 'Tasks Setting', icon: <Sliders className="w-5 h-5" /> },
   { to: '/simulationManager/brand-models', label: 'Brand Model', icon: <Truck className="w-5 h-5" /> },
   { to: '/simulationManager/settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
