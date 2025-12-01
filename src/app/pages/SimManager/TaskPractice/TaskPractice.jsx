@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Skeleton, Empty, App, Form, Space, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useSearchParams } from 'react-router-dom';
 import { getAllTasks, createTask, updateTask, deleteTask, getTaskById } from '../../../apis/SimulationManager/SimulationManagerTaskApi';
 import { getAuthToken } from '../../../libs/cookies';
 import ViewModeToggle from '../../../components/ViewModeToggle/ViewModeToggle';
@@ -10,12 +11,13 @@ import DrawerForm from './partials/DrawerForm';
 
 export default function TaskPractice() {
     const { message } = App.useApp();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [loading, setLoading] = useState(true);
     const [tasks, setTasks] = useState([]);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageNumber, setPageNumber] = useState(parseInt(searchParams.get('page')) || 1);
+    const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
     const [total, setTotal] = useState(0);
-    const [viewMode, setViewMode] = useState('table');
+    const [viewMode, setViewMode] = useState(searchParams.get('view') || 'table');
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [drawerMode, setDrawerMode] = useState('create'); // 'create', 'edit', 'view'
     const [currentTask, setCurrentTask] = useState(null);
@@ -166,6 +168,7 @@ export default function TaskPractice() {
         const newSize = mode === 'card' ? 9 : 10;
         setPageNumber(1);
         setPageSize(newSize);
+        setSearchParams({ page: '1', pageSize: newSize.toString(), view: mode });
         loadTasks(1, newSize);
     };
 
@@ -213,6 +216,8 @@ export default function TaskPractice() {
                         onChange: (page, size) => {
                             setPageNumber(page);
                             setPageSize(size);
+                            setSearchParams({ page: page.toString(), pageSize: size.toString(), view: viewMode });
+                            loadTasks(page, size);
                         },
                     }}
                 />
@@ -230,6 +235,8 @@ export default function TaskPractice() {
                         onChange: (page, size) => {
                             setPageNumber(page);
                             setPageSize(size);
+                            setSearchParams({ page: page.toString(), pageSize: size.toString(), view: viewMode });
+                            loadTasks(page, size);
                         },
                     }}
                 />
