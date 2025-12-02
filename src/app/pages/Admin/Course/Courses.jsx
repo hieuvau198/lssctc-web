@@ -344,7 +344,7 @@ const Courses = () => {
   return (
     <div className="max-w-7xl mx-auto px-2 py-2">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-2">
         <span className="text-2xl">Course Management</span>
       </div>
 

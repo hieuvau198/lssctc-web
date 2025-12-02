@@ -1,35 +1,65 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Skeleton, Empty, Card } from 'antd';
+import { fetchPrograms } from '../../../apis/Trainee/TraineeProgramApi';
+import ProgramCard from '../../../components/ProgramCard';
 
-// Highlighted main courses (static mock list)
 export default function MainCoursesSection() {
-  const courses = [
-    { id: 1, title: 'Fundamentals of Port Crane Operation', lvl: 'Beginner', duration: '6h', tag: 'Core' },
-    { id: 2, title: 'Advanced Container Handling & Yard Flow', lvl: 'Intermediate', duration: '8h', tag: 'Advanced' },
-    { id: 3, title: 'Safety & Incident Prevention Workshop', lvl: 'All Levels', duration: '4h', tag: 'Safety' }
-  ];
+  const navigate = useNavigate();
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+
+    fetchPrograms({ PageNumber: 1, PageSize: 10, IsActive: true })
+      .then((res) => {
+        if (cancelled) return;
+        const items = res?.items || res?.data || [];
+        setPrograms(items.slice(0, 5));
+        setLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setPrograms([]);
+        setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
-    <section id="courses" className="py-14 md:py-18 bg-slate-50">
-  <div className="max-w-[1380px] mx-auto px-5 sm:px-6 md:px-10">
+    <section id="programs" className="py-14 md:py-18 bg-slate-50">
+      <div className="max-w-[1380px] mx-auto px-5 sm:px-6 md:px-10">
         <div className="flex items-baseline justify-between mb-8">
-          <h2 className="text-xl md:text-2xl font-semibold text-slate-900 tracking-tight">Featured Courses</h2>
-          <a href="#" className="text-blue-600 text-sm hover:text-blue-700 font-medium">Browse catalog</a>
+          <h2 className="text-xl md:text-2xl font-semibold text-slate-900 tracking-tight">Featured Programs</h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {courses.map(c => (
-            <div key={c.id} className="group flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-blue-500 hover:shadow-md transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] tracking-widest font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">{c.tag}</span>
-                <span className="text-[11px] text-slate-500">{c.duration}</span>
-              </div>
-              <h3 className="font-semibold text-sm md:text-base text-slate-900 leading-snug line-clamp-3">{c.title}</h3>
-              <p className="mt-2 text-[11px] text-slate-600">Level: {c.lvl}</p>
-              <div className="mt-4 flex gap-2">
-                <button className="text-xs font-medium px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-500 transition-colors">Enroll</button>
-                <button className="text-xs font-medium px-3 py-1 rounded border border-slate-300 text-slate-700 hover:bg-slate-100">Details</button>
-              </div>
-            </div>
-          ))}
-        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i} className="rounded-lg">
+                <Skeleton.Image active className="!w-full !h-40 mb-4" />
+                <Skeleton active paragraph={{ rows: 3 }} />
+              </Card>
+            ))}
+          </div>
+        ) : programs.length === 0 ? (
+          <Empty description="No programs available" />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {programs.map((prog) => (
+              <ProgramCard
+                key={prog.id}
+                program={prog}
+                onClick={() => navigate(`/program/${prog.id}`)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

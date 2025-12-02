@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
 import { Input, Skeleton, Alert, Empty, Pagination } from "antd";
-import ProgramCard from "./partials/ProgramCard";
+import ProgramCard from "../../../components/ProgramCard";
 import { useNavigate } from "react-router";
 import PageNav from "../../../components/PageNav/PageNav";
 

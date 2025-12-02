@@ -70,15 +70,6 @@ export default function CourseCard({ course }) {
             )}
           </div>
         )}
-
-        {/* <div className="mt-4 flex items-center justify-between">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-          >
-            Enroll
-          </button>
-        </div> */}
       </div>
     </div>
   );
