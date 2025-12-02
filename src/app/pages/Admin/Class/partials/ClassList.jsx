@@ -21,6 +21,7 @@ const ClassTableView = ({
       key: "index",
       width: 60,
       fixed: "left",
+      align: "center",
       render: (_, __, index) => (
         <span className="font-medium text-gray-600">
           {(page - 1) * pageSize + index + 1}

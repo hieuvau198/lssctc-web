@@ -208,7 +208,7 @@ export default function PracticeTaskList({ practiceId }) {
         {tasks.length === 0 ? (
           <Empty description="No tasks assigned" />
         ) : (
-          <div className="max-h-[720px] overflow-y-auto pr-2">
+          <div className="max-h-[500px] overflow-y-auto pr-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min">
               {tasks.map((task, idx) => (
                 <TaskCard

@@ -4,14 +4,15 @@ import { Empty, Skeleton, Button, App, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import PracticeTable from './partials/PracticeTable';
 import { getPractices, deletePractice } from '../../../apis/SimulationManager/SimulationManagerPracticeApi';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function Practices() {
   const { message } = App.useApp();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [practices, setPractices] = useState([]);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageNumber, setPageNumber] = useState(parseInt(searchParams.get('page')) || 1);
+  const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [total, setTotal] = useState(0);
   const [deleting, setDeleting] = useState(null);
   const navigate = useNavigate();
@@ -106,6 +107,8 @@ export default function Practices() {
             onChange: (page, size) => {
               setPageNumber(page);
               setPageSize(size);
+              setSearchParams({ page: page.toString(), pageSize: size.toString() });
+              load(page, size);
             },
           }}
         />

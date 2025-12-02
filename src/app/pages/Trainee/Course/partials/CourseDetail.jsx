@@ -1,19 +1,16 @@
-import { Alert, Skeleton, Card, Tag, Empty } from 'antd';
+import { Alert, Skeleton, Tag, Empty } from 'antd';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router';
-import { fetchCourseDetail, fetchClassesByCourse } from '../../../../apis/ProgramManager/CourseApi';
+import { useParams, useLocation } from 'react-router';
+import { fetchCourseDetail } from '../../../../apis/ProgramManager/CourseApi';
 import PageNav from '../../../../components/PageNav/PageNav';
-import { CalendarOutlined, UserOutlined, ClockCircleOutlined, InfoCircleOutlined, BookOutlined } from '@ant-design/icons';
+import { ClockCircleOutlined, InfoCircleOutlined, BookOutlined } from '@ant-design/icons';
 import { Wallet } from 'lucide-react';
-import { getClassStatus } from '../../../../utils/classStatus';
+import ClassesSection from './ClassesSection';
 
 export default function CourseDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [data, setData] = useState(null);
-  const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [classesLoading, setClassesLoading] = useState(true);
   const [error, setError] = useState(null);
   const location = useLocation();
 
@@ -22,22 +19,16 @@ export default function CourseDetail() {
     setLoading(true);
     setError(null);
     
-    Promise.all([
-      fetchCourseDetail(id),
-      fetchClassesByCourse(id).catch(() => [])
-    ])
-      .then(([courseRes, classesRes]) => {
+    fetchCourseDetail(id)
+      .then((courseRes) => {
         if (cancelled) return;
         setData(courseRes);
-        setClasses(classesRes);
         setLoading(false);
-        setClassesLoading(false);
       })
       .catch((err) => {
         if (cancelled) return;
         setError(err.message || 'Failed to load course');
         setLoading(false);
-        setClassesLoading(false);
       });
     return () => { cancelled = true; };
   }, [id]);
@@ -81,13 +72,7 @@ export default function CourseDetail() {
         <div className="bg-white">
           <div className="max-w-7xl mx-auto px-4 py-10">
             <h3 className="text-2xl font-semibold mb-6">Available Classes</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="rounded-lg">
-                  <Skeleton active paragraph={{ rows: 3 }} />
-                </Card>
-              ))}
-            </div>
+            <ClassesSection courseId={id} />
           </div>
         </div>
       </div>
@@ -190,77 +175,7 @@ export default function CourseDetail() {
       <div className="bg-white min-h-screen">
         <div className="max-w-7xl mx-auto px-4 py-10">
           <h2 className="text-2xl font-semibold mb-6">Available Classes</h2>
-          {classesLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="rounded-lg">
-                  <Skeleton active paragraph={{ rows: 3 }} />
-                </Card>
-              ))}
-            </div>
-          ) : classes.length === 0 ? (
-            <Empty description="No classes available for this course yet." className="py-8" />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {classes.map((cls) => (
-                <Card
-                  key={cls.id}
-                  hoverable
-                  className="rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                  onClick={() => navigate(`/class/${cls.id}`)}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between">
-                      <h3 className="font-semibold text-slate-900 line-clamp-2 flex-1">
-                        {cls.name || cls.className || 'Unnamed Class'}
-                      </h3>
-                      {(() => {
-                        const s = getClassStatus(cls.status ?? cls._statusMapped ?? (cls.isActive ? 'Open' : null));
-                        return (
-                          <Tag color={s.color} className="ml-2 text-xs uppercase font-semibold">
-                            {s.label}
-                          </Tag>
-                        );
-                      })()}
-                    </div>
-                    
-                    {cls.classCode && (
-                      <div className="text-xs text-slate-500">
-                        Code: <span className="font-mono font-medium">{cls.classCode}</span>
-                      </div>
-                    )}
-
-                    <div className="space-y-2 text-sm text-slate-600">
-                      {cls.startDate && (
-                        <div className="flex items-center gap-2">
-                          <CalendarOutlined className="text-slate-400" />
-                          <span>Start: {new Date(cls.startDate).toLocaleDateString()}</span>
-                        </div>
-                      )}
-                      {cls.endDate && (
-                        <div className="flex items-center gap-2">
-                          <CalendarOutlined className="text-slate-400" />
-                          <span>End: {new Date(cls.endDate).toLocaleDateString()}</span>
-                        </div>
-                      )}
-                      {cls.instructorName && (
-                        <div className="flex items-center gap-2">
-                          <UserOutlined className="text-slate-400" />
-                          <span>{cls.instructorName}</span>
-                        </div>
-                      )}
-                      {cls.totalTrainee != null && (
-                        <div className="flex items-center gap-2">
-                          <UserOutlined className="text-slate-400" />
-                          <span>{cls.totalTrainee} trainees</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
+          <ClassesSection courseId={id} />
         </div>
       </div>
     </div>

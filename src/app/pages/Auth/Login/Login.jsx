@@ -102,7 +102,7 @@ export default function Login() {
 
       const authState = useAuthStore.getState();
       redirectByRole(authState.role);
-      message.success('Login successful');
+      // message.success('Login successful');
     } catch (err) {
       console.error('Login error:', err);
       message.error(err.response?.data?.message || 'Đăng nhập thất bại');

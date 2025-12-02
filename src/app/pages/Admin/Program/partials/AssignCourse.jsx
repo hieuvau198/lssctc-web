@@ -2,6 +2,7 @@ import { App, Button, Select } from 'antd';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { addCourseToProgram, fetchCourses } from '../../../../apis/ProgramManager/ProgramManagerCourseApi';
+import { fetchCoursesByProgram } from '../../../../apis/ProgramManager/CourseApi';
 
 const AssignCourse = ({ program, onAssigned }) => {
     const {message} = App.useApp();
@@ -17,12 +18,24 @@ const AssignCourse = ({ program, onAssigned }) => {
     useEffect(() => {
         if (!program || !editing) return;
         setLoadingCourses(true);
-        fetchCourses({ pageNumber: 1, pageSize: 1000 })
-            .then((data) => {
-                const items = data.items || [];
-                setCourses(items);
-                const assignedIds = new Set((program?.courses || []).map((c) => c.coursesId || c.id || c.programCourseId));
-                const avail = items.filter((it) => !assignedIds.has(it.id));
+        
+        // Fetch both all courses and assigned courses in parallel
+        Promise.all([
+            fetchCourses({ pageNumber: 1, pageSize: 1000 }),
+            fetchCoursesByProgram(program.id)
+        ])
+            .then(([allCoursesData, assignedCoursesData]) => {
+                const allCourses = allCoursesData.items || [];
+                const assignedCourses = assignedCoursesData.items || [];
+                
+                setCourses(allCourses);
+                
+                // Create set of assigned course IDs
+                const assignedIds = new Set(assignedCourses.map((c) => c.id));
+                
+                // Filter out assigned courses
+                const avail = allCourses.filter((course) => !assignedIds.has(course.id));
+                
                 if (!avail || avail.length === 0) {
                     // no available courses: inform user and close editing mode
                     setAvailable([]);
@@ -37,7 +50,7 @@ const AssignCourse = ({ program, onAssigned }) => {
                 setError(err?.message || 'Failed to load courses');
             })
             .finally(() => setLoadingCourses(false));
-    }, [program, editing]);
+    }, [program, editing, message]);
 
     const handleAssign = async () => {
         if (!selected) return setError('Please choose a course to assign');

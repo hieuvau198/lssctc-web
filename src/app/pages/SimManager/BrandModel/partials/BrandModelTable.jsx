@@ -1,20 +1,16 @@
 import React from 'react';
 import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
-import { EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
-const PracticeTable = ({
+const BrandModelTable = ({
   data = [],
   loading = false,
   deleting = null,
   onView = () => {},
+  onEdit = () => {},
   onDelete = () => {},
   pagination = {},
 }) => {
-  const getDifficultyColor = (level) => {
-    const map = { Entry: 'green', Intermediate: 'orange', Advanced: 'red' };
-    return map[level] || 'default';
-  };
-
   const tableColumns = [
     {
       title: '#',
@@ -29,49 +25,25 @@ const PracticeTable = ({
       ),
     },
     {
-      title: 'Practice Code',
-      dataIndex: 'practiceCode',
-      key: 'practiceCode',
-      width: 120,
-      fixed: 'left',
-    },
-    {
       title: 'Name',
-      dataIndex: 'practiceName',
-      key: 'practiceName',
-      width: 280,
+      dataIndex: 'name',
+      key: 'name',
+      width: 300,
       render: (name, record) => (
         <div
-          className="font-medium text-blue-600 cursor-pointer hover:underline line-clamp-1"
+          className="font-medium text-blue-600 cursor-pointer hover:underline"
           onClick={() => onView(record)}
         >
-          <Tooltip title={name}>{name}</Tooltip>
+          {name}
         </div>
       ),
     },
     {
-      title: 'Duration (min)',
-      dataIndex: 'estimatedDurationMinutes',
-      key: 'estimatedDurationMinutes',
-      width: 130,
-      align: 'center',
-      render: (v) => <span>{v}</span>,
-    },
-    {
-      title: 'Difficulty',
-      dataIndex: 'difficultyLevel',
-      key: 'difficultyLevel',
-      width: 140,
-      align: 'center',
-      render: (level) => <Tag color={getDifficultyColor(level)}>{level || 'N/A'}</Tag>,
-    },
-    {
-      title: 'Max Attempts',
-      dataIndex: 'maxAttempts',
-      key: 'maxAttempts',
-      width: 120,
-      align: 'center',
-      render: (v) => <span>{v}</span>,
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      ellipsis: true,
+      render: (desc) => <span className="text-gray-600">{desc || 'N/A'}</span>,
     },
     {
       title: 'Status',
@@ -95,6 +67,9 @@ const PracticeTable = ({
         <Space size="small">
           <Tooltip title="View Details">
             <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(record)} />
+          </Tooltip>
+          <Tooltip title="Edit">
+            <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(record)} />
           </Tooltip>
           <Tooltip title="Delete">
             <Button 
@@ -133,11 +108,11 @@ const PracticeTable = ({
           onChange={pagination.onChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} practices`}
+          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} brand models`}
         />
       </div>
     </div>
   );
 };
 
-export default PracticeTable;
+export default BrandModelTable;

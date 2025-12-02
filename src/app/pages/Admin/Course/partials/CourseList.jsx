@@ -19,8 +19,9 @@ const CourseTableView = ({
     {
       title: "#",
       key: "index",
-      width: 40,
+      width: 60,
       fixed: "left",
+      align: "center",
       render: (_, __, index) => (
         <span className="font-medium text-gray-600">
           {(pageNumber - 1) * pageSize + index + 1}
@@ -133,14 +134,15 @@ const CourseTableView = ({
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div style={{ height: 400 }} className="overflow-auto">
+    <div className="rounded-lg shadow overflow-hidden">
+      <div className="overflow-hidden min-h-[450px]">
         <Table
           columns={tableColumns}
           dataSource={courses}
           rowKey="id"
-          scroll={{ x: 360 }}
+          scroll={{ y: 400 }}
           pagination={false}
+          size="middle"
         />
       </div>
       <div className="p-4 border-t border-gray-200 bg-white flex justify-center">
