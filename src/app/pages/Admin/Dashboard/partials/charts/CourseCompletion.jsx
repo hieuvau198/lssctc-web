@@ -1,18 +1,77 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
+import { Skeleton, Select } from 'antd';
+import { getDailyCompletionTrends } from '../../../../../apis/Admin/AdminDashboard';
 
 export default function CourseCompletion() {
-  const series = [68];
+  const currentDate = new Date();
+  const [month, setMonth] = useState(currentDate.getMonth() + 1);
+  const [year, setYear] = useState(currentDate.getFullYear());
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const trends = await getDailyCompletionTrends(month, year);
+        setData(trends);
+      } catch (error) {
+        console.error('Failed to fetch daily completion trends:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [month, year]);
+
+  const series = [{ name: 'Completions', data: data.map(d => d.completedCount) }];
   const options = {
-    chart: { type: 'radialBar' },
-    plotOptions: { radialBar: { hollow: { size: '60%' }, dataLabels: { value: { formatter: (v) => v + '%'} } } },
-    labels: ['Avg Completion'],
+    chart: { id: 'completion-trends', toolbar: { show: false } },
+    stroke: { curve: 'smooth', width: 3 },
+    xaxis: { categories: data.map(d => `Day ${d.day}`) },
     colors: ['#10b981'],
+    dataLabels: { enabled: false },
+    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05, stops: [0, 90, 100] } },
+    grid: { borderColor: '#eee' },
+    tooltip: { theme: 'light', y: { formatter: (val) => val + ' completed' } }
   };
+
+  const months = [
+    { value: 1, label: 'January' }, { value: 2, label: 'February' }, { value: 3, label: 'March' },
+    { value: 4, label: 'April' }, { value: 5, label: 'May' }, { value: 6, label: 'June' },
+    { value: 7, label: 'July' }, { value: 8, label: 'August' }, { value: 9, label: 'September' },
+    { value: 10, label: 'October' }, { value: 11, label: 'November' }, { value: 12, label: 'December' }
+  ];
+
+  const years = Array.from({ length: 5 }, (_, i) => currentDate.getFullYear() - 2 + i);
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col">
-      <h2 className="text-sm font-medium mb-2 text-gray-700">Course Completion Rate</h2>
-      <Chart options={options} series={series} type="radialBar" height={260} />
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-sm font-medium text-gray-700">Daily Course Completions</h2>
+        <div className="flex gap-2">
+          <Select
+            size="small"
+            value={month}
+            onChange={setMonth}
+            options={months}
+            style={{ width: 100 }}
+          />
+          <Select
+            size="small"
+            value={year}
+            onChange={setYear}
+            options={years.map(y => ({ value: y, label: y }))}
+            style={{ width: 80 }}
+          />
+        </div>
+      </div>
+      {loading ? (
+        <Skeleton active paragraph={{ rows: 4 }} />
+      ) : (
+        <Chart options={options} series={series} type="area" height={290} />
+      )}
     </div>
   );
 }
