@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Card, Button, Modal, Form, Input, App, Empty, Spin } from 'antd';
-import { Plus } from 'lucide-react';
 import { 
   getTasksByPracticeId
 } from '../../../../apis/SimulationManager/SimulationManagerPracticeApi';
 import { 
   updateTask, 
-  deleteTaskFromPractice 
+  deleteTaskFromPractice
 } from '../../../../apis/SimulationManager/SimulationManagerTaskApi';
 import TaskCard from '../../../../components/TaskCard/TaskCard';
 import { getAuthToken } from '../../../../libs/cookies';
+import AssignTaskModal from './AssignTaskModal';
 
 // --- Update Task Form Component ---
 const UpdateTaskForm = ({ initialValues, onUpdate, onCancel, visible, loading }) => {
@@ -83,6 +83,7 @@ export default function PracticeTaskList({ practiceId }) {
   const [currentTaskToUpdate, setCurrentTaskToUpdate] = useState(null);
   const [isTaskUpdateModalVisible, setIsTaskUpdateModalVisible] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
+  
   const token = getAuthToken();
 
   const fetchTasks = useCallback(async () => {
@@ -204,6 +205,13 @@ export default function PracticeTaskList({ practiceId }) {
       <Card 
         title={`Practice Tasks (${tasks.length})`}
         className="shadow"
+        extra={
+          <AssignTaskModal 
+            practiceId={practiceId} 
+            assignedTaskIds={tasks.map(t => t.id)} 
+            onAssigned={fetchTasks} 
+          />
+        }
       >
         {tasks.length === 0 ? (
           <Empty description="No tasks assigned" />

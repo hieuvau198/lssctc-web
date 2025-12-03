@@ -5,7 +5,7 @@ import { approveEnrollment, fetchClassTrainees, rejectEnrollment } from "../../.
 import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import { getClassStatus } from "../../../../utils/classStatus";
 import { getEnrollmentStatus } from "../../../../utils/enrollmentStatus";
-import AddTrainee from "./AddTrainee";
+import AddTraineeModal from "./AddTraineeModal";
 
 const ClassMembersTable = ({ classItem }) => {
     const { message } = App.useApp();
@@ -200,7 +200,11 @@ const ClassMembersTable = ({ classItem }) => {
                 if (s.key === 'Draft' || s.key === 'Open') {
                     return (
                         <div className="ml-3 mb-4">
-                            <AddTrainee classItem={classItem} onAssigned={handleTraineeAdded} />
+                            <AddTraineeModal 
+                                classItem={classItem} 
+                                existingTraineeIds={trainees.map(t => t.traineeId || t.id)} 
+                                onAssigned={handleTraineeAdded} 
+                            />
                         </div>
                     );
                 }

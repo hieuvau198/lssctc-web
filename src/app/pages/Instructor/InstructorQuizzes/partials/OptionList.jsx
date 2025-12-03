@@ -31,6 +31,13 @@ export default function OptionList({ questionId }) {
 
   const columns = [
     {
+      title: '#',
+      key: 'index',
+      width: 56,
+      align: 'center',
+      render: (_, __, idx) => idx + 1,
+    },
+    {
       title: 'Option',
       dataIndex: 'name',
       key: 'name',

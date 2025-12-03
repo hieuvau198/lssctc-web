@@ -33,6 +33,7 @@ export default function InstructorSections() {
       title: '#',
       key: 'index',
       width: 60,
+      align: 'center',
       render: (_, __, index) => (
         <span className="text-sm text-gray-600">{(pageNumber - 1) * pageSize + index + 1}</span>
       ),

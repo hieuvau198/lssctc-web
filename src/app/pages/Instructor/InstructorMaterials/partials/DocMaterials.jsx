@@ -51,6 +51,7 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
       title: '#',
       key: 'index',
       width: 60,
+      align: 'center',
       render: (_, __, index) => (page - 1) * pageSize + index + 1,
     },
     { title: 'Name', dataIndex: 'name', key: 'name', width: 180, ellipsis: true },
