@@ -76,7 +76,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
     modal.error({
       title,
       content: errorMessage,
-      okText: 'Đóng',
+      okText: 'Close',
       centered: true,
     });
   };
@@ -100,7 +100,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
   // Remove question
   const removeQuestion = (qIdx) => {
     if (questions.length === 1) {
-      message.warning('Phải có ít nhất một câu hỏi');
+      message.warning('At least one question is required');
       return;
     }
     const newQuestions = questions.filter((_, idx) => idx !== qIdx);
@@ -142,7 +142,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
   const removeOption = (qIdx, oIdx) => {
     const newQuestions = [...questions];
     if (newQuestions[qIdx].options.length === 1) {
-      message.warning('Mỗi câu hỏi phải có ít nhất một đáp án');
+      message.warning('Each question must have at least one option');
       return;
     }
     newQuestions[qIdx].options = newQuestions[qIdx].options.filter((_, idx) => idx !== oIdx);
@@ -171,18 +171,18 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
     try {
       // Validate questions
       if (!questions || questions.length === 0) {
-        showErrorModal('Lỗi validation', 'Vui lòng thêm ít nhất một câu hỏi');
+        showErrorModal('Validation Error', 'Please add at least one question');
         return;
       }
 
       for (let q of questions) {
         if (!q.name.trim()) {
-          showErrorModal('Lỗi validation', 'Vui lòng điền đầy đủ nội dung câu hỏi');
+          showErrorModal('Validation Error', 'Please enter the question text');
           return;
         }
 
         if (!q.questionScore || q.questionScore <= 0) {
-          showErrorModal('Lỗi validation', `Câu hỏi "${q.name}" phải có điểm lớn hơn 0`);
+          showErrorModal('Validation Error', `Question "${q.name}" must have a score greater than 0`);
           return;
         }
 
@@ -190,30 +190,30 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
         const scoreStr = q.questionScore.toString();
         const decimalPart = scoreStr.split('.')[1];
         if (decimalPart && decimalPart.length > 2) {
-          showErrorModal('Lỗi validation', `Điểm câu hỏi "${q.name}" không được có quá 2 chữ số thập phân`);
+          showErrorModal('Validation Error', `Question "${q.name}" must not have more than 2 decimal places`);
           return;
         }
 
         if (!q.options || q.options.length === 0) {
-          showErrorModal('Lỗi validation', `Câu hỏi "${q.name}" phải có ít nhất một đáp án`);
+          showErrorModal('Validation Error', `Question "${q.name}" must have at least one option`);
           return;
         }
 
         // Validate correct answers
         const correctAnswers = q.options.filter((opt) => opt.isCorrect).length;
         if (correctAnswers === 0) {
-          showErrorModal('Lỗi validation', `Câu hỏi "${q.name}" phải có ít nhất một đáp án đúng`);
+          showErrorModal('Validation Error', `Question "${q.name}" must have at least one correct option`);
           return;
         }
         if (correctAnswers > 1) {
-          showErrorModal('Lỗi validation', `Câu hỏi "${q.name}" chỉ được có một đáp án đúng`);
+          showErrorModal('Validation Error', `Question "${q.name}" may only have one correct option`);
           return;
         }
 
         // Validate option texts
         for (let opt of q.options) {
           if (!opt.name.trim()) {
-            showErrorModal('Lỗi validation', `Câu hỏi "${q.name}" có đáp án trống`);
+            showErrorModal('Validation Error', `Question "${q.name}" has an empty option`);
             return;
           }
         }
@@ -222,8 +222,8 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
       // Validate total score
       if (!isScoreValid) {
         showErrorModal(
-          'Lỗi validation',
-          `Tổng điểm quiz phải bằng 10. Hiện tại: ${totalScore.toFixed(2)} điểm`
+          'Validation Error',
+          `Total quiz score must equal 10. Current: ${totalScore.toFixed(2)}`
         );
         return;
       }
@@ -255,9 +255,9 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
       const response = await createQuizWithQuestions(payload);
 
       if (response?.status === 200 || response?.data) {
-        message.success(response?.message || 'Tạo quiz thành công');
+        message.success(response?.message || 'Quiz created successfully');
       } else {
-        message.success('Tạo quiz thành công');
+        message.success('Quiz created successfully');
       }
 
       onSuccess?.();
@@ -265,7 +265,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
     } catch (e) {
       console.error('Error creating quiz:', e);
 
-      let errorMsg = 'Không thể tạo quiz';
+      let errorMsg = 'Unable to create quiz';
 
       if (e?.response?.data) {
         const data = e.response.data;
@@ -288,7 +288,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
         errorMsg = e.message;
       }
 
-      showErrorModal('Lỗi tạo Quiz', errorMsg);
+      showErrorModal('Create Quiz Error', errorMsg);
     } finally {
       setSubmitting(false);
     }
@@ -296,7 +296,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
 
   return (
     <Drawer
-      title="Tạo Quiz mới"
+      title="Create Quiz"
       placement="right"
       width={720}
       open={open}
@@ -306,7 +306,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
       extra={
         <Space>
           <Button onClick={onClose} icon={<X className="w-4 h-4" />}>
-            Hủy
+            Cancel
           </Button>
           <Button
             type="primary"
@@ -314,7 +314,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
             onClick={() => form.submit()}
             icon={<Save className="w-4 h-4" />}
           >
-            Tạo Quiz
+            Create Quiz
           </Button>
         </Space>
       }
@@ -331,50 +331,50 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
         {/* Quiz Information */}
         <div className="grid grid-cols-2 gap-4">
           <Form.Item
-            label="Tên Quiz"
+            label="Quiz Name"
             name="name"
-            rules={[{ required: true, message: 'Vui lòng nhập tên quiz' }]}
+            rules={[{ required: true, message: 'Please enter quiz name' }]}
             className="col-span-2"
           >
-            <Input placeholder="VD: Kiến thức an toàn cơ bản" />
+            <Input placeholder="e.g. Basic Safety Knowledge" />
           </Form.Item>
 
           <Form.Item
-            label="Điểm đạt (điểm)"
+            label="Pass Score (pts)"
             name="passScoreCriteria"
-            rules={[{ required: true, message: 'Bắt buộc' }]}
+            rules={[{ required: true, message: 'Required' }]}
           >
             <InputNumber min={1} max={10} className="w-full" />
           </Form.Item>
 
           <Form.Item
-            label="Thời gian (phút)"
+            label="Time (min)"
             name="timelimitMinute"
-            rules={[{ required: true, message: 'Bắt buộc' }]}
+            rules={[{ required: true, message: 'Required' }]}
           >
             <InputNumber min={1} max={180} className="w-full" />
           </Form.Item>
 
-          <Form.Item label="Mô tả" name="description" className="col-span-2">
-            <Input.TextArea rows={2} placeholder="Mô tả mục đích của quiz" />
+          <Form.Item label="Description" name="description" className="col-span-2">
+            <Input.TextArea rows={2} placeholder="Optional description" />
           </Form.Item>
         </div>
 
-        <Divider>Câu hỏi</Divider>
+        <Divider>Questions</Divider>
 
         {/* Score Summary */}
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="grid grid-cols-4 gap-2 text-center">
+        <div className="mb-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="grid grid-cols-4 gap-x-2 text-center">
             <div>
-              <p className="text-xs text-gray-600">Số câu</p>
+              <p className="text-xs text-gray-600">Questions</p>
               <p className="text-lg font-bold text-blue-600">{questions.length}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-600">Tổng điểm</p>
+              <p className="text-xs text-gray-600">Total Score</p>
               <p className="text-lg font-bold text-green-600">{totalScore.toFixed(2)}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-600">TB/Câu</p>
+              <p className="text-xs text-gray-600">Avg / Q</p>
               <p className="text-lg font-bold text-purple-600">
                 {questions.length > 0 ? (totalScore / questions.length).toFixed(2) : '0'}
               </p>
@@ -389,8 +389,8 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
               </p>
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-2 text-center">
-            ℹ️ Tổng điểm phải bằng đúng 10
+          <p className="text-xs text-gray-500 text-center">
+            Total score must equal 10
           </p>
         </div>
 
@@ -402,9 +402,9 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
               size="small"
               title={
                 <span className="text-sm font-medium">
-                  Câu {qIdx + 1}
+                  Q{qIdx + 1}
                   <span className="text-gray-400 font-normal ml-2">
-                    ({question.questionScore || 0} điểm)
+                    ({question.questionScore || 0} pts)
                   </span>
                 </span>
               }
@@ -423,16 +423,16 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
                 {/* Question text and score */}
                 <div className="grid grid-cols-3 gap-2">
                   <div className="col-span-2">
-                    <label className="block text-xs font-medium mb-1">Nội dung câu hỏi *</label>
+                    <label className="block text-xs font-medium mb-1">Question *</label>
                     <Input
                       value={question.name}
                       onChange={(e) => updateQuestion(qIdx, 'name', e.target.value)}
-                      placeholder="Nhập câu hỏi"
+                      placeholder="Enter question"
                       size="small"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium mb-1">Điểm *</label>
+                    <label className="block text-xs font-medium mb-1">Score *</label>
                     <InputNumber
                       className="w-full"
                       value={question.questionScore}
@@ -451,12 +451,12 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
 
                 {/* Description */}
                 <div>
-                  <label className="block text-xs font-medium mb-1">Mô tả</label>
+                  <label className="block text-xs font-medium mb-1">Description</label>
                   <Input.TextArea
                     rows={1}
                     value={question.description}
                     onChange={(e) => updateQuestion(qIdx, 'description', e.target.value)}
-                    placeholder="Mô tả (tùy chọn)"
+                    placeholder="Description (optional)"
                     size="small"
                   />
                 </div>
@@ -464,14 +464,14 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
                 {/* Options */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-xs font-medium">Đáp án</label>
+                    <label className="text-xs font-medium">Options</label>
                     <Button
                       type="dashed"
                       size="small"
                       icon={<Plus className="w-3 h-3" />}
                       onClick={() => addOption(qIdx)}
                     >
-                      Thêm
+                      Add
                     </Button>
                   </div>
 
@@ -487,7 +487,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
                             <Input
                               value={option.name}
                               onChange={(e) => updateOption(qIdx, oIdx, 'name', e.target.value)}
-                              placeholder={`Đáp án ${oIdx + 1}`}
+                              placeholder={`Option ${oIdx + 1}`}
                               size="small"
                               className="flex-1"
                             />
@@ -504,7 +504,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
                               checked={option.isCorrect}
                               onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
                             >
-                              <span className="text-xs">Đáp án đúng</span>
+                              <span className="text-xs">Correct answer</span>
                             </Checkbox>
                             <span
                               className="text-xs px-2 py-0.5 rounded"
@@ -513,14 +513,14 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
                                 color: option.isCorrect ? '#155724' : '#6c757d',
                               }}
                             >
-                              {optionScore.toFixed(1)} điểm
+                              {optionScore.toFixed(1)} pts
                             </span>
                           </div>
                           <Input.TextArea
                             rows={1}
                             value={option.explanation}
                             onChange={(e) => updateOption(qIdx, oIdx, 'explanation', e.target.value)}
-                            placeholder="Giải thích (tùy chọn)"
+                            placeholder="Explanation (optional)"
                             size="small"
                             className="mt-1"
                           />
@@ -542,7 +542,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
           onClick={addQuestion}
           className="mt-4"
         >
-          Thêm câu hỏi
+          Add question
         </Button>
       </Form>
     </Drawer>

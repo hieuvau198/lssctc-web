@@ -150,7 +150,7 @@ export default function QuizDetailView() {
   }));
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-4">
+    <div className="max-w-7xl mx-auto px-4 py-4">
       <Button 
         type="text" 
         icon={<ArrowLeftOutlined />}
