@@ -11,6 +11,7 @@ import {
   markSectionMaterialAsNotCompleted,
   getActivityRecordsByClassAndSection,
   getMaterialsByActivityId,
+  submitActivity, 
 } from "../../../apis/Trainee/TraineeLearningApi";
 import {
   getQuizByActivityIdForTrainee,
@@ -178,37 +179,34 @@ export default function LearnContent() {
     }
   };
 
-  // Các hàm markAsComplete/NotComplete giờ chỉ áp dụng cho "Material"
   const handleMarkAsComplete = async () => {
-    if (!activityRecord || activityRecord.activityType !== 'Material' || !traineeId) return;
-    
-    const success = await markSectionMaterialAsCompleted(
-      activityRecord.activityId, // Dùng activityId
-      traineeId
-    );
-    if (success) {
+    if (!activityRecord || activityRecord.activityType !== 'Material') return;
+
+    try {
+      // The backend expects a Dto with ActivityRecordId
+      const payload = {
+        activityRecordId: activityRecord.activityRecordId
+      };
+
+      await submitActivity(payload);
+      
+      // Refresh data to show green ticks/status
       await fetchPartitionData();
-      // Trigger sidebar refresh to update tick marks
       refreshSidebar();
-    } else {
-      alert("Failed to mark as complete. Please try again.");
+      
+    } catch (err) {
+      console.error("Error submitting activity:", err);
+      // specific error message from backend (e.g., "Already completed")
+      const msg = err.response?.data?.message || "Failed to mark as complete.";
+      alert(msg);
     }
   };
 
   const handleMarkAsNotComplete = async () => {
-    if (!activityRecord || activityRecord.activityType !== 'Material' || !traineeId) return;
-
-    const success = await markSectionMaterialAsNotCompleted(
-      activityRecord.activityId, // Dùng activityId
-      traineeId
-    );
-    if (success) {
-      await fetchPartitionData();
-      // Trigger sidebar refresh to update tick marks
-      refreshSidebar();
-    } else {
-      alert("Failed to mark as not complete. Please try again.");
-    }
+    // NOTE: The current 'SubmitActivityAsync' endpoint only sets status to Completed.
+    // It does not support toggling back to Incomplete.
+    // If you need this feature, the backend requires a separate endpoint or update logic.
+    alert("Unmarking is not supported at this time.");
   };
 
   // --- PHẦN RENDER ---
