@@ -1,85 +1,196 @@
-/* Custom styles for SessionLayout */
-.session-sidebar-item {
-  transition: all 0.2s ease;
+/* Modern Learning Layout Styles */
+
+/* Smooth scrollbar for sidebar */
+aside::-webkit-scrollbar {
+  width: 6px;
 }
 
-.session-sidebar-item:hover {
-  transform: translateX(2px);
+aside::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.session-sidebar-item.active {
-  background: linear-gradient(90deg, #dbeafe 0%, #bfdbfe 100%);
-  border-left: 3px solid #2563eb;
+aside::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
 }
 
-/* Smooth animations for completion status */
-.completion-circle {
-  transition: all 0.3s ease;
+aside::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
 }
 
-.completion-circle.completed {
-  animation: checkmark-bounce 0.6s ease;
+/* Activity card hover effect */
+.activity-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Section expand/collapse animations */
-.section-header {
-  transition: all 0.2s ease;
+.activity-card:hover {
+  transform: translateX(4px);
 }
 
-.section-header:hover {
-  background-color: #93c5fd;
-  color: white;
+/* Completion status animation */
+.completion-check {
+  animation: check-pop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.section-content {
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.expand-icon {
-  transition: transform 0.2s ease;
-}
-
-/* Subtle indentation for sub-items */
-.section-partition {
-  position: relative;
-}
-
-.section-partition::before {
-  content: '';
-  position: absolute;
-  left: -8px;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background-color: #e2e8f0;
-}
-
-/* Active state indicator bar */
-.section-partition .active-indicator {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: linear-gradient(to bottom, #2563eb, #1d4ed8);
-  border-radius: 0 4px 4px 0;
-  animation: slide-in 0.3s ease;
-}
-
-@keyframes slide-in {
-  from {
-    width: 0;
+@keyframes check-pop {
+  0% { 
+    transform: scale(0);
     opacity: 0;
   }
-  to {
-    width: 4px;
+  50% { 
+    transform: scale(1.2);
+  }
+  100% { 
+    transform: scale(1);
     opacity: 1;
   }
 }
 
-@keyframes checkmark-bounce {
-  0% { transform: scale(0.8); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+/* Active indicator pulse */
+.active-pulse {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Section expand animation */
+.section-expand {
+  animation: expand-down 0.3s ease-out;
+}
+
+@keyframes expand-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Progress bar animation */
+.progress-animate {
+  animation: progress-fill 1s ease-out;
+}
+
+@keyframes progress-fill {
+  from {
+    width: 0%;
+  }
+}
+
+/* Badge entrance animation */
+.badge-enter {
+  animation: badge-bounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes badge-bounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Gradient background animation */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animated-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 10s ease infinite;
+}
+
+/* Icon transitions */
+.icon-transition {
+  transition: all 0.3s ease;
+}
+
+.icon-transition:hover {
+  transform: rotate(5deg) scale(1.1);
+}
+
+/* Card shadow on hover */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Skeleton loading shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Course Completion Modal Styles */
+.completion-modal .ant-modal-content {
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.completion-modal .ant-modal-body {
+  padding: 24px;
+}
+
+/* Confetti animation for celebration */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100%) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Trophy bounce animation */
+@keyframes trophy-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce {
+  animation: trophy-bounce 1s ease-in-out infinite;
+}
+
+/* Star pulse animation with delay */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
 }

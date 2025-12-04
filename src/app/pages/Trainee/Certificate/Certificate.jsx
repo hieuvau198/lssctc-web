@@ -3,63 +3,52 @@ import { Card, Empty, Skeleton, Tag, message } from 'antd';
 import { Award, Calendar, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PageNav from '../../../components/PageNav/PageNav';
-// import { getTraineeCertificates } from '../../../apis/Trainee/TraineeCertificateApi';
-// import { getAuthToken } from '../../../libs/cookies';
-// import { decodeToken } from '../../../libs/jwtDecode';
-// import useAuthStore from '../../../store/authStore';
-import { getMockCertificates } from '../../../mocks/certificates';
+import { getAllTraineeCertificates } from '../../../apis/Trainee/TraineeCertificateApi';
+import { getAuthToken } from '../../../libs/cookies';
+import { decodeToken } from '../../../libs/jwtDecode';
+import useAuthStore from '../../../store/authStore';
 
 export default function CertificateView() {
-	// const authState = useAuthStore();
-	// const traineeIdFromStore = authState.nameid;
+	const authState = useAuthStore();
+	const traineeIdFromStore = authState.nameid;
 	const [certificates, setCertificates] = useState([]);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		// Simulate loading with mock data
-		setLoading(true);
-		setTimeout(() => {
-			const mockData = getMockCertificates();
-			setCertificates(mockData);
-			setLoading(false);
-		}, 500);
-	}, []);
+		let mounted = true;
+		async function fetchCertificates() {
+			const token = getAuthToken();
+			const decoded = token ? decodeToken(token) : null;
+			const resolvedTraineeId = traineeIdFromStore || decoded?.nameid || decoded?.nameId || decoded?.sub || null;
 
-	// Real API version (commented for now)
-	// useEffect(() => {
-	// 	let mounted = true;
-	// 	async function fetchCertificates() {
-	// 		const token = getAuthToken();
-	// 		const decoded = token ? decodeToken(token) : null;
-	// 		const resolvedTraineeId = traineeIdFromStore || decoded?.nameid || decoded?.nameId || decoded?.sub || null;
+			if (!resolvedTraineeId) {
+				if (mounted) {
+					message.error('Trainee id not available');
+				}
+				return;
+			}
 
-	// 		if (!resolvedTraineeId) {
-	// 			if (mounted) {
-	// 				message.error('Trainee id not available');
-	// 			}
-	// 			return;
-	// 		}
+			setLoading(true);
+			try {
+				const data = await getAllTraineeCertificates();
+				// Show all certificates or filter if needed
+				if (mounted) {
+					setCertificates(data);
+				}
+			} catch (err) {
+				console.error('Failed to fetch certificates:', err);
+				if (mounted) {
+					message.error('Failed to load certificates');
+					setCertificates([]);
+				}
+			} finally {
+				if (mounted) setLoading(false);
+			}
+		}
 
-	// 		setLoading(true);
-	// 		try {
-	// 			const data = await getTraineeCertificates(resolvedTraineeId);
-	// 			if (mounted) {
-	// 				setCertificates(data);
-	// 			}
-	// 		} catch (err) {
-	// 			console.error('Failed to fetch certificates:', err);
-	// 			if (mounted) {
-	// 				message.error('Không tải được danh sách chứng chỉ');
-	// 				setCertificates([]);
-	// 			}
-	// 		} finally {
-	// 			if (mounted) setLoading(false);
-	// 		}
-	// 	}
-
-	// 	fetchCertificates();
-	// 	return () => { mounted = false; };
-	// }, [traineeIdFromStore]);
+		fetchCertificates();
+		return () => { mounted = false; };
+	}, [traineeIdFromStore, authState.name]);
 
 	const getStatusColor = (expireDate) => {
 		if (!expireDate) return 'blue';
@@ -112,7 +101,7 @@ export default function CertificateView() {
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{certificates.map((cert) => {
-						const issueDate = cert.issueDate ? new Date(cert.issueDate) : null;
+						const issueDate = cert.issuedDate ? new Date(cert.issuedDate) : null;
 						const expireDate = cert.expireDate ? new Date(cert.expireDate) : null;
 						const statusColor = getStatusColor(cert.expireDate);
 						const statusText = getStatusText(cert.expireDate);
@@ -127,15 +116,32 @@ export default function CertificateView() {
 									hoverable
 									className="rounded-xl shadow-md hover:shadow-xl transition-all duration-300 h-full"
 									cover={
-										<div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 flex items-center justify-center relative">
-											<Award className="w-16 h-16 text-white" />
-											<Tag
-												color={statusColor}
-												className="absolute top-3 right-3"
-											>
-												{statusText}
-											</Tag>
-										</div>
+										cert.pdfUrl ? (
+											<div className="relative h-48 bg-slate-100 overflow-hidden">
+												<iframe
+													src={`${cert.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+													className="w-full h-full pointer-events-none"
+													title="Certificate Preview"
+													scrolling="no"
+												/>
+												<Tag
+													color={statusColor}
+													className="absolute top-3 right-3 z-10"
+												>
+													{statusText}
+												</Tag>
+											</div>
+										) : (
+											<div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 flex items-center justify-center relative h-48">
+												<Award className="w-16 h-16 text-white" />
+												<Tag
+													color={statusColor}
+													className="absolute top-3 right-3"
+												>
+													{statusText}
+												</Tag>
+											</div>
+										)
 									}
 								>
 									<div className="space-y-3">

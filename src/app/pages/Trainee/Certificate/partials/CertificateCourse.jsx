@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Divider, Skeleton, message } from 'antd';
-import { Award, Download } from 'lucide-react';
+import { Award, Download, ExternalLink } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageNav from '../../../../components/PageNav/PageNav';
-// import { getCertificateById } from '../../../../apis/Trainee/TraineeCertificateApi';
-import { getMockCertificateById } from '../../../../mocks/certificates';
+import { getTraineeCertificateById } from '../../../../apis/Trainee/TraineeCertificateApi';
 
 export default function CertificateCourse() {
 	const { id } = useParams();
@@ -13,51 +12,37 @@ export default function CertificateCourse() {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		// Simulate loading with mock data
-		if (!id) return;
-		
-		setLoading(true);
-		setTimeout(() => {
-			const mockData = getMockCertificateById(id);
-			if (mockData) {
-				setCert(mockData);
-			} else {
-				message.error('Không tìm thấy chứng chỉ');
-				navigate('/certificate');
+		let mounted = true;
+		async function fetchCertificate() {
+			if (!id) return;
+
+			setLoading(true);
+			try {
+				const data = await getTraineeCertificateById(id);
+				if (mounted) {
+					setCert(data);
+				}
+			} catch (err) {
+				console.error('Failed to fetch certificate:', err);
+				if (mounted) {
+					message.error('Failed to load certificate');
+					navigate('/certificate');
+				}
+			} finally {
+				if (mounted) setLoading(false);
 			}
-			setLoading(false);
-		}, 500);
+		}
+
+		fetchCertificate();
+		return () => { mounted = false; };
 	}, [id, navigate]);
 
-	// Real API version (commented for now)
-	// useEffect(() => {
-	// 	let mounted = true;
-	// 	async function fetchCertificate() {
-	// 		if (!id) return;
-
-	// 		setLoading(true);
-	// 		try {
-	// 			const data = await getCertificateById(id);
-	// 			if (mounted) {
-	// 				setCert(data);
-	// 			}
-	// 		} catch (err) {
-	// 			console.error('Failed to fetch certificate:', err);
-	// 			if (mounted) {
-	// 				message.error('Không tải được thông tin chứng chỉ');
-	// 				navigate('/certificate');
-	// 			}
-	// 		} finally {
-	// 			if (mounted) setLoading(false);
-	// 		}
-	// 	}
-
-	// 	fetchCertificate();
-	// 	return () => { mounted = false; };
-	// }, [id, navigate]);
-
 	const downloadPdf = () => {
-		window.print();
+		if (cert?.pdfUrl) {
+			window.open(cert.pdfUrl, '_blank');
+		} else {
+			window.print();
+		}
 	};
 
 	if (loading) {
@@ -75,37 +60,43 @@ export default function CertificateCourse() {
 		return null;
 	}
 
-	const issueDate = cert.issueDate ? new Date(cert.issueDate) : null;
+	const issueDate = cert.issuedDate ? new Date(cert.issuedDate) : null;
 	const expireDate = cert.expireDate ? new Date(cert.expireDate) : null;
 	const issueDateText = issueDate?.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
 	const expireDateText = expireDate?.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 py-6 min-h-screen flex flex-col">
-			<PageNav items={[{ title: 'Certificates', href: '/certificate' }, { title: cert.courseName || cert.course || 'Certificate' }]} />
-			<style>{`
-				@media print {
-					@page { size: A4 landscape; margin: 12mm; }
-					body * { visibility: hidden; }
-					.print-area, .print-area * { visibility: visible; }
-					.print-area { position: absolute; inset: 0; margin: 0; }
-				}
-			`}</style>
+			<PageNav items={[{ title: 'Certificates', href: '/certificate' }, { title: cert.courseName || 'Certificate' }]} />
 
-			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border rounded-xl p-4 mb-4 print:hidden">
+			{/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 mb-4">
 				<div className="flex items-center gap-2">
 					<Award className="w-6 h-6 text-blue-600" />
 					<h1 className="text-lg font-semibold text-slate-800 m-0">Your Certificate</h1>
 				</div>
-				<div className="sm:ml-auto">
+				<div className="sm:ml-auto flex gap-2">
+					{cert.pdfUrl && (
+						<Button icon={<ExternalLink className="w-4 h-4" />} onClick={() => window.open(cert.pdfUrl, '_blank')}>
+							Open in New Tab
+						</Button>
+					)}
 					<Button type="primary" icon={<Download className="w-4 h-4" />} onClick={downloadPdf}>
 						Download PDF
 					</Button>
 				</div>
-			</div>
+			</div> */}
 
 			<div className="flex-1 w-full flex items-center justify-center">
-				<Card className="justify-center border-slate-200 max-w-[980px] w-full print-area">
+				{cert.pdfUrl ? (
+					<Card className="justify-center border-slate-200 max-w-auto w-full">
+						<iframe
+							src={cert.pdfUrl}
+							className="w-full h-[800px] border-0 rounded-lg"
+							title="Certificate PDF"
+						/>
+					</Card>
+				) : (
+					<Card className="justify-center border-slate-200 max-w-auto w-full print-area">
 					<div className="border-2 border-slate-200 rounded-2xl p-10 bg-white relative overflow-hidden">
 						<div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-50 rounded-full" />
 						<div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-50 rounded-full" />
@@ -160,6 +151,7 @@ export default function CertificateCourse() {
 						</div>
 					</div>
 				</Card>
+				)}
 			</div>
 		</div>
 	);
