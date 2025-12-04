@@ -25,6 +25,30 @@ export async function fetchCourses({ pageNumber = 1, pageSize = 10, searchTerm, 
   }
 }
 
+export async function fetchCoursesPaged({ pageNumber = 1, pageSize = 10, searchTerm } = {}) {
+  try {
+    const searchParams = new URLSearchParams();
+    searchParams.append('PageNumber', pageNumber);
+    searchParams.append('PageSize', pageSize);
+    if (searchTerm) searchParams.append('SearchTerm', searchTerm);
+
+    const url = `${BASE_URL}/paged?${searchParams.toString()}`;
+    const resp = await apiClient.get(url);
+    const data = resp.data;
+
+    // normalize to { items, totalCount }
+    return {
+      items: data.items || [],
+      totalCount: data.totalCount || 0,
+      pageNumber: data.pageNumber || pageNumber,
+      pageSize: data.pageSize || pageSize,
+    };
+  } catch (err) {
+    console.error('Error fetching courses paged:', err);
+    throw err;
+  }
+}
+
 export async function fetchCourseDetail(id) {
   try {
     const resp = await apiClient.get(`${BASE_URL}/${id}`);

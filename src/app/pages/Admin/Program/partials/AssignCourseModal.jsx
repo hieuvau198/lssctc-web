@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { Button, Modal, App, Empty, Spin, Table, Tag, Pagination } from 'antd';
 import { Plus } from 'lucide-react';
-import { fetchCourses, addCourseToProgram } from '../../../../apis/ProgramManager/ProgramManagerCourseApi';
-import { fetchCoursesByProgram } from '../../../../apis/ProgramManager/CourseApi';
+import { addCourseToProgram } from '../../../../apis/ProgramManager/ProgramManagerCourseApi';
+import { fetchCoursesPaged, fetchCoursesByProgram } from '../../../../apis/ProgramManager/CourseApi';
 
 const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
     const { message } = App.useApp();
@@ -18,14 +18,19 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
     const fetchAvailableCourses = useCallback(async () => {
         setLoading(true);
         try {
-            // Fetch both all courses and assigned courses in parallel
-            const [allCoursesData, assignedCoursesData] = await Promise.all([
-                fetchCourses({ pageNumber: 1, pageSize: 1000 }),
-                fetchCoursesByProgram(program.id)
-            ]);
-
+            // Fetch all courses using paged API
+            const allCoursesData = await fetchCoursesPaged({ pageNumber: 1, pageSize: 100 });
             const allCoursesList = allCoursesData.items || [];
-            const assignedCourses = assignedCoursesData.items || [];
+
+            // Try to fetch assigned courses, handle case when program has no courses
+            let assignedCourses = [];
+            try {
+                const assignedCoursesData = await fetchCoursesByProgram(program.id);
+                assignedCourses = assignedCoursesData.items || [];
+            } catch (e) {
+                // If 404 or no courses assigned, continue with empty array
+                console.log('No courses assigned to program yet');
+            }
 
             // Create set of assigned course IDs
             const assignedIds = new Set(assignedCourses.map((c) => c.id));

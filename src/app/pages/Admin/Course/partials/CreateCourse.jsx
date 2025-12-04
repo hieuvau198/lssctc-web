@@ -143,7 +143,7 @@ const CreateCourse = ({
         </Select>
       </Form.Item>
       <Form.Item label="Price" name="price" rules={[{ required: true, message: "Please enter price" }]}>
-        <InputNumber min={1} max={10000} style={{ width: "100%" }} />
+        <InputNumber min={1} max={9999999999} style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item label="Duration (hours)" name="durationHours" rules={[{ required: true, message: "Please enter duration" }]}>
         <InputNumber min={1} style={{ width: "100%" }} />

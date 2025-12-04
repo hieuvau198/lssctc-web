@@ -121,12 +121,12 @@ const ProgramTableView = ({
 
   return (
     <div className="rounded-lg shadow overflow-hidden">
-      <div className="overflow-hidden min-h-[450px]">
+      <div className="overflow-hidden h-[450px]">
         <Table
           columns={tableColumns}
           dataSource={programs}
           rowKey="id"
-          scroll={{ y: 450 }}
+          scroll={{ y: 400 }}
           pagination={false}
           size="middle"
         />
