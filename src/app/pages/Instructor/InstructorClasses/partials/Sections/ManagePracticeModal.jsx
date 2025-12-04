@@ -30,7 +30,7 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
       const assigned = await getPracticesByActivityId(activity.id);
       setAssignedPractice(assigned[0] || null); 
 
-      const library = await getPractices({ page: 1, pageSize: 1000 });
+      const library = await getPractices({ page: 1, pageSize: 10 });
       setPracticeLibrary(library.items || []);
     } catch (err) {
       setError(err.message || 'Failed to load data');
