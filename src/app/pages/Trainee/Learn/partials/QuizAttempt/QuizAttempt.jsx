@@ -1,62 +1,101 @@
 // src/app/pages/Trainee/Learn/partials/QuizAttempt/QuizAttempt.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Checkbox, Radio, Space, Typography, Alert, Modal, Spin } from 'antd';
-import { ClockCircleOutlined } from '@ant-design/icons';
-
-const { Title, Text, Paragraph } = Typography;
+import { Button, Checkbox, Radio, Space, Alert, Spin, Tag, Progress } from 'antd';
+import { Clock, AlertTriangle, Send, CheckCircle2 } from 'lucide-react';
 
 // Child component for a single question
-const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange }) => {
+const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange, totalQuestions }) => {
   const questionId = question.id;
 
   const handleRadioChange = (e) => {
-    onChange(questionId, [e.target.value]); // Radio (single choice)
+    onChange(questionId, [e.target.value]);
   };
 
   const handleCheckboxChange = (checkedValues) => {
-    onChange(questionId, checkedValues); // Checkbox (multiple choice)
+    onChange(questionId, checkedValues);
   };
 
   const currentValue = selectedAnswers[questionId] || [];
+  const isAnswered = currentValue.length > 0;
 
   return (
-    <Card
-      className="mb-6 shadow-md"
-      title={<Title level={5}>{`Question ${questionIndex + 1}: ${question.name}`}</Title>}
-    >
-      {question.description && <Paragraph type="secondary">{question.description}</Paragraph>}
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50/30 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
+            isAnswered 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-slate-200 text-slate-600'
+          }`}>
+            {questionIndex + 1}
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900">{question.name}</h3>
+            {question.isMultipleAnswers && (
+              <span className="text-xs text-slate-500">Select all that apply</span>
+            )}
+          </div>
+        </div>
+        <Tag color={isAnswered ? 'blue' : 'default'} className="text-xs">
+          {isAnswered ? 'Answered' : 'Unanswered'}
+        </Tag>
+      </div>
 
-      {question.isMultipleAnswers ? (
-        <Checkbox.Group
-          className="w-full"
-          value={currentValue}
-          onChange={handleCheckboxChange}
-        >
-          <Space direction="vertical" className="w-full">
-            {question.options.map((opt) => (
-              <Checkbox key={opt.id} value={opt.id} className="text-base p-2">
-                {opt.name}
-              </Checkbox>
-            ))}
-          </Space>
-        </Checkbox.Group>
-      ) : (
-        <Radio.Group
-          className="w-full"
-          value={currentValue[0]} // Radio only has 1 value
-          onChange={handleRadioChange}
-        >
-          <Space direction="vertical" className="w-full">
-            {question.options.map((opt) => (
-              <Radio key={opt.id} value={opt.id} className="text-base p-2">
-                {opt.name}
-              </Radio>
-            ))}
-          </Space>
-        </Radio.Group>
-      )}
-    </Card>
+      <div className="p-6">
+        {question.description && (
+          <p className="text-slate-600 mb-4">{question.description}</p>
+        )}
+
+        {question.isMultipleAnswers ? (
+          <Checkbox.Group
+            className="w-full"
+            value={currentValue}
+            onChange={handleCheckboxChange}
+          >
+            <Space direction="vertical" className="w-full">
+              {question.options.map((opt) => (
+                <div 
+                  key={opt.id} 
+                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                    currentValue.includes(opt.id)
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'
+                  }`}
+                >
+                  <Checkbox value={opt.id} className="w-full">
+                    <span className="text-slate-700">{opt.name}</span>
+                  </Checkbox>
+                </div>
+              ))}
+            </Space>
+          </Checkbox.Group>
+        ) : (
+          <Radio.Group
+            className="w-full"
+            value={currentValue[0]}
+            onChange={handleRadioChange}
+          >
+            <Space direction="vertical" className="w-full">
+              {question.options.map((opt) => (
+                <div 
+                  key={opt.id} 
+                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                    currentValue[0] === opt.id
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'
+                  }`}
+                >
+                  <Radio value={opt.id} className="w-full">
+                    <span className="text-slate-700">{opt.name}</span>
+                  </Radio>
+                </div>
+              ))}
+            </Space>
+          </Radio.Group>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -64,22 +103,25 @@ const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange }) =>
 export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
   const { questions, timelimitMinute, quizName } = quizData;
   const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [timeLeft, setTimeLeft] = useState(timelimitMinute * 60); // in seconds
-  const [isTimerRunning, setIsTimerRunning] = useState(true); // Control timer
+  const [timeLeft, setTimeLeft] = useState(timelimitMinute * 60);
+  const [isTimerRunning, setIsTimerRunning] = useState(true);
+
+  const answeredCount = Object.keys(selectedAnswers).filter(k => selectedAnswers[k]?.length > 0).length;
+  const progressPercent = Math.round((answeredCount / questions.length) * 100);
 
   // Timer effect
   useEffect(() => {
     if (timeLeft <= 0) {
-      if (isTimerRunning) { // Only auto-submit once
+      if (isTimerRunning) {
         console.log('Time is up! Auto-submitting.');
         setIsTimerRunning(false);
-        handleSubmit(true); // Pass flag to bypass confirm modal
+        handleSubmit(true);
       }
       return;
     }
     
     if (!isTimerRunning) {
-      return; // Stop timer if not running
+      return;
     }
 
     const timer = setInterval(() => {
@@ -106,11 +148,8 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
   
   const handleSubmit = () => {
     console.log('[QuizAttempt] handleSubmit triggered.');
-
-    // Stop the timer
     setIsTimerRunning(false);
 
-    // Format the answers
     const formattedAnswers = Object.entries(selectedAnswers).map(
       ([questionId, selectedOptionIds]) => ({
         questionId: parseInt(questionId, 10),
@@ -119,61 +158,109 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
     );
 
     console.log('[QuizAttempt] Submitting with payload:', formattedAnswers);
-    onSubmit(formattedAnswers); // Call parent (QuizContent) onSubmit
+    onSubmit(formattedAnswers);
   };
 
+  const isLowTime = timeLeft < 300;
+  const isCriticalTime = timeLeft < 60;
+
   return (
-    <Spin spinning={isSubmitting} tip="Submitting...">
-      <div className="max-w-4xl mx-auto p-4">
-        <Title level={2} className="text-center">{quizName}</Title>
+    <Spin spinning={isSubmitting} tip="Submitting your answers...">
+      <div className="space-y-6">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">{quizName}</h2>
+              <div className="flex items-center gap-4 mt-1">
+                <span className="text-sm text-slate-500">
+                  {answeredCount}/{questions.length} answered
+                </span>
+                <Progress 
+                  percent={progressPercent} 
+                  size="small" 
+                  showInfo={false}
+                  strokeColor={{ from: '#3b82f6', to: '#6366f1' }}
+                  className="w-24"
+                />
+              </div>
+            </div>
 
-        <Card className="mb-6 sticky top-4 z-10 shadow-lg">
-          <div className="flex justify-between items-center">
-            <Title level={4} className="mb-0">
-              <ClockCircleOutlined className="mr-2" />
-              Time Remaining:
-              <span className={`ml-2 font-bold ${timeLeft < 300 ? 'text-red-500' : 'text-blue-600'}`}>
+            <div className="flex items-center gap-4">
+              {/* Timer */}
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl font-mono text-lg font-bold ${
+                isCriticalTime 
+                  ? 'bg-red-100 text-red-600 animate-pulse' 
+                  : isLowTime 
+                    ? 'bg-amber-100 text-amber-600'
+                    : 'bg-blue-100 text-blue-600'
+              }`}>
+                <Clock className="w-5 h-5" />
                 {formatTime(timeLeft)}
-              </span>
-            </Title>
-            <Button 
-              type="primary" 
-              size="large" 
-              onClick={() => handleSubmit(false)} // Ensure it calls with bypass=false
-              loading={isSubmitting}
-            >
-              Submit
-            </Button>
-          </div>
-        </Card>
+              </div>
 
-        {timeLeft <= 300 && (
+              {/* Submit Button */}
+              <Button 
+                type="primary" 
+                size="large"
+                icon={<Send className="w-4 h-4" />}
+                onClick={() => handleSubmit(false)}
+                loading={isSubmitting}
+                className="shadow-lg shadow-blue-200"
+              >
+                Submit
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Time Warning */}
+        {isLowTime && (
           <Alert
-            message="You have less than 5 minutes remaining!"
-            type="warning"
+            message={isCriticalTime ? "Less than 1 minute remaining!" : "Less than 5 minutes remaining!"}
+            type={isCriticalTime ? "error" : "warning"}
             showIcon
-            className="mb-4"
+            icon={<AlertTriangle className="w-5 h-5" />}
+            className="rounded-xl"
           />
         )}
 
-        {questions.map((q, index) => (
-          <QuestionCard
-            key={q.id}
-            question={q}
-            questionIndex={index}
-            selectedAnswers={selectedAnswers}
-            onChange={handleAnswerChange}
-          />
-        ))}
+        {/* Questions */}
+        <div className="space-y-6">
+          {questions.map((q, index) => (
+            <QuestionCard
+              key={q.id}
+              question={q}
+              questionIndex={index}
+              totalQuestions={questions.length}
+              selectedAnswers={selectedAnswers}
+              onChange={handleAnswerChange}
+            />
+          ))}
+        </div>
 
-        <div className="text-center mt-8">
+        {/* Bottom Submit */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 text-center">
+          <div className="mb-4">
+            <div className="flex items-center justify-center gap-2 text-slate-600 mb-2">
+              <CheckCircle2 className="w-5 h-5" />
+              <span>{answeredCount} of {questions.length} questions answered</span>
+            </div>
+            <Progress 
+              percent={progressPercent} 
+              strokeColor={{ from: '#3b82f6', to: '#6366f1' }}
+              className="max-w-md mx-auto"
+            />
+          </div>
           <Button 
             type="primary" 
-            size="large" 
-            onClick={() => handleSubmit(false)} // Ensure it calls with bypass=false
+            size="large"
+            icon={<Send className="w-4 h-4" />}
+            onClick={() => handleSubmit(false)}
             loading={isSubmitting}
+            className="px-8 shadow-lg shadow-blue-200"
           >
-            Submit
+            Submit Quiz
           </Button>
         </div>
       </div>

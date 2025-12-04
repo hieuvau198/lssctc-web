@@ -1,8 +1,8 @@
 // src\app\pages\Trainee\Learn\partials\VideoContent.jsx
 
 import React, { useState, useRef } from "react";
-import { Card, Button, Progress } from "antd";
-import { Play, CheckCircle2 } from "lucide-react";
+import { Button, Progress, Tag } from "antd";
+import { Play, CheckCircle2, Video, Clock } from "lucide-react";
 
 // Helper to extract YouTube video ID from various URL formats
 const getYouTubeVideoId = (url) => {
@@ -29,7 +29,6 @@ export default function VideoContent({
   completed: initialCompleted = false,
   videoUrl,
   onMarkAsComplete,
-  onMarkAsNotComplete,
 }) {
   const [completed, setCompleted] = useState(initialCompleted);
   const [progress, setProgress] = useState(initialCompleted ? 100 : 0);
@@ -67,22 +66,33 @@ export default function VideoContent({
     if (onMarkAsComplete) onMarkAsComplete();
   };
 
-  const handleManualMarkIncomplete = () => {
-    setCompleted(false);
-    setProgress(0);
-    if (onMarkAsNotComplete) onMarkAsNotComplete();
-  };
-
   return (
-    <div className="max-w-4xl mx-auto">
-      <Card className="mb-6">
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-3">
-            <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
+                <Video className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Tag color="blue" className="text-xs font-medium">Video</Tag>
+                  {completed && (
+                    <Tag color="success" className="text-xs font-medium">Completed</Tag>
+                  )}
+                </div>
+                <h1 className="text-xl font-bold text-slate-900">{title}</h1>
+              </div>
+            </div>
           </div>
-          <div className="aspect-video bg-black rounded-lg overflow-hidden">
+        </div>
+
+        {/* Video Player */}
+        <div className="p-6">
+          <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-lg">
             {isYouTube && youtubeVideoId ? (
-              // YouTube embed iframe
               <iframe
                 src={`https://www.youtube.com/embed/${youtubeVideoId}?rel=0`}
                 title={title}
@@ -92,7 +102,6 @@ export default function VideoContent({
                 allowFullScreen
               />
             ) : videoUrl ? (
-              // Native video player for direct video URLs
               <video
                 ref={videoRef}
                 src={videoUrl}
@@ -105,52 +114,59 @@ export default function VideoContent({
                 Your browser does not support the video tag.
               </video>
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-white bg-slate-900">
+              <div className="h-full w-full flex items-center justify-center text-white">
                 <div className="text-center">
-                  <Play className="w-16 h-16 mx-auto mb-4" />
+                  <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
+                    <Play className="w-10 h-10" />
+                  </div>
                   <p className="text-lg font-semibold">{title}</p>
-                  <p className="text-slate-300">No video URL provided</p>
+                  <p className="text-slate-400 text-sm">No video URL provided</p>
                 </div>
               </div>
             )}
           </div>
-        </div>
 
-        {/* Progress Bar - only show for native videos */}
-        {!isYouTube && (
-          <Progress
-            percent={Math.round(progress)}
-            status={completed ? "success" : "active"}
-          />
-        )}
-
-        {/* Completion Status & Manual Controls */}
-        <div className="flex items-center justify-between mt-4">
-          {completed ? (
-            <div className="flex items-center gap-2 text-green-600">
-              <CheckCircle2 className="w-4 h-4" />
-              <span className="text-sm">Completed</span>
-            </div>
-          ) : (
-            <div />
-          )}
-
-          {/* Manual mark buttons for YouTube (since we can't track progress) */}
-          {isYouTube && (
-            <div className="flex gap-2">
-              {!completed ? (
-                <Button type="primary" onClick={handleManualMarkComplete}>
-                  Mark as Complete
-                </Button>
-              ) : (
-                <Button danger onClick={handleManualMarkIncomplete}>
-                  Mark as Incomplete
-                </Button>
-              )}
+          {/* Progress Bar - only show for native videos */}
+          {!isYouTube && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-sm text-slate-600 mb-2">
+                <span>Watch Progress</span>
+                <span className="font-medium">{Math.round(progress)}%</span>
+              </div>
+              <Progress
+                percent={Math.round(progress)}
+                status={completed ? "success" : "active"}
+                strokeColor={{ from: '#3b82f6', to: '#6366f1' }}
+                showInfo={false}
+              />
             </div>
           )}
         </div>
-      </Card>
+
+        {/* Footer Actions */}
+        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {completed ? (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full">
+                <CheckCircle2 className="w-4 h-4" />
+                <span className="text-sm font-medium">Completed</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-slate-500">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm">In Progress</span>
+              </div>
+            )}
+          </div>
+
+          {/* Manual mark button for YouTube */}
+          {isYouTube && !completed && (
+            <Button type="primary" onClick={handleManualMarkComplete} className="shadow-sm">
+              Mark as Complete
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -24,7 +24,9 @@ export default function CourseSection() {
   const classId = courseId;
 
   // --- LEARNING SIDEBAR CONTEXT ---
-  const { refreshKey } = useLearningSidebar();
+  const { refreshKey, triggerCourseCompletion } = useLearningSidebar();
+  // Track previous completion state to detect when it becomes 100%
+  const [wasCompleted, setWasCompleted] = React.useState(false);
   // --- KẾT THÚC LEARNING SIDEBAR CONTEXT ---
 
   // --- LOGIC TRAINEE ID MỚI ---
@@ -104,6 +106,17 @@ export default function CourseSection() {
       }
 
       setActivities(allActivities);
+
+      // Check if course is now 100% complete
+      const totalActivities = allActivities.length;
+      const completedActivities = allActivities.filter(a => a.isCompleted).length;
+      const isNowComplete = totalActivities > 0 && completedActivities === totalActivities;
+
+      // Only show celebration if it just became complete (not on initial load)
+      if (isNowComplete && !wasCompleted && refreshKey > 0) {
+        triggerCourseCompletion(courseTitle);
+      }
+      setWasCompleted(isNowComplete);
 
     } catch (err) {
       console.error('Error fetching sections/partitions:', err);
