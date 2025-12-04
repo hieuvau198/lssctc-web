@@ -110,6 +110,12 @@ export const getActivityRecordsByClassAndSection = async (classId, sectionId) =>
   return arr.map(mapActivityRecord);
 };
 
+export const submitActivity = async (payload) => {
+  // Payload should be: { activityRecordId: number }
+  const response = await api.post('/ActivityRecords/my-records/submit', payload);
+  return response.data;
+};
+
 //#endregion
 
 //#region Learning Section Mateirals APIs

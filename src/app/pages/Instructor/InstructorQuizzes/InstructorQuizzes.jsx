@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Skeleton, Empty, Pagination, Alert, Button, Tooltip, message, Popconfirm } from 'antd';
-import { Eye, Pencil, Trash2, FileSpreadsheet } from 'lucide-react';
+import { Table, Skeleton, Pagination, Alert, Button, Tooltip, Popconfirm, Space, Tag, App } from 'antd';
+import { EyeOutlined, EditOutlined, DeleteOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router';
 import { getQuizzes, deleteQuiz } from '../../../apis/Instructor/InstructorQuiz';
 import QuizFilters from './partials/QuizFilters';
 import ImportQuizModal from './partials/ImportQuizModal';
+import CreateQuizDrawer from './partials/CreateQuizDrawer';
 
 export default function InstructorQuizzes() {
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
@@ -17,6 +19,7 @@ export default function InstructorQuizzes() {
   const [searchValue, setSearchValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [importModalVisible, setImportModalVisible] = useState(false);
+  const [createDrawerVisible, setCreateDrawerVisible] = useState(false);
 
   const load = async (p = page, ps = pageSize) => {
     setLoading(true);
@@ -67,64 +70,94 @@ export default function InstructorQuizzes() {
     load(1, pageSize);
   };
 
+  const handleCreateSuccess = () => {
+    setCreateDrawerVisible(false);
+    load(1, pageSize);
+  };
+
   const columns = [
-    { title: '#', key: 'index', width: 60, render: (_, __, idx) => (page - 1) * pageSize + idx + 1 },
+    {
+      title: '#',
+      key: 'index',
+      width: 64,
+      align: 'center',
+      render: (_, __, idx) => (page - 1) * pageSize + idx + 1,
+      fixed: 'left',
+    },
+    {
+      title: 'Quiz Code',
+      dataIndex: 'id',
+      key: 'id',
+      width: 100,
+      render: (id) => <span className="text-gray-500">Q-{id}</span>
+    },
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      ellipsis: true,
+      width: 260,
       render: (text, record) => (
-        <button
+        <div
+          className="font-medium text-blue-600 cursor-pointer hover:underline"
           onClick={() => handleView(record)}
-          className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left"
         >
           {text}
-        </button>
+        </div>
       )
     },
-    { title: 'Pass (pts)', dataIndex: 'passScoreCriteria', key: 'passScoreCriteria', width: 100, align: 'center' },
-    { title: 'Time (min)', dataIndex: 'timelimitMinute', key: 'timelimitMinute', width: 120, align: 'center' },
-    { title: 'Total Score (pts)', dataIndex: 'totalScore', key: 'totalScore', width: 120, align: 'center' },
+    {
+      title: 'Time (min)',
+      dataIndex: 'timelimitMinute',
+      key: 'timelimitMinute',
+      width: 120,
+      align: 'center',
+      render: (v) => <span>{v}</span>
+    },
+    {
+      title: 'Pass Score',
+      dataIndex: 'passScoreCriteria',
+      key: 'passScoreCriteria',
+      width: 120,
+      align: 'center',
+      render: (v) => <Tag color="blue">{v} pts</Tag>
+    },
+    {
+      title: 'Total Score',
+      dataIndex: 'totalScore',
+      key: 'totalScore',
+      width: 120,
+      align: 'center',
+      render: (v) => <span>{v} pts</span>
+    },
     {
       title: 'Actions',
       key: 'actions',
       width: 120,
       fixed: 'right',
+      align: 'center',
       render: (_, record) => (
-        <div className="flex justify-center gap-1">
+        <Space size="small">
           <Tooltip title="View Details">
             <Button
               type="text"
               size="small"
-              icon={<Eye className="w-4 h-4" />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleView(record);
-              }}
-              className="hover:bg-blue-50 hover:text-blue-600"
+              icon={<EyeOutlined />}
+              onClick={() => handleView(record)}
             />
           </Tooltip>
           <Tooltip title="Edit Quiz">
             <Button
               type="text"
               size="small"
-              icon={<Pencil className="w-4 h-4" />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleEdit(record);
-              }}
-              className="hover:bg-yellow-50 hover:text-yellow-600"
+              icon={<EditOutlined />}
+              onClick={() => handleEdit(record)}
             />
           </Tooltip>
           <Tooltip title="Delete Quiz">
             <Popconfirm
               title="Delete Quiz"
               description={`Are you sure you want to delete "${record.name}"?`}
-              onConfirm={(e) => {
-                e?.stopPropagation();
-                handleDelete(record);
-              }}
+              onConfirm={() => handleDelete(record)}
               okText="Yes"
               cancelText="No"
               okButtonProps={{ danger: true }}
@@ -132,119 +165,108 @@ export default function InstructorQuizzes() {
               <Button
                 type="text"
                 size="small"
-                icon={<Trash2 className="w-4 h-4" />}
-                onClick={(e) => e.stopPropagation()}
+                icon={<DeleteOutlined />}
                 danger
               />
             </Popconfirm>
           </Tooltip>
-        </div>
+        </Space>
       ),
     },
   ];
 
   if (loading) return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-      {/* Header Skeleton */}
       <div className="flex items-center justify-between mb-4">
-        <Skeleton.Button style={{ width: 200, height: 32 }} active />
+        <Skeleton.Button style={{ width: 100, height: 32 }} active />
+        <div className="flex gap-2">
+          <Skeleton.Button style={{ width: 120, height: 32 }} active />
+          <Skeleton.Button style={{ width: 120, height: 32 }} active />
+        </div>
       </div>
-
-      {/* Search Skeleton */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+      <div className="mb-4">
         <Skeleton.Input style={{ width: 320, height: 40 }} active />
       </div>
-
-      {/* Content Skeleton */}
-      <Card>
-        <Skeleton active paragraph={{ rows: 6 }} />
-      </Card>
+      <div className="rounded-lg shadow overflow-hidden bg-white">
+        <Skeleton active paragraph={{ rows: 8 }} className="p-4" />
+      </div>
     </div>
   );
 
   if (error) return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">Quizzes</span>
-      </div>
       <Alert type="error" message="Error" description={error} />
-    </div>
-  );
-
-  if (!quizzes || quizzes.length === 0) return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">Quizzes</span>
-      </div>
-
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <QuizFilters
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-          onSearch={handleSearch}
-        />
-      </div>
-
-      <Card title="Quizzes">
-        <Empty description="No quizzes found." />
-      </Card>
     </div>
   );
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">Quizzes</span>
-        <div>
-          <Button
-            icon={<FileSpreadsheet className="w-4 h-4" />}
-            onClick={() => setImportModalVisible(true)}
-            className="mr-2"
-          >
-            Import Excel
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => navigate('/instructor/quizzes/create')}
-          >
-            + Create Quiz
-          </Button>
-        </div>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-2xl font-semibold">Quizzes</span>
       </div>
 
-      {/* Search and Controls */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+      {/* Search */}
+      <div className=" flex items-center justify-between mb-4">
         <QuizFilters
           searchValue={searchValue}
           setSearchValue={setSearchValue}
           onSearch={handleSearch}
         />
-      </div >
+        <div className="flex items-center gap-2">
+          <Button
+            icon={<UploadOutlined />}
+            onClick={() => setImportModalVisible(true)}
+          >
+            Import Excel
+          </Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setCreateDrawerVisible(true)}
+          >
+            Create Quiz
+          </Button>
+        </div>
+      </div>
 
-      {/* Content */}
-      < Card title="Quizzes" >
-        <div className="overflow-auto h-[350px]">
+      {/* Table */}
+      <div className="rounded-lg shadow overflow-hidden">
+        <div className="overflow-hidden min-h-[450px]">
           <Table
             columns={columns}
             dataSource={quizzes}
             rowKey="id"
             pagination={false}
+            scroll={{ y: 450 }}
             size="middle"
-          // scroll={{ y: 560 }}
           />
         </div>
-        <div className="pt-4 border-t border-gray-200 flex justify-center">
-          <Pagination current={page} pageSize={pageSize} total={total} showSizeChanger pageSizeOptions={["10", "20", "50"]}
-            onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }} showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} quizzes`} />
+
+        <div className="p-4 border-t border-gray-200 bg-white flex justify-center">
+          <Pagination
+            current={page}
+            pageSize={pageSize}
+            total={total}
+            onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }}
+            showSizeChanger
+            pageSizeOptions={["10", "20", "50"]}
+            showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} quizzes`}
+          />
         </div>
-      </Card >
+      </div>
 
       <ImportQuizModal
         visible={importModalVisible}
         onCancel={() => setImportModalVisible(false)}
         onSuccess={handleImportSuccess}
       />
-    </div >
+
+      <CreateQuizDrawer
+        open={createDrawerVisible}
+        onClose={() => setCreateDrawerVisible(false)}
+        onSuccess={handleCreateSuccess}
+      />
+    </div>
   );
 }

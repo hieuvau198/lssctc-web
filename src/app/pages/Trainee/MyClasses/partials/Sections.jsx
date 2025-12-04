@@ -1,4 +1,4 @@
-import { Card, Progress, Skeleton, message } from 'antd';
+import { Card, Empty, Progress, Skeleton, message } from 'antd';
 import { Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -61,11 +61,11 @@ export default function Sections({ classId }) {
 
 	if (!sections || sections.length === 0) {
 		return (
-			<Card className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-				<div className="text-center text-slate-500 py-10">
-					No sections available at the moment.
-				</div>
-			</Card>
+			<div className="my-4">
+				<Card className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+					<Empty description="No sections available at the moment" className="py-16" />
+				</Card>
+			</div>
 		);
 	}
 

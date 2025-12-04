@@ -95,6 +95,7 @@ export default function QuestionList({ quizId }) {
       title: '#',
       key: 'index',
       width: 60,
+      align: 'center',
       render: (_, __, idx) => (page - 1) * pageSize + idx + 1,
     },
     {

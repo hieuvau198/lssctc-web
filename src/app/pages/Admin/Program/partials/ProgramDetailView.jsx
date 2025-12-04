@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Tag, Divider, Empty, Skeleton } from "antd";
 import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
 import CourseCard from "./CourseCard";
-import AssignCourse from "./AssignCourse";
+import AssignCourseModal from "./AssignCourseModal";
 
 const ProgramDetailView = ({ program, loading }) => {
   const [courses, setCourses] = useState([]);
@@ -71,7 +71,7 @@ const ProgramDetailView = ({ program, loading }) => {
       <div>
         <Divider orientation="left">Courses</Divider>
         <div className="ml-3">
-          <AssignCourse program={program} onAssigned={() => {
+          <AssignCourseModal program={program} onAssigned={() => {
             // refresh courses after assign
             setLoadingCourses(true);
             fetchCoursesByProgram(program.id)

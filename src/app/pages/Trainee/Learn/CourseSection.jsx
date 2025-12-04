@@ -14,11 +14,18 @@ import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeC
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
 import useAuthStore from '../../../store/authStore';
+
+// Import context for sidebar refresh
+import { useLearningSidebar } from '../../../contexts/LearningSidebarContext';
 // --- KẾT THÚC IMPORT MỚI ---
 
 export default function CourseSection() {
   const { courseId } = useParams(); // courseId == classId
   const classId = courseId;
+
+  // --- LEARNING SIDEBAR CONTEXT ---
+  const { refreshKey } = useLearningSidebar();
+  // --- KẾT THÚC LEARNING SIDEBAR CONTEXT ---
 
   // --- LOGIC TRAINEE ID MỚI ---
   const authState = useAuthStore();
@@ -108,7 +115,7 @@ export default function CourseSection() {
 
   useEffect(() => {
     fetchSidebarData();
-  }, [fetchSidebarData]);
+  }, [fetchSidebarData, refreshKey]); // Add refreshKey to trigger refresh
 
   // Gộp Section records và Activity records để tạo sidebar
   const allItems = useMemo(() => {

@@ -11,6 +11,7 @@ import {
   markSectionMaterialAsNotCompleted,
   getActivityRecordsByClassAndSection,
   getMaterialsByActivityId,
+  submitActivity, 
 } from "../../../apis/Trainee/TraineeLearningApi";
 import {
   getQuizByActivityIdForTrainee,
@@ -24,9 +25,15 @@ import { getAuthToken } from "../../../libs/cookies";
 import { decodeToken } from "../../../libs/jwtDecode";
 import useAuthStore from "../../../store/authStore";
 
+// Import context for sidebar refresh
+import { useLearningSidebar } from "../../../contexts/LearningSidebarContext";
+
 export default function LearnContent() {
   const { courseId, sectionId, partitionId } = useParams();
   const activityId = parseInt(partitionId, 10);
+
+  // Get refreshSidebar function from context
+  const { refreshSidebar } = useLearningSidebar();
 
   const authState = useAuthStore();
   const traineeIdFromStore = authState.nameid;
@@ -162,6 +169,8 @@ export default function LearnContent() {
       
       // Reload all data to show the result screen
       await fetchPartitionData();
+      // Trigger sidebar refresh to update tick marks
+      refreshSidebar();
       return result;
     } catch (err) {
       console.error('[LearnContent] API call failed:', err);
@@ -170,33 +179,34 @@ export default function LearnContent() {
     }
   };
 
-  // Các hàm markAsComplete/NotComplete giờ chỉ áp dụng cho "Material"
   const handleMarkAsComplete = async () => {
-    if (!activityRecord || activityRecord.activityType !== 'Material' || !traineeId) return;
-    
-    const success = await markSectionMaterialAsCompleted(
-      activityRecord.activityId, // Dùng activityId
-      traineeId
-    );
-    if (success) {
+    if (!activityRecord || activityRecord.activityType !== 'Material') return;
+
+    try {
+      // The backend expects a Dto with ActivityRecordId
+      const payload = {
+        activityRecordId: activityRecord.activityRecordId
+      };
+
+      await submitActivity(payload);
+      
+      // Refresh data to show green ticks/status
       await fetchPartitionData();
-    } else {
-      alert("Failed to mark as complete. Please try again.");
+      refreshSidebar();
+      
+    } catch (err) {
+      console.error("Error submitting activity:", err);
+      // specific error message from backend (e.g., "Already completed")
+      const msg = err.response?.data?.message || "Failed to mark as complete.";
+      alert(msg);
     }
   };
 
   const handleMarkAsNotComplete = async () => {
-    if (!activityRecord || activityRecord.activityType !== 'Material' || !traineeId) return;
-
-    const success = await markSectionMaterialAsNotCompleted(
-      activityRecord.activityId, // Dùng activityId
-      traineeId
-    );
-    if (success) {
-      await fetchPartitionData();
-    } else {
-      alert("Failed to mark as not complete. Please try again.");
-    }
+    // NOTE: The current 'SubmitActivityAsync' endpoint only sets status to Completed.
+    // It does not support toggling back to Incomplete.
+    // If you need this feature, the backend requires a separate endpoint or update logic.
+    alert("Unmarking is not supported at this time.");
   };
 
   // --- PHẦN RENDER ---
@@ -239,25 +249,38 @@ export default function LearnContent() {
         <div className="space-y-6">
           {materialsList.length > 0 ? (
             materialsList.map((material) => {
-              // Dùng learningMaterialType (chuỗi)
-              if (material.learningMaterialType === 'Video') {
-                return (
-                  <VideoContent
-                    key={material.id}
-                    title={material.name || "Untitled Video"}
-                    completed={isActivityCompleted}
-                    videoUrl={material.materialUrl}
-                    onMarkAsComplete={handleMarkAsComplete}
-                    onMarkAsNotComplete={handleMarkAsNotComplete}
-                  />
-                );
-              } else if (material.learningMaterialType === 'Document') {
+              // Debug log to check actual API response
+              console.log('Material data:', material);
+              console.log('learningMaterialType:', material.learningMaterialType, 'type:', typeof material.learningMaterialType);
+
+              // Detect actual type from URL extension (workaround for incorrect backend data)
+              const url = (material.materialUrl || '').toLowerCase();
+              const isDocumentByUrl = url.endsWith('.pdf') || url.endsWith('.doc') || url.endsWith('.docx') || url.endsWith('.txt');
+              const isVideoByUrl = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.endsWith('.avi') || url.includes('youtube.com') || url.includes('vimeo.com');
+
+              // Use URL-based detection first, then fall back to API type
+              const materialType = String(material.learningMaterialType || '').toLowerCase();
+              const isDocument = isDocumentByUrl || (!isVideoByUrl && (materialType === 'document' || materialType === '0' || material.learningMaterialType === 0));
+              const isVideo = isVideoByUrl || (!isDocumentByUrl && (materialType === 'video' || materialType === '1' || material.learningMaterialType === 1));
+
+              if (isDocument) {
                 return (
                   <ReadingContent
                     key={material.id}
                     title={material.name || "Untitled Document"}
                     completed={isActivityCompleted}
                     documentUrl={material.materialUrl}
+                    onMarkAsComplete={handleMarkAsComplete}
+                    onMarkAsNotComplete={handleMarkAsNotComplete}
+                  />
+                );
+              } else if (isVideo) {
+                return (
+                  <VideoContent
+                    key={material.id}
+                    title={material.name || "Untitled Video"}
+                    completed={isActivityCompleted}
+                    videoUrl={material.materialUrl}
                     onMarkAsComplete={handleMarkAsComplete}
                     onMarkAsNotComplete={handleMarkAsNotComplete}
                   />

@@ -100,9 +100,9 @@ export default function MyClasses() {
         )}
 
         {!loading && programs.length > 0 && (
-          <div className="space-y-6">
+          <div className="space-y-6 min-h-screen">
             {programs.map((p) => (
-              <div className="min-h-screen my-4" key={p.id}>
+              <div className="my-4" key={p.id}>
                 <Link to={`/my-classes/${p.id}`}>
                   <Card className="group rounded-2xl shadow-xl border hover:shadow-lg transition-all duration-300 overflow-hidden relative cursor-pointer">
                     <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r opacity-80 from-transparent via-slate-200 to-transparent" />

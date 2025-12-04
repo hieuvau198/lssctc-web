@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Upload, Button, message, Input, InputNumber, Row, Col, Collapse, Typography, Card } from 'antd';
+import { Modal, Upload, Button, message, Input, InputNumber, Row, Col, Collapse, Typography, Card, Divider } from 'antd';
 import { FileSpreadsheet, Upload as UploadIcon, Download, Info } from 'lucide-react';
 import { downloadQuizTemplate, importQuizFromExcel } from '../../../../apis/Instructor/InstructorQuiz';
 
@@ -156,43 +156,11 @@ const ImportQuizModal = ({ visible, onCancel, onSuccess }) => {
             width={800}
             centered
         >
-            <div className="py-4 space-y-6">
-                {/* 1. Top Section: Upload & Download */}
-                <Row gutter={24}>
-                    <Col span={12}>
-                        <Card size="small" title="1. Upload File" className="h-full bg-gray-50">
-                            <Upload.Dragger {...uploadProps} className="w-full bg-white" height={120}>
-                                <p className="ant-upload-drag-icon">
-                                    <UploadIcon className="w-8 h-8 text-blue-500 mx-auto" />
-                                </p>
-                                <p className="ant-upload-text text-sm">Click or drag file here</p>
-                                <p className="ant-upload-hint text-xs text-gray-400">
-                                    .xlsx files only
-                                </p>
-                            </Upload.Dragger>
-                        </Card>
-                    </Col>
-                    <Col span={12}>
-                        <Card size="small" title="2. Need a Template?" className="h-full bg-gray-50">
-                            <div className="flex flex-col items-center justify-center h-[120px] gap-3">
-                                <p className="text-gray-500 text-center text-sm px-4">
-                                    Download the standard Excel template to ensure correct format.
-                                </p>
-                                <Button
-                                    icon={<Download className="w-4 h-4" />}
-                                    onClick={handleDownloadTemplate}
-                                    loading={downloading}
-                                >
-                                    Download Template
-                                </Button>
-                            </div>
-                        </Card>
-                    </Col>
-                </Row>
+            <div className="py-4 space-y-4">
 
-                {/* 2. Middle Section: Quiz Information Form */}
+                {/* 1. Middle Section: Quiz Information Form */}
                 <div>
-                    <h3 className="font-medium text-gray-800 mb-4 border-b pb-2">3. Quiz Information</h3>
+                    <h3 className="font-medium text-gray-800 mb-4 pb-2">1. Quiz Information</h3>
                     <Row gutter={24}>
                         <Col span={12}>
                             <div className="mb-4">
@@ -238,6 +206,43 @@ const ImportQuizModal = ({ visible, onCancel, onSuccess }) => {
                         </Col>
                     </Row>
                 </div>
+
+                <div>
+                    <Divider size="small" />
+                </div>
+
+                {/* 2. Top Section: Upload & Download */}
+                <Row gutter={24}>
+                    <Col span={12}>
+                        <Card size="small" title="2. Upload File" className="h-full bg-gray-50">
+                            <Upload.Dragger {...uploadProps} className="w-full bg-white" height={120}>
+                                <p className="ant-upload-drag-icon">
+                                    <UploadIcon className="w-8 h-8 text-blue-500 mx-auto" />
+                                </p>
+                                <p className="ant-upload-text text-sm">Click or drag file here</p>
+                                <p className="ant-upload-hint text-xs text-gray-400">
+                                    .xlsx files only
+                                </p>
+                            </Upload.Dragger>
+                        </Card>
+                    </Col>
+                    <Col span={12}>
+                        <Card size="small" title="3. Need a Template?" className="h-full bg-gray-50">
+                            <div className="flex flex-col items-center justify-center h-[120px] gap-3">
+                                <p className="text-gray-500 text-center text-sm px-4">
+                                    Download the standard Excel template to ensure correct format.
+                                </p>
+                                <Button
+                                    icon={<Download className="w-4 h-4" />}
+                                    onClick={handleDownloadTemplate}
+                                    loading={downloading}
+                                >
+                                    Download Template
+                                </Button>
+                            </div>
+                        </Card>
+                    </Col>
+                </Row>
 
                 {/* 3. Bottom Section: Instructions */}
                 <Collapse items={instructionItems} ghost size="small" />

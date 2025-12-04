@@ -111,14 +111,23 @@ export async function fetchClassEnrollment(classId) {
 
 /**
  * Approve an enrollment
- * POST /api/Classes/approve-enrollment
- * @param {{enrollmentId:number,description?:string}} payload
+ * PUT /api/Enrollments/{enrollmentId}/approve
+ * @param {number} enrollmentId
  */
-export async function approveEnrollment(payload) {
-	const { data } = await apiClient.post(
-		`${CLASSES_BASE}/approve-enrollment`,
-		payload
-	);
+export async function approveEnrollment(enrollmentId) {
+	if (enrollmentId == null) throw new Error("enrollmentId is required");
+	const { data } = await apiClient.put(`/Enrollments/${enrollmentId}/approve`);
+	return data;
+}
+
+/**
+ * Reject an enrollment
+ * PUT /api/Enrollments/{enrollmentId}/reject
+ * @param {number} enrollmentId
+ */
+export async function rejectEnrollment(enrollmentId) {
+	if (enrollmentId == null) throw new Error("enrollmentId is required");
+	const { data } = await apiClient.put(`/Enrollments/${enrollmentId}/reject`);
 	return data;
 }
 
@@ -324,7 +333,9 @@ export const ClassesApi = {
 	enrollTrainee,
 	fetchClassEnrollment,
 	approveEnrollment,
+	rejectEnrollment,
 	fetchClassMembers,
+	fetchClassTrainees,
 	fetchClassInstructor,
 	removeInstructorFromClass,
 	openClass,

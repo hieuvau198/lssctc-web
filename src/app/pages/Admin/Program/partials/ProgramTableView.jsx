@@ -2,16 +2,16 @@ import React from "react";
 import { Table, Tag, Button, Space, Tooltip, Popconfirm, Pagination } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
-const ProgramTableView = ({ 
-  programs, 
-  pageNumber, 
-  pageSize, 
-  total, 
-  onPageChange, 
-  onView, 
-  onEdit, 
-  onDelete, 
-  deletingId 
+const ProgramTableView = ({
+  programs,
+  pageNumber,
+  pageSize,
+  total,
+  onPageChange,
+  onView,
+  onEdit,
+  onDelete,
+  deletingId
 }) => {
   // Table columns definition
   const tableColumns = [
@@ -19,7 +19,7 @@ const ProgramTableView = ({
       title: "#",
       key: "index",
       width: 60,
-      fixed: "left",
+      align: "center",
       render: (_, __, index) => (
         <span className="font-medium text-gray-600">
           {(pageNumber - 1) * pageSize + index + 1}

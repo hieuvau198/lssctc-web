@@ -20,7 +20,6 @@ const CourseTableView = ({
       title: "#",
       key: "index",
       width: 60,
-      fixed: "left",
       align: "center",
       render: (_, __, index) => (
         <span className="font-medium text-gray-600">

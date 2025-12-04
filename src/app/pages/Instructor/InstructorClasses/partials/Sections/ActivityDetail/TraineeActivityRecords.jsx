@@ -42,6 +42,13 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
   }, [classId, sectionId, activityId]);
 
   const columns = [
+    {
+      title: '#',
+      key: 'index',
+      width: 64,
+      align: 'center',
+      render: (_, __, idx) => idx + 1,
+    },
     // ... (columns - no changes)
     {
       title: 'Trainee',

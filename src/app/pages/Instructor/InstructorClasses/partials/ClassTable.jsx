@@ -22,6 +22,14 @@ const ClassTable = ({
 
   const tableColumns = [
     {
+      title: '#',
+      key: 'index',
+      width: 64,
+      align: 'center',
+      render: (_, __, idx) => (pageNumber - 1) * pageSize + idx + 1,
+      fixed: 'left',
+    },
+    {
       title: 'Class Code',
       dataIndex: 'classCode',
       key: 'classCode',
