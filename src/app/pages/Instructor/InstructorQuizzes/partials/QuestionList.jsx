@@ -1,11 +1,13 @@
 import { CheckCircle, XCircle, Trash2, Pencil } from 'lucide-react';
 import { App, Badge, Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Switch, Table, Tag, Tooltip, Pagination } from 'antd';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { deleteQuizQuestion, getQuizQuestions, updateQuizQuestion } from '../../../../apis/Instructor/InstructorQuiz';
 import OptionList from './OptionList';
 
 export default function QuestionList({ quizId }) {
   const { message } = App.useApp();
+  const { t } = useTranslation();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -99,26 +101,26 @@ export default function QuestionList({ quizId }) {
       render: (_, __, idx) => (page - 1) * pageSize + idx + 1,
     },
     {
-      title: 'Question',
+      title: t('instructor.quizzes.questions.question'),
       dataIndex: 'name',
       key: 'name',
       ellipsis: true,
       render: (name) => <span className="font-medium">{name}</span>,
     },
     {
-      title: 'Type',
+      title: t('instructor.quizzes.table.type'),
       dataIndex: 'isMultipleAnswers',
       key: 'type',
       width: 150,
       align: 'center',
       render: (isMultiple) => (
         <Tag color={isMultiple ? 'purple' : 'blue'}>
-          {isMultiple ? 'Multiple Choice' : 'Single Choice'}
+          {isMultiple ? t('instructor.quizzes.multipleChoice') : t('instructor.quizzes.singleChoice')}
         </Tag>
       ),
     },
     {
-      title: 'Score',
+      title: t('instructor.quizzes.questions.score'),
       dataIndex: 'questionScore',
       key: 'score',
       width: 100,
@@ -128,13 +130,13 @@ export default function QuestionList({ quizId }) {
       ),
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       width: 120,
       align: 'center',
       render: (_, record) => (
         <div className="flex gap-2 justify-center">
-          <Tooltip title="Edit Question">
+          <Tooltip title={t('instructor.quizzes.editQuestion')}>
             <Button
               type="text"
               icon={<Pencil className="w-4 h-4" />}
@@ -144,14 +146,14 @@ export default function QuestionList({ quizId }) {
             />
           </Tooltip>
           <Popconfirm
-            title="Delete Question"
-            description="Are you sure you want to delete this question?"
+            title={t('instructor.quizzes.deleteQuestion')}
+            description={t('instructor.quizzes.deleteQuestionConfirm')}
             onConfirm={() => handleDeleteQuestion(record.id)}
-            okText="Yes"
-            cancelText="No"
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
             okButtonProps={{ danger: true }}
           >
-            <Tooltip title="Delete Question">
+            <Tooltip title={t('instructor.quizzes.deleteQuestion')}>
               <Button
                 type="text"
                 icon={<Trash2 className="w-4 h-4" />}
@@ -168,7 +170,7 @@ export default function QuestionList({ quizId }) {
   return (
     <>
       <div className="shadow-xl rounded-2xl overflow-hidden">
-        <Card title={`Questions`} className="h-auto flex flex-col overflow-hidden">
+        <Card title={t('instructor.quizzes.questions.title')} className="h-auto flex flex-col overflow-hidden">
           <div className="flex-1 min-h-0">
             <Table
               columns={columns}
@@ -193,7 +195,7 @@ export default function QuestionList({ quizId }) {
               total={total}
               showSizeChanger
               pageSizeOptions={["10", "20", "50"]}
-              showTotal={(t, range) => `${range[0]}-${range[1]} of ${t} questions`}
+              showTotal={(total, range) => t('instructor.quizzes.pagination.showTotal', { start: range[0], end: range[1], total })}
               onChange={(p, ps) => {
                 setPage(p);
                 setPageSize(ps);
@@ -205,7 +207,7 @@ export default function QuestionList({ quizId }) {
       </div>
 
       <Modal
-        title="Edit Question"
+        title={t('instructor.quizzes.editQuestion')}
         open={editModalVisible}
         onOk={handleUpdateQuestion}
         onCancel={handleCancelEdit}
@@ -213,14 +215,14 @@ export default function QuestionList({ quizId }) {
       >
         <Form form={form} layout="vertical" className="mt-4">
           <Form.Item
-            label="Question Name"
+            label={t('instructor.quizzes.questions.questionName')}
             name="name"
-            rules={[{ required: true, message: 'Please enter question name' }]}
+            rules={[{ required: true, message: t('instructor.quizzes.validation.questionNameRequired') }]}
           >
             <Input
               maxLength={100}
               showCount
-              placeholder="Enter question name"
+              placeholder={t('instructor.quizzes.questions.enterQuestion')}
             />
           </Form.Item>
 
@@ -242,22 +244,22 @@ export default function QuestionList({ quizId }) {
             </Form.Item> */}
 
             <Form.Item
-              label="Multiple Answers"
+              label={t('instructor.quizzes.multipleAnswers')}
               name="isMultipleAnswers"
               valuePropName="checked"
               className="flex-none w-1/2 flex items-center"
             >
-              <Switch checkedChildren="Yes" unCheckedChildren="No" />
+              <Switch checkedChildren={t('common.yes')} unCheckedChildren={t('common.no')} />
             </Form.Item>
           </div>
 
           <Form.Item
-            label="Description"
+            label={t('instructor.quizzes.questions.description')}
             name="description"
           >
             <Input.TextArea
               rows={3}
-              placeholder="Enter question description (optional)"
+              placeholder={t('instructor.quizzes.questions.descriptionPlaceholder')}
               maxLength={500}
               showCount
             />

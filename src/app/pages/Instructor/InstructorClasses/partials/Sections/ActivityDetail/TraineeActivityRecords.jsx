@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Typography, Alert, Skeleton } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { getActivityRecords } from '../../../../../../apis/Instructor/InstructorApi'; // Adjust path as needed
 import DayTimeFormat from '../../../../../../components/DayTimeFormat/DayTimeFormat';
 
 const { Title } = Typography;
 
 const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
+  const { t } = useTranslation();
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,7 +24,7 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
       // --- END OF DEBUGGING ---
 
       if (!classId || !sectionId || !activityId) {
-        setError('Missing required IDs to fetch records.');
+        setError(t('instructor.classes.activityDetail.missingIds'));
         setLoading(false);
         return;
       }
@@ -32,7 +34,7 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
         const data = await getActivityRecords(classId, sectionId, activityId);
         setRecords(data || []);
       } catch (err) {
-        setError(err.message || 'Failed to load trainee records.');
+        setError(err.message || t('instructor.classes.activityDetail.loadFailed'));
       } finally {
         setLoading(false);
       }
@@ -51,13 +53,13 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
     },
     // ... (columns - no changes)
     {
-      title: 'Trainee',
+      title: t('instructor.classes.activityDetail.trainee'),
       dataIndex: 'traineeName',
       key: 'traineeName',
       sorter: (a, b) => a.traineeName.localeCompare(b.traineeName),
     },
     {
-      title: 'Status',
+      title: t('instructor.classes.activityDetail.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status) => (
@@ -65,19 +67,19 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
           color={status === 'Completed' ? 'success' : 'processing'}
           icon={status === 'Completed' ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
         >
-          {status}
+          {status === 'Completed' ? t('instructor.classes.activityDetail.statusCompleted') : t('instructor.classes.activityDetail.statusInProgress')}
         </Tag>
       ),
     },
     {
-      title: 'Score',
+      title: t('instructor.classes.activityDetail.score'),
       dataIndex: 'score',
       key: 'score',
       sorter: (a, b) => (a.score || 0) - (b.score || 0),
       render: (score) => score ?? 'N/A',
     },
     {
-      title: 'Completed Date',
+      title: t('instructor.classes.activityDetail.completedDate'),
       dataIndex: 'completedDate',
       key: 'completedDate',
       render: (date) => (date ? <DayTimeFormat date={date} /> : 'N/A'),
@@ -90,12 +92,12 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
   }
 
   if (error) {
-    return <Alert message="Error" description={error} type="error" showIcon />;
+    return <Alert message={t('common.error')} description={error} type="error" showIcon />;
   }
 
   return (
     <div className="mt-6">
-      <Title level={4}>Trainee Progress</Title>
+      <Title level={4}>{t('instructor.classes.activityDetail.traineeProgress')}</Title>
       <Table
         dataSource={records}
         columns={columns}

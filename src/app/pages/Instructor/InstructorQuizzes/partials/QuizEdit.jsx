@@ -2,12 +2,14 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { App, Button, Card, Form, Input, InputNumber, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { getQuizById, updateQuiz } from '../../../../apis/Instructor/InstructorQuiz';
 
 export default function QuizEdit() {
   const { message } = App.useApp();
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -31,7 +33,7 @@ export default function QuizEdit() {
       });
     } catch (e) {
       console.error('Failed to load quiz:', e);
-      message.error('Failed to load quiz');
+      message.error(t('instructor.quizzes.messages.loadQuizFailed'));
     } finally {
       setLoading(false);
     }
@@ -43,11 +45,11 @@ export default function QuizEdit() {
       setSubmitting(true);
 
       await updateQuiz(id, values);
-      message.success('Quiz updated successfully');
+      message.success(t('instructor.quizzes.messages.updateQuizSuccess'));
       navigate(-1);
     } catch (e) {
       console.error('Failed to update quiz:', e);
-      message.error('Failed to update quiz');
+      message.error(t('instructor.quizzes.messages.updateQuizFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -71,7 +73,7 @@ export default function QuizEdit() {
             onClick={() => navigate(-1)}
             className="flex items-center"/>
           <div>
-            <span className="text-2xl font-bold text-slate-900 m-0">Edit Quiz</span>
+            <span className="text-2xl font-bold text-slate-900 m-0">{t('instructor.quizzes.editQuiz')}</span>
           </div>
         </div>
         <Button
@@ -81,52 +83,52 @@ export default function QuizEdit() {
           loading={submitting}
           size="middle"
         >
-          Save Changes
+          {t('common.saveChanges')}
         </Button>
       </div>
 
       {/* Edit Form Card */}
-      <Card title="Quiz Information">
+      <Card title={t('instructor.quizzes.quizInformation')}>
         <Form form={form} layout="vertical" className="">
           <Form.Item
-            label="Quiz Name"
+            label={t('instructor.quizzes.form.quizName')}
             name="name"
             rules={[
-              { required: true, message: 'Please enter quiz name' },
-              { type: 'string', max: 100, message: 'Quiz name cannot exceed 100 characters' },
+              { required: true, message: t('instructor.quizzes.form.quizNameRequired') },
+              { type: 'string', max: 100, message: t('instructor.quizzes.validation.quizNameMax') },
             ]}
           >
-            <Input placeholder="Enter quiz name" size="large" maxLength={100} />
+            <Input placeholder={t('instructor.quizzes.form.quizNamePlaceholder')} size="large" maxLength={100} />
           </Form.Item>
 
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
-              label="Pass Score Criteria (Points)"
+              label={t('instructor.quizzes.form.passScore')}
               name="passScoreCriteria"
               rules={[
-                { required: true, message: 'Please enter pass score criteria' },
-                { type: 'number', min: 0, max: 10, message: 'Must be between 0-10' },
+                { required: true, message: t('instructor.quizzes.validation.passScoreRequired') },
+                { type: 'number', min: 0, max: 10, message: t('instructor.quizzes.validation.mustBeBetween0And10') },
               ]}
             >
               <InputNumber
                 min={0}
-                placeholder="Enter pass score"
+                placeholder={t('instructor.quizzes.form.enterPassScore')}
                 className="w-full"
                 size="large"
               />
             </Form.Item>
 
             <Form.Item
-              label="Time Limit (minutes)"
+              label={t('instructor.quizzes.form.timeLimit')}
               name="timelimitMinute"
               rules={[
-                { required: true, message: 'Please enter time limit' },
-                { type: 'number', min: 1, max: 60, message: 'Must be between 1-60' },
+                { required: true, message: t('instructor.quizzes.validation.timeLimitRequired') },
+                { type: 'number', min: 1, max: 60, message: t('instructor.quizzes.validation.mustBeBetween1And60') },
               ]}
             >
               <InputNumber
                 min={1}
-                placeholder="Enter time limit"
+                placeholder={t('instructor.quizzes.form.enterTimeLimit')}
                 className="w-full"
                 size="large"
               />
@@ -150,13 +152,13 @@ export default function QuizEdit() {
           </Form.Item> */}
 
           <Form.Item
-            label="Description"
+            label={t('instructor.quizzes.form.description')}
             name="description"
-            rules={[{ type: 'string', max: 500, message: 'Description cannot exceed 500 characters' }]}
+            rules={[{ type: 'string', max: 500, message: t('instructor.quizzes.validation.descriptionMax') }]}
           >
             <Input.TextArea
               rows={4}
-              placeholder="Enter quiz description (optional)"
+              placeholder={t('instructor.quizzes.form.descriptionPlaceholder')}
               size="large"
               showCount
               maxLength={500}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Button, Select, Alert, message, Spin, Typography } from 'antd';
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { 
   getAllTasks, 
   addTaskToPractice 
@@ -10,6 +11,7 @@ const { Option } = Select;
 const { Title } = Typography;
 
 export default function ManageTasksModal({ practiceId, currentTasks, reloadTasks, onCancel, visible, token }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [allTasks, setAllTasks] = useState([]);
   const [availableTasks, setAvailableTasks] = useState([]);
@@ -22,7 +24,7 @@ export default function ManageTasksModal({ practiceId, currentTasks, reloadTasks
       setAllTasks(all);
     } catch (e) {
       console.error('Failed to load all tasks', e);
-      message.error('Failed to load available tasks');
+      message.error(t('instructor.practices.manageTasks.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -45,18 +47,18 @@ export default function ManageTasksModal({ practiceId, currentTasks, reloadTasks
 
   const handleAssignTask = async () => {
     if (!selectedTaskId) {
-      message.warning('Please select a task to assign.');
+      message.warning(t('instructor.practices.manageTasks.selectTaskWarning'));
       return;
     }
     setLoading(true);
     try {
       await addTaskToPractice(practiceId, selectedTaskId, token);
-      message.success('Task assigned successfully.');
+      message.success(t('instructor.practices.manageTasks.assignSuccess'));
       await reloadTasks();
       loadAllTasks(); // Reload all tasks to update the list of available tasks
     } catch (e) {
       console.error('Error assigning task:', e);
-      message.error(e.response?.data?.Message || 'Failed to assign task.');
+      message.error(e.response?.data?.Message || t('instructor.practices.manageTasks.assignFailed'));
     } finally {
       setLoading(false);
     }
@@ -64,16 +66,16 @@ export default function ManageTasksModal({ practiceId, currentTasks, reloadTasks
 
   return (
     <Modal
-      title="Manage Tasks for Practice"
+      title={t('instructor.practices.manageTasks.title')}
       visible={visible}
       onCancel={onCancel}
       footer={null}
     >
       <Spin spinning={loading}>
-        <Title level={5}>Assign New Task</Title>
+        <Title level={5}>{t('instructor.practices.manageTasks.assignNewTask')}</Title>
         <div className="flex space-x-2">
           <Select 
-            placeholder="Select a Task to Assign"
+            placeholder={t('instructor.practices.manageTasks.selectTask')}
             style={{ flexGrow: 1 }}
             onChange={setSelectedTaskId}
             value={selectedTaskId}
@@ -96,10 +98,10 @@ export default function ManageTasksModal({ practiceId, currentTasks, reloadTasks
             icon={<Plus className="w-4 h-4" />}
             disabled={!selectedTaskId}
           >
-            Assign
+            {t('instructor.practices.manageTasks.assign')}
           </Button>
         </div>
-        {availableTasks.length === 0 && <Alert message="No unassigned tasks found in the system." type="info" className="mt-2" />}
+        {availableTasks.length === 0 && <Alert message={t('instructor.practices.manageTasks.noUnassignedTasks')} type="info" className="mt-2" />}
       </Spin>
     </Modal>
   );

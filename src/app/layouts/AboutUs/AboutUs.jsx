@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Award,
   ShieldCheck,
@@ -12,6 +13,8 @@ import {
 } from 'lucide-react';
 
 export default function AboutUs() {
+  const { t } = useTranslation();
+  
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -26,10 +29,10 @@ export default function AboutUs() {
         <div className="relative max-w-[1380px] mx-auto px-4 py-16">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              About <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-500 to-sky-400">LSSCTC</span>
+              {t('about.heroTitle')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-500 to-sky-400">LSSCTC</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed text-slate-600">
-              Leading Safety Skills Crane Training Center - Your trusted partner in professional crane operator education and safety training.
+              {t('about.heroDescription')}
             </p>
           </div>
         </div>
@@ -40,14 +43,14 @@ export default function AboutUs() {
         <div className="max-w-[1380px] mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-6">Our Mission</h2>
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">{t('about.missionTitle')}</h2>
               <p className="text-lg text-slate-600 leading-relaxed mb-8">
-                To provide world-class crane operator training that prioritizes safety, competency, and professional excellence. We are committed to developing skilled operators who contribute to safer worksites and more efficient operations.
+                {t('about.missionDescription')}
               </p>
               <div className="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r-lg">
-                <h3 className="text-xl font-semibold text-blue-900 mb-3">Our Vision</h3>
+                <h3 className="text-xl font-semibold text-blue-900 mb-3">{t('about.visionTitle')}</h3>
                 <p className="text-blue-800">
-                  To be the premier crane training institution, recognized for our commitment to safety excellence and innovative training methodologies that set industry standards.
+                  {t('about.visionDescription')}
                 </p>
               </div>
             </div>
@@ -67,9 +70,9 @@ export default function AboutUs() {
       <section className="py-16 bg-slate-50">
         <div className="max-w-[1380px] mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Our Story</h2>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">{t('about.storyTitle')}</h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Over two decades of excellence in crane operator training and safety education
+              {t('about.storySubtitle')}
             </p>
           </div>
 
@@ -78,9 +81,9 @@ export default function AboutUs() {
               <div className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 20+
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Years of Experience</h3>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">{t('about.yearsExperience')}</h3>
               <p className="text-slate-600">
-                Established in 2003, we've been at the forefront of crane operator education, adapting to industry changes and technological advances.
+                {t('about.yearsExperienceDesc')}
               </p>
             </div>
 
@@ -88,9 +91,9 @@ export default function AboutUs() {
               <div className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 5K+
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Trained Operators</h3>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">{t('about.trainedOperators')}</h3>
               <p className="text-slate-600">
-                Over 5,000 certified crane operators have graduated from our programs, now working safely across various industries.
+                {t('about.trainedOperatorsDesc')}
               </p>
             </div>
 
@@ -98,9 +101,9 @@ export default function AboutUs() {
               <div className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 98%
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Success Rate</h3>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">{t('about.successRate')}</h3>
               <p className="text-slate-600">
-                Our comprehensive training approach results in a 98% pass rate for certification exams and excellent job placement rates.
+                {t('about.successRateDesc')}
               </p>
             </div>
           </div>
@@ -120,34 +123,34 @@ export default function AboutUs() {
               />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-6">State-of-the-Art Facilities</h2>
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">{t('about.facilitiesTitle')}</h2>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-slate-900">Modern Crane Fleet</h4>
-                    <p className="text-slate-600">Latest model cranes including mobile, tower, and overhead cranes for comprehensive hands-on training.</p>
+                    <h4 className="font-semibold text-slate-900">{t('about.modernCraneFleet')}</h4>
+                    <p className="text-slate-600">{t('about.modernCraneFleetDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-slate-900">Advanced Simulators</h4>
-                    <p className="text-slate-600">High-fidelity crane simulators providing safe learning environments for complex scenarios.</p>
+                    <h4 className="font-semibold text-slate-900">{t('about.advancedSimulators')}</h4>
+                    <p className="text-slate-600">{t('about.advancedSimulatorsDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-slate-900">Dedicated Training Yards</h4>
-                    <p className="text-slate-600">Purpose-built training areas simulating real-world construction and industrial environments.</p>
+                    <h4 className="font-semibold text-slate-900">{t('about.dedicatedTrainingYards')}</h4>
+                    <p className="text-slate-600">{t('about.dedicatedTrainingYardsDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-slate-900">Classroom Technology</h4>
-                    <p className="text-slate-600">Interactive learning spaces equipped with modern audiovisual technology and safety demonstration areas.</p>
+                    <h4 className="font-semibold text-slate-900">{t('about.classroomTechnology')}</h4>
+                    <p className="text-slate-600">{t('about.classroomTechnologyDesc')}</p>
                   </div>
                 </div>
               </div>
@@ -160,9 +163,9 @@ export default function AboutUs() {
       <section className="py-16 bg-slate-50">
         <div className="max-w-[1380px] mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Safety Standards & Certifications</h2>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">{t('about.safetyTitle')}</h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              We maintain the highest safety standards and hold all necessary certifications to ensure quality training
+              {t('about.safetySubtitle')}
             </p>
           </div>
 
@@ -171,32 +174,32 @@ export default function AboutUs() {
               <div className="mb-3 inline-flex items-center justify-center rounded-full bg-blue-50 p-2">
                 <Award className="w-6 h-6 text-blue-600" />
               </div>
-              <h4 className="font-semibold text-slate-900 mb-2">NCCCO Certified</h4>
-              <p className="text-sm text-slate-600">National Commission for the Certification of Crane Operators accredited training provider</p>
+              <h4 className="font-semibold text-slate-900 mb-2">{t('about.ncccoCertified')}</h4>
+              <p className="text-sm text-slate-600">{t('about.ncccoCertifiedDesc')}</p>
             </div>
 
             <div className="bg-white p-6 rounded-xl border border-slate-200 text-center hover:shadow-md hover:shadow-blue-100 hover:border-blue-200 transition">
               <div className="mb-3 inline-flex items-center justify-center rounded-full bg-blue-50 p-2">
                 <ShieldCheck className="w-6 h-6 text-blue-600" />
               </div>
-              <h4 className="font-semibold text-slate-900 mb-2">OSHA Compliant</h4>
-              <p className="text-sm text-slate-600">All training programs meet or exceed OSHA safety requirements and standards</p>
+              <h4 className="font-semibold text-slate-900 mb-2">{t('about.oshaCompliant')}</h4>
+              <p className="text-sm text-slate-600">{t('about.oshaCompliantDesc')}</p>
             </div>
 
             <div className="bg-white p-6 rounded-xl border border-slate-200 text-center hover:shadow-md hover:shadow-blue-100 hover:border-blue-200 transition">
               <div className="mb-3 inline-flex items-center justify-center rounded-full bg-blue-50 p-2">
                 <ClipboardList className="w-6 h-6 text-blue-600" />
               </div>
-              <h4 className="font-semibold text-slate-900 mb-2">ISO 9001 Certified</h4>
-              <p className="text-sm text-slate-600">Quality management system certification ensuring consistent training excellence</p>
+              <h4 className="font-semibold text-slate-900 mb-2">{t('about.isoCertified')}</h4>
+              <p className="text-sm text-slate-600">{t('about.isoCertifiedDesc')}</p>
             </div>
 
             <div className="bg-white p-6 rounded-xl border border-slate-200 text-center hover:shadow-md hover:shadow-blue-100 hover:border-blue-200 transition">
               <div className="mb-3 inline-flex items-center justify-center rounded-full bg-blue-50 p-2">
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
-              <h4 className="font-semibold text-slate-900 mb-2">Industry Partnerships</h4>
-              <p className="text-sm text-slate-600">Partnerships with leading construction and industrial companies for real-world training</p>
+              <h4 className="font-semibold text-slate-900 mb-2">{t('about.industryPartnerships')}</h4>
+              <p className="text-sm text-slate-600">{t('about.industryPartnershipsDesc')}</p>
             </div>
           </div>
         </div>
@@ -206,9 +209,9 @@ export default function AboutUs() {
       <section className="py-16">
         <div className="max-w-[1380px] mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Leadership Team</h2>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">{t('about.leadershipTitle')}</h2>
             <p className="text-lg text-slate-600">
-              Experienced professionals leading our commitment to excellence
+              {t('about.leadershipSubtitle')}
             </p>
           </div>
 
@@ -221,8 +224,8 @@ export default function AboutUs() {
                 loading="lazy"
               />
               <h4 className="text-xl font-semibold text-slate-900">John Anderson</h4>
-              <p className="text-blue-600 mb-2">Training Director</p>
-              <p className="text-sm text-slate-600">25+ years in crane operations and safety training with extensive industry certifications.</p>
+              <p className="text-blue-600 mb-2">{t('about.trainingDirector')}</p>
+              <p className="text-sm text-slate-600">{t('about.trainingDirectorDesc')}</p>
             </div>
 
             <div className="text-center">
@@ -233,8 +236,8 @@ export default function AboutUs() {
                 loading="lazy"
               />
               <h4 className="text-xl font-semibold text-slate-900">Sarah Chen</h4>
-              <p className="text-blue-600 mb-2">Safety Manager</p>
-              <p className="text-sm text-slate-600">Certified safety professional with expertise in OSHA regulations and risk management.</p>
+              <p className="text-blue-600 mb-2">{t('about.safetyManager')}</p>
+              <p className="text-sm text-slate-600">{t('about.safetyManagerDesc')}</p>
             </div>
 
             <div className="text-center">
@@ -245,8 +248,8 @@ export default function AboutUs() {
                 loading="lazy"
               />
               <h4 className="text-xl font-semibold text-slate-900">Michael Rodriguez</h4>
-              <p className="text-blue-600 mb-2">Operations Manager</p>
-              <p className="text-sm text-slate-600">Former construction supervisor with deep understanding of real-world crane operations.</p>
+              <p className="text-blue-600 mb-2">{t('about.operationsManager')}</p>
+              <p className="text-sm text-slate-600">{t('about.operationsManagerDesc')}</p>
             </div>
           </div>
         </div>

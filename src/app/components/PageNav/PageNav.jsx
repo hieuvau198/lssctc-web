@@ -2,6 +2,7 @@ import React from 'react';
 import { Skeleton } from 'antd';
 import { Link, useLocation } from 'react-router';
 import { Home } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -16,13 +17,15 @@ function toTitle(seg) {
   return seg.replace(/[-_]/g, ' ').replace(/\b\w/g, (s) => s.toUpperCase());
 }
 
-export default function PageNav({ items, className = '', rootHref = '/', rootLabel = 'Home', hideIds = true }) {
+export default function PageNav({ items, className = '', rootHref = '/', rootLabel, hideIds = true }) {
   const location = useLocation();
+  const { t } = useTranslation();
+  const homeLabel = rootLabel || t('common.home');
 
   const builtItems = React.useMemo(() => {
     if (Array.isArray(items) && items.length) {
       return [
-        { key: 'root', href: rootHref, title: rootLabel, isRoot: true },
+        { key: 'root', href: rootHref, title: homeLabel, isRoot: true },
         ...items.map((it, idx) => ({
           key: it.href || `i-${idx}`,
           href: it.href,
@@ -34,7 +37,7 @@ export default function PageNav({ items, className = '', rootHref = '/', rootLab
 
     const pathnames = location.pathname.split('/').filter(Boolean);
     const built = [
-      { key: 'root', href: rootHref, title: rootLabel, isRoot: true },
+      { key: 'root', href: rootHref, title: homeLabel, isRoot: true },
       ...pathnames.map((seg, idx) => {
         const url = '/' + pathnames.slice(0, idx + 1).join('/');
         const isLast = idx === pathnames.length - 1;
@@ -44,7 +47,7 @@ export default function PageNav({ items, className = '', rootHref = '/', rootLab
           return {
             key: url,
             href: isLast ? null : url,
-            title: 'Detail',
+            title: t('common.detail'),
             isLast,
           };
         }
@@ -58,7 +61,7 @@ export default function PageNav({ items, className = '', rootHref = '/', rootLab
       }),
     ];
     return built;
-  }, [items, location.pathname, rootHref, rootLabel, hideIds]);
+  }, [items, location.pathname, rootHref, homeLabel, hideIds, t]);
 
   if (!builtItems) return <Skeleton active />;
 

@@ -2,11 +2,13 @@ import { ArrowLeft, User, Mail, Phone, Calendar, IdCard, CheckCircle, Award, Bri
 import { Avatar, Button, Card, Descriptions, Skeleton, Tag, Divider, Row, Col, Alert } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '../../../store/authStore';
 import { getAuthToken } from '../../../libs/cookies';
 import { getInstructorProfileByUserId } from '../../../apis/Instructor/InstructorProfileApi';
 
 export default function InstructorProfile() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +20,7 @@ export default function InstructorProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!token) {
-        setError('Không tìm thấy token xác thực. Vui lòng đăng nhập lại.');
+        setError(t('instructor.profile.error.tokenNotFound'));
         setLoading(false);
         return;
       }
@@ -32,7 +34,7 @@ export default function InstructorProfile() {
         const userId = decoded.nameid || decoded.nameId || decoded.sub;
         
         if (!userId) {
-          throw new Error('Không tìm thấy ID người dùng trong token');
+          throw new Error(t('instructor.profile.error.userIdNotFound'));
         }
         
         console.log('=== Instructor Profile Fetch Debug ===');
@@ -46,14 +48,14 @@ export default function InstructorProfile() {
         setError(null);
       } catch (err) {
         console.error('❌ Error:', err);
-        setError(err.message || 'Không thể tải thông tin hồ sơ');
+        setError(err.message || t('instructor.profile.error.loadFailed'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfile();
-  }, [token]);
+  }, [token, t]);
 
   if (loading) {
     return (
@@ -73,13 +75,13 @@ export default function InstructorProfile() {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="bg-white rounded-xl shadow-lg p-8">
             <Alert
-              message="Error Loading Profile"
+              message={t('instructor.profile.error.errorLoadingProfile')}
               description={error}
               type="error"
               showIcon
             />
             <Button className="mt-4" onClick={() => navigate(-1)}>
-              Go Back
+              {t('common.back')}
             </Button>
           </div>
         </div>
@@ -92,7 +94,7 @@ export default function InstructorProfile() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-center text-gray-500">Instructor not found</div>
+            <div className="text-center text-gray-500">{t('instructor.profile.instructorNotFound')}</div>
           </div>
         </div>
       </div>
@@ -102,12 +104,12 @@ export default function InstructorProfile() {
   // Map role number to string
   const getRoleName = (roleNumber) => {
     const roles = {
-      1: 'Admin',
-      2: 'Instructor',
-      3: 'Simulation Manager',
-      4: 'Trainee'
+      1: t('instructor.profile.roles.admin'),
+      2: t('instructor.profile.roles.instructor'),
+      3: t('instructor.profile.roles.simulationManager'),
+      4: t('instructor.profile.roles.trainee')
     };
-    return roles[roleNumber] || 'Unknown';
+    return roles[roleNumber] || t('instructor.profile.roles.unknown');
   };
 
   return (
@@ -143,10 +145,10 @@ export default function InstructorProfile() {
                   <div className="flex flex-wrap gap-3">
                     <Tag color="gold" className="px-3 py-1 flex items-center">
                       <IdCard className="mr-1 w-4 h-4" />
-                      {profileData?.instructorCode || 'N/A'}
+                      {profileData?.instructorCode || t('common.na')}
                     </Tag>
                     <Tag color={profileData?.isInstructorActive ? 'green' : 'red'} className="px-3 py-1">
-                      {profileData?.isInstructorActive ? 'Active' : 'Inactive'}
+                      {profileData?.isInstructorActive ? t('common.active') : t('common.inactive')}
                     </Tag>
                     <Tag color="blue" className="px-3 py-1">
                       {getRoleName(profileData?.role)}
@@ -154,7 +156,7 @@ export default function InstructorProfile() {
                     {profileData?.experienceYears && (
                       <Tag color="purple" className="px-3 py-1 flex items-center">
                         <Award className="mr-1 w-4 h-4" />
-                        {profileData.experienceYears} years exp.
+                        {t('instructor.profile.yearsExp', { years: profileData.experienceYears })}
                       </Tag>
                     )}
                   </div>
@@ -162,7 +164,7 @@ export default function InstructorProfile() {
                     {profileData?.hireDate && (
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        <span>Joined {new Date(profileData.hireDate).toLocaleDateString()}</span>
+                        <span>{t('instructor.profile.joined', { date: new Date(profileData.hireDate).toLocaleDateString() })}</span>
                       </div>
                     )}
                   </div>
@@ -180,7 +182,7 @@ export default function InstructorProfile() {
                   title={
                     <div className="flex items-center gap-2">
                       <User className="text-blue-600" />
-                      <span>Personal Information</span>
+                      <span>{t('instructor.profile.personalInformation')}</span>
                     </div>
                   }
                   className="h-full shadow-md border-l-4 border-l-blue-500"
@@ -188,25 +190,25 @@ export default function InstructorProfile() {
                 >
                   <Descriptions column={1} size="small" className="custom-descriptions">
                     <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">Full Name</span>}
+                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.fullName')}</span>}
                       labelStyle={{ width: '120px' }}
                     >
-                      <span className="text-gray-900">{profileData?.fullname || 'N/A'}</span>
+                      <span className="text-gray-900">{profileData?.fullname || t('common.na')}</span>
                     </Descriptions.Item>
                     <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">Email</span>}
+                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.email')}</span>}
                     >
                       <div className="flex items-center gap-2">
                         <Mail className="text-gray-500 w-4 h-4" />
-                        <span className="text-blue-600">{profileData?.email || 'N/A'}</span>
+                        <span className="text-blue-600">{profileData?.email || t('common.na')}</span>
                       </div>
                     </Descriptions.Item>
                     <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">Phone</span>}
+                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.phone')}</span>}
                     >
                       <div className="flex items-center gap-2">
                         <Phone className="text-gray-500 w-4 h-4" />
-                        <span className="text-gray-900">{profileData?.phoneNumber || 'N/A'}</span>
+                        <span className="text-gray-900">{profileData?.phoneNumber || t('common.na')}</span>
                       </div>
                     </Descriptions.Item>
                   </Descriptions>
@@ -219,7 +221,7 @@ export default function InstructorProfile() {
                   title={
                     <div className="flex items-center gap-2">
                       <IdCard className="text-indigo-600" />
-                      <span>Professional Details</span>
+                      <span>{t('instructor.profile.professionalDetails')}</span>
                     </div>
                   }
                   className="h-full shadow-md border-l-4 border-l-indigo-500"
@@ -227,45 +229,45 @@ export default function InstructorProfile() {
                 >
                   <Descriptions column={1} size="small">
                     <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">Role</span>}
+                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.role')}</span>}
                     >
                       <Tag color="blue" className="px-3 py-1">
                         {getRoleName(profileData?.role)}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">Instructor Code</span>}
+                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.instructorCode')}</span>}
                     >
                       <span className="text-gray-900 font-mono bg-gray-100 px-2 py-1 rounded">
-                        {profileData?.instructorCode || 'N/A'}
+                        {profileData?.instructorCode || t('common.na')}
                       </span>
                     </Descriptions.Item>
                     <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">Experience Years</span>}
+                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.experienceYears')}</span>}
                     >
                       <div className="flex items-center gap-2">
                         <Award className="text-gray-500 w-4 h-4" />
-                        <span className="text-gray-900">{profileData?.experienceYears || 0} years</span>
+                        <span className="text-gray-900">{t('instructor.profile.years', { count: profileData?.experienceYears || 0 })}</span>
                       </div>
                     </Descriptions.Item>
                     <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">Hire Date</span>}
+                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.hireDate')}</span>}
                     >
                       <div className="flex items-center gap-2">
                         <Calendar className="text-gray-500 w-4 h-4" />
                         <span className="text-gray-900">
-                          {profileData?.hireDate ? new Date(profileData.hireDate).toLocaleDateString() : 'N/A'}
+                          {profileData?.hireDate ? new Date(profileData.hireDate).toLocaleDateString() : t('common.na')}
                         </span>
                       </div>
                     </Descriptions.Item>
                     <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">Status</span>}
+                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.status')}</span>}
                     >
                       <Tag 
                         color={profileData?.isInstructorActive ? 'green' : 'red'} 
                         className="px-3 py-1"
                       >
-                        {profileData?.isInstructorActive ? 'Active' : 'Inactive'}
+                        {profileData?.isInstructorActive ? t('common.active') : t('common.inactive')}
                       </Tag>
                     </Descriptions.Item>
                   </Descriptions>
@@ -284,7 +286,7 @@ export default function InstructorProfile() {
                     title={
                       <div className="flex items-center gap-2">
                         <Briefcase className="text-green-600" />
-                        <span>Biography</span>
+                        <span>{t('instructor.profile.biography')}</span>
                       </div>
                     }
                     className="shadow-md border-l-4 border-l-green-500"
@@ -303,7 +305,7 @@ export default function InstructorProfile() {
                     title={
                       <div className="flex items-center gap-2">
                         <Award className="text-purple-600" />
-                        <span>Specialization</span>
+                        <span>{t('instructor.profile.specialization')}</span>
                       </div>
                     }
                     className="shadow-md border-l-4 border-l-purple-500"
@@ -322,14 +324,14 @@ export default function InstructorProfile() {
                     title={
                       <div className="flex items-center gap-2">
                         <Award className="text-orange-600" />
-                        <span>Professional Certificate</span>
+                        <span>{t('instructor.profile.professionalCertificate')}</span>
                       </div>
                     }
                     className="shadow-md border-l-4 border-l-orange-500"
                   >
                     <img
                       src={profileData.professionalProfileUrl}
-                      alt="Professional Certificate"
+                      alt={t('instructor.profile.professionalCertificate')}
                       className="max-w-2xl w-full rounded-lg shadow-md"
                     />
                   </Card>
@@ -347,7 +349,7 @@ export default function InstructorProfile() {
                 className="px-8 shadow-md hover:shadow-lg transition-shadow"
                 onClick={() => navigate('/instructor/profile/edit')}
               >
-                Edit Profile
+                {t('instructor.profile.editProfile')}
               </Button>
             </div>
           </div>

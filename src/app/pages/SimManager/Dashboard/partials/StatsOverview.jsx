@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, Statistic, Row, Col } from 'antd';
 import { Users, Activity, PlayCircle, Timer } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function StatsOverview({
   activeUsers = 0,
@@ -9,11 +10,12 @@ export default function StatsOverview({
   totalSimulations = 0,
   avgSessionMins = 0,
 }) {
+  const { t } = useTranslation();
   const items = [
-    { title: 'Active Users', value: activeUsers, icon: <Users className="w-5 h-5 text-blue-600" /> },
-    { title: 'Active Simulations', value: activeSimulations, icon: <Activity className="w-5 h-5 text-blue-600" /> },
-    { title: 'Total Simulations', value: totalSimulations, icon: <PlayCircle className="w-5 h-5 text-blue-600" /> },
-    { title: 'Avg Session (min)', value: avgSessionMins, icon: <Timer className="w-5 h-5 text-blue-600" /> },
+    { title: t('simManager.dashboard.activeUsers'), value: activeUsers, icon: <Users className="w-5 h-5 text-blue-600" /> },
+    { title: t('simManager.dashboard.activeSimulations'), value: activeSimulations, icon: <Activity className="w-5 h-5 text-blue-600" /> },
+    { title: t('simManager.dashboard.totalSimulations'), value: totalSimulations, icon: <PlayCircle className="w-5 h-5 text-blue-600" /> },
+    { title: t('simManager.dashboard.avgSession'), value: avgSessionMins, icon: <Timer className="w-5 h-5 text-blue-600" /> },
   ];
 
   return (

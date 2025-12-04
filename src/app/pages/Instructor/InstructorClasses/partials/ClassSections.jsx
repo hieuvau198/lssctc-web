@@ -1,6 +1,7 @@
 import { Alert, Collapse, Skeleton, Space, Typography, Button, Tooltip } from 'antd';
 import { ClockCircleOutlined, ReadOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getSectionsByCourseId } from '../../../../apis/Instructor/InstructorSectionApi';
 import ActivityList from './ActivityList';
 import AddActivityModal from './Sections/AddActivityModal';
@@ -8,7 +9,7 @@ import AddActivityModal from './Sections/AddActivityModal';
 const { Panel } = Collapse;
 const { Text } = Typography;
 
-const SectionHeader = ({ title, duration }) => (
+const SectionHeader = ({ title, duration, minutesText }) => (
   <div className="flex justify-between items-center w-full">
     <div className="flex items-center gap-2">
       <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
@@ -20,12 +21,14 @@ const SectionHeader = ({ title, duration }) => (
     </div>
     <Space size="small" className="text-sm text-slate-600 pr-2">
       <ClockCircleOutlined className="text-slate-500" />
-      <span className="font-medium">{duration} minutes</span>
+      <span className="font-medium">{duration} {minutesText}</span>
     </Space>
   </div>
 );
 
 const ClassSections = ({ courseId, classId }) => {
+  const { t } = useTranslation();
+  const minutesText = t('instructor.classes.sections.minutes');
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -38,7 +41,7 @@ const ClassSections = ({ courseId, classId }) => {
   useEffect(() => {
     if (!courseId) {
       setLoading(false);
-      setError('Course ID is not available. Cannot load sections.');
+      setError(t('instructor.classes.sections.courseIdNotAvailable'));
       return;
     }
 
@@ -97,7 +100,7 @@ const ClassSections = ({ courseId, classId }) => {
     return (
       <div className="p-6">
         <Alert 
-          message="Error Loading Sections" 
+          message={t('instructor.classes.sections.errorLoading')} 
           description={error} 
           type="error" 
           showIcon 
@@ -112,8 +115,8 @@ const ClassSections = ({ courseId, classId }) => {
       <div className="p-6">
         <div className="bg-slate-50 rounded-lg border border-slate-200 p-8 text-center">
           <ReadOutlined className="text-4xl text-slate-400 mb-3" />
-          <p className="text-slate-600 font-medium mb-1">No Sections Available</p>
-          <p className="text-sm text-slate-500">There are no sections available for this course yet.</p>
+          <p className="text-slate-600 font-medium mb-1">{t('instructor.classes.sections.noSections')}</p>
+          <p className="text-sm text-slate-500">{t('instructor.classes.sections.noSectionsDesc')}</p>
         </div>
       </div>
     );
@@ -135,10 +138,11 @@ const ClassSections = ({ courseId, classId }) => {
                 <SectionHeader
                   title={section.title}
                   duration={section.duration}
+                  minutesText={minutesText}
                 />
               }
               extra={
-                <Tooltip title="Add Activity">
+                <Tooltip title={t('instructor.classes.sections.addActivity')}>
                   <Button
                     type="primary"
                     size="small"

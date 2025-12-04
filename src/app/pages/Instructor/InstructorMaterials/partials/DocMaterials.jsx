@@ -2,11 +2,13 @@ import { FilePdfOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons
 import { Button, Card, Empty, Table, Pagination, Tooltip, Modal, message, App } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { deleteMaterial } from '../../../../apis/Instructor/InstructorMaterialsApi';
 import DrawerView from './DrawerView';
 
 export default function DocMaterials({ materials = [], viewMode = 'table', onDelete }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -17,20 +19,20 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
 
   const handleDelete = async (material) => {
     modal.confirm({
-      title: 'Delete Material',
-      content: `Are you sure you want to delete "${material.name}"?`,
-      okText: 'Delete',
+      title: t('instructor.materials.modal.deleteTitle'),
+      content: t('instructor.materials.modal.deleteContent', { name: material.name }),
+      okText: t('instructor.materials.modal.delete'),
       okType: 'danger',
-      cancelText: 'Cancel',
+      cancelText: t('instructor.materials.modal.cancel'),
       onOk: async () => {
         try {
           setDeleting(true);
           await deleteMaterial(material.id);
-          message.success('Material deleted successfully');
+          message.success(t('instructor.materials.messages.deleteSuccess'));
           onDelete?.();
         } catch (e) {
           console.error('Delete material error', e);
-          message.error(e?.message || 'Failed to delete material');
+          message.error(e?.message || t('instructor.materials.messages.deleteFailed'));
         } finally {
           setDeleting(false);
         }
@@ -40,43 +42,43 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
 
   if (!materials || materials.length === 0) {
     return (
-      <Card title="Docs">
-        <Empty description="No documents found." />
+      <Card title={t('instructor.materials.docs')}>
+        <Empty description={t('instructor.materials.noDocuments')} />
       </Card>
     );
   }
 
   const columns = [
     {
-      title: '#',
+      title: t('instructor.materials.table.index'),
       key: 'index',
       width: 60,
       align: 'center',
       render: (_, __, index) => (page - 1) * pageSize + index + 1,
     },
-    { title: 'Name', dataIndex: 'name', key: 'name', width: 180, ellipsis: true },
-    { title: 'Description', dataIndex: 'description', key: 'description', ellipsis: true, width: 400 },
+    { title: t('instructor.materials.table.name'), dataIndex: 'name', key: 'name', width: 180, ellipsis: true },
+    { title: t('instructor.materials.table.description'), dataIndex: 'description', key: 'description', ellipsis: true, width: 400 },
     {
-      title: 'Action',
+      title: t('instructor.materials.table.action'),
       key: 'action',
       width: 150,
       render: (_, record) => (
         <div className="flex gap-2">
-          <Tooltip title="Open document">
+          <Tooltip title={t('instructor.materials.tooltip.openDocument')}>
             <Button
               type="primary"
               icon={<FilePdfOutlined />}
               onClick={() => { setSelectedMaterial(record); setDrawerVisible(true); }}
             />
           </Tooltip>
-          <Tooltip title="Edit material">
+          <Tooltip title={t('instructor.materials.tooltip.editMaterial')}>
             <Button
               type="default"
               icon={<EditOutlined />}
               onClick={() => navigate(`/instructor/materials/edit/${record.id}`)}
             />
           </Tooltip>
-          <Tooltip title="Delete material">
+          <Tooltip title={t('instructor.materials.tooltip.deleteMaterial')}>
             <Button
               danger
               icon={<DeleteOutlined />}
@@ -91,24 +93,24 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
 
   if (viewMode === 'card') {
     return (
-      <Card title={`Documents`} className="mb-4">
+      <Card title={t('instructor.materials.documents')} className="mb-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {materials.map((m) => (
             <Card key={m.id} size="small" bodyStyle={{ height: 160, overflow: 'auto' }}>
               <div className="flex items-start justify-between">
                 <div className="flex-1 pr-2">
                   <div className="text-sm font-semibold line-clamp-1">{m.name}</div>
-                  <div className="text-xs text-gray-500 mt-1">Document</div>
+                  <div className="text-xs text-gray-500 mt-1">{t('instructor.materials.document')}</div>
                   <div className="text-sm text-gray-700 mt-2 truncate">{m.description}</div>
                 </div>
                 <div className="flex-shrink-0 ml-2 flex gap-1">
-                  <Tooltip title="Open document">
+                  <Tooltip title={t('instructor.materials.tooltip.openDocument')}>
                     <Button type="primary" shape="circle" icon={<FilePdfOutlined />} onClick={() => { setSelectedMaterial(m); setDrawerVisible(true); }} />
                   </Tooltip>
-                  <Tooltip title="Edit material">
+                  <Tooltip title={t('instructor.materials.tooltip.editMaterial')}>
                     <Button shape="circle" icon={<EditOutlined />} onClick={() => navigate(`/instructor/materials/edit/${m.id}`)} />
                   </Tooltip>
-                  <Tooltip title="Delete material">
+                  <Tooltip title={t('instructor.materials.tooltip.deleteMaterial')}>
                     <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleDelete(m)} loading={deleting} />
                   </Tooltip>
                 </div>
@@ -122,7 +124,7 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
   }
 
   return (
-    <Card title={`Documents`} className="mb-4">
+    <Card title={t('instructor.materials.documents')} className="mb-4">
       <div style={{ height: 370 }} className="overflow-auto">
         <Table
           columns={columns}
@@ -140,7 +142,7 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
           showSizeChanger
           pageSizeOptions={['5', '10', '20']}
           onChange={(p, ps) => { setPage(p); setPageSize(ps); }}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} documents`}
+          showTotal={(total, range) => t('instructor.materials.table.paginationDocs', { start: range[0], end: range[1], total })}
         />
       </div>
       <DrawerView visible={drawerVisible} onClose={() => setDrawerVisible(false)} material={selectedMaterial} />

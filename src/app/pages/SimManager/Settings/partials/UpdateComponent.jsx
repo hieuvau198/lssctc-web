@@ -1,10 +1,12 @@
 // src\app\pages\SimManager\Settings\partials\UpdateComponent.jsx
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { updateComponent } from '../../../../apis/SimulationManager/SimulationManagerComponentApi';
 import { Form, Input, Switch, Button, Space, Alert } from 'antd';
 
 export default function UpdateComponent({ component, onUpdated, onCancel }) {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState(null);
@@ -31,7 +33,7 @@ export default function UpdateComponent({ component, onUpdated, onCancel }) {
       await updateComponent(component.id, values);
       onUpdated && onUpdated();
     } catch (ex) {
-      setErr(ex.message || 'Update failed');
+      setErr(ex.message || t('simManager.settings.updateComponentForm.updateFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -48,22 +50,22 @@ export default function UpdateComponent({ component, onUpdated, onCancel }) {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please enter a name' }]}>
-              <Input placeholder="Component name" />
+            <Form.Item label={t('simManager.settings.updateComponentForm.name')} name="name" rules={[{ required: true, message: t('simManager.settings.updateComponentForm.nameRequired') }]}>
+              <Input placeholder={t('simManager.settings.updateComponentForm.namePlaceholder')} />
             </Form.Item>
-            <Form.Item label="Description" name="description">
-              <Input.TextArea placeholder="Short description" rows={5} />
+            <Form.Item label={t('simManager.settings.updateComponentForm.description')} name="description">
+              <Input.TextArea placeholder={t('simManager.settings.updateComponentForm.descriptionPlaceholder')} rows={5} />
             </Form.Item>
-            <Form.Item label="Active" name="isActive" valuePropName="checked">
+            <Form.Item label={t('simManager.settings.updateComponentForm.active')} name="isActive" valuePropName="checked">
               <Switch />
             </Form.Item>
           </div>
           <div>
-            <Form.Item label="Image URL" name="imageUrl">
-              <Input placeholder="https://..." />
+            <Form.Item label={t('simManager.settings.updateComponentForm.imageUrl')} name="imageUrl">
+              <Input placeholder={t('simManager.settings.updateComponentForm.imageUrlPlaceholder')} />
             </Form.Item>
             <div className="border rounded-lg bg-slate-50 p-2">
-              <div className="text-xs text-slate-500 mb-1">Preview</div>
+              <div className="text-xs text-slate-500 mb-1">{t('simManager.settings.updateComponentForm.preview')}</div>
               <div className="w-full h-64 rounded-md bg-white flex items-center justify-center overflow-hidden">
                 {imageUrl && !imgError ? (
                   <img
@@ -73,7 +75,7 @@ export default function UpdateComponent({ component, onUpdated, onCancel }) {
                     onError={() => setImgError(true)}
                   />
                 ) : (
-                  <div className="text-slate-400 text-sm">Paste an image URL to preview</div>
+                  <div className="text-slate-400 text-sm">{t('simManager.settings.updateComponentForm.pasteImageUrl')}</div>
                 )}
               </div>
             </div>
@@ -82,9 +84,9 @@ export default function UpdateComponent({ component, onUpdated, onCancel }) {
         <div className="mt-4">
           <Space>
             <Button type="primary" htmlType="submit" loading={submitting}>
-              Update
+              {t('simManager.settings.updateComponentForm.updateButton')}
             </Button>
-            <Button onClick={onCancel}>Cancel</Button>
+            <Button onClick={onCancel}>{t('common.cancel')}</Button>
           </Space>
         </div>
       </Form>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Card, Divider, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const ProgramCard = ({ program, onClick }) => {
+  const { t } = useTranslation();
   const { name, imageUrl, totalCourses, isActive, description } = program || {};
 
   return (
@@ -15,7 +17,7 @@ const ProgramCard = ({ program, onClick }) => {
             <div className="h-40 w-full bg-gradient-to-br from-blue-50 to-blue-100" />
           )}
           <div className="absolute top-2 right-2 z-10">
-            <Tag color={isActive ? 'green' : 'red'} className="m-0">{isActive ? 'Active' : 'Inactive'}</Tag>
+            <Tag color={isActive ? 'green' : 'red'} className="m-0">{isActive ? t('common.active') : t('common.inactive')}</Tag>
           </div>
         </div>
       }
@@ -38,7 +40,7 @@ const ProgramCard = ({ program, onClick }) => {
         <div className="mt-auto pt-2 text-xs text-slate-700 space-y-1">
           {totalCourses != null && (
             <div>
-              <span className="font-medium">Courses:</span> {totalCourses}
+              <span className="font-medium">{t('sidebar.courses')}:</span> {totalCourses}
             </div>
           )}
         </div>

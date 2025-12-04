@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card, Table, Input, Select, Tag, Skeleton, Alert, Empty } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { getInstructorSections } from '../../../mocks/instructorSections';
 import { getProgramName } from '../../../mocks/instructorClasses';
 
 const { Option } = Select;
 
 export default function InstructorSections() {
+  const { t } = useTranslation();
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,9 +26,9 @@ export default function InstructorSections() {
         setSections(data.items);
         setTotal(data.totalCount || 0);
       })
-      .catch((err) => setError(err?.message || 'Failed to load sections'))
+      .catch((err) => setError(err?.message || t('instructor.sections.error.loadFailed')))
       .finally(() => setLoading(false));
-  }, [pageNumber, pageSize, searchTerm, status]);
+  }, [pageNumber, pageSize, searchTerm, status, t]);
 
   const columns = useMemo(() => [
     {
@@ -40,50 +42,50 @@ export default function InstructorSections() {
       fixed: 'left',
     },
     {
-      title: 'Name',
+      title: t('instructor.sections.table.name'),
       dataIndex: 'name',
       key: 'name',
       width: 260,
       render: (name) => <span className="font-medium text-slate-900">{name}</span>,
     },
     {
-      title: 'Program',
+      title: t('instructor.sections.table.program'),
       dataIndex: 'programCourseId',
       key: 'program',
       width: 220,
       render: (id) => <span className="text-gray-700">{getProgramName(id)}</span>,
     },
     {
-      title: 'Class ID',
+      title: t('instructor.sections.table.classId'),
       dataIndex: 'classesId',
       key: 'classId',
       width: 100,
       align: 'center',
     },
     {
-      title: 'Order',
+      title: t('instructor.sections.table.order'),
       dataIndex: 'order',
       key: 'order',
       width: 90,
       align: 'center',
     },
     {
-      title: 'Duration',
+      title: t('instructor.sections.table.duration'),
       dataIndex: 'durationMinutes',
       key: 'duration',
       width: 130,
-      render: (m) => <span>{m} mins</span>,
+      render: (m) => <span>{m} {t('instructor.sections.mins')}</span>,
     },
     {
-      title: 'Status',
+      title: t('instructor.sections.table.status'),
       dataIndex: 'status',
       key: 'status',
       width: 110,
       render: (s) => (
-        <Tag color={String(s) === '1' ? 'green' : 'red'}>{String(s) === '1' ? 'Active' : 'Inactive'}</Tag>
+        <Tag color={String(s) === '1' ? 'green' : 'red'}>{String(s) === '1' ? t('common.active') : t('common.inactive')}</Tag>
       ),
     },
-  ], [pageNumber, pageSize]);
+  ], [pageNumber, pageSize, t]);
 
   const handleSearch = (value) => {
     setSearchTerm(value);
@@ -106,7 +108,7 @@ export default function InstructorSections() {
   if (error) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <Alert message="Error" description={error} type="error" showIcon />
+        <Alert message={t('common.error')} description={error} type="error" showIcon />
       </div>
     );
   }
@@ -114,12 +116,12 @@ export default function InstructorSections() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-semibold">Sections</h1>
+        <h1 className="text-2xl font-semibold">{t('instructor.sections.title')}</h1>
       </div>
 
       <div className="flex flex-wrap gap-3 mb-4">
         <Input.Search
-          placeholder="Search sections..."
+          placeholder={t('instructor.sections.searchPlaceholder')}
           allowClear
           size="middle"
           value={searchValue}
@@ -128,19 +130,19 @@ export default function InstructorSections() {
           style={{ width: 320 }}
         />
         <Select
-          placeholder="Status"
+          placeholder={t('instructor.sections.table.status')}
           allowClear
           style={{ width: 160 }}
           value={status}
           onChange={(val) => setStatus(val)}
         >
-          <Option value="1">Active</Option>
-          <Option value="0">Inactive</Option>
+          <Option value="1">{t('common.active')}</Option>
+          <Option value="0">{t('common.inactive')}</Option>
         </Select>
       </div>
 
       {sections.length === 0 ? (
-        <Empty description="No sections found." className="mt-16" />
+        <Empty description={t('instructor.sections.noSections')} className="mt-16" />
       ) : (
         <Card className="shadow-sm">
           <Table
@@ -157,7 +159,7 @@ export default function InstructorSections() {
               },
               showSizeChanger: true,
               pageSizeOptions: ['10', '12', '20', '50'],
-              showTotal: (t, r) => `${r[0]}-${r[1]} of ${t} sections`,
+              showTotal: (total, range) => t('instructor.sections.pagination.showTotal', { start: range[0], end: range[1], total }),
             }}
             scroll={{ y: 420 }}
             size="middle"

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Skeleton } from 'antd';
 import { LayoutDashboard, Users, BookOpen, FileText, HelpCircle } from 'lucide-react';
 import ClassTraineeChart from './partials/charts/ClassTraineeChart';
@@ -8,31 +9,31 @@ import GradeDistributionChart from './partials/charts/GradeDistributionChart';
 import { getInstructorSummary } from '../../../apis/Instructor/InstructorDashboard';
 import useAuthStore from '../../../store/authStore';
 
-const statConfig = [
+const getStatConfig = (t) => [
   { 
     key: 'trainees', 
-    label: 'Total Trainees', 
+    label: t('instructor.dashboard.totalTrainees'), 
     dataKey: 'totalTrainees', 
     color: 'bg-emerald-50 text-emerald-600 border-emerald-100',
     icon: Users
   },
   { 
     key: 'classes', 
-    label: 'Total Classes', 
+    label: t('instructor.dashboard.totalClasses'), 
     dataKey: 'totalClasses', 
     color: 'bg-blue-50 text-blue-600 border-blue-100',
     icon: BookOpen
   },
   { 
     key: 'materials', 
-    label: 'Total Materials', 
+    label: t('instructor.dashboard.totalMaterials'), 
     dataKey: 'totalMaterials', 
     color: 'bg-amber-50 text-amber-600 border-amber-100',
     icon: FileText
   },
   { 
     key: 'quizzes', 
-    label: 'Total Quizzes', 
+    label: t('instructor.dashboard.totalQuizzes'), 
     dataKey: 'totalQuizzes', 
     color: 'bg-purple-50 text-purple-600 border-purple-100',
     icon: HelpCircle
@@ -40,9 +41,11 @@ const statConfig = [
 ];
 
 export default function InstructorDashboard() {
+  const { t } = useTranslation();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const { nameid: instructorId } = useAuthStore();
+  const statConfig = getStatConfig(t);
 
   useEffect(() => {
     const fetchSummary = async () => {
@@ -69,8 +72,8 @@ export default function InstructorDashboard() {
           <LayoutDashboard className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Instructor Dashboard</h1>
-          <p className="text-sm text-gray-500">Overview of your teaching activities</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('instructor.dashboard.title')}</h1>
+          <p className="text-sm text-gray-500">{t('instructor.dashboard.subtitle')}</p>
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Breadcrumb, Skeleton, Alert, Typography } from 'antd';
 import { HomeOutlined, BookOutlined, UserOutlined, ReadOutlined, LaptopOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import TraineeActivityRecords from './TraineeActivityRecords';
 // We'll need an API to get the activity's own details, e.g., from InstructorSectionApi
 // import { getActivityById } from '../../../../../../apis/Instructor/InstructorSectionApi'; // Assuming this exists
@@ -22,6 +23,7 @@ const getActivityDetailsMock = (activityId) => {
 };
 
 const ActivityDetail = () => {
+  const { t } = useTranslation();
   // e.g., /instructor/classes/:classId/sections/:sectionId/activities/:activityId
   const { classId, sectionId, activityId } = useParams();
   
@@ -38,7 +40,7 @@ const ActivityDetail = () => {
         setActivity(data);
       })
       .catch((err) => {
-        setError(err.message || 'Failed to load activity details');
+        setError(err.message || t('instructor.classes.activityDetail.loadFailed'));
       })
       .finally(() => {
         setLoading(false);
@@ -59,7 +61,7 @@ const ActivityDetail = () => {
   }
 
   if (error) {
-    return <Alert message="Error" description={error} type="error" showIcon />;
+    return <Alert message={t('common.error')} description={error} type="error" showIcon />;
   }
 
   return (
@@ -67,8 +69,8 @@ const ActivityDetail = () => {
       <Breadcrumb
         items={[
           { title: <Link to="/instructor/dashboard"><HomeOutlined /></Link> },
-          { title: <Link to="/instructor/classes">Classes</Link> },
-          { title: <Link to={`/instructor/classes/${classId}`}>Class Details</Link> },
+          { title: <Link to="/instructor/classes">{t('instructor.classes.activityDetail.breadcrumbClasses')}</Link> },
+          { title: <Link to={`/instructor/classes/${classId}`}>{t('instructor.classes.activityDetail.breadcrumbClassDetails')}</Link> },
           { title: <><span className="mr-2">{getActivityIcon(activity.type)}</span>{activity.title}</> },
         ]}
         className="mb-4"

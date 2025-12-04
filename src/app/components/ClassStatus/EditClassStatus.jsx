@@ -1,10 +1,12 @@
 import { App, Button, Popconfirm } from 'antd';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { openClass, startClass, completeClass, cancelClass } from '../../apis/ProgramManager/ClassesApi';
 import { getClassStatus } from '../../utils/classStatus';
 
 const EditClassStatus = ({ classId, status, onSuccess }) => {
   const { message } = App.useApp();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const handleStatusAction = async (action, actionName) => {
@@ -28,47 +30,47 @@ const EditClassStatus = ({ classId, status, onSuccess }) => {
       return (
         <>
           <Popconfirm
-            title="Publish this class?"
-            description="Are you sure you want to publish this class?"
+            title={t('class.publishConfirm')}
+            description={t('class.publishConfirmDesc')}
             onConfirm={() => handleStatusAction(openClass, 'published')}
-            okText="Yes"
-            cancelText="No"
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
           >
-            <Button type="primary" loading={loading}>Publish Class</Button>
+            <Button type="primary" loading={loading}>{t('class.publishClass')}</Button>
           </Popconfirm>
           <Popconfirm
-            title="Cancel this class?"
-            description="Are you sure you want to cancel this class?"
+            title={t('class.cancelConfirm')}
+            description={t('class.cancelConfirmDesc')}
             onConfirm={() => handleStatusAction(cancelClass, 'cancelled')}
-            okText="Yes"
-            cancelText="No"
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
           >
-            <Button danger loading={loading}>Cancel Class</Button>
+            <Button danger loading={loading}>{t('class.cancelClass')}</Button>
           </Popconfirm>
         </>
       );
     case 'Open':
       return (
         <Popconfirm
-          title="Start this class?"
-          description="Are you sure you want to start this class?"
+          title={t('class.startConfirm')}
+          description={t('class.startConfirmDesc')}
           onConfirm={() => handleStatusAction(startClass, 'started')}
-          okText="Yes"
-          cancelText="No"
+          okText={t('common.yes')}
+          cancelText={t('common.no')}
         >
-          <Button type="primary" loading={loading}>Start Class</Button>
+          <Button type="primary" loading={loading}>{t('class.startClass')}</Button>
         </Popconfirm>
       );
     case 'Inprogress':
       return (
         <Popconfirm
-          title="Complete this class?"
-          description="Are you sure you want to complete this class?"
+          title={t('class.completeConfirm')}
+          description={t('class.completeConfirmDesc')}
           onConfirm={() => handleStatusAction(completeClass, 'completed')}
-          okText="Yes"
-          cancelText="No"
+          okText={t('common.yes')}
+          cancelText={t('common.no')}
         >
-          <Button type="primary" loading={loading}>Complete Class</Button>
+          <Button type="primary" loading={loading}>{t('class.completeClass')}</Button>
         </Popconfirm>
       );
     case 'Cancelled':

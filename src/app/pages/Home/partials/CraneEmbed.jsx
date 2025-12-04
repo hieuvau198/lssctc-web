@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function CraneEmbed({ className = '' }) {
+  const { t } = useTranslation();
   return (
     <div className={`relative w-full ${className}`}>
       <div className="relative w-full aspect-[5/4] sm:aspect-[4/3] md:aspect-[16/11] lg:aspect-[16/10] xl:aspect-[16/9]">
@@ -21,21 +23,21 @@ export default function CraneEmbed({ className = '' }) {
          */}
       </div>
   <div className="mt-2 text-[10px] md:text-[11px] text-slate-500 flex flex-wrap gap-1 leading-snug">
-        <span>Model:</span>
+        <span>{t('home.craneEmbed.model')}</span>
         <a
           href="https://sketchfab.com/3d-models/howo-crane-manipulator-truck-sunhunk-s3005-8ebf8a41e62543169a40869356f10e75"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-600 hover:text-blue-700"
         >Howo Crane Manipulator Truck Sunhunk S3005</a>
-        <span>by</span>
+        <span>{t('home.craneEmbed.by')}</span>
         <a
           href="https://sketchfab.com/Anastenko"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-600 hover:text-blue-700"
         >A Nastenko</a>
-        <span>on</span>
+        <span>{t('home.craneEmbed.on')}</span>
         <a
           href="https://sketchfab.com"
             target="_blank"

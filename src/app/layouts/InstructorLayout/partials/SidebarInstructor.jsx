@@ -2,29 +2,32 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import { Tooltip, App, Avatar, Dropdown, Menu } from 'antd';
 import { BookOpen, FileText, HelpCircle, Dumbbell, User, PanelLeftClose, PanelLeft, LayoutDashboard, LogOut, MoreVertical } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
 import useAuthStore from '../../../store/authStore';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
 import { sAvatarUrl, setAvatarUrl, clearAvatarUrl } from '../../../store/userAvatar';
 
-const ITEMS = [
-  { to: '/instructor/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { to: '/instructor/classes', label: 'Class', icon: <BookOpen className="w-5 h-5" /> },
-  { to: '/instructor/materials', label: 'Material', icon: <FileText className="w-5 h-5" /> },
-  { to: '/instructor/quizzes', label: 'Quiz', icon: <HelpCircle className="w-5 h-5" /> },
-  { to: '/instructor/practices', label: 'Practice', icon: <Dumbbell className="w-5 h-5" /> },
+const getItems = (t) => [
+  { to: '/instructor/dashboard', label: t('sidebar.dashboard'), icon: <LayoutDashboard className="w-5 h-5" /> },
+  { to: '/instructor/classes', label: t('sidebar.class'), icon: <BookOpen className="w-5 h-5" /> },
+  { to: '/instructor/materials', label: t('sidebar.material'), icon: <FileText className="w-5 h-5" /> },
+  { to: '/instructor/quizzes', label: t('sidebar.quiz'), icon: <HelpCircle className="w-5 h-5" /> },
+  { to: '/instructor/practices', label: t('sidebar.practice'), icon: <Dumbbell className="w-5 h-5" /> },
 ];
 
 export default function SidebarInstructor({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
   const { message } = App.useApp();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const ITEMS = getItems(t);
 
   const handleLogout = async () => {
     try {
       await logout();
     } catch (e) {
-      message.error('Logout failed.');
+      message.error(t('common.logoutFailed'));
       console.error('Logout failed:', e);
     } finally {
       try { window.location.assign('/'); } catch { navigate('/'); }
@@ -50,12 +53,12 @@ export default function SidebarInstructor({ collapsed, onToggle, mobileOpen, onM
         <div className="flex items-center justify-between h-14 px-3 border-b border-b-slate-300">
           <div className="flex items-center gap-2 overflow-hidden">
             <div className="flex items-center justify-center bg-blue-600 text-white font-bold rounded size-8 shrink-0 text-lg">I</div>
-            {!collapsed && <span className="font-semibold text-sm tracking-wide">Instructor</span>}
+            {!collapsed && <span className="font-semibold text-sm tracking-wide">{t('sidebar.instructorPanel')}</span>}
           </div>
-          <button onClick={onToggle} className="hidden md:inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
+          <button onClick={onToggle} className="hidden md:inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100" aria-label={collapsed ? t('sidebar.expandSidebar') : t('sidebar.collapseSidebar')}>
             {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
-          <button onClick={onMobileToggle} className="md:hidden inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100" aria-label="Close navigation">
+          <button onClick={onMobileToggle} className="md:hidden inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100" aria-label={t('sidebar.closeNavigation')}>
             <PanelLeftClose className="w-4 h-4" />
           </button>
         </div>
@@ -105,15 +108,15 @@ export default function SidebarInstructor({ collapsed, onToggle, mobileOpen, onM
               const menu = (
                 <Menu onClick={async ({ key }) => {
                   if (key === 'logout') {
-                    try { await logout(); } catch (e) { message.error('Logout failed.'); }
+                    try { await logout(); } catch (e) { message.error(t('common.logoutFailed')); }
                     clearAvatarUrl();
                     try { window.location.assign('/'); } catch { navigate('/'); }
                   } else if (key === 'profile') {
                     navigate('/instructor/profile');
                   }
                 }}>
-                  <Menu.Item key="profile">Profile</Menu.Item>
-                  <Menu.Item key="logout" danger>Logout</Menu.Item>
+                  <Menu.Item key="profile">{t('common.profile')}</Menu.Item>
+                  <Menu.Item key="logout" danger>{t('common.logout')}</Menu.Item>
                 </Menu>
               );
 

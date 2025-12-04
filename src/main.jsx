@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client'
 import { App as AntdApp, ConfigProvider } from 'antd'
 import 'antd/dist/reset.css'
 import './index.css'
+import './app/i18n'
 import App from './App.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 

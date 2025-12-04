@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Skeleton, Empty, App, Form, Space, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getAllTasks, createTask, updateTask, deleteTask, getTaskById } from '../../../apis/SimulationManager/SimulationManagerTaskApi';
 import { getAuthToken } from '../../../libs/cookies';
 import ViewModeToggle from '../../../components/ViewModeToggle/ViewModeToggle';
@@ -10,6 +11,7 @@ import TaskList from './partials/TaskList';
 import DrawerForm from './partials/DrawerForm';
 
 export default function TaskPractice() {
+    const { t } = useTranslation();
     const { message } = App.useApp();
     const [searchParams, setSearchParams] = useSearchParams();
     const [loading, setLoading] = useState(true);
@@ -33,13 +35,13 @@ export default function TaskPractice() {
             setTotal(data.totalCount || 0);
         } catch (e) {
             console.error('Failed to load tasks', e);
-            message.error('Failed to load tasks');
+            message.error(t('simManager.tasks.failedToLoad'));
             setTasks([]);
             setTotal(0);
         } finally {
             setLoading(false);
         }
-    }, [pageNumber, pageSize, token, message]);
+    }, [pageNumber, pageSize, token, message, t]);
 
     useEffect(() => {
         loadTasks();
@@ -63,7 +65,7 @@ export default function TaskPractice() {
             form.setFieldsValue(data);
         } catch (e) {
             console.error('Failed to load task details', e);
-            message.error('Failed to load task details');
+            message.error(t('simManager.tasks.failedToLoadDetails'));
         } finally {
             setDrawerLoading(false);
         }
@@ -79,7 +81,7 @@ export default function TaskPractice() {
             form.setFieldsValue(data);
         } catch (e) {
             console.error('Failed to load task details', e);
-            message.error('Failed to load task details');
+            message.error(t('simManager.tasks.failedToLoadDetails'));
         } finally {
             setDrawerLoading(false);
         }
@@ -87,18 +89,18 @@ export default function TaskPractice() {
 
     const handleDelete = (record) => {
         Modal.confirm({
-            title: 'Confirm Delete',
-            content: `Are you sure you want to delete task "${record.taskName}"? This action cannot be undone.`,
-            okText: 'Delete',
+            title: t('simManager.tasks.confirmDelete'),
+            content: t('simManager.tasks.deleteContent', { name: record.taskName }),
+            okText: t('simManager.tasks.delete'),
             okType: 'danger',
             onOk: async () => {
                 try {
                     await deleteTask(record.id, token);
-                    message.success('Task deleted successfully');
+                    message.success(t('simManager.tasks.deleteSuccess'));
                     await loadTasks(pageNumber, pageSize);
                 } catch (e) {
                     console.error('Failed to delete task', e);
-                    let errorMsg = 'Failed to delete task';
+                    let errorMsg = t('simManager.tasks.failedToDelete');
                     if (e.response?.data?.error?.details?.exceptionMessage) {
                         errorMsg = e.response.data.error.details.exceptionMessage;
                     } else if (e.response?.data?.error?.message) {
@@ -129,10 +131,10 @@ export default function TaskPractice() {
                 // For create, we need practiceCode - you may need to add this field or handle differently
                 const practiceCode = values.practiceCode || 'DEFAULT';
                 await createTask(practiceCode, values, token);
-                message.success('Task created successfully');
+                message.success(t('simManager.tasks.createSuccess'));
             } else if (drawerMode === 'edit') {
                 await updateTask(currentTask.id, values, token);
-                message.success('Task updated successfully');
+                message.success(t('simManager.tasks.updateSuccess'));
             }
 
             await loadTasks(pageNumber, pageSize);
@@ -143,7 +145,7 @@ export default function TaskPractice() {
                 return;
             }
             console.error('Failed to save task', e);
-            let errorMsg = 'Failed to save task';
+            let errorMsg = t('simManager.tasks.failedToSave');
             if (e.response?.data?.error?.details?.exceptionMessage) {
                 errorMsg = e.response.data.error.details.exceptionMessage;
             } else if (e.response?.data?.error?.message) {
@@ -185,7 +187,7 @@ export default function TaskPractice() {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Task Management</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">{t('simManager.tasks.title')}</h1>
                 </div>
                 <Space>
                     <Button
@@ -193,7 +195,7 @@ export default function TaskPractice() {
                         icon={<PlusOutlined />}
                         onClick={handleCreate}
                     >
-                        Create Task
+                        {t('simManager.tasks.createTask')}
                     </Button>
                     <ViewModeToggle viewMode={viewMode} onViewModeChange={handleViewModeChange} />
                 </Space>
@@ -201,7 +203,7 @@ export default function TaskPractice() {
 
             {/* Content */}
             {tasks.length === 0 ? (
-                <Empty description="No tasks found" />
+                <Empty description={t('simManager.tasks.noTasksFound')} />
             ) : viewMode === 'table' ? (
                 <TaskTable
                     data={tasks}

@@ -1,6 +1,7 @@
 import { Alert, Breadcrumb, Skeleton, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { getInstructorClassById } from "../../../apis/Instructor/InstructorApi";
 import BackButton from "../../../components/BackButton/BackButton";
 import ClassMembers from "./partials/ClassMembers";
@@ -8,6 +9,7 @@ import ClassOverview from "./partials/ClassOverview";
 import ClassSections from "./partials/ClassSections";
 
 export default function InstructorClassDetail() {
+  const { t } = useTranslation();
   const { classId } = useParams();
   const [classDetail, setClassDetail] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,8 +60,8 @@ export default function InstructorClassDetail() {
     return (
       <div className="max-w-md mx-auto mt-10">
         <Alert
-          message="Not Found"
-          description="This class could not be found."
+          message={t('common.error')}
+          description={t('instructor.classes.classDetail')}
           type="warning"
           showIcon
         />
@@ -71,19 +73,19 @@ export default function InstructorClassDetail() {
   const tabItems = [
     {
       key: "overview",
-      label: "Overview",
+      label: t('instructor.classes.overview'),
       children: <ClassOverview classData={classDetail} />,
     },
     {
       key: "sections",
-      label: "Sections",
+      label: t('instructor.classes.sections'),
       // classDetail is now guaranteed to be non-null
       // We still use optional chaining just in case programCourseId is null
       children: <ClassSections courseId={classDetail?.courseId} classId={classId}/>,
     },
     {
       key: "members",
-      label: "Members",
+      label: t('instructor.classes.members'),
       children: <ClassMembers classId={classId} />,
     },
   ];

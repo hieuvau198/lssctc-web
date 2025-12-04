@@ -1,14 +1,16 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ReactTyped } from 'react-typed';
 import CraneEmbed from './CraneEmbed';
 
 export default function HomeBanner() {
+  const { t } = useTranslation();
   const phrases = [
-    'Crane Simulation',
-    'Safety Training',
-    'Operational Excellence',
-    'Real‑time Assessment',
-    'Certified Progress'
+    t('home.banner.phrases.craneSimulation'),
+    t('home.banner.phrases.safetyTraining'),
+    t('home.banner.phrases.operationalExcellence'),
+    t('home.banner.phrases.realTimeAssessment'),
+    t('home.banner.phrases.certifiedProgress')
   ];
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
@@ -27,14 +29,14 @@ export default function HomeBanner() {
           <div>
             <div className="flex items-center gap-2 mb-6">
               <span className="text-2xl font-bold tracking-tight text-blue-700">LSSCTC</span>
-              <span className="text-[10px] font-semibold uppercase bg-blue-50 px-2 py-1 rounded border border-blue-100 tracking-wide text-blue-600">Platform</span>
+              <span className="text-[10px] font-semibold uppercase bg-blue-50 px-2 py-1 rounded border border-blue-100 tracking-wide text-blue-600">{t('home.banner.platform')}</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">
-              Master <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-500 to-sky-400">Port Crane</span><br className="hidden md:block" /> Operations & Skills
+              {t('home.banner.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-500 to-sky-400">{t('home.banner.titleHighlight')}</span><br className="hidden md:block" /> {t('home.banner.titleEnd')}
             </h1>
-            <p className="mt-6 text-lg max-w-xl text-slate-600">End‑to‑end academy for crane & logistics simulation: structured courses, realistic scenarios, safety benchmarks and performance analytics—built for Learners, Instructors and Simulator Managers.</p>
+            <p className="mt-6 text-lg max-w-xl text-slate-600">{t('home.banner.description')}</p>
             <div className="my-6 text-base font-medium">
-              <span className="text-blue-700 font-semibold">Focus right now:&nbsp;</span>
+              <span className="text-blue-700 font-semibold">{t('home.banner.focusNow')}&nbsp;</span>
               <span className="inline-flex items-center relative">
                 {prefersReducedMotion ? (
                   <span className="tabular-nums font-semibold">{phrases[0]}</span>
@@ -54,15 +56,15 @@ export default function HomeBanner() {
               </span>
             </div>
             <div className="mt-10 flex flex-wrap gap-4">
-              <a href="/register" className="h-12 inline-flex items-center justify-center px-6 rounded-md bg-blue-600 text-white font-semibold shadow-sm hover:bg-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 focus:ring-offset-white">Get Started</a>
-              <a href="#courses" className="h-12 inline-flex items-center justify-center px-6 rounded-md border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 focus:ring-offset-white">Explore Courses</a>
-              <a href="#simulator" className="h-12 inline-flex items-center justify-center px-6 rounded-md border border-blue-300 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 focus:ring-offset-white">Live Simulator</a>
+              <a href="/register" className="h-12 inline-flex items-center justify-center px-6 rounded-md bg-blue-600 text-white font-semibold shadow-sm hover:bg-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 focus:ring-offset-white">{t('home.banner.getStarted')}</a>
+              <a href="#courses" className="h-12 inline-flex items-center justify-center px-6 rounded-md border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 focus:ring-offset-white">{t('home.banner.exploreCourses')}</a>
+              <a href="#simulator" className="h-12 inline-flex items-center justify-center px-6 rounded-md border border-blue-300 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 focus:ring-offset-white">{t('home.banner.liveSimulator')}</a>
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-6 text-xs text-slate-600">
-              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />Real‑time scoring</div>
-              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-amber-500" />Safety rubric</div>
-              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-blue-500" />Scenario engine</div>
-              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-fuchsia-500" />Role analytics</div>
+              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />{t('home.banner.features.realTimeScoring')}</div>
+              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-amber-500" />{t('home.banner.features.safetyRubric')}</div>
+              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-blue-500" />{t('home.banner.features.scenarioEngine')}</div>
+              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-fuchsia-500" />{t('home.banner.features.roleAnalytics')}</div>
             </div>
           </div>
           {/* Right visual (now visible on all breakpoints, stacks under text on small) */}
@@ -71,11 +73,11 @@ export default function HomeBanner() {
             <div className="relative rounded-3xl border border-slate-200 bg-white/40 shadow-xl p-5 md:p-6 flex flex-col w-full max-w-xl xl:max-w-2xl mx-auto overflow-hidden">
               <CraneEmbed />
               <div className="mt-5 text-[11px] md:text-[12px] text-slate-600 px-1 leading-relaxed">
-                <p className="font-semibold text-slate-900 mb-1 tracking-wide">3D Mobile Crane Model</p>
-                <p className="text-slate-600">Interactive model (LTM 1070-4-2). Rotate & zoom—no data queries.</p>
+                <p className="font-semibold text-slate-900 mb-1 tracking-wide">{t('home.banner.craneModel.title')}</p>
+                <p className="text-slate-600">{t('home.banner.craneModel.description')}</p>
               </div>
               <div className="pt-4 mt-4 border-t border-slate-200 text-[10px] text-slate-500 flex justify-between">
-                <span className="uppercase tracking-wider">Prototype 3D</span>
+                <span className="uppercase tracking-wider">{t('home.banner.craneModel.prototype')}</span>
               </div>
             </div>
           </div>
