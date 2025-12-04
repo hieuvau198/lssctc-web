@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Skeleton, Empty, Carousel, Button } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { fetchCourses } from '../../../apis/ProgramManager/CourseApi';
@@ -7,6 +8,7 @@ import CourseCard from '../../../components/CourseCard/CourseCard';
 
 export default function NewCoursesSection() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const carouselRef = useRef(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +39,7 @@ export default function NewCoursesSection() {
     <section id="new-courses" className="py-10 md:py-14 bg-white">
       <div className="max-w-[1380px] mx-auto px-5 sm:px-6 md:px-10">
         <div className="flex items-baseline justify-between mb-6">
-          <h2 className="text-lg md:text-xl font-semibold text-slate-900 tracking-tight">New & Updated Courses</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-slate-900 tracking-tight">{t('home.courses.title')}</h2>
         </div>
 
         {loading ? (
@@ -50,7 +52,7 @@ export default function NewCoursesSection() {
             ))}
           </div>
         ) : courses.length === 0 ? (
-          <Empty description="No courses available" />
+          <Empty description={t('home.courses.noCourses')} />
         ) : (
           <div className="relative">
             <Carousel

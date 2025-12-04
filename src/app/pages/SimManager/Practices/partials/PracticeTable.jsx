@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
 import { EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const PracticeTable = ({
   data = [],
@@ -10,6 +11,8 @@ const PracticeTable = ({
   onDelete = () => {},
   pagination = {},
 }) => {
+  const { t } = useTranslation();
+  
   const getDifficultyColor = (level) => {
     const map = { Entry: 'green', Intermediate: 'orange', Advanced: 'red' };
     return map[level] || 'default';
@@ -29,14 +32,14 @@ const PracticeTable = ({
       ),
     },
     {
-      title: 'Practice Code',
+      title: t('simManager.practices.practiceCode'),
       dataIndex: 'practiceCode',
       key: 'practiceCode',
       width: 120,
       fixed: 'left',
     },
     {
-      title: 'Name',
+      title: t('simManager.practices.practiceName'),
       dataIndex: 'practiceName',
       key: 'practiceName',
       width: 280,
@@ -50,7 +53,7 @@ const PracticeTable = ({
       ),
     },
     {
-      title: 'Duration (min)',
+      title: t('simManager.practices.duration'),
       dataIndex: 'estimatedDurationMinutes',
       key: 'estimatedDurationMinutes',
       width: 130,
@@ -58,15 +61,15 @@ const PracticeTable = ({
       render: (v) => <span>{v}</span>,
     },
     {
-      title: 'Difficulty',
+      title: t('simManager.practices.difficulty'),
       dataIndex: 'difficultyLevel',
       key: 'difficultyLevel',
       width: 140,
       align: 'center',
-      render: (level) => <Tag color={getDifficultyColor(level)}>{level || 'N/A'}</Tag>,
+      render: (level) => <Tag color={getDifficultyColor(level)}>{level || t('common.na')}</Tag>,
     },
     {
-      title: 'Max Attempts',
+      title: t('simManager.practices.maxAttempts'),
       dataIndex: 'maxAttempts',
       key: 'maxAttempts',
       width: 120,
@@ -74,29 +77,29 @@ const PracticeTable = ({
       render: (v) => <span>{v}</span>,
     },
     {
-      title: 'Status',
+      title: t('common.status'),
       dataIndex: 'isActive',
       key: 'isActive',
       width: 120,
       align: 'center',
       render: (isActive) => (
         <Tag color={isActive ? 'green' : 'red'}>
-          {isActive ? 'Active' : 'Inactive'}
+          {isActive ? t('common.active') : t('common.inactive')}
         </Tag>
       ),
     },
     {
-      title: 'Actions',
+      title: t('common.actions'),
       key: 'actions',
       width: 120,
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
         <Space size="small">
-          <Tooltip title="View Details">
+          <Tooltip title={t('common.view')}>
             <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(record)} />
           </Tooltip>
-          <Tooltip title="Delete">
+          <Tooltip title={t('common.delete')}>
             <Button 
               type="text" 
               size="small" 
@@ -133,7 +136,7 @@ const PracticeTable = ({
           onChange={pagination.onChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} practices`}
+          showTotal={(total, range) => `${range[0]}-${range[1]} ${t('simManager.practices.ofPractices', { total })}`}
         />
       </div>
     </div>

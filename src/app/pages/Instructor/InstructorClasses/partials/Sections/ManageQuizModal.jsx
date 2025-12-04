@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Alert, Select, Spin, Empty, Typography, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { getQuizzes } from '../../../../../apis/Instructor/InstructorQuiz';
 import { 
   getQuizzesByActivityId, 
@@ -11,6 +12,7 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 
 const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [assignedQuiz, setAssignedQuiz] = useState(null);
@@ -30,7 +32,7 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
       const library = await getQuizzes({ pageIndex: 1, pageSize: 1000 });
       setQuizLibrary(library.items || []);
     } catch (err) {
-      setError(err.message || 'Failed to load data');
+      setError(err.message || t('instructor.classes.manageQuizModal.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
       await assignQuizToActivity(activity.id, selectedQuizId);
       onUpdate(); 
     } catch (err) {
-      setError(err.message || 'Failed to assign quiz');
+      setError(err.message || t('instructor.classes.manageQuizModal.assignFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -72,7 +74,7 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
       await removeQuizFromActivity(activity.id, assignedQuiz.id);
       onUpdate();
     } catch (err) {
-      setError(err.message || 'Failed to remove quiz');
+      setError(err.message || t('instructor.classes.manageQuizModal.removeFailed'));
     } finally {
       setIsRemoving(false);
     }
@@ -87,7 +89,7 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
     if (assignedQuiz) {
       return (
         <div>
-          <Title level={5}>Assigned Quiz</Title>
+          <Title level={5}>{t('instructor.classes.manageQuizModal.assignedQuiz')}</Title>
           <div className="p-4 border rounded-md bg-gray-50">
             <div className="flex justify-between items-start">
               <div>
@@ -96,7 +98,7 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
                 <Text type="secondary">{assignedQuiz.description}</Text>
                 <br />
                 <Tag color="green" className="mt-2">
-                  {assignedQuiz.timelimitMinute} min • {assignedQuiz.totalScore} pts
+                  {assignedQuiz.timelimitMinute} {t('instructor.classes.manageQuizModal.minPoints')} • {assignedQuiz.totalScore} {t('instructor.classes.manageQuizModal.points')}
                 </Tag>
               </div>
               <Button
@@ -105,7 +107,7 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
                 loading={isRemoving}
                 onClick={handleRemove}
               >
-                Remove
+                {t('instructor.classes.manageQuizModal.remove')}
               </Button>
             </div>
           </div>
@@ -116,14 +118,14 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
     // No quiz assigned, show assignment UI
     return (
       <div>
-        <Title level={5}>Assign Quiz</Title>
+        <Title level={5}>{t('instructor.classes.manageQuizModal.assignQuiz')}</Title>
         <Text type="secondary" className="block mb-2">
-          Select a quiz from the library to assign to this activity.
+          {t('instructor.classes.manageQuizModal.assignQuizDesc')}
         </Text>
         <div className="flex space-x-2">
           <Select
             showSearch
-            placeholder="Search and select a quiz"
+            placeholder={t('instructor.classes.manageQuizModal.searchPlaceholder')}
             style={{ width: '100%' }}
             onChange={(value) => setSelectedQuizId(value)}
             filterOption={(input, option) =>
@@ -142,7 +144,7 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
             onClick={handleAssign}
             disabled={!selectedQuizId}
           >
-            Assign
+            {t('instructor.classes.manageQuizModal.assign')}
           </Button>
         </div>
       </div>
@@ -151,16 +153,16 @@ const ManageQuizModal = ({ activity, isVisible, onClose, onUpdate }) => {
 
   return (
     <Modal
-      title={`Manage Quiz for: ${activity?.title || ''}`}
+      title={t('instructor.classes.manageQuizModal.title', { title: activity?.title || '' })}
       visible={isVisible}
       onCancel={onClose}
       footer={[
         <Button key="close" onClick={onClose}>
-          Close
+          {t('instructor.classes.manageQuizModal.close')}
         </Button>,
       ]}
     >
-      {error && <Alert message="Error" description={error} type="error" showIcon closable className="mb-4" />}
+      {error && <Alert message={t('common.error')} description={error} type="error" showIcon closable className="mb-4" />}
       {renderContent()}
     </Modal>
   );

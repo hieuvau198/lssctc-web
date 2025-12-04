@@ -8,56 +8,65 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
     const { message } = App.useApp();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [allCourses, setAllCourses] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [selectedCourseIds, setSelectedCourseIds] = useState([]);
     const [assignLoading, setAssignLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const [assignedCourseIds, setAssignedCourseIds] = useState(new Set());
 
-    // Fetch available courses when modal opens
-    const fetchAvailableCourses = useCallback(async () => {
+    // Fetch assigned courses once when modal opens
+    const fetchAssignedCourses = useCallback(async () => {
+        try {
+            const assignedCoursesData = await fetchCoursesByProgram(program.id);
+            const assignedCourses = assignedCoursesData.items || [];
+            setAssignedCourseIds(new Set(assignedCourses.map((c) => c.id)));
+        } catch (e) {
+            console.log('No courses assigned to program yet');
+            setAssignedCourseIds(new Set());
+        }
+    }, [program.id]);
+
+    // Fetch available courses with pagination
+    const fetchAvailableCourses = useCallback(async (page, size) => {
         setLoading(true);
         try {
-            // Fetch all courses using paged API
-            const allCoursesData = await fetchCoursesPaged({ pageNumber: 1, pageSize: 100 });
+            const allCoursesData = await fetchCoursesPaged({ pageNumber: page, pageSize: size });
             const allCoursesList = allCoursesData.items || [];
 
-            // Try to fetch assigned courses, handle case when program has no courses
-            let assignedCourses = [];
-            try {
-                const assignedCoursesData = await fetchCoursesByProgram(program.id);
-                assignedCourses = assignedCoursesData.items || [];
-            } catch (e) {
-                // If 404 or no courses assigned, continue with empty array
-                console.log('No courses assigned to program yet');
-            }
-
-            // Create set of assigned course IDs
-            const assignedIds = new Set(assignedCourses.map((c) => c.id));
-
             // Filter out assigned courses
-            const availableCourses = allCoursesList.filter(course => !assignedIds.has(course.id));
+            const availableCourses = allCoursesList.filter(course => !assignedCourseIds.has(course.id));
 
             setAllCourses(availableCourses);
+            setTotalCount(allCoursesData.totalCount || 0);
 
-            if (availableCourses.length === 0) {
-                message.info('All courses are already assigned to this program');
+            if (availableCourses.length === 0 && allCoursesList.length > 0) {
+                message.info('All courses on this page are already assigned');
             }
         } catch (err) {
             console.error('Error fetching courses:', err);
             message.error('Failed to load available courses');
             setAllCourses([]);
+            setTotalCount(0);
         } finally {
             setLoading(false);
         }
-    }, [program, message]);
+    }, [assignedCourseIds, message]);
 
     // Open modal and fetch courses
-    const handleOpen = () => {
+    const handleOpen = async () => {
         setIsModalVisible(true);
         setSelectedCourseIds([]);
         setCurrentPage(1);
-        fetchAvailableCourses();
+        await fetchAssignedCourses();
+        fetchAvailableCourses(1, pageSize);
+    };
+
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        fetchAvailableCourses(page, pageSize);
     };
 
     // Close modal
@@ -176,7 +185,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                 ]}
             >
                 {loading ? (
-                    <div className="flex justify-center py-8">
+                    <div className="flex justify-center items-center h-[500px] py-8">
                         <Spin size="large" />
                     </div>
                 ) : allCourses.length === 0 ? (
@@ -188,7 +197,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                             <Table
                                 rowSelection={rowSelection}
                                 columns={columns}
-                                dataSource={allCourses.slice((currentPage - 1) * pageSize, currentPage * pageSize)}
+                                dataSource={allCourses}
                                 rowKey="id"
                                 size="small"
                                 pagination={false}
@@ -200,8 +209,8 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                             <Pagination
                                 current={currentPage}
                                 pageSize={pageSize}
-                                total={allCourses.length}
-                                onChange={setCurrentPage}
+                                total={totalCount}
+                                onChange={handlePageChange}
                                 showTotal={(total) => `Total ${total} courses`}
                             />
                         </div>

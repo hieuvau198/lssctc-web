@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Chart from 'react-apexcharts';
 import { Skeleton } from 'antd';
 import { getClassGradeDistribution } from '../../../../../apis/Instructor/InstructorDashboard';
 import useAuthStore from '../../../../../store/authStore';
 
 // Grade ranges configuration
-const gradeRanges = [
-  { label: 'Excellent (90-100)', color: '#10b981', min: 90, max: 100 },
-  { label: 'Good (70-89)', color: '#3b82f6', min: 70, max: 89 },
-  { label: 'Average (50-69)', color: '#f59e0b', min: 50, max: 69 },
-  { label: 'Below Average (30-49)', color: '#f97316', min: 30, max: 49 },
-  { label: 'Poor (0-29)', color: '#ef4444', min: 0, max: 29 },
+const getGradeRanges = (t) => [
+  { key: 'excellent', label: t('instructor.dashboard.grades.excellent'), color: '#10b981', min: 90, max: 100 },
+  { key: 'good', label: t('instructor.dashboard.grades.good'), color: '#3b82f6', min: 70, max: 89 },
+  { key: 'average', label: t('instructor.dashboard.grades.average'), color: '#f59e0b', min: 50, max: 69 },
+  { key: 'belowAverage', label: t('instructor.dashboard.grades.belowAverage'), color: '#f97316', min: 30, max: 49 },
+  { key: 'poor', label: t('instructor.dashboard.grades.poor'), color: '#ef4444', min: 0, max: 29 },
 ];
 
 export default function GradeDistributionChart() {
+  const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { nameid: instructorId } = useAuthStore();
+  const gradeRanges = getGradeRanges(t);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,7 +72,7 @@ export default function GradeDistributionChart() {
       enabled: true,
       formatter: (val, opts) => {
         const count = opts.w.config.series[opts.seriesIndex];
-        return count > 0 ? `${count} classes` : '';
+        return count > 0 ? t('instructor.dashboard.classesCount', { count }) : '';
       },
       dropShadow: { enabled: false },
       style: { fontSize: '11px', fontWeight: 600 }
@@ -84,7 +87,7 @@ export default function GradeDistributionChart() {
     },
     tooltip: {
       y: {
-        formatter: (val) => `${val} classes`
+        formatter: (val) => t('instructor.dashboard.classesCount', { count: val })
       }
     },
     responsive: [{
@@ -101,9 +104,9 @@ export default function GradeDistributionChart() {
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-gray-700">Class Grade Distribution</h2>
+        <h2 className="text-sm font-semibold text-gray-700">{t('instructor.dashboard.classGradeDistribution')}</h2>
         <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-          {totalClasses} classes
+          {t('instructor.dashboard.classesCount', { count: totalClasses })}
         </span>
       </div>
       {loading ? (
@@ -112,7 +115,7 @@ export default function GradeDistributionChart() {
         </div>
       ) : totalClasses === 0 ? (
         <div className="flex-1 flex items-center justify-center text-gray-400">
-          No grade data available
+          {t('instructor.dashboard.noGradeData')}
         </div>
       ) : (
         <Chart options={options} series={series} type="pie" height={320} />

@@ -1,14 +1,17 @@
 import { Input } from "antd";
+import { useTranslation } from 'react-i18next';
 
 const QuizFilters = ({
   searchValue,
   setSearchValue,
   onSearch,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-wrap gap-4">
       <Input.Search
-        placeholder="Search quizzes..."
+        placeholder={t('instructor.quizzes.filters.searchPlaceholder')}
         allowClear
         size="middle"
         value={searchValue}

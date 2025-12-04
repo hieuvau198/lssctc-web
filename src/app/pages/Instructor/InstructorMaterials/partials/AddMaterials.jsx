@@ -2,6 +2,7 @@ import { ArrowLeftOutlined, BookOutlined, VideoCameraOutlined } from '@ant-desig
 import { Button, Card, Form, Input, Radio, Space, message, App, Modal } from 'antd';
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { createMaterial } from '../../../../apis/Instructor/InstructorMaterialsApi';
 
 function useQuery() {
@@ -10,6 +11,7 @@ function useQuery() {
 }
 
 export default function AddMaterials({ onSuccess }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { modal } = App.useApp();
   const query = useQuery();
@@ -32,9 +34,9 @@ export default function AddMaterials({ onSuccess }) {
       await createMaterial(payload);
       
       modal.success({
-        title: 'Success',
-        content: 'Material created successfully',
-        okText: 'OK',
+        title: t('instructor.materials.modal.success'),
+        content: t('instructor.materials.messages.createSuccess'),
+        okText: t('instructor.materials.modal.ok'),
         centered: true,
         onOk: () => {
           // Always navigate back and let parent component refresh
@@ -44,7 +46,7 @@ export default function AddMaterials({ onSuccess }) {
     } catch (e) {
       console.error('Create material error', e);
       
-      let errorMsg = e?.message || 'Failed to create material';
+      let errorMsg = e?.message || t('instructor.materials.messages.createFailed');
       // Handle API error responses
       if (e?.response?.data) {
         const data = e.response.data;
@@ -66,9 +68,9 @@ export default function AddMaterials({ onSuccess }) {
       }
       
       modal.error({
-        title: 'Error Creating Material',
+        title: t('instructor.materials.messages.createError'),
         content: errorMsg,
-        okText: 'Close',
+        okText: t('instructor.materials.modal.close'),
         centered: true,
       });
     }
@@ -80,9 +82,9 @@ export default function AddMaterials({ onSuccess }) {
     <div className="max-w-3xl mx-auto px-4 py-4">
       <div className="flex items-center gap-3 mb-4">
         <Button icon={<ArrowLeftOutlined />} onClick={onCancel}>
-          Back
+          {t('instructor.materials.buttons.back')}
         </Button>
-        <h1 className="text-2xl font-semibold m-0">Add Material</h1>
+        <h1 className="text-2xl font-semibold m-0">{t('instructor.materials.addMaterial')}</h1>
       </div>
 
       <Card>
@@ -92,25 +94,25 @@ export default function AddMaterials({ onSuccess }) {
           initialValues={{ typeId: 1 }}
           onFinish={onFinish}
         >
-          <Form.Item label="Title" name="title" rules={[{ required: true, message: 'Please enter title' }]}>
-            <Input placeholder="Material title" />
+          <Form.Item label={t('instructor.materials.form.title')} name="title" rules={[{ required: true, message: t('instructor.materials.form.titleRequired') }]}>
+            <Input placeholder={t('instructor.materials.form.titlePlaceholder')} />
           </Form.Item>
 
-          <Form.Item label="Type" name="typeId">
+          <Form.Item label={t('instructor.materials.form.type')} name="typeId">
             <Radio.Group>
               <Space direction="horizontal">
-                <Radio value={1}><BookOutlined /> Document</Radio>
-                <Radio value={2}><VideoCameraOutlined /> Video</Radio>
+                <Radio value={1}><BookOutlined /> {t('instructor.materials.document')}</Radio>
+                <Radio value={2}><VideoCameraOutlined /> {t('instructor.materials.video')}</Radio>
               </Space>
             </Radio.Group>
           </Form.Item>
 
-          <Form.Item label="URL" name="url" rules={[{ required: true, message: 'Please enter URL' }]}>
-            <Input placeholder="https://..." />
+          <Form.Item label={t('instructor.materials.form.url')} name="url" rules={[{ required: true, message: t('instructor.materials.form.urlRequired') }]}>
+            <Input placeholder={t('instructor.materials.form.urlPlaceholder')} />
           </Form.Item>
 
-          <Form.Item label="Description" name="description">
-            <Input.TextArea rows={4} placeholder="Optional description" />
+          <Form.Item label={t('instructor.materials.form.description')} name="description">
+            <Input.TextArea rows={4} placeholder={t('instructor.materials.form.descriptionPlaceholder')} />
           </Form.Item>
 
           <input type="hidden" value={sectionId} readOnly />
@@ -118,8 +120,8 @@ export default function AddMaterials({ onSuccess }) {
 
           <Form.Item>
             <Space>
-              <Button onClick={onCancel}>Cancel</Button>
-              <Button type="primary" htmlType="submit">Create</Button>
+              <Button onClick={onCancel}>{t('instructor.materials.buttons.cancel')}</Button>
+              <Button type="primary" htmlType="submit">{t('instructor.materials.buttons.create')}</Button>
             </Space>
           </Form.Item>
         </Form>

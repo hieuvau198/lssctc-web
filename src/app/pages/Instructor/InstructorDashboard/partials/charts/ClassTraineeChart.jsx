@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Chart from 'react-apexcharts';
 import { Skeleton } from 'antd';
 import { getTopClassesByTrainees } from '../../../../../apis/Instructor/InstructorDashboard';
 import useAuthStore from '../../../../../store/authStore';
 
 export default function ClassTraineeChart() {
+  const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { nameid: instructorId } = useAuthStore();
@@ -27,7 +29,7 @@ export default function ClassTraineeChart() {
   }, [instructorId]);
 
   const series = [{ 
-    name: 'Trainees', 
+    name: t('instructor.dashboard.trainees'), 
     data: data.map(c => c.traineeCount || c.totalTrainees || 0) 
   }];
   
@@ -56,7 +58,7 @@ export default function ClassTraineeChart() {
       }
     },
     yaxis: {
-      title: { text: 'Number of Trainees', style: { fontSize: '12px', fontWeight: 500 } }
+      title: { text: t('instructor.dashboard.numberOfTrainees'), style: { fontSize: '12px', fontWeight: 500 } }
     },
     colors: ['#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e', '#ef4444', '#f97316', '#eab308'],
     dataLabels: { 
@@ -67,20 +69,20 @@ export default function ClassTraineeChart() {
     grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
     tooltip: { 
       theme: 'light', 
-      y: { formatter: (val) => val + ' trainees' } 
+      y: { formatter: (val) => t('instructor.dashboard.traineesCount', { count: val }) } 
     }
   };
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col h-full">
-      <h2 className="text-sm font-semibold mb-4 text-gray-700">Trainees by Class</h2>
+      <h2 className="text-sm font-semibold mb-4 text-gray-700">{t('instructor.dashboard.traineesByClass')}</h2>
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
           <Skeleton active paragraph={{ rows: 6 }} />
         </div>
       ) : data.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-gray-400">
-          No class data available
+          {t('instructor.dashboard.noClassData')}
         </div>
       ) : (
         <Chart options={options} series={series} type="bar" height={320} />

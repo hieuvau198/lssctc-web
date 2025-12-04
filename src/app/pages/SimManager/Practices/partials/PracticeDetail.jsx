@@ -5,6 +5,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { EditOutlined } from '@ant-design/icons';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   getPracticeById,
   updatePractice
@@ -15,7 +16,7 @@ const { Option } = Select;
 
 // --- Helper Components for Forms ---
 
-const UpdatePracticeForm = ({ initialValues, onUpdate, onCancel, visible, loading }) => {
+const UpdatePracticeForm = ({ initialValues, onUpdate, onCancel, visible, loading, t }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -28,15 +29,15 @@ const UpdatePracticeForm = ({ initialValues, onUpdate, onCancel, visible, loadin
 
   return (
     <Modal
-      title="Update Practice"
+      title={t('simManager.practiceDetailPartials.updatePractice')}
       open={visible}
       onCancel={onCancel}
       footer={[
         <Button key="back" onClick={onCancel}>
-          Cancel
+          {t('common.cancel')}
         </Button>,
         <Button key="submit" type="primary" loading={loading} onClick={() => form.submit()}>
-          Update
+          {t('common.edit')}
         </Button>,
       ]}
     >
@@ -48,55 +49,55 @@ const UpdatePracticeForm = ({ initialValues, onUpdate, onCancel, visible, loadin
       >
         <Form.Item
           name="practiceName"
-          label="Practice Name"
-          rules={[{ required: true, message: 'Practice name is required.' }]}
+          label={t('simManager.practiceDetailPartials.practiceName')}
+          rules={[{ required: true, message: t('simManager.practiceDetailPartials.practiceNameRequired') }]}
         >
-          <Input placeholder="Practice Name" maxLength={200} />
+          <Input placeholder={t('simManager.practiceDetailPartials.practiceNamePlaceholder')} maxLength={200} />
         </Form.Item>
         <Form.Item
           name="practiceCode"
-          label="Practice Code"
+          label={t('simManager.practiceDetailPartials.practiceCode')}
         >
-          <Input placeholder="Practice Code" maxLength={50} />
+          <Input placeholder={t('simManager.practiceDetailPartials.practiceCodePlaceholder')} maxLength={50} />
         </Form.Item>
         <Form.Item
           name="practiceDescription"
-          label="Description"
+          label={t('simManager.practiceDetailPartials.practiceDescription')}
         >
-          <Input.TextArea rows={3} placeholder="Practice Description" maxLength={1000} />
+          <Input.TextArea rows={3} placeholder={t('simManager.practiceDetailPartials.practiceDescriptionPlaceholder')} maxLength={1000} />
         </Form.Item>
         <Form.Item
           name="estimatedDurationMinutes"
-          label="Estimated Duration (Minutes)"
+          label={t('simManager.practiceDetailPartials.estimatedDuration')}
           rules={[{ type: 'number', min: 1, max: 600 }]}
         >
           <InputNumber min={1} max={600} style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="difficultyLevel"
-          label="Difficulty Level"
-          rules={[{ required: true, message: 'Please select a difficulty level.' }]}
+          label={t('simManager.practiceDetailPartials.difficultyLevel')}
+          rules={[{ required: true, message: t('simManager.practiceDetailPartials.difficultyRequired') }]}
         >
-          <Select placeholder="Select level">
-            <Option value="Entry">Entry</Option>
-            <Option value="Intermediate">Intermediate</Option>
-            <Option value="Advanced">Advanced</Option>
+          <Select placeholder={t('simManager.practiceDetailPartials.selectLevel')}>
+            <Option value="Entry">{t('simManager.practiceDetailPartials.difficultyEntry')}</Option>
+            <Option value="Intermediate">{t('simManager.practiceDetailPartials.difficultyIntermediate')}</Option>
+            <Option value="Advanced">{t('simManager.practiceDetailPartials.difficultyAdvanced')}</Option>
           </Select>
         </Form.Item>
         <Form.Item
           name="maxAttempts"
-          label="Max Attempts"
+          label={t('simManager.practiceDetailPartials.maxAttempts')}
           rules={[{ type: 'number', min: 1, max: 10 }]}
         >
           <InputNumber min={1} max={10} style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="isActive"
-          label="Status"
+          label={t('simManager.practiceDetailPartials.status')}
         >
-          <Select placeholder="Select status">
-            <Option value={true}>Active</Option>
-            <Option value={false}>Inactive</Option>
+          <Select placeholder={t('simManager.practiceDetailPartials.selectStatus')}>
+            <Option value={true}>{t('simManager.practiceDetailPartials.active')}</Option>
+            <Option value={false}>{t('simManager.practiceDetailPartials.inactive')}</Option>
           </Select>
         </Form.Item>
       </Form>
@@ -108,6 +109,7 @@ const UpdatePracticeForm = ({ initialValues, onUpdate, onCancel, visible, loadin
 // --- Main Component ---
 
 export default function PracticeDetail() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -125,11 +127,11 @@ export default function PracticeDetail() {
       setError(null);
     } catch (err) {
       console.error('Error:', err);
-      setError(err.message || 'Failed to load practice details');
+      setError(err.message || t('simManager.practiceDetailPartials.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     fetchData();
@@ -146,12 +148,12 @@ export default function PracticeDetail() {
     setUpdateLoading(true);
     try {
       const updated = await updatePractice(practice.id, values);
-      message.success('Practice updated successfully');
+      message.success(t('simManager.practiceDetailPartials.updateSuccess'));
       setIsUpdateModalVisible(false);
       setPractice({ ...practice, ...updated });
     } catch (e) {
       console.error('Error updating practice:', e);
-      let errorMsg = 'Failed to update practice';
+      let errorMsg = t('simManager.practiceDetailPartials.updateFailed');
       if (e.response?.data?.error?.details?.exceptionMessage) {
         errorMsg = e.response.data.error.details.exceptionMessage;
       } else if (e.response?.data?.error?.message) {
@@ -171,7 +173,7 @@ export default function PracticeDetail() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <Spin size="large" tip="Loading practice details..." className="w-full py-16" />
+        <Spin size="large" tip={t('simManager.practiceDetailPartials.loadingDetails')} className="w-full py-16" />
       </div>
     );
   }
@@ -179,7 +181,7 @@ export default function PracticeDetail() {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <Alert message="Error" description={error} type="error" showIcon />
+        <Alert message={t('common.error')} description={error} type="error" showIcon />
       </div>
     );
   }
@@ -191,6 +193,15 @@ export default function PracticeDetail() {
     return map[level] || 'default';
   };
 
+  const getDifficultyLabel = (level) => {
+    const map = {
+      Entry: t('simManager.practiceDetailPartials.difficultyEntry'),
+      Intermediate: t('simManager.practiceDetailPartials.difficultyIntermediate'),
+      Advanced: t('simManager.practiceDetailPartials.difficultyAdvanced')
+    };
+    return map[level] || level;
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-2">
       {/* Modals */}
@@ -200,6 +211,7 @@ export default function PracticeDetail() {
           onCancel={() => setIsUpdateModalVisible(false)}
           onUpdate={handleUpdatePractice}
           loading={updateLoading}
+          t={t}
           initialValues={{
             practiceName: practice.practiceName,
             practiceCode: practice.practiceCode,
@@ -217,7 +229,7 @@ export default function PracticeDetail() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Button type="default" icon={<ArrowLeft size={16} />} onClick={() => navigate(-1)}/>
-            <span className="text-2xl text-slate-900">Practice Details</span>
+            <span className="text-2xl text-slate-900">{t('simManager.practiceDetailPartials.title')}</span>
           </div>
         </div>
       </div>
@@ -225,39 +237,39 @@ export default function PracticeDetail() {
       {/* Practice Information Card */}
       <div className="mb-6">
         <Card
-          title="Practice Information"
+          title={t('simManager.practiceDetailPartials.practiceInfo')}
           className="shadow mb-6"
           extra={
             <Button type="primary" icon={<EditOutlined />} onClick={handleEditPractice}>
-              Edit Practice
+              {t('simManager.practiceDetailPartials.editPractice')}
             </Button>
           }
         >
           <Descriptions bordered column={2}>
-            <Descriptions.Item label="Practice Name" span={2}>
+            <Descriptions.Item label={t('simManager.practiceDetailPartials.practiceName')} span={2}>
               {practice.practiceName}
             </Descriptions.Item>
-            <Descriptions.Item label="Practice Code" span={2}>
+            <Descriptions.Item label={t('simManager.practiceDetailPartials.practiceCode')} span={2}>
               {practice.practiceCode}
             </Descriptions.Item>
-            <Descriptions.Item label="Duration">
-              {practice.estimatedDurationMinutes} minutes
+            <Descriptions.Item label={t('simManager.practiceDetailPartials.duration')}>
+              {practice.estimatedDurationMinutes} {t('simManager.practiceDetailPartials.minutes')}
             </Descriptions.Item>
-            <Descriptions.Item label="Difficulty">
+            <Descriptions.Item label={t('simManager.practiceDetailPartials.difficulty')}>
               <Tag color={getDifficultyColor(practice.difficultyLevel)}>
-                {practice.difficultyLevel}
+                {getDifficultyLabel(practice.difficultyLevel)}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Max Attempts">
+            <Descriptions.Item label={t('simManager.practiceDetailPartials.maxAttempts')}>
               {practice.maxAttempts}
             </Descriptions.Item>
-            <Descriptions.Item label="Status">
+            <Descriptions.Item label={t('simManager.practiceDetailPartials.status')}>
               <Tag color={practice.isActive ? 'green' : 'red'}>
-                {practice.isActive ? 'Active' : 'Inactive'}
+                {practice.isActive ? t('simManager.practiceDetailPartials.active') : t('simManager.practiceDetailPartials.inactive')}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Description" span={2}>
-              {practice.practiceDescription || 'N/A'}
+            <Descriptions.Item label={t('simManager.practiceDetailPartials.practiceDescription')} span={2}>
+              {practice.practiceDescription || t('common.na')}
             </Descriptions.Item>
           </Descriptions>
         </Card>

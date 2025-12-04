@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Chart from 'react-apexcharts';
 import { Skeleton, Select } from 'antd';
 import { getYearlyCompletionTrends } from '../../../../../apis/Instructor/InstructorDashboard';
 import useAuthStore from '../../../../../store/authStore';
 
 export default function YearlyCompletionChart() {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(currentYear);
   const [data, setData] = useState([]);
@@ -28,7 +30,20 @@ export default function YearlyCompletionChart() {
     fetchData();
   }, [instructorId, year]);
 
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    t('instructor.dashboard.months.jan'),
+    t('instructor.dashboard.months.feb'),
+    t('instructor.dashboard.months.mar'),
+    t('instructor.dashboard.months.apr'),
+    t('instructor.dashboard.months.may'),
+    t('instructor.dashboard.months.jun'),
+    t('instructor.dashboard.months.jul'),
+    t('instructor.dashboard.months.aug'),
+    t('instructor.dashboard.months.sep'),
+    t('instructor.dashboard.months.oct'),
+    t('instructor.dashboard.months.nov'),
+    t('instructor.dashboard.months.dec')
+  ];
   
   // Map data to months (assuming API returns monthly data)
   const chartData = months.map((month, index) => {
@@ -37,7 +52,7 @@ export default function YearlyCompletionChart() {
   });
 
   const series = [{ 
-    name: 'Completions', 
+    name: t('instructor.dashboard.completions'), 
     data: chartData 
   }];
 
@@ -56,7 +71,7 @@ export default function YearlyCompletionChart() {
       labels: { style: { fontSize: '11px' } }
     },
     yaxis: {
-      title: { text: 'Completions', style: { fontSize: '12px', fontWeight: 500 } },
+      title: { text: t('instructor.dashboard.completions'), style: { fontSize: '12px', fontWeight: 500 } },
       min: 0
     },
     colors: ['#10b981'],
@@ -73,7 +88,7 @@ export default function YearlyCompletionChart() {
     grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
     tooltip: { 
       theme: 'light', 
-      y: { formatter: (val) => val + ' completed' } 
+      y: { formatter: (val) => t('instructor.dashboard.completedCount', { count: val }) } 
     },
     markers: {
       size: 4,
@@ -89,7 +104,7 @@ export default function YearlyCompletionChart() {
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-gray-700">Yearly Course Completions</h2>
+        <h2 className="text-sm font-semibold text-gray-700">{t('instructor.dashboard.yearlyCourseCompletions')}</h2>
         <Select
           size="small"
           value={year}

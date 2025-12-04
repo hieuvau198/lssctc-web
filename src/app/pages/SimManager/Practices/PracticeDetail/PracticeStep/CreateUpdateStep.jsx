@@ -1,5 +1,6 @@
 // src\app\pages\SimManager\Practices\PracticeDetail\PracticeStep\CreateUpdateStep.jsx
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function CreateUpdateStep({
   step,
@@ -8,6 +9,7 @@ export default function CreateUpdateStep({
   onDelete,
   onCancel,
 }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     stepName: '',
     stepDescription: '',
@@ -60,7 +62,7 @@ export default function CreateUpdateStep({
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-white rounded-lg border">
       <div>
-        <label className="block text-xs font-medium">Step Name</label>
+        <label className="block text-xs font-medium">{t('simManager.practiceSteps.stepName')}</label>
         <input
           type="text"
           name="stepName"
@@ -71,7 +73,7 @@ export default function CreateUpdateStep({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium">Step Description</label>
+        <label className="block text-xs font-medium">{t('simManager.practiceSteps.stepDescription')}</label>
         <textarea
           name="stepDescription"
           value={form.stepDescription}
@@ -81,7 +83,7 @@ export default function CreateUpdateStep({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium">Expected Result</label>
+        <label className="block text-xs font-medium">{t('simManager.practiceSteps.expectedResult')}</label>
         <input
           type="text"
           name="expectedResult"
@@ -91,7 +93,7 @@ export default function CreateUpdateStep({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium">Order</label>
+        <label className="block text-xs font-medium">{t('simManager.practiceSteps.order')}</label>
         <input
           type="number"
           name="stepOrder"
@@ -105,15 +107,15 @@ export default function CreateUpdateStep({
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          {step ? "Update Step" : "Create Step"}
+          {step ? t('simManager.practiceSteps.updateStep') : t('simManager.practiceSteps.createStep')}
         </button>
         {step && (
           <button
             type="button"
-            onClick={() => { if (window.confirm('Delete this step?')) onDelete(step.id); }}
+            onClick={() => { if (window.confirm(t('simManager.practiceSteps.deleteStepConfirm'))) onDelete(step.id); }}
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
           >
-            Delete
+            {t('simManager.practiceSteps.delete')}
           </button>
         )}
         <button
@@ -121,7 +123,7 @@ export default function CreateUpdateStep({
           onClick={onCancel}
           className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
         >
-          Cancel
+          {t('simManager.practiceSteps.cancel')}
         </button>
       </div>
     </form>

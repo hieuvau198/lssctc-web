@@ -1,12 +1,14 @@
 // src\app\pages\SimManager\Practices\CreatePractice\CreatePractice.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   createPractice,
 } from "../../../../apis/SimulationManager/SimulationManagerPracticeApi";
 import { ArrowLeft, Save, Clock, Zap, AlertCircle, CheckCircle, BookOpen } from "lucide-react";
 
 export default function CreatePractice() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Form state
@@ -28,52 +30,52 @@ export default function CreatePractice() {
   const handleCreate = () => {
     // Validation
     if (!form.practiceName?.trim()) {
-      setError("Practice name is required");
+      setError(t('simManager.createPractice.practiceNameRequired'));
       setModalType("error");
       return;
     }
     if (form.practiceName.length > 200) {
-      setError("Practice name must be less than 200 characters");
+      setError(t('simManager.createPractice.practiceNameMaxLength'));
       setModalType("error");
       return;
     }
     if (form.practiceDescription && form.practiceDescription.length > 1000) {
-      setError("Practice description must be less than 1000 characters");
+      setError(t('simManager.createPractice.practiceDescMaxLength'));
       setModalType("error");
       return;
     }
     if (!form.practiceCode?.trim()) {
-      setError("Practice code is required");
+      setError(t('simManager.createPractice.practiceCodeRequired'));
       setModalType("error");
       return;
     }
     if (form.practiceCode.length > 50) {
-      setError("Practice code must be less than 50 characters");
+      setError(t('simManager.createPractice.practiceCodeMaxLength'));
       setModalType("error");
       return;
     }
     if (!form.difficultyLevel) {
-      setError("Difficulty level is required");
+      setError(t('simManager.createPractice.difficultyRequired'));
       setModalType("error");
       return;
     }
     if (!form.estimatedDurationMinutes || form.estimatedDurationMinutes < 1) {
-      setError("Duration must be greater than 0 minutes");
+      setError(t('simManager.createPractice.durationMin'));
       setModalType("error");
       return;
     }
     if (form.estimatedDurationMinutes > 600) {
-      setError("Duration must be less than 600 minutes");
+      setError(t('simManager.createPractice.durationMax'));
       setModalType("error");
       return;
     }
     if (!form.maxAttempts || form.maxAttempts < 1) {
-      setError("Max attempts must be at least 1");
+      setError(t('simManager.createPractice.maxAttemptsMin'));
       setModalType("error");
       return;
     }
     if (form.maxAttempts > 10) {
-      setError("Max attempts cannot exceed 10");
+      setError(t('simManager.createPractice.maxAttemptsMax'));
       setModalType("error");
       return;
     }
@@ -93,17 +95,16 @@ export default function CreatePractice() {
 
     createPractice(payload)
       .then((data) => {
-        setSuccessMessage("Practice created successfully!");
+        setSuccessMessage(t('simManager.createPractice.createSuccess'));
         setModalType("success");
         setError(null);
         setCreating(false);
-        // Navigate back to practices list after 1.5 seconds
         setTimeout(() => {
           navigate("/simulationManager/practices");
         }, 1500);
       })
       .catch((err) => {
-        let errorMsg = "Create failed. Please try again.";
+        let errorMsg = t('simManager.createPractice.createFailed');
         
         // Handle new API error format: { success: false, error: { code, message, details } }
         if (err.response?.data?.error) {
@@ -150,11 +151,11 @@ export default function CreatePractice() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          {t('simManager.createPractice.back')}
         </button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Create New Practice</h1>
-          <p className="text-gray-600 mt-1">Add a new simulation practice module</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('simManager.createPractice.title')}</h1>
+          <p className="text-gray-600 mt-1">{t('simManager.createPractice.subtitle')}</p>
         </div>
       </div>
 
@@ -168,14 +169,14 @@ export default function CreatePractice() {
               <div className="p-2 bg-blue-100 rounded-lg">
                 <BookOpen className="h-5 w-5 text-blue-600" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">Basic Information</h2>
+              <h2 className="text-xl font-semibold text-gray-900">{t('simManager.createPractice.basicInfo')}</h2>
             </div>
 
             <div className="space-y-4">
               {/* Practice Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Practice Name
+                  {t('simManager.createPractice.practiceNameLabel')}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -183,17 +184,17 @@ export default function CreatePractice() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, practiceName: e.target.value }))
                   }
-                  placeholder="Enter practice name"
+                  placeholder={t('simManager.createPractice.enterPracticeName')}
                 />
                 <div className="mt-1 text-xs text-gray-500">
-                  {form.practiceName?.length || 0} / 200 characters
+                  {form.practiceName?.length || 0} / 200 {t('simManager.createPractice.characters')}
                 </div>
               </div>
 
               {/* Practice Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Practice Code
+                  {t('simManager.createPractice.practiceCodeLabel')}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -201,17 +202,17 @@ export default function CreatePractice() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, practiceCode: e.target.value }))
                   }
-                  placeholder="Enter practice code"
+                  placeholder={t('simManager.createPractice.enterPracticeCode')}
                 />
                 <div className="mt-1 text-xs text-gray-500">
-                  {form.practiceCode?.length || 0} / 50 characters
+                  {form.practiceCode?.length || 0} / 50 {t('simManager.createPractice.characters')}
                 </div>
               </div>
 
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
+                  {t('simManager.createPractice.descriptionLabel')}
                 </label>
                 <textarea
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
@@ -220,10 +221,10 @@ export default function CreatePractice() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, practiceDescription: e.target.value }))
                   }
-                  placeholder="Enter practice description"
+                  placeholder={t('simManager.createPractice.enterDescription')}
                 />
                 <div className="mt-1 text-xs text-gray-500">
-                  {form.practiceDescription?.length || 0} / 1000 characters
+                  {form.practiceDescription?.length || 0} / 1000 {t('simManager.createPractice.characters')}
                 </div>
               </div>
 
@@ -231,7 +232,7 @@ export default function CreatePractice() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Estimated Duration (minutes)
+                    {t('simManager.createPractice.estimatedDuration')}
                   </label>
                   <div className="relative">
                     <Clock className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
@@ -249,12 +250,12 @@ export default function CreatePractice() {
                     />
                   </div>
                   <div className="mt-1 text-xs text-gray-500">
-                    1 - 600 minutes
+                    {t('simManager.createPractice.minutes')}
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Difficulty Level
+                    {t('simManager.createPractice.difficultyLevel')}
                   </label>
                   <select
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -263,10 +264,10 @@ export default function CreatePractice() {
                       setForm((f) => ({ ...f, difficultyLevel: e.target.value }))
                     }
                   >
-                    <option value="">-- Select Difficulty --</option>
-                    <option value="Entry">Entry</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
+                    <option value="">{t('simManager.createPractice.selectDifficulty')}</option>
+                    <option value="Entry">{t('simManager.createPractice.entry')}</option>
+                    <option value="Intermediate">{t('simManager.createPractice.intermediate')}</option>
+                    <option value="Advanced">{t('simManager.createPractice.advanced')}</option>
                   </select>
                 </div>
               </div>
@@ -275,7 +276,7 @@ export default function CreatePractice() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Attempts
+                    {t('simManager.createPractice.maxAttemptsLabel')}
                   </label>
                   <div className="relative">
                     <Zap className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
@@ -293,12 +294,12 @@ export default function CreatePractice() {
                     />
                   </div>
                   <div className="mt-1 text-xs text-gray-500">
-                    1 - 10 attempts
+                    {t('simManager.createPractice.attempts')}
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status
+                    {t('simManager.createPractice.statusLabel')}
                   </label>
                   <select
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -307,8 +308,8 @@ export default function CreatePractice() {
                       setForm((f) => ({ ...f, isActive: e.target.value === "active" }))
                     }
                   >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="active">{t('simManager.createPractice.active')}</option>
+                    <option value="inactive">{t('simManager.createPractice.inactive')}</option>
                   </select>
                 </div>
               </div>
@@ -322,7 +323,7 @@ export default function CreatePractice() {
                 disabled={creating}
               >
                 <Save className="h-4 w-4" />
-                {creating ? "Creating..." : "Create Practice"}
+                {creating ? t('simManager.createPractice.creating') : t('simManager.createPractice.createPractice')}
               </button>
             </div>
           </div>
@@ -331,7 +332,7 @@ export default function CreatePractice() {
         {/* Right Column - Summary Card */}
         <div>
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200 p-6 sticky top-6">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Summary</h3>
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">{t('simManager.createPractice.summary')}</h3>
             
             <div className="space-y-4">
               {/* Duration */}
@@ -340,7 +341,7 @@ export default function CreatePractice() {
                   <Clock className="h-5 w-5 text-blue-700" />
                 </div>
                 <div>
-                  <p className="text-xs text-blue-600 font-medium">Duration</p>
+                  <p className="text-xs text-blue-600 font-medium">{t('simManager.createPractice.durationSummary')}</p>
                   <p className="text-lg font-bold text-blue-900">{form.estimatedDurationMinutes} min</p>
                 </div>
               </div>
@@ -361,8 +362,8 @@ export default function CreatePractice() {
                   }`} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 font-medium">Difficulty</p>
-                  <p className="text-lg font-bold text-gray-900">{form.difficultyLevel || 'N/A'}</p>
+                  <p className="text-xs text-gray-600 font-medium">{t('simManager.createPractice.difficultySummary')}</p>
+                  <p className="text-lg font-bold text-gray-900">{form.difficultyLevel || t('simManager.createPractice.na')}</p>
                 </div>
               </div>
 
@@ -372,7 +373,7 @@ export default function CreatePractice() {
                   <AlertCircle className="h-5 w-5 text-purple-700" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 font-medium">Max Attempts</p>
+                  <p className="text-xs text-gray-600 font-medium">{t('simManager.createPractice.maxAttemptsSummary')}</p>
                   <p className="text-lg font-bold text-gray-900">{form.maxAttempts}</p>
                 </div>
               </div>
@@ -383,8 +384,8 @@ export default function CreatePractice() {
                   <CheckCircle className={`h-5 w-5 ${form.isActive ? 'text-green-700' : 'text-gray-700'}`} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 font-medium">Status</p>
-                  <p className="text-lg font-bold text-gray-900">{form.isActive ? 'Active' : 'Inactive'}</p>
+                  <p className="text-xs text-gray-600 font-medium">{t('simManager.createPractice.statusSummary')}</p>
+                  <p className="text-lg font-bold text-gray-900">{form.isActive ? t('simManager.createPractice.active') : t('simManager.createPractice.inactive')}</p>
                 </div>
               </div>
             </div>
@@ -401,13 +402,13 @@ export default function CreatePractice() {
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Success</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('simManager.createPractice.success')}</h3>
                 <p className="text-gray-600 text-sm mb-4">{successMessage}</p>
                 <button
                   onClick={() => setModalType(null)}
                   className="w-full px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors font-medium"
                 >
-                  OK
+                  {t('simManager.createPractice.ok')}
                 </button>
               </div>
             </div>
@@ -424,13 +425,13 @@ export default function CreatePractice() {
                 <AlertCircle className="h-6 w-6 text-red-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Error</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('simManager.createPractice.error')}</h3>
                 <p className="text-gray-600 text-sm mb-4">{error}</p>
                 <button
                   onClick={() => setModalType(null)}
                   className="w-full px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium"
                 >
-                  OK
+                  {t('simManager.createPractice.ok')}
                 </button>
               </div>
             </div>

@@ -1,8 +1,11 @@
 import { Drawer, Button, Space } from 'antd';
 import { ExternalLink } from 'lucide-react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function DrawerView({ visible, onClose, material }) {
+  const { t } = useTranslation();
+
   if (!material) return null;
 
   const isVideo = Number(material.typeId) === 1;
@@ -16,7 +19,7 @@ export default function DrawerView({ visible, onClose, material }) {
     <iframe title={material.name} src={material.url} style={{ width: '100%', height: '100%', border: 0 }} />
   ) : (
     <div>
-      <a href={material.url} target="_blank" rel="noreferrer">Open resource in new tab</a>
+      <a href={material.url} target="_blank" rel="noreferrer">{t('instructor.materials.openResource')}</a>
     </div>
   );
 
@@ -30,7 +33,7 @@ export default function DrawerView({ visible, onClose, material }) {
       bodyStyle={{ padding: 16, height: 'calc(100vh - 108px)' }}
       extra={(
         <Space>
-          <Button icon={<ExternalLink size={16} />} href={material.url} target="_blank" rel="noreferrer">Open in new tab</Button>
+          <Button icon={<ExternalLink size={16} />} href={material.url} target="_blank" rel="noreferrer">{t('instructor.materials.openInNewTab')}</Button>
         </Space>
       )}
     >

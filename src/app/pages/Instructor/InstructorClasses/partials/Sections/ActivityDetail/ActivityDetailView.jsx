@@ -6,6 +6,7 @@ import {
   LaptopOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import TraineeActivityRecords from './TraineeActivityRecords';
 
 const { Title, Paragraph } = Typography;
@@ -25,6 +26,8 @@ const getActivityTypeIcon = (type) => {
 };
 
 const ActivityDetailView = ({ activity, classId, sectionId }) => {
+  const { t } = useTranslation();
+  
   if (!activity) {
     return null;
   }
@@ -38,7 +41,7 @@ const ActivityDetailView = ({ activity, classId, sectionId }) => {
       
       <div className="mb-4">
         <Tag color="blue">{activity.type}</Tag>
-        <Tag>{activity.duration} minutes</Tag>
+        <Tag>{activity.duration} {t('instructor.classes.activityDetail.minutes')}</Tag>
       </div>
 
       <Paragraph type="secondary" className="mb-6">

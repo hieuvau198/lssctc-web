@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Alert, Select, Spin, Empty, Typography, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import {
   getMaterials,
   getMaterialsByActivityId,
@@ -11,6 +12,7 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 
 const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [assignedMaterial, setAssignedMaterial] = useState(null);
@@ -31,7 +33,7 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
       const library = await getMaterials({ page: 1, pageSize: 1000 });
       setMaterialLibrary(library.items || []);
     } catch (err) {
-      setError(err.message || 'Failed to load data');
+      setError(err.message || t('instructor.classes.manageMaterialModal.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -57,7 +59,7 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
       await assignMaterialToActivity(activity.id, selectedMaterialId);
       onUpdate();
     } catch (err) {
-      setError(err.message || 'Failed to assign material');
+      setError(err.message || t('instructor.classes.manageMaterialModal.assignFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -72,7 +74,7 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
       await removeMaterialFromActivity(activity.id, assignedMaterial.learningMaterialId);
       onUpdate();
     } catch (err) {
-      setError(err.message || 'Failed to remove material');
+      setError(err.message || t('instructor.classes.manageMaterialModal.removeFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -86,7 +88,7 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
     if (assignedMaterial) {
       return (
         <div>
-          <Title level={5}>Assigned Material</Title>
+          <Title level={5}>{t('instructor.classes.manageMaterialModal.assignedMaterial')}</Title>
           <div className="p-4 border rounded-md bg-gray-50 flex justify-between items-center">
             <div>
               <Text strong>{assignedMaterial.name}</Text>
@@ -99,7 +101,7 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
               loading={isSubmitting}
               onClick={handleRemove}
             >
-              Remove
+              {t('instructor.classes.manageMaterialModal.remove')}
             </Button>
           </div>
         </div>
@@ -109,14 +111,14 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
     // No material assigned, show assignment UI
     return (
       <div>
-        <Title level={5}>Assign Material</Title>
+        <Title level={5}>{t('instructor.classes.manageMaterialModal.assignMaterial')}</Title>
         <Text type="secondary" className="block mb-2">
-          Select a material from the library to assign to this activity.
+          {t('instructor.classes.manageMaterialModal.assignMaterialDesc')}
         </Text>
         <div className="flex space-x-2">
           <Select
             showSearch
-            placeholder="Search and select a material"
+            placeholder={t('instructor.classes.manageMaterialModal.searchPlaceholder')}
             style={{ width: '100%' }}
             onChange={(value) => setSelectedMaterialId(value)}
             filterOption={(input, option) =>
@@ -135,7 +137,7 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
             onClick={handleAssign}
             disabled={!selectedMaterialId}
           >
-            Assign
+            {t('instructor.classes.manageMaterialModal.assign')}
           </Button>
         </div>
       </div>
@@ -144,16 +146,16 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
 
   return (
     <Modal
-      title={`Manage Material for: ${activity?.title || ''}`}
+      title={t('instructor.classes.manageMaterialModal.title', { title: activity?.title || '' })}
       visible={isVisible}
       onCancel={onClose}
       footer={[
         <Button key="close" onClick={onClose}>
-          Close
+          {t('instructor.classes.manageMaterialModal.close')}
         </Button>,
       ]}
     >
-      {error && <Alert message="Error" description={error} type="error" showIcon closable className="mb-4" />}
+      {error && <Alert message={t('common.error')} description={error} type="error" showIcon closable className="mb-4" />}
       {renderContent()}
     </Modal>
   );

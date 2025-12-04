@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import Cookies from 'js-cookie';
+import { useTranslation } from 'react-i18next';
 import Avt from "./partials/Avt";
 import { clearRememberedCredentials } from "../../libs/crypto";
 import { Button } from "antd";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 export default function Header() {
   const [hidden, setHidden] = useState(false);
@@ -12,6 +14,7 @@ export default function Header() {
   const lastScroll = useRef(0);
   const [hasToken, setHasToken] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const onScroll = () => {
@@ -121,12 +124,12 @@ export default function Header() {
             <ul className="flex pt-4 gap-1">
               <li>
                 <NavLink to="/" className={getLinkClass}>
-                  Home
+                  {t('common.home')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/program" className={getLinkClass}>
-                  Programs
+                  {t('header.programs')}
                 </NavLink>
               </li>
               {/* <li>
@@ -136,12 +139,12 @@ export default function Header() {
               </li> */}
               <li>
                 <NavLink to="/simulator" className={getLinkClass}>
-                  Simulator
+                  {t('header.simulator')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/about" className={getLinkClass}>
-                  About
+                  {t('header.about')}
                 </NavLink>
               </li>
             </ul>
@@ -149,6 +152,7 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             {hasToken ? (
               <Avt onLogout={() => { Cookies.remove('token', { path: '/' }); try{clearRememberedCredentials();}catch{} setHasToken(false); }} />
             ) : (
@@ -156,7 +160,7 @@ export default function Header() {
                 onClick={() => navigate('/auth/login')}
                 type="primary"
               >
-                Sign in
+                {t('common.signIn')}
               </Button>
             )}
           </div>
@@ -177,21 +181,21 @@ export default function Header() {
                 to="/courses"
                 className={getLinkClass}
               >
-                Courses
+                {t('header.courses')}
               </NavLink>
               <NavLink
                 onClick={() => setMobileOpen(false)}
                 to="/simulator"
                 className={getLinkClass}
               >
-                Simulator
+                {t('header.simulator')}
               </NavLink>
               <NavLink
                 onClick={() => setMobileOpen(false)}
                 to="/about"
                 className={getLinkClass}
               >
-                About
+                {t('header.about')}
               </NavLink>
             </div>
           </div>

@@ -2,11 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import { Empty, Skeleton, Button, App, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import PracticeTable from './partials/PracticeTable';
 import { getPractices, deletePractice } from '../../../apis/SimulationManager/SimulationManagerPracticeApi';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function Practices() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -25,7 +27,7 @@ export default function Practices() {
       setTotal(data.totalCount || 0);
     } catch (e) {
       console.error('Failed to load practices', e);
-      message.error('Load practices thất bại');
+      message.error(t('simManager.practices.failedToLoad'));
       setPractices([]);
       setTotal(0);
     } finally {
@@ -37,18 +39,18 @@ export default function Practices() {
 
   const handleDelete = (record) => {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: `Are you sure you want to delete practice "${record.practiceName}"?`,
-      okText: 'Delete',
+      title: t('simManager.practices.confirmDelete'),
+      content: t('simManager.practices.confirmDeleteDesc', { name: record.practiceName }),
+      okText: t('common.delete'),
       okType: 'danger',
       onOk: async () => {
         setDeleting(record.id);
         try {
           await deletePractice(record.id);
-          message.success('Practice deleted successfully');
+          message.success(t('simManager.practices.deleteSuccess'));
           await load(pageNumber, pageSize);
         } catch (err) {
-          let errorMsg = 'Delete failed. Please try again.';
+          let errorMsg = t('simManager.practices.deleteFailed');
           if (err.response?.data?.error?.details?.exceptionMessage) {
             errorMsg = err.response.data.error.details.exceptionMessage;
           } else if (err.response?.data?.error?.message) {
@@ -79,20 +81,20 @@ export default function Practices() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Simulation Practices</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('simManager.practices.title')}</h1>
         </div>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => navigate('./create')}
         >
-          Create Practice
+          {t('simManager.practices.createPractice')}
         </Button>
       </div>
 
       {/* Content */}
       {practices.length === 0 ? (
-        <Empty description="No practices found" />
+        <Empty description={t('simManager.practices.noPractices')} />
       ) : (
         <PracticeTable
           data={practices}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Chart from 'react-apexcharts';
 import { Skeleton } from 'antd';
 import { getClassStatusDistribution } from '../../../../../apis/Instructor/InstructorDashboard';
@@ -14,6 +15,7 @@ const statusColors = {
 };
 
 export default function ClassStatusChart() {
+  const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { nameid: instructorId } = useAuthStore();
@@ -36,8 +38,9 @@ export default function ClassStatusChart() {
   }, [instructorId]);
 
   const series = data.map(d => d.count || d.classCount || 0);
-  const labels = data.map(d => d.statusName || d.status);
-  const colors = labels.map(label => statusColors[label] || '#6b7280');
+  const rawLabels = data.map(d => d.statusName || d.status);
+  const labels = rawLabels.map(label => t(`instructor.dashboard.status.${label.toLowerCase().replace('-', '')}`, label));
+  const colors = rawLabels.map(label => statusColors[label] || '#6b7280');
 
   const options = {
     chart: { 
@@ -67,7 +70,7 @@ export default function ClassStatusChart() {
             value: { show: true, fontSize: '20px', fontWeight: 700 },
             total: {
               show: true,
-              label: 'Total Classes',
+              label: t('instructor.dashboard.totalClasses'),
               fontSize: '12px',
               formatter: (w) => w.globals.seriesTotals.reduce((a, b) => a + b, 0)
             }
@@ -86,14 +89,14 @@ export default function ClassStatusChart() {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col h-full">
-      <h2 className="text-sm font-semibold mb-4 text-gray-700">Class Status Distribution</h2>
+      <h2 className="text-sm font-semibold mb-4 text-gray-700">{t('instructor.dashboard.classStatusDistribution')}</h2>
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
           <Skeleton active paragraph={{ rows: 6 }} />
         </div>
       ) : data.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-gray-400">
-          No status data available
+          {t('instructor.dashboard.noStatusData')}
         </div>
       ) : (
         <Chart options={options} series={series} type="donut" height={320} />

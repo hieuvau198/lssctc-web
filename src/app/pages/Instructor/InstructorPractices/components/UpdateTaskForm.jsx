@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export default function UpdateTaskForm({ initialValues, onUpdate, onCancel, visible, loading }) {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   
   useEffect(() => {
@@ -17,16 +19,16 @@ export default function UpdateTaskForm({ initialValues, onUpdate, onCancel, visi
 
   return (
     <Modal
-      title={`Update Task: ${initialValues?.taskName || ''}`}
+      title={t('instructor.practices.updateTask.titleWithName', { name: initialValues?.taskName || '' })}
       visible={visible}
       onCancel={onCancel}
       destroyOnClose={true} // Important to reset form state on close
       footer={[
         <Button key="back" onClick={onCancel}>
-          Cancel
+          {t('instructor.practices.updateTask.cancel')}
         </Button>,
         <Button key="submit" type="primary" loading={loading} onClick={() => form.submit()}>
-          Update Task
+          {t('instructor.practices.updateTask.updateTask')}
         </Button>,
       ]}
     >
@@ -38,30 +40,30 @@ export default function UpdateTaskForm({ initialValues, onUpdate, onCancel, visi
       >
         <Form.Item
           name="taskName"
-          label="Task Name"
-          rules={[{ required: true, message: 'Task name is required.' }]}
+          label={t('instructor.practices.updateTask.taskName')}
+          rules={[{ required: true, message: t('instructor.practices.updateTask.taskNameRequired') }]}
         >
-          <Input placeholder="Task Name" maxLength={200} />
+          <Input placeholder={t('instructor.practices.updateTask.taskNamePlaceholder')} maxLength={200} />
         </Form.Item>
         <Form.Item
           name="taskCode"
-          label="Task Code"
+          label={t('instructor.practices.updateTask.taskCode')}
         >
-          <Input placeholder="Task Code" maxLength={50} />
+          <Input placeholder={t('instructor.practices.updateTask.taskCodePlaceholder')} maxLength={50} />
         </Form.Item>
         <Form.Item
           name="taskDescription"
-          label="Task Description"
-          rules={[{ required: true, message: 'Task description is required.' }]}
+          label={t('instructor.practices.updateTask.taskDescription')}
+          rules={[{ required: true, message: t('instructor.practices.updateTask.taskDescriptionRequired') }]}
         >
-          <Input.TextArea rows={3} placeholder="Task Description" maxLength={1000} />
+          <Input.TextArea rows={3} placeholder={t('instructor.practices.updateTask.taskDescriptionPlaceholder')} maxLength={1000} />
         </Form.Item>
         <Form.Item
           name="expectedResult"
-          label="Expected Result"
-          rules={[{ required: true, message: 'Expected result is required.' }]}
+          label={t('instructor.practices.updateTask.expectedResult')}
+          rules={[{ required: true, message: t('instructor.practices.updateTask.expectedResultRequired') }]}
         >
-          <Input.TextArea rows={3} placeholder="Expected Result" maxLength={1000} />
+          <Input.TextArea rows={3} placeholder={t('instructor.practices.updateTask.expectedResultPlaceholder')} maxLength={1000} />
         </Form.Item>
       </Form>
     </Modal>

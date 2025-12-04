@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const TaskTable = ({
     data = [],
@@ -10,6 +11,8 @@ const TaskTable = ({
     onDelete = () => { },
     pagination = {},
 }) => {
+    const { t } = useTranslation();
+
     const tableColumns = [
         {
             title: '#',
@@ -24,7 +27,7 @@ const TaskTable = ({
             ),
         },
         {
-            title: 'Task Code',
+            title: t('simManager.tasks.columns.taskCode'),
             dataIndex: 'taskCode',
             key: 'taskCode',
             width: 160,
@@ -32,7 +35,7 @@ const TaskTable = ({
             render: (code) => <div className="text-sm">{code}</div>,
         },
         {
-            title: 'Task Name',
+            title: t('simManager.tasks.columns.taskName'),
             dataIndex: 'taskName',
             key: 'taskName',
             width: 200,
@@ -46,7 +49,7 @@ const TaskTable = ({
             ),
         },
         {
-            title: 'Expected Result',
+            title: t('simManager.tasks.columns.expectedResult'),
             dataIndex: 'expectedResult',
             key: 'expectedResult',
             width: 300,
@@ -55,20 +58,20 @@ const TaskTable = ({
             ),
         },
         {
-            title: 'Actions',
+            title: t('simManager.tasks.columns.actions'),
             key: 'actions',
             width: 120,
             fixed: 'right',
             align: 'center',
             render: (_, record) => (
                 <Space size="small">
-                    <Tooltip title="View Details">
+                    <Tooltip title={t('simManager.tasks.viewDetails')}>
                         <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(record)} />
                     </Tooltip>
-                    <Tooltip title="Edit">
+                    <Tooltip title={t('simManager.tasks.edit')}>
                         <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(record)} />
                     </Tooltip>
-                    <Tooltip title="Delete">
+                    <Tooltip title={t('simManager.tasks.delete')}>
                         <Button
                             type="text"
                             size="small"
@@ -104,7 +107,7 @@ const TaskTable = ({
                     onChange={pagination.onChange}
                     showSizeChanger
                     pageSizeOptions={['10', '20', '50']}
-                    showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} tasks`}
+                    showTotal={(total, range) => t('simManager.tasks.pagination', { start: range[0], end: range[1], total })}
                 />
             </div>
         </div>

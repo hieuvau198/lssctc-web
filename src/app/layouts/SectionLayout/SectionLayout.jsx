@@ -1,6 +1,7 @@
 // src\app\layouts\SectionLayout\SectionLayout.jsx
 import React from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import ScrollTop from '../../components/ScrollTop/ScrollTop';
 import { Alert, Skeleton, Tooltip, Button, Progress, Modal } from 'antd';
 import { CheckCircle2, ArrowLeft, GraduationCap, Trophy, PartyPopper, Star } from 'lucide-react';
@@ -14,6 +15,7 @@ export default function SectionLayout({
   error,
   courseTitle = "Course Title",
 }) {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { courseId, sessionId } = useParams();
@@ -65,10 +67,10 @@ export default function SectionLayout({
 
           {/* Title */}
           <h2 className="text-2xl font-bold text-slate-900 mb-2">
-            🎉 Congratulations! 🎉
+            🎉 {t('sectionLayout.congratulations')} 🎉
           </h2>
           <p className="text-lg text-slate-600 mb-4">
-            You have completed
+            {t('sectionLayout.youHaveCompleted')}
           </p>
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6 border border-blue-100">
             <h3 className="text-xl font-bold text-blue-700">
@@ -79,12 +81,12 @@ export default function SectionLayout({
           {/* Progress */}
           <div className="flex items-center justify-center gap-2 text-green-600 mb-6">
             <CheckCircle2 className="w-6 h-6" />
-            <span className="text-lg font-semibold">100% Complete</span>
+            <span className="text-lg font-semibold">100% {t('sectionLayout.complete')}</span>
           </div>
 
           {/* Message */}
           <p className="text-slate-500 mb-6">
-            Great job! You've successfully completed all activities in this class.
+            {t('sectionLayout.greatJob')}
           </p>
 
           {/* Actions */}
@@ -96,7 +98,7 @@ export default function SectionLayout({
                 navigate(`/my-classes/${classId}`);
               }}
             >
-              Back to Class
+              {t('sectionLayout.backToClass')}
             </Button>
             <Button 
               type="primary" 
@@ -104,7 +106,7 @@ export default function SectionLayout({
               onClick={closeCompletionModal}
               className="shadow-lg shadow-blue-200"
             >
-              Continue Learning
+              {t('sectionLayout.continueLearning')}
             </Button>
           </div>
         </div>
@@ -126,7 +128,7 @@ export default function SectionLayout({
                 type="text"
                 shape="circle"
                 size="small"
-                aria-label="Back to class"
+                aria-label={t('sectionLayout.backToClassAriaLabel')}
                 onClick={() => navigate(`/my-classes/${classId}`)}
                 icon={<ArrowLeft className="w-4 h-4 text-blue-700" />}
                 className="hover:bg-blue-300/50 border-blue-300"
@@ -148,8 +150,8 @@ export default function SectionLayout({
             {/* Progress Bar */}
             <div className="relative space-y-2">
               <div className="flex items-center justify-between text-xs text-blue-800">
-                <span className="font-medium">Your Progress</span>
-                <span className="font-semibold">{completedActivities}/{totalActivities} Activities</span>
+                <span className="font-medium">{t('sectionLayout.yourProgress')}</span>
+                <span className="font-semibold">{completedActivities}/{totalActivities} {t('sectionLayout.activities')}</span>
               </div>
               <Progress
                 percent={progress}
@@ -159,7 +161,7 @@ export default function SectionLayout({
                 showInfo={false}
               />
               <div className="text-right text-xs font-semibold text-blue-700">
-                {progress}% Complete
+                {progress}% {t('sectionLayout.complete')}
               </div>
             </div>
           </div>
@@ -183,7 +185,7 @@ export default function SectionLayout({
                 ))}
               </div>
             ) : (
-              <SidebarMenu items={items} activeId={activeId} navigate={navigate} onSelectItem={onSelectItem} />
+              <SidebarMenu items={items} activeId={activeId} navigate={navigate} onSelectItem={onSelectItem} t={t} />
             )}
           </div>
         </aside>
@@ -203,7 +205,7 @@ export default function SectionLayout({
 }
 
 // Separate component for sidebar menu
-function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
+function SidebarMenu({ items, activeId, navigate, onSelectItem, t }) {
   const [expandedSections, setExpandedSections] = React.useState({});
 
   // Group items by sections
@@ -389,7 +391,7 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
                         {isActive && (
                           <div className="flex-shrink-0 flex items-center">
                             <div className="px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full leading-tight">
-                              Current
+                              {t('sectionLayout.current')}
                             </div>
                           </div>
                         )}
@@ -405,7 +407,7 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem }) {
 
       {items.length === 0 && (
         <div className="px-3 py-6 text-xs text-slate-500 text-center">
-          No session items
+          {t('sectionLayout.noSessionItems')}
         </div>
       )}
     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router'; // Thêm Link để điều hướng về Home
 import { App, Divider, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { 
   
   FacebookFilled, 
@@ -25,6 +26,7 @@ import useAuthStore from '../../../store/authStore';
 import useLoginGoogle from '../../../hooks/useLoginGoogle';
 
 export default function Login() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const nav = useNavigate();
   const { setToken } = useAuthStore();
@@ -105,7 +107,7 @@ export default function Login() {
       // message.success('Login successful');
     } catch (err) {
       console.error('Login error:', err);
-      message.error(err.response?.data?.message || 'Đăng nhập thất bại');
+      message.error(err.response?.data?.message || t('auth.loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -118,12 +120,12 @@ export default function Login() {
     e.preventDefault();
     setSending(true);
     if (!resetEmail) {
-        message.warning('Please enter your email address');
+        message.warning(t('auth.enterEmail'));
         setSending(false);
         return;
     }
     // Simulate API Call here
-    message.success(`OTP code sent to ${resetEmail}`);
+    message.success(t('auth.otpSent', { email: resetEmail }));
     setForgotStep(2); 
     setSending(false);
   };
@@ -132,12 +134,12 @@ export default function Login() {
     e.preventDefault();
     setSending(true);
     if (otpCode.length !== 6) {
-        message.error('Code must be 6 digits');
+        message.error(t('auth.otpMustBe6Digits'));
         setSending(false);
         return;
     }
     // Simulate API Call here
-    message.success('Password reset successfully!');
+    message.success(t('auth.passwordResetSuccess'));
     
     // Reset states and slide back to login
     setForgotStep(1);
@@ -159,7 +161,7 @@ export default function Login() {
             <img src="/crane-truck.png" alt="LSSCTC Logo" className="header-logo" />
             <span className="brand-name">LSSCTC</span>
           </Link>
-          <span className="page-title">Sign In</span>
+          <span className="page-title">{t('auth.signIn')}</span>
         </div>
         </header>
 
@@ -169,28 +171,28 @@ export default function Login() {
         <div className="form-container sign-up">
           {forgotStep === 1 ? (
             <form onSubmit={handleSendCode}>
-              <h1>Recovery Password</h1>
+              <h1>{t('auth.resetPassword')}</h1>
               <div className="social-icons">
                 <span className="icon"><MailOutlined style={{fontSize: '20px'}}/></span>
               </div>
-              <span className="text-desc">Enter your email to receive verification code</span>
+              <span className="text-desc">{t('auth.forgotPasswordDesc')}</span>
               <Input
                 type="email"
-                placeholder="Email Address"
+                placeholder={t('common.email')}
                 value={resetEmail}
                 onChange={(e) => setResetEmail(e.target.value)}
                 required
                 disabled={sending}
               />
-              <button type="submit" style={{marginTop: '15px'}}>Send Code</button>
+              <button type="submit" style={{marginTop: '15px'}}>{t('auth.sendVerificationCode')}</button>
             </form>
           ) : (
             <form onSubmit={handleVerifyOtp}>
-              <h1>Verification</h1>
+              <h1>{t('auth.verifyCode')}</h1>
               <div className="social-icons">
                 <span className="icon"><KeyOutlined style={{fontSize: '20px'}}/></span>
               </div>
-              <span className="text-desc">Enter the 6-digit code sent to your email</span>
+              <span className="text-desc">{t('auth.enterVerificationCode', { email: resetEmail })}</span>
               
               <Input
                 placeholder="000000"
@@ -204,7 +206,7 @@ export default function Login() {
                 disabled={sending}
               />
               <Input.Password
-                placeholder="New Password"
+                placeholder={t('auth.newPassword')}
                 value={newPassword}
                 size='small'
                 onChange={(e) => setNewPassword(e.target.value)}
@@ -212,10 +214,10 @@ export default function Login() {
                 disabled={sending}
               />
               
-              <button type="submit" style={{marginTop: '10px'}}>Reset Password</button>
+              <button type="submit" style={{marginTop: '10px'}}>{t('auth.resetPassword')}</button>
               
               <div onClick={() => setForgotStep(1)} className="back-link">
-                <ArrowLeftOutlined /> Back to Email
+                <ArrowLeftOutlined /> {t('common.back')}
               </div>
             </form>
           )}
@@ -224,10 +226,10 @@ export default function Login() {
         {/* --- FORM ĐĂNG NHẬP (Bên phải) --- */}
         <div className="form-container sign-in">
           <form onSubmit={handleLoginSubmit}>
-            <h1>Sign In</h1>
+            <h1>{t('auth.signIn')}</h1>
             
             <Input
-              placeholder="Email or Username"
+              placeholder={t('auth.username')}
               value={identity}
               size="small"
               onChange={(e) => setIdentity(e.target.value)}
@@ -235,7 +237,7 @@ export default function Login() {
               disabled={loading}
             />
             <Input.Password
-              placeholder="Password"
+              placeholder={t('auth.password')}
               size="small"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -251,19 +253,19 @@ export default function Login() {
                     onChange={(e) => setRemember(e.target.checked)}
                     disabled={loading}
                   />
-                  Remember me
+                  {t('auth.rememberMe')}
                 </label>
                 {/* Link kích hoạt hiệu ứng trượt */}
                 <a href="#" onClick={(e) => { e.preventDefault(); setIsActive(true); }}>
-                  Forgot Password?
+                  {t('auth.forgotPassword')}
                 </a>
             </div>
 
             <button type="submit" disabled={loading} style={{marginTop: '15px'}}>
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? t('auth.signingIn') : t('auth.signIn')}
             </button>
 
-            <Divider style={{ margin: '10px', fontSize: '12px', color: '#94a3b8' }}>OR</Divider>
+            <Divider style={{ margin: '10px', fontSize: '12px', color: '#94a3b8' }}>{t('auth.orContinueWith')}</Divider>
 
             <div className="social-icons">
               <a
@@ -290,19 +292,19 @@ export default function Login() {
             
             {/* Panel Trái: Hiện khi đang ở trang Forgot Password */}
             <div className="toggle-panel toggle-left">
-              <h1>Remember Password?</h1>
-              <p>If you already have an account, just sign in to continue your journey.</p>
+              <h1>{t('auth.rememberedPassword')}</h1>
+              <p>{t('auth.signInContinue')}</p>
               <button onClick={() => setIsActive(false)} aria-label="Go to Sign In">
-                Sign In
+                {t('auth.signIn')}
               </button>
             </div>
             
             {/* Panel Phải: Hiện khi đang ở trang Login */}
             <div className="toggle-panel toggle-right">
-              <h1>Forgot Password?</h1>
-              <p>Don't worry! Enter your email to receive a recovery code and reset your password.</p>
+              <h1>{t('auth.forgotPassword')}</h1>
+              <p>{t('auth.forgotPasswordDesc')}</p>
               <button onClick={() => setIsActive(true)} aria-label="Go to Recovery">
-                Recovery Password
+                {t('auth.resetPassword')}
               </button>
             </div>
 

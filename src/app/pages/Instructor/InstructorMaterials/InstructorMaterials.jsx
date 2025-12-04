@@ -2,6 +2,7 @@ import { Alert, Button, Card, Skeleton } from 'antd';
 import { BookOpen, Video, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { getLearningMaterials } from '../../../apis/Instructor/InstructorSectionApi';
 import AddMaterials from './partials/AddMaterials';
 import EditMaterials from './partials/EditMaterials';
@@ -14,6 +15,7 @@ function useQuery() {
 }
 
 export default function InstructorMaterials() {
+  const { t } = useTranslation();
   const query = useQuery();
   const { id } = useParams();
   const isAddMode = query.get('mode') === 'add';
@@ -37,7 +39,7 @@ export default function InstructorMaterials() {
         setMaterials(Array.isArray(res.items) ? res.items : []);
       } catch (err) {
         if (cancelled) return;
-        setError(err?.message || 'Failed to load materials');
+        setError(err?.message || t('instructor.materials.messages.loadFailed'));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -75,7 +77,7 @@ export default function InstructorMaterials() {
     <div className="max-w-7xl mx-auto px-4 py-4">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <span className="text-2xl">Materials</span>
+          <span className="text-2xl">{t('instructor.materials.title')}</span>
         </div>
         <div className="flex items-center gap-3">
           <Button 
@@ -83,7 +85,7 @@ export default function InstructorMaterials() {
             icon={<Plus className="w-4 h-4" />}
             onClick={() => navigate('/instructor/materials?mode=add')}
           >
-            Create Material
+            {t('instructor.materials.createMaterial')}
           </Button>
           <Button.Group>
             <Button
@@ -91,14 +93,14 @@ export default function InstructorMaterials() {
               icon={<BookOpen />}
               onClick={() => setActiveTab('docs')}
             >
-              Docs
+              {t('instructor.materials.docs')}
             </Button>
             <Button
               type={activeTab === 'videos' ? 'primary' : 'default'}
               icon={<Video />}
               onClick={() => setActiveTab('videos')}
             >
-              Videos
+              {t('instructor.materials.videos')}
             </Button>
           </Button.Group>
         </div>
@@ -109,7 +111,7 @@ export default function InstructorMaterials() {
           <Skeleton active paragraph={{ rows: 6 }} />
         </Card>
       ) : error ? (
-        <Alert type="error" message="Error" description={error} />
+        <Alert type="error" message={t('common.error')} description={error} />
       ) : (
         <div>
           {activeTab === 'videos' ? (

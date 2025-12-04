@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Empty, Skeleton, Tooltip, Button, App } from 'antd';
+import { useTranslation } from 'react-i18next';
 import PracticeTable from './partials/PracticeTable';
 import { getPractices } from '../../../apis/Instructor/InstructorPractice';
 import { useNavigate } from 'react-router';
 
 // Trang thực hành Instructor chuyển sang phong cách tương tự Course Admin (chỉ bảng)
 export default function InstructorPractices() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [loading, setLoading] = useState(true);
   const [practices, setPractices] = useState([]);
@@ -22,7 +24,7 @@ export default function InstructorPractices() {
       setTotal(res.totalCount || 0);
     } catch (e) {
       console.error('Failed to load practices', e);
-      message.error('Load practices thất bại');
+      message.error(t('instructor.practices.loadFailed'));
       setPractices([]);
       setTotal(0);
     } finally {
@@ -49,12 +51,12 @@ export default function InstructorPractices() {
     <div className="max-w-7xl mx-auto px-4 py-2">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">Practices</span>
+        <span className="text-2xl">{t('instructor.practices.title')}</span>
       </div>
 
       {/* Content */}
       {(!practices || practices.length === 0) ? (
-        <Empty description="Không có practice" className="mt-16" />
+        <Empty description={t('instructor.practices.noPractices')} className="mt-16" />
       ) : (
         <div className="bg-white rounded-lg shadow">
           <div className="overflow-hidden">

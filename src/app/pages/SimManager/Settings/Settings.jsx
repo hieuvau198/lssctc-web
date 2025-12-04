@@ -1,6 +1,7 @@
 // src/app/pages/SimManager/Settings/Settings.jsx
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getComponents } from '../../../apis/SimulationManager/SimulationManagerComponentApi';
 import UpdateComponent from './partials/UpdateComponent';
 import { Typography, Card, Tag, Button, Modal, Pagination, Space, Skeleton, Alert, Tabs, Empty, Badge, Tooltip } from 'antd';
@@ -9,6 +10,7 @@ import { CheckCircle2, Pencil } from 'lucide-react';
 const { Title, Paragraph, Text } = Typography;
 
 export default function SimSettings() {
+  const { t } = useTranslation();
   const [components, setComponents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
@@ -45,11 +47,11 @@ export default function SimSettings() {
   const items = [
     {
       key: 'components',
-      label: 'Components',
+      label: t('simManager.settings.components'),
       children: (
         <div>
           {err && (
-            <Alert className="mb-4" type="error" showIcon message="Failed to load" description={err} />
+            <Alert className="mb-4" type="error" showIcon message={t('simManager.settings.failedToLoad')} description={err} />
           )}
 
           {loading ? (
@@ -61,7 +63,7 @@ export default function SimSettings() {
               ))}
             </div>
           ) : components.length === 0 ? (
-            <Empty description="No components found" className="bg-white rounded-lg py-10" />
+            <Empty description={t('simManager.settings.noComponents')} className="bg-white rounded-lg py-10" />
           ) : (
             <div className="grid grid-cols-1 gap-6">
               {components.map((comp) => (
@@ -75,7 +77,7 @@ export default function SimSettings() {
                       {comp.imageUrl ? (
                         <img src={comp.imageUrl} alt={comp.name} className="w-full h-full object-cover" loading="lazy" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-400">No image</div>
+                        <div className="w-full h-full flex items-center justify-center text-slate-400">{t('simManager.settings.noImage')}</div>
                       )}
                     </div>
                     <div className="flex-1">
@@ -86,15 +88,15 @@ export default function SimSettings() {
                           <Space size="small" wrap>
                             <Text type="secondary">ID: {comp.id}</Text>
                             {comp.isActive ? (
-                              <Tag color="blue">Active</Tag>
+                              <Tag color="blue">{t('common.active')}</Tag>
                             ) : (
-                              <Tag color="red">Inactive</Tag>
+                              <Tag color="red">{t('common.inactive')}</Tag>
                             )}
                           </Space>
                         </div>
-                        <Tooltip title="Edit">
+                        <Tooltip title={t('common.edit')}>
                           <Button type="primary" icon={<Pencil className="w-4 h-4" />} onClick={() => setEditing(comp)}>
-                            Edit
+                            {t('common.edit')}
                           </Button>
                         </Tooltip>
                       </div>
@@ -116,7 +118,7 @@ export default function SimSettings() {
           </div>
 
           <Modal
-            title="Update Component"
+            title={t('simManager.settings.updateComponent')}
             open={!!editing}
             onCancel={() => setEditing(null)}
             footer={null}
@@ -139,8 +141,8 @@ export default function SimSettings() {
   return (
     <div className="max-w-[1380px] mx-auto px-4 py-6">
       <div className="bg-white border rounded-xl p-6 mb-6">
-        <Title level={3} className="!mb-1">Settings</Title>
-        <Paragraph className="!mb-0 text-slate-600">Manage simulation manager preferences and components.</Paragraph>
+        <Title level={3} className="!mb-1">{t('simManager.settings.title')}</Title>
+        <Paragraph className="!mb-0 text-slate-600">{t('simManager.settings.subtitle')}</Paragraph>
       </div>
 
       <Tabs defaultActiveKey="components" items={items} />

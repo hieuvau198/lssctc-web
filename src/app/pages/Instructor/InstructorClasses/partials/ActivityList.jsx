@@ -7,42 +7,44 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getActivitiesBySectionId } from '../../../../apis/Instructor/InstructorSectionApi';
 import ManageMaterialModal from './Sections/ManageMaterialModal';
 import ManageQuizModal from './Sections/ManageQuizModal';
 import ManagePracticeModal from './Sections/ManagePracticeModal';
 import ActivityDetailView from './Sections/ActivityDetail/ActivityDetailView'; 
 
-const getActivityTypeDetails = (type) => {
+const getActivityTypeDetails = (type, t) => {
   switch (type?.toLowerCase()) {
     case 'material':
       return {
         icon: <BookOutlined />,
         color: 'blue',
-        label: 'Material',
+        label: t('instructor.classes.addActivityModal.typeMaterial'),
       };
     case 'quiz':
       return {
         icon: <QuestionCircleOutlined />,
         color: 'green',
-        label: 'Quiz',
+        label: t('instructor.classes.addActivityModal.typeQuiz'),
       };
     case 'practice':
       return {
         icon: <LaptopOutlined />,
         color: 'purple',
-        label: 'Practice',
+        label: t('instructor.classes.addActivityModal.typePractice'),
       };
     default:
       return {
         icon: <FileTextOutlined />,
         color: 'default',
-        label: type || 'Activity',
+        label: type || t('instructor.classes.activities'),
       };
   }
 };
 
 const ActivityList = ({ sectionId, classId, refreshKey }) => {
+  const { t } = useTranslation();
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,7 +61,7 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
   const fetchActivities = async () => {
     if (!sectionId) {
       setLoading(false);
-      setError('No Section ID provided.');
+      setError(t('instructor.classes.activityList.noSectionId'));
       return;
     }
     setLoading(true);
@@ -68,7 +70,7 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
       const data = await getActivitiesBySectionId(sectionId);
       setActivities(data || []);
     } catch (err) {
-      setError(err.message || 'Failed to load activities');
+      setError(err.message || t('instructor.classes.activityList.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -143,11 +145,11 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
   }
 
   if (error) {
-    return <Alert message="Error" description={error} type="error" showIcon className="m-4" />;
+    return <Alert message={t('instructor.classes.activityList.error')} description={error} type="error" showIcon className="m-4" />;
   }
 
   if (activities.length === 0) {
-    return <div className="p-4 text-gray-500">No activities found for this section.</div>;
+    return <div className="p-4 text-gray-500">{t('instructor.classes.activityList.noActivities')}</div>;
   }
 
   return (
@@ -156,26 +158,26 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
         itemLayout="horizontal"
         dataSource={activities}
         renderItem={(item) => {
-          const typeDetails = getActivityTypeDetails(item.type);
+          const typeDetails = getActivityTypeDetails(item.type, t);
           const actions = [];
 
           // --- MODIFIED: Add "Manage" buttons based on type ---
           if (item.type?.toLowerCase() === 'material') {
             actions.push(
               <Button type="link" icon={<SettingOutlined />} onClick={(e) => { e.stopPropagation(); openManageMaterial(item); }}>
-                Manage Material
+                {t('instructor.classes.activityList.manageMaterial')}
               </Button>
             );
           } else if (item.type?.toLowerCase() === 'quiz') {
             actions.push(
               <Button type="link" icon={<SettingOutlined />} onClick={(e) => { e.stopPropagation(); openManageQuiz(item); }}>
-                Manage Quiz
+                {t('instructor.classes.activityList.manageQuiz')}
               </Button>
             );
           } else if (item.type?.toLowerCase() === 'practice') {
             actions.push(
               <Button type="link" icon={<SettingOutlined />} onClick={(e) => { e.stopPropagation(); openManagePractice(item); }}>
-                Manage Practice
+                {t('instructor.classes.activityList.managePractice')}
               </Button>
             );
           }
@@ -202,7 +204,7 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
                   <div className="flex flex-col">
                     <span>{item.description}</span>
                     <span className="text-xs text-gray-500 mt-1">
-                      {typeDetails.label} • {item.duration} minutes
+                      {typeDetails.label} • {item.duration} {t('instructor.classes.activityList.minutes')}
                     </span>
                   </div>
                 }
@@ -214,7 +216,7 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
 
       {/* --- ADDED: Detail Drawer --- */}
       <Drawer
-        title="Activity Details"
+        title={t('instructor.classes.activityList.activityDetails')}
         placement="right"
         width={720}
         onClose={closeDetailDrawer}

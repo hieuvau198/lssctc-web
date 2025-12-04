@@ -1,8 +1,10 @@
 import React from 'react';
 import { Card, Button, Tooltip, Tag } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemove }) {
+    const { t } = useTranslation();
     const handleDelete = onDelete || onRemove;
 
     return (
@@ -23,7 +25,7 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
             extra={
                 <div className="flex gap-1">
                     {onView && (
-                        <Tooltip title="View">
+                        <Tooltip title={t('common.view')}>
                             <Button
                                 type="text"
                                 size="small"
@@ -33,7 +35,7 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
                         </Tooltip>
                     )}
                     {onEdit && (
-                        <Tooltip title="Edit">
+                        <Tooltip title={t('common.edit')}>
                             <Button
                                 type="text"
                                 size="small"
@@ -43,7 +45,7 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
                         </Tooltip>
                     )}
                     {(onDelete || onRemove) && (
-                        <Tooltip title={onRemove ? "Remove" : "Delete"}>
+                        <Tooltip title={onRemove ? t('common.remove') : t('common.delete')}>
                             <Button
                                 type="text"
                                 size="small"
@@ -58,15 +60,15 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
         >
             <div className="flex flex-col gap-1 flex-1">
                 <div className="text-xs text-slate-500">
-                    Code: <Tag color="blue" size="small">{task.taskCode}</Tag>
+                    {t('common.code')}: <Tag color="blue" size="small">{task.taskCode}</Tag>
                 </div>
                 <div className="flex-1">
                     <p className="text-xs text-slate-600 line-clamp-2">
-                        {task.taskDescription || 'N/A'}
+                        {task.taskDescription || t('common.na')}
                     </p>
                 </div>
                 <div className="text-xs bg-green-50 border border-green-200 rounded p-1 text-green-800 my-auto">
-                    <strong>Expected:</strong> <span className="line-clamp-2">{task.expectedResult || 'N/A'}</span>
+                    <strong>{t('common.expected')}:</strong> <span className="line-clamp-2">{task.expectedResult || t('common.na')}</span>
                 </div>
             </div>
         </Card>
