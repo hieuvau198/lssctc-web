@@ -1,6 +1,7 @@
 // src\app\pages\Trainee\Learn\partials\VideoContent.jsx
 
 import React, { useState, useRef } from "react";
+import { useTranslation } from 'react-i18next';
 import { Button, Progress, Tag } from "antd";
 import { Play, CheckCircle2, Video, Clock } from "lucide-react";
 
@@ -30,6 +31,7 @@ export default function VideoContent({
   videoUrl,
   onMarkAsComplete,
 }) {
+  const { t } = useTranslation();
   const [completed, setCompleted] = useState(initialCompleted);
   const [progress, setProgress] = useState(initialCompleted ? 100 : 0);
   const videoRef = useRef(null);
@@ -78,9 +80,9 @@ export default function VideoContent({
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <Tag color="blue" className="text-xs font-medium">Video</Tag>
+                  <Tag color="blue" className="text-xs font-medium">{t('trainee.learn.video')}</Tag>
                   {completed && (
-                    <Tag color="success" className="text-xs font-medium">Completed</Tag>
+                    <Tag color="success" className="text-xs font-medium">{t('trainee.learn.completed')}</Tag>
                   )}
                 </div>
                 <h1 className="text-xl font-bold text-slate-900">{title}</h1>
@@ -120,7 +122,7 @@ export default function VideoContent({
                     <Play className="w-10 h-10" />
                   </div>
                   <p className="text-lg font-semibold">{title}</p>
-                  <p className="text-slate-400 text-sm">No video URL provided</p>
+                  <p className="text-slate-400 text-sm">{t('trainee.learn.noVideoUrl')}</p>
                 </div>
               </div>
             )}
@@ -130,7 +132,7 @@ export default function VideoContent({
           {!isYouTube && (
             <div className="mt-4">
               <div className="flex items-center justify-between text-sm text-slate-600 mb-2">
-                <span>Watch Progress</span>
+                <span>{t('trainee.learn.watchProgress')}</span>
                 <span className="font-medium">{Math.round(progress)}%</span>
               </div>
               <Progress
@@ -149,12 +151,12 @@ export default function VideoContent({
             {completed ? (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full">
                 <CheckCircle2 className="w-4 h-4" />
-                <span className="text-sm font-medium">Completed</span>
+                <span className="text-sm font-medium">{t('trainee.learn.completed')}</span>
               </div>
             ) : (
               <div className="flex items-center gap-2 text-slate-500">
                 <Clock className="w-4 h-4" />
-                <span className="text-sm">In Progress</span>
+                <span className="text-sm">{t('trainee.learn.inProgress')}</span>
               </div>
             )}
           </div>
@@ -162,7 +164,7 @@ export default function VideoContent({
           {/* Manual mark button for YouTube */}
           {isYouTube && !completed && (
             <Button type="primary" onClick={handleManualMarkComplete} className="shadow-sm">
-              Mark as Complete
+              {t('trainee.learn.markComplete')}
             </Button>
           )}
         </div>

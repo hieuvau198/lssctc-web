@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import { Drawer, Space, Button, Popconfirm } from "antd";
 import ProgramCreateForm from "./ProgramCreateForm";
 import ProgramEditForm from "./ProgramEditForm";
@@ -20,14 +21,16 @@ const ProgramDrawer = ({
   onSwitchToEdit,
   onSwitchToView, // Add this prop
 }) => {
+  const { t } = useTranslation();
+  
   const getTitle = () => {
     switch (mode) {
       case 'create':
-        return 'Create Program';
+        return t('admin.programs.createProgram');
       case 'edit':
-        return 'Edit Program';
+        return t('admin.programs.editProgram');
       default:
-        return currentProgram?.name || 'Program Detail';
+        return currentProgram?.name || t('admin.programs.programDetail');
     }
   };
 
@@ -35,15 +38,15 @@ const ProgramDrawer = ({
     if (mode === 'view' && currentProgram) {
       return (
         <Space>
-          <Button onClick={onSwitchToEdit}>Edit</Button>
+          <Button onClick={onSwitchToEdit}>{t('common.edit')}</Button>
           <Popconfirm
-            title="Delete program?"
-            description="Are you sure you want to delete this program?"
+            title={t('admin.programs.deleteConfirmTitle')}
+            description={t('admin.programs.deleteConfirmDesc')}
             onConfirm={() => onDelete(currentProgram.id)}
             okButtonProps={{ loading: deletingId === currentProgram.id }}
           >
             <Button danger loading={deletingId === currentProgram.id}>
-              Delete
+              {t('common.delete')}
             </Button>
           </Popconfirm>
         </Space>

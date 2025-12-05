@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { Form, Input, InputNumber, Switch, Button, Space, Image } from "antd";
 
 const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
+  const { t } = useTranslation();
   const [preview, setPreview] = useState(null);
 
   useEffect(() => {
@@ -18,10 +20,10 @@ const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
     >
       <Form.Item
         name="name"
-        label="Program Name"
-        rules={[{ required: true, message: "Please enter program name" }]}
+        label={t('admin.programs.form.name')}
+        rules={[{ required: true, message: t('admin.programs.form.nameRequired') }]}
       >
-        <Input maxLength={120} showCount placeholder="Enter program name" />
+        <Input maxLength={120} showCount placeholder={t('admin.programs.form.namePlaceholder')} />
       </Form.Item>
 
       {/* <Form.Item
@@ -40,10 +42,10 @@ const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
         <Form.Item
           name="imageUrl"
-          label="Image URL"
+          label={t('admin.programs.form.imageUrl')}
           rules={[
-            { required: true, message: "Please enter image URL" },
-            { type: "url", message: "Please enter a valid URL" },
+            { required: true, message: t('admin.programs.form.imageUrlRequired') },
+            { type: "url", message: t('admin.programs.form.imageUrlInvalid') },
           ]}
         >
           <Input
@@ -58,12 +60,12 @@ const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
         </Form.Item>
 
         <div>
-          <div className="text-sm text-gray-600 mb-2">Image preview</div>
+          <div className="text-sm text-gray-600 mb-2">{t('admin.programs.form.imagePreview')}</div>
           <div className="w-32 h-32 flex items-center justify-center rounded-lg overflow-hidden bg-gray-100">
             {preview ? (
-              <Image src={preview} preview={{ mask: 'Click to preview' }} className="w-full h-full object-cover" />
+              <Image src={preview} preview={{ mask: t('common.clickToPreview') }} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">No image</div>
+              <div className="w-full h-full flex items-center justify-center text-gray-400">{t('common.noImage')}</div>
             )}
           </div>
         </div>
@@ -79,26 +81,26 @@ const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
       
       <Form.Item
         name="description"
-        label="Description"
-        rules={[{ required: true, message: "Please enter description" }]}
+        label={t('admin.programs.form.description')}
+        rules={[{ required: true, message: t('admin.programs.form.descriptionRequired') }]}
       >
         <Input.TextArea
           rows={3}
           maxLength={500}
           showCount
-          placeholder="Enter program description"
+          placeholder={t('admin.programs.form.descriptionPlaceholder')}
         />
       </Form.Item>
 
       <Form.Item>
         <Space>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onCancel}>{t('common.cancel')}</Button>
           <Button
             type="primary"
             htmlType="submit"
             loading={submitting}
           >
-            Update Program
+            {t('admin.programs.updateProgram')}
           </Button>
         </Space>
       </Form.Item>

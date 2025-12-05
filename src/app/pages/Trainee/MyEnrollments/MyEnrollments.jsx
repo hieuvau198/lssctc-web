@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { App, Card, Tag, Pagination, Skeleton, Empty, Segmented } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getMyEnrollmentsPaged } from '../../../apis/Trainee/TraineeEnrollment';
 import { getEnrollmentStatus } from '../../../utils/enrollmentStatus';
 import DayTimeFormat from '../../../components/DayTimeFormat/DayTimeFormat';
 import PageNav from '../../../components/PageNav/PageNav';
 
 export default function MyEnrollments() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const navigate = useNavigate();
   const [enrollments, setEnrollments] = useState([]);
@@ -50,13 +52,13 @@ export default function MyEnrollments() {
       <PageNav nameMap={{ 'my-enrollments': 'My Enrollments' }} />
       <div className="mt-2 space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 mb-4">My Enrollments</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 mb-4">{t('trainee.myEnrollments.title')}</h1>
           <Segmented
             options={[
-              { label: 'All', value: 'all' },
-              { label: 'Enrolled', value: 'enrolled' },
-              { label: 'In Progress', value: 'inprogress' },
-              { label: 'Completed', value: 'completed' },
+              { label: t('trainee.myEnrollments.allTab'), value: 'all' },
+              { label: t('trainee.myEnrollments.enrolledTab'), value: 'enrolled' },
+              { label: t('trainee.myEnrollments.inProgressTab'), value: 'inprogress' },
+              { label: t('trainee.myEnrollments.completedTab'), value: 'completed' },
             ]}
             value={statusFilter}
             onChange={setStatusFilter}
@@ -76,7 +78,7 @@ export default function MyEnrollments() {
 
         {!loading && filteredEnrollments.length === 0 && (
           <div className="min-h-[400px] flex items-center justify-center">
-            <Empty description="No enrollments found" className="py-16" />
+            <Empty description={t('trainee.myEnrollments.noEnrollments')} className="py-16" />
           </div>
         )}
 
@@ -110,7 +112,7 @@ export default function MyEnrollments() {
                                 <div className="mt-2 flex items-center gap-4 text-sm text-slate-600">
                                   <div className="flex items-center gap-2">
                                     <BookOpen className="w-4 h-4" />
-                                    <span>Enrolled: <DayTimeFormat value={enrollment.enrollDate} /></span>
+                                    <span>{t('trainee.myEnrollments.enrolledLabel')}: <DayTimeFormat value={enrollment.enrollDate} /></span>
                                   </div>
                                 </div>
                               </div>
@@ -137,7 +139,7 @@ export default function MyEnrollments() {
                   showSizeChanger
                   pageSizeOptions={['10', '20', '35', '50']}
                   showTotal={(total, range) =>
-                    `${range[0]}-${range[1]} of ${total} enrollments`
+                    t('trainee.myEnrollments.pagination', { start: range[0], end: range[1], total })
                   }
                 />
               </div>

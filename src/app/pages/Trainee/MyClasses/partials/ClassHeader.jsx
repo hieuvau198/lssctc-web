@@ -1,8 +1,10 @@
 import { Card, Tag } from 'antd';
 import { BookOpen, Clock, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getClassStatus } from '../../../../utils/classStatus';
 
 export default function ClassHeader({ classData }) {
+	const { t } = useTranslation();
 	if (!classData) return null;
 
 	return (
@@ -29,11 +31,11 @@ export default function ClassHeader({ classData }) {
 							<div className="flex items-center gap-6 text-sm text-slate-600 mb-4">
 								<div className="flex items-center gap-2">
 									<Users className="w-4 h-4" />
-									<span>{classData.capacity} students</span>
+									<span>{classData.capacity} {t('trainee.myClassDetail.students')}</span>
 								</div>
 								<div className="flex items-center gap-2">
 									<Clock className="w-4 h-4" />
-									<span>{classData.courseDurationHours} hrs</span>
+									<span>{classData.courseDurationHours} {t('trainee.myClassDetail.hrs')}</span>
 								</div>
 							</div>
 						</div>

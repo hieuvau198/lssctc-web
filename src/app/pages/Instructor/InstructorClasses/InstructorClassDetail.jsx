@@ -7,6 +7,10 @@ import BackButton from "../../../components/BackButton/BackButton";
 import ClassMembers from "./partials/ClassMembers";
 import ClassOverview from "./partials/ClassOverview";
 import ClassSections from "./partials/ClassSections";
+import ClassScheduleSlots from "./partials/ClassScheduleSlots";
+import WeeklyScheduleView from "./partials/WeeklyScheduleView";
+import AttendanceModal from "./partials/AttendanceModal";
+import { mockTeachingSlots, mockWeeklySchedule, mockAttendanceList } from "../../../mocks/teachingSlots";
 
 export default function InstructorClassDetail() {
   const { t } = useTranslation();
@@ -15,6 +19,8 @@ export default function InstructorClassDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -69,24 +75,47 @@ export default function InstructorClassDetail() {
     );
   }
 
+  // Mock data - filter slots for current class
+  const classSlots = mockTeachingSlots.filter(slot => slot.classId === classId);
+
   // Define tabItems ONLY when data is guaranteed to be available.
   const tabItems = [
     {
       key: "overview",
-      label: t('instructor.classes.overview'),
+      label: t('instructor.classes.overviewTitle'),
       children: <ClassOverview classData={classDetail} />,
     },
     {
       key: "sections",
-      label: t('instructor.classes.sections'),
+      label: t('instructor.classes.sectionsTitle'),
       // classDetail is now guaranteed to be non-null
       // We still use optional chaining just in case programCourseId is null
       children: <ClassSections courseId={classDetail?.courseId} classId={classId}/>,
     },
     {
       key: "members",
-      label: t('instructor.classes.members'),
+      label: t('instructor.classes.membersTitle'),
       children: <ClassMembers classId={classId} />,
+    },
+    {
+      key: "schedule",
+      label: t('attendance.classSchedule'),
+      children: (
+        <ClassScheduleSlots
+          classId={classId}
+          className={classDetail?.courseName || classDetail?.name}
+          slots={classSlots}
+          onTakeAttendance={(slot) => {
+            setSelectedSlot(slot);
+            setAttendanceModalOpen(true);
+          }}
+        />
+      ),
+    },
+    {
+      key: "weekly",
+      label: t('attendance.weeklySchedule'),
+      children: <WeeklyScheduleView weeklySchedule={mockWeeklySchedule} />,
     },
   ];
 
@@ -115,6 +144,13 @@ export default function InstructorClassDetail() {
           type="line"
         />
       </div>
+
+      <AttendanceModal
+        open={attendanceModalOpen}
+        onClose={() => setAttendanceModalOpen(false)}
+        slotData={selectedSlot}
+        attendanceList={mockAttendanceList}
+      />
     </div>
   );
 }

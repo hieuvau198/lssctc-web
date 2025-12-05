@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Empty, Skeleton, Tag, message } from 'antd';
 import { Award, Calendar, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageNav from '../../../components/PageNav/PageNav';
 import { getAllTraineeCertificates } from '../../../apis/Trainee/TraineeCertificateApi';
 import { getAuthToken } from '../../../libs/cookies';
@@ -9,6 +10,7 @@ import { decodeToken } from '../../../libs/jwtDecode';
 import useAuthStore from '../../../store/authStore';
 
 export default function CertificateView() {
+	const { t } = useTranslation();
 	const authState = useAuthStore();
 	const traineeIdFromStore = authState.nameid;
 	const [certificates, setCertificates] = useState([]);
@@ -61,13 +63,13 @@ export default function CertificateView() {
 	};
 
 	const getStatusText = (expireDate) => {
-		if (!expireDate) return 'Valid';
+		if (!expireDate) return t('trainee.certificate.valid');
 		const exp = new Date(expireDate);
 		const now = new Date();
-		if (exp < now) return 'Expired';
+		if (exp < now) return t('trainee.certificate.expired');
 		const daysLeft = Math.floor((exp - now) / (1000 * 60 * 60 * 24));
-		if (daysLeft < 90) return 'Expiring Soon';
-		return 'Valid';
+		if (daysLeft < 90) return t('trainee.certificate.expiringSoon');
+		return t('trainee.certificate.valid');
 	};
 
 	if (loading) {
@@ -86,14 +88,14 @@ export default function CertificateView() {
 			<PageNav nameMap={{ certificate: 'Certificates' }} />
 			<div className="mt-2 space-y-6">
 				<div>
-					<h1 className="text-2xl font-semibold text-slate-900 mb-4">My Certificates</h1>
+					<h1 className="text-2xl font-semibold text-slate-900 mb-4">{t('trainee.certificate.title')}</h1>
 				</div>
 
 			{certificates.length === 0 ? (
 				<div className='min-h-screen '>
 					<Card className="rounded-xl shadow-md">
 						<Empty
-							description="Bạn chưa có chứng chỉ nào"
+							description={t('trainee.certificate.noCertificates')}
 							image={Empty.PRESENTED_IMAGE_SIMPLE}
 						/>
 					</Card>
@@ -121,7 +123,7 @@ export default function CertificateView() {
 												<iframe
 													src={`${cert.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
 													className="w-full h-full pointer-events-none"
-													title="Certificate Preview"
+													title={t('trainee.certificate.preview')}
 													scrolling="no"
 												/>
 												<Tag
@@ -162,13 +164,13 @@ export default function CertificateView() {
 											{issueDate && (
 												<div className="flex items-center gap-2 text-sm text-slate-600">
 													<Calendar className="w-4 h-4" />
-													<span>Issued: {issueDate.toLocaleDateString()}</span>
+													<span>{t('trainee.certificate.issued')}: {issueDate.toLocaleDateString()}</span>
 												</div>
 											)}
 											{expireDate && (
 												<div className="flex items-center gap-2 text-sm text-slate-600">
 													<Calendar className="w-4 h-4" />
-													<span>Expires: {expireDate.toLocaleDateString()}</span>
+													<span>{t('trainee.certificate.expires')}: {expireDate.toLocaleDateString()}</span>
 												</div>
 											)}
 										</div>

@@ -11,6 +11,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { createClass } from "../../../../apis/ProgramManager/ClassApi";
 import { fetchCourses, fetchPrograms } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
 import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
@@ -25,6 +26,7 @@ const AddClassForm = ({
   programCourseId,
   onCreated
 }) => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -109,7 +111,7 @@ const AddClassForm = ({
       onClose();
     } catch (err) {
       setError(
-        err?.response?.data?.message || err?.message || "Failed to create class"
+        err?.response?.data?.message || err?.message || t('admin.classes.createError')
       );
     } finally {
       setSaving(false);
@@ -134,32 +136,32 @@ const AddClassForm = ({
         }}
       >
         <Form.Item
-          label="Class Name"
+          label={t('admin.classes.form.className')}
           name="name"
-          rules={[{ required: true, message: "Please enter class name" }]}
+          rules={[{ required: true, message: t('admin.classes.form.classNameRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input placeholder="Class name" showCount maxLength={120} allowClear />
+          <Input placeholder={t('admin.classes.form.classNamePlaceholder')} showCount maxLength={120} allowClear />
         </Form.Item>
 
         <Form.Item
-          label="Class Code"
+          label={t('admin.classes.form.classCode')}
           name="classCode"
-          rules={[{ required: true, message: "Please enter class code" }]}
+          rules={[{ required: true, message: t('admin.classes.form.classCodeRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input placeholder="Class code" showCount allowClear maxLength={50} />
+          <Input placeholder={t('admin.classes.form.classCodePlaceholder')} showCount allowClear maxLength={50} />
         </Form.Item>
 
         {/* Program Selection */}
         <Form.Item
-          label="Program"
+          label={t('admin.classes.form.program')}
           name="programId"
-          rules={[{ required: true, message: 'Please select a program' }]}
+          rules={[{ required: true, message: t('admin.classes.form.programRequired') }]}
           className={embedded ? 'md:col-span-1' : undefined}
         >
           <Select
-            placeholder="Select a program"
+            placeholder={t('admin.classes.form.programPlaceholder')}
             loading={loadingPrograms}
             showSearch
             allowClear
@@ -180,13 +182,13 @@ const AddClassForm = ({
         {/* Course Selection - only show if not in program context */}
         {!programCourseId && (
           <Form.Item
-            label="Course"
+            label={t('admin.classes.form.course')}
             name="courseId"
-            rules={[{ required: true, message: "Please select a course" }]}
+            rules={[{ required: true, message: t('admin.classes.form.courseRequired') }]}
             className={embedded ? "md:col-span-1" : undefined}
           >
             <Select
-              placeholder="Select a course"
+              placeholder={t('admin.classes.form.coursePlaceholder')}
               loading={loadingCourses}
               disabled={!selectedProgram}
               showSearch
@@ -206,24 +208,24 @@ const AddClassForm = ({
         )}
 
         <Form.Item
-          label="Start Date"
+          label={t('admin.classes.form.startDate')}
           name="startDate"
-          rules={[{ required: true, message: "Please select start date" }]}
+          rules={[{ required: true, message: t('admin.classes.form.startDateRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
           <DatePicker className="w-full" />
         </Form.Item>
         <Form.Item
-          label="End Date"
+          label={t('admin.classes.form.endDate')}
           name="endDate"
           rules={[
-            { required: true, message: "Please select end date" },
+            { required: true, message: t('admin.classes.form.endDateRequired') },
             ({ getFieldValue }) => ({
               validator(_, value) {
                 const start = getFieldValue('startDate');
                 if (!value || !start) return Promise.resolve();
                 if (value.isAfter(start)) return Promise.resolve();
-                return Promise.reject(new Error('End date must be after start date'));
+                return Promise.reject(new Error(t('admin.classes.form.endDateAfterStart')));
               }
             })
           ]}
@@ -233,7 +235,7 @@ const AddClassForm = ({
         </Form.Item>
         
         <Form.Item
-          label="Capacity"
+          label={t('admin.classes.columns.capacity')}
           name="capacity"
           rules={[
             {
@@ -241,7 +243,7 @@ const AddClassForm = ({
               type: "number",
               min: 10,
               max: 50,
-              message: "Capacity must be at least 10",
+              message: t('admin.classes.form.capacityRequired'),
             },
           ]}
           className={embedded ? "md:col-span-1" : undefined}
@@ -249,18 +251,18 @@ const AddClassForm = ({
           <InputNumber min={1} max={50} className="w-full" />
         </Form.Item>
 
-        <Form.Item label="Description" name="description" className={embedded ? "md:col-span-2" : undefined}>
-          <Input.TextArea rows={3} placeholder="Description" showCount maxLength={500} allowClear />
+        <Form.Item label={t('common.description')} name="description" className={embedded ? "md:col-span-2" : undefined}>
+          <Input.TextArea rows={3} placeholder={t('common.description')} showCount maxLength={500} allowClear />
         </Form.Item>
         <Form.Item>
           <Space>
-            <Button onClick={onCancel || onClose}>Cancel</Button>
+            <Button onClick={onCancel || onClose}>{t('common.cancel')}</Button>
             <Button
               type="primary"
               htmlType="submit"
               loading={embedded ? confirmLoading : saving}
             >
-              {embedded ? "Create Class" : "Add Class"}
+              {embedded ? t('admin.classes.createClass') : t('admin.classes.addClass')}
             </Button>
           </Space>
         </Form.Item>
@@ -275,7 +277,7 @@ const AddClassForm = ({
   return (
     <Modal
       open={open}
-      title="Add Class"
+      title={t('admin.classes.addClass')}
       onCancel={onClose}
       footer={null}
       destroyOnClose

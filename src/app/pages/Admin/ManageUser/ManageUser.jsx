@@ -6,18 +6,20 @@ import {
 import { App, Menu, Button } from 'antd';
 import { Outlet, Link, useLocation } from 'react-router';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import DrawerAdd from './partials/DrawerAdd';
 
-const MENU_ITEMS = [
-  { key: 'trainees', icon: <TeamOutlined />, label: 'Trainee', to: 'trainees' },
-  { key: 'instructors', icon: <UserOutlined />, label: 'Instructor', to: 'instructors' },
-  { key: 'simulation-managers', icon: <ExperimentOutlined />, label: 'Simulator Manager', to: 'simulation-managers' },
-];
-
 export default function ManageUser() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const location = useLocation();
+
+  const MENU_ITEMS = [
+    { key: 'trainees', icon: <TeamOutlined />, label: t('admin.users.trainee'), to: 'trainees' },
+    { key: 'instructors', icon: <UserOutlined />, label: t('admin.users.instructor'), to: 'instructors' },
+    { key: 'simulation-managers', icon: <ExperimentOutlined />, label: t('admin.users.simulatorManager'), to: 'simulation-managers' },
+  ];
 
   // derive active key from current pathname (last segment)
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -35,9 +37,9 @@ export default function ManageUser() {
   }, [location.pathname]);
 
   const getButtonLabel = () => {
-    if (activeKey === 'trainees') return 'Add Trainee';
-    if (activeKey === 'simulation-managers') return 'Add Simulation Manager';
-    return 'Add Instructor';
+    if (activeKey === 'trainees') return t('admin.users.addTrainee');
+    if (activeKey === 'simulation-managers') return t('admin.users.addSimulationManager');
+    return t('admin.users.addInstructor');
   };
 
   const getRole = () => {
@@ -49,7 +51,7 @@ export default function ManageUser() {
   return (
     <div className="max-w-7xl mx-auto px-2 py-2">
       <div className="mb-4 flex justify-between items-center">
-        <span className="text-2xl">Manage Users</span>
+        <span className="text-2xl">{t('admin.users.title')}</span>
         <Button type="primary" icon={<Plus size={18}/>} onClick={() => setDrawerVisible(true)}>
           {getButtonLabel()}
         </Button>

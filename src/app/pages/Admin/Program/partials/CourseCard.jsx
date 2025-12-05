@@ -1,6 +1,9 @@
 import { Card, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const CourseCard = ({ course }) => {
+    const { t } = useTranslation();
+
     return (
         <div className="mb-2">
             <Card
@@ -25,26 +28,26 @@ const CourseCard = ({ course }) => {
                         <div className="flex items-start justify-between gap-2">
                             <h4 className="font-semibold text-base">{course.name}</h4>
                             <Tag color={course.isActive ? 'green' : 'default'}>
-                                {course.isActive ? 'Active' : 'Inactive'}
+                                {course.isActive ? t('common.active') : t('common.inactive')}
                             </Tag>
                         </div>
 
                         <div className="flex items-center gap-x-6 text-sm text-slate-600">
                             {course.durationHours && (
                                 <span>
-                                    <span className="font-medium">Duration:</span> {course.durationHours}h
+                                    <span className="font-medium">{t('common.duration')}:</span> {course.durationHours}h
                                 </span>
                             )}
                             {course.level && (
                                 <span>
-                                    <span className="font-medium">Level:</span> {course.level}
+                                    <span className="font-medium">{t('common.level')}:</span> {course.level}
                                 </span>
                             )}
                         </div>
 
                         {course.category && (
                             <div className="text-sm text-slate-600 mt-1">
-                                <span className="font-medium">Category:</span> {course.category}
+                                <span className="font-medium">{t('common.category')}:</span> {course.category}
                             </div>
                         )}
                     </div>

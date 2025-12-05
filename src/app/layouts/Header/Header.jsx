@@ -152,17 +152,17 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-3">
-            <LanguageSwitcher />
             {hasToken ? (
               <Avt onLogout={() => { Cookies.remove('token', { path: '/' }); try{clearRememberedCredentials();}catch{} setHasToken(false); }} />
             ) : (
               <Button
-                onClick={() => navigate('/auth/login')}
-                type="primary"
+              onClick={() => navigate('/auth/login')}
+              type="primary"
               >
                 {t('common.signIn')}
               </Button>
             )}
+            <LanguageSwitcher />
           </div>
 
           {/* Mobile panel */}

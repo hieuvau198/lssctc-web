@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Avatar, Typography, Divider, Button, Spin, Alert } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageNav from '../../../components/PageNav/PageNav';
 import useAuthStore from '../../../store/authStore';
 import { getAuthToken } from '../../../libs/cookies';
@@ -10,6 +11,7 @@ import { getTraineeProfileByUserId } from '../../../apis/Trainee/TraineeProfileA
 const { Title, Text } = Typography;
 
 export default function Profile() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [imgErr, setImgErr] = useState(false);
   const [profileData, setProfileData] = useState(null);
@@ -136,11 +138,11 @@ export default function Profile() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
       {/* Header */}
-      <PageNav nameMap={{ profile: 'Profile' }} />
+      <PageNav nameMap={{ profile: t('trainee.profile.title') }} />
       <div className="bg-white border rounded-xl p-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <Title level={3} className="!mb-1 text-xl sm:!text-2xl">Profile</Title>
-          <Text type="secondary" className="text-sm sm:text-base">Your personal information</Text>
+          <Title level={3} className="!mb-1 text-xl sm:!text-2xl">{t('trainee.profile.title')}</Title>
+          <Text type="secondary" className="text-sm sm:text-base">{t('trainee.profile.subtitle')}</Text>
         </div>
         <div>
           <Button 
@@ -148,7 +150,7 @@ export default function Profile() {
             onClick={() => navigate('/profile/edit')}
             className="w-full sm:w-auto"
           >
-            Update info
+            {t('trainee.profile.editProfile')}
           </Button>
         </div>
       </div>
@@ -196,25 +198,25 @@ export default function Profile() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <div>
-                    <div className="text-xs uppercase tracking-wide text-slate-500">Full Name</div>
+                    <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.fullName')}</div>
                     <div className="text-slate-800 mt-1">{fullName}</div>
                   </div>
                   <div>
-                    <div className="text-xs uppercase tracking-wide text-slate-500">Email</div>
+                    <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.email')}</div>
                     <div className="text-slate-800 mt-1">{email}</div>
                   </div>
                   <div>
-                    <div className="text-xs uppercase tracking-wide text-slate-500">Phone</div>
+                    <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.phone')}</div>
                     <div className="text-slate-800 mt-1">{phone}</div>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <div className="text-xs uppercase tracking-wide text-slate-500">Student ID</div>
+                    <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.studentId')}</div>
                     <div className="text-slate-800 mt-1">{studentId}</div>
                   </div>
                   <div>
-                    <div className="text-xs uppercase tracking-wide text-slate-500">Status</div>
+                    <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.status')}</div>
                     <div className="text-slate-800 mt-1">{status}</div>
                   </div>
                 </div>
@@ -222,7 +224,7 @@ export default function Profile() {
 
               <Divider className="!my-4" />
               <div>
-                <div className="text-xs uppercase tracking-wide text-slate-500">Role</div>
+                <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.role')}</div>
                 <div className="text-slate-800 mt-1">{userRole}</div>
               </div>
 
@@ -231,29 +233,29 @@ export default function Profile() {
                 <>
                   <Divider className="!my-4" />
                   <div className="space-y-4">
-                    <Title level={5} className="!mb-0">Driver License Information</Title>
+                    <Title level={5} className="!mb-0">{t('trainee.profile.driverLicense')}</Title>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="space-y-3">
                         <div>
-                          <div className="text-xs uppercase tracking-wide text-slate-500">License Number</div>
+                          <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.licenseNumber')}</div>
                           <div className="text-slate-800 mt-1">{profileData.driverLicenseNumber || '-'}</div>
                         </div>
                         <div>
-                          <div className="text-xs uppercase tracking-wide text-slate-500">License Level</div>
+                          <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.licenseLevel')}</div>
                           <div className="text-slate-800 mt-1">{profileData.driverLicenseLevel || '-'}</div>
                         </div>
                         <div>
-                          <div className="text-xs uppercase tracking-wide text-slate-500">Issued Date</div>
+                          <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.issuedDate')}</div>
                           <div className="text-slate-800 mt-1">{fmtDate(profileData.driverLicenseIssuedDate)}</div>
                         </div>
                       </div>
                       <div className="space-y-3">
                         <div>
-                          <div className="text-xs uppercase tracking-wide text-slate-500">Valid Start Date</div>
+                          <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.validFrom')}</div>
                           <div className="text-slate-800 mt-1">{fmtDate(profileData.driverLicenseValidStartDate)}</div>
                         </div>
                         <div>
-                          <div className="text-xs uppercase tracking-wide text-slate-500">Valid End Date</div>
+                          <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.validTo')}</div>
                           <div className="text-slate-800 mt-1">{fmtDate(profileData.driverLicenseValidEndDate)}</div>
                         </div>
                         {profileData.driverLicenseImageUrl && (
@@ -273,10 +275,10 @@ export default function Profile() {
                   {/* Education Section */}
                   <Divider className="!my-4" />
                   <div className="space-y-4">
-                    <Title level={5} className="!mb-0">Education Information</Title>
+                    <Title level={5} className="!mb-0">{t('trainee.profile.education')}</Title>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
-                        <div className="text-xs uppercase tracking-wide text-slate-500">Education Level</div>
+                        <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.educationLevel')}</div>
                         <div className="text-slate-800 mt-1">{profileData.educationLevel || '-'}</div>
                       </div>
                       {profileData.educationImageUrl && (
@@ -295,21 +297,21 @@ export default function Profile() {
                   {/* Citizen Card Section */}
                   <Divider className="!my-4" />
                   <div className="space-y-4">
-                    <Title level={5} className="!mb-0">Citizen Card Information</Title>
+                    <Title level={5} className="!mb-0">{t('trainee.profile.citizenId')}</Title>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="space-y-3">
                         <div>
-                          <div className="text-xs uppercase tracking-wide text-slate-500">Citizen Card ID</div>
+                          <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.citizenCardId')}</div>
                           <div className="text-slate-800 mt-1">{profileData.citizenCardId || '-'}</div>
                         </div>
                         <div>
-                          <div className="text-xs uppercase tracking-wide text-slate-500">Issued Date</div>
+                          <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.issuedDate')}</div>
                           <div className="text-slate-800 mt-1">{fmtDate(profileData.citizenCardIssuedDate)}</div>
                         </div>
                       </div>
                       <div className="space-y-3">
                         <div>
-                          <div className="text-xs uppercase tracking-wide text-slate-500">Place of Issue</div>
+                          <div className="text-xs uppercase tracking-wide text-slate-500">{t('trainee.profile.placeOfIssue')}</div>
                           <div className="text-slate-800 mt-1">{profileData.citizenCardPlaceOfIssue || '-'}</div>
                         </div>
                         {profileData.citizenCardImageUrl && (

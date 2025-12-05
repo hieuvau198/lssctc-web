@@ -1,5 +1,6 @@
 // src\app\pages\Trainee\Learn\partials\ReadingContent.jsx
 
+import { useTranslation } from 'react-i18next';
 import { Button, Tag, Progress } from "antd";
 import { CheckCircle2, FileText, Clock, BookOpen } from "lucide-react";
 
@@ -9,6 +10,7 @@ export default function ReadingContent({
   documentUrl,
   onMarkAsComplete,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -21,9 +23,9 @@ export default function ReadingContent({
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <Tag color="cyan" className="text-xs font-medium">Document</Tag>
+                  <Tag color="cyan" className="text-xs font-medium">{t('trainee.learn.document')}</Tag>
                   {completed && (
-                    <Tag color="success" className="text-xs font-medium">Completed</Tag>
+                    <Tag color="success" className="text-xs font-medium">{t('trainee.learn.completed')}</Tag>
                   )}
                 </div>
                 <h1 className="text-xl font-bold text-slate-900">{title}</h1>
@@ -50,19 +52,19 @@ export default function ReadingContent({
             {completed ? (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full">
                 <CheckCircle2 className="w-4 h-4" />
-                <span className="text-sm font-medium">Completed</span>
+                <span className="text-sm font-medium">{t('trainee.learn.completed')}</span>
               </div>
             ) : (
               <div className="flex items-center gap-2 text-slate-500">
                 <BookOpen className="w-4 h-4" />
-                <span className="text-sm">Reading in progress</span>
+                <span className="text-sm">{t('trainee.learn.readingInProgress')}</span>
               </div>
             )}
           </div>
 
           {!completed && (
             <Button type="primary" size="large" onClick={onMarkAsComplete} className="shadow-sm">
-              Mark as Complete
+              {t('trainee.learn.markComplete')}
             </Button>
           )}
         </div>
@@ -74,7 +76,7 @@ export default function ReadingContent({
           <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-green-50 to-emerald-50">
             <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-600" />
-              Reading Progress
+              {t('trainee.learn.readingProgress')}
             </h3>
           </div>
           <div className="p-6">
@@ -84,7 +86,7 @@ export default function ReadingContent({
               strokeColor={{ from: '#10b981', to: '#059669' }}
             />
             <p className="text-sm text-slate-600 mt-3">
-              You have completed this reading material.
+              {t('trainee.learn.readingCompleted')}
             </p>
           </div>
         </div>

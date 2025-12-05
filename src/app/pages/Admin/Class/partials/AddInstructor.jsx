@@ -1,11 +1,13 @@
 import { App, Button, Select } from 'antd';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getInstructors } from '../../../../apis/Admin/AdminUser';
 import { addInstructorToClass } from '../../../../apis/ProgramManager/ClassesApi';
 
 // Component: Add/assign an instructor to a class (similar style to AssignCourse)
 export default function AddInstructor({ classItem, onAssigned }) {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,7 +32,7 @@ export default function AddInstructor({ classItem, onAssigned }) {
         if (!active) return;
         console.error('Failed to fetch instructors:', err);
         // setError(err?.message || 'Failed to load instructors');
-        message.error('Failed to load instructors');
+        message.error(t('admin.classes.messages.loadInstructorsFailed'));
       })
       .finally(() => active && setLoadingInstructors(false));
     return () => { active = false; };
@@ -39,21 +41,21 @@ export default function AddInstructor({ classItem, onAssigned }) {
   const handleSave = async () => {
     if (!selected) {
       // setError('Please select an instructor');
-      message.warning('Please select an instructor');
+      message.warning(t('admin.classes.messages.selectInstructor'));
       return;
     }
     setLoading(true);
     // setError(null);
     try {
       await addInstructorToClass(classItem.id, { instructorId: selected });
-      message.success('Instructor assigned to class');
+      message.success(t('admin.classes.messages.assignInstructorSuccess'));
       setSelected(null);
       setEditing(false);
       onAssigned?.();
     } catch (err) {
       console.error('Failed to assign instructor:', err);
       const apiData = err?.response?.data;
-      const msg = (apiData && (apiData.message || apiData.error || String(apiData))) || err?.message || 'Failed to assign instructor';
+      const msg = (apiData && (apiData.message || apiData.error || String(apiData))) || err?.message || t('admin.classes.messages.assignInstructorFailed');
       message.error(msg);
     } finally {
       setLoading(false);
@@ -78,7 +80,7 @@ export default function AddInstructor({ classItem, onAssigned }) {
             onClick={() => { setEditing(true); setError(null); }}
             size="middle"
           >
-            Assign Instructor
+            {t('admin.classes.buttons.assignInstructor')}
           </Button>
         </div>
       ) : (
@@ -86,7 +88,7 @@ export default function AddInstructor({ classItem, onAssigned }) {
           <div className="w-[350px]">
             <Select
               showSearch
-              placeholder="Select an instructor"
+              placeholder={t('admin.classes.placeholders.selectInstructor')}
               optionFilterProp="children"
               loading={loadingInstructors}
               allowClear
@@ -99,7 +101,7 @@ export default function AddInstructor({ classItem, onAssigned }) {
             >
               {instructors.length === 0 && !loadingInstructors ? (
                 <Select.Option disabled value="">
-                  No instructors available
+                  {t('admin.classes.messages.noInstructorsAvailable')}
                 </Select.Option>
               ) : (
                 instructors.map((i) => (
@@ -115,10 +117,10 @@ export default function AddInstructor({ classItem, onAssigned }) {
           </div>
           <div className="flex gap-2">
             <Button type="primary" onClick={handleSave} loading={loading} size="middle">
-              Save
+              {t('common.save')}
             </Button>
             <Button onClick={handleCancel} size="middle" disabled={loadingInstructors}>
-              Cancel
+              {t('common.cancel')}
             </Button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { App, Avatar, Dropdown, Menu, Tooltip } from 'antd';
+import { App, Avatar, Dropdown, Menu, Tooltip, Switch } from 'antd';
 import { FlaskConical, LayoutDashboard, MoreVertical, PanelLeft, PanelLeftClose, Settings, Sliders, Truck } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ const getItems = (t) => [
 export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
   const { message } = App.useApp();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const ITEMS = getItems(t);
 
   const handleLogout = async () => {
@@ -110,21 +110,50 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
               const fullName = store.fullName || store.name || claims.fullName || claims.full_name || claims.name || claims.sub || 'User';
               const role = store.role || claims.role || '';
               const avatarUrl = store.avatarUrl || store.avatar || claims.avatarUrl || claims.picture || claims.avatar || '';
-              const avatarContent = avatarUrl ? null : (fullName ? fullName.split(' ').filter(Boolean).map(n => n[0]).slice(0,2).join('') : 'U');
+              const avatarContent = avatarUrl ? null : (fullName ? fullName.split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('') : 'U');
 
               const menu = (
-                <Menu onClick={async ({ key }) => {
-                  if (key === 'logout') {
-                    try { await logout(); } catch (e) { message.error(t('common.logoutFailed')); }
-                    clearAvatarUrl();
-                    try { window.location.assign('/'); } catch { navigate('/'); }
-                  } else if (key === 'profile') {
-                    navigate('/simmanager/profile');
-                  }
-                }}>
-                  <Menu.Item key="profile">{t('common.profile')}</Menu.Item>
-                    <Menu.Item key="logout" danger>{t('common.logout')}</Menu.Item>
-                </Menu>
+                <Menu
+                  onClick={async ({ key }) => {
+                    if (key === 'logout') {
+                      try { await logout(); } catch (e) { message.error(t('common.logoutFailed')); }
+                      clearAvatarUrl();
+                      try { window.location.assign('/'); } catch { navigate('/'); }
+                    } else if (key === 'profile') {
+                      navigate('/simmanager/profile');
+                    }
+                  }}
+                  items={[
+                    {
+                      key: 'profile',
+                      label: t('common.profile')
+                    },
+                    {
+                      key: 'language',
+                      label: (
+                        <div
+                          className="flex items-center justify-between gap-3"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span>{t('common.language')}</span>
+                          <Switch
+                            checked={i18n.language === 'vi'}
+                            onChange={(checked) => i18n.changeLanguage(checked ? 'vi' : 'en')}
+                            checkedChildren="Vi"
+                            unCheckedChildren="En"
+                            size="small"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      )
+                    },
+                    {
+                      key: 'logout',
+                      label: t('common.logout'),
+                      danger: true
+                    }
+                  ]}
+                />
               );
 
               return collapsed ? (

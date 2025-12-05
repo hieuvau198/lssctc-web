@@ -1,5 +1,6 @@
 import React from "react";
-import { Table, Tag, Button, Space, Tooltip, Popconfirm, Pagination } from "antd";
+import { useTranslation } from 'react-i18next';
+import { Table, Tag, Button, Space, Tooltip, Popconfirm, Pagination, Avatar } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const ProgramTableView = ({
@@ -13,6 +14,16 @@ const ProgramTableView = ({
   onDelete,
   deletingId
 }) => {
+  const { t } = useTranslation();
+  const getInitials = (name = '') => {
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .map((n) => n[0]?.toUpperCase())
+      .slice(0, 2)
+      .join('');
+  };
+  
   // Table columns definition
   const tableColumns = [
     {
@@ -27,24 +38,28 @@ const ProgramTableView = ({
       ),
     },
     {
-      title: "Image",
+      title: t('admin.programs.table.image'),
       dataIndex: "imageUrl",
       key: "imageUrl",
       width: 80,
-      fixed: "left",
+      align: "center",
       render: (imageUrl, record) => (
-        <div className="w-12 h-12 overflow-hidden rounded cursor-pointer">
-          <img
+        <div className="flex justify-center">
+          <Avatar
             src={imageUrl}
             alt={record.name}
-            className="w-full h-full object-cover"
+            shape="square"
+            size={48}
+            style={{ backgroundColor: '#f3f4f6', cursor: 'pointer' }}
             onClick={() => onView(record)}
-          />
+          >
+            {!imageUrl && getInitials(record.name)}
+          </Avatar>
         </div>
       ),
     },
     {
-      title: "Program Name",
+      title: t('admin.programs.table.name'),
       dataIndex: "name",
       key: "name",
       width: 200,
@@ -58,31 +73,37 @@ const ProgramTableView = ({
       ),
     },
     {
-      title: "Courses",
+      title: t('admin.programs.table.duration'),
+      dataIndex: "durationHours",
+      key: "duration",
+      width: 100,
+    },
+    {
+      title: t('admin.programs.table.courses'),
       dataIndex: "totalCourses",
       key: "totalCourses",
       width: 100,
       render: (count) => <span>{count || 0}</span>,
     },
     {
-      title: "Status",
+      title: t('admin.programs.table.status'),
       dataIndex: "isActive",
       key: "isActive",
       width: 100,
       render: (isActive) => (
         <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "Active" : "Inactive"}
+          {isActive ? t('common.active') : t('common.inactive')}
         </Tag>
       ),
     },
     {
-      title: "Actions",
+      title: t('admin.programs.table.actions'),
       key: "actions",
       width: 120,
       fixed: "right",
       render: (_, record) => (
         <Space size="small">
-          <Tooltip title="View Details">
+          <Tooltip title={t('common.viewDetails')}>
             <Button
               type="text"
               size="small"
@@ -90,7 +111,7 @@ const ProgramTableView = ({
               onClick={() => onView(record)}
             />
           </Tooltip>
-          <Tooltip title="Edit Program">
+          <Tooltip title={t('admin.programs.editProgram')}>
             <Button
               type="text"
               size="small"
@@ -98,10 +119,10 @@ const ProgramTableView = ({
               onClick={() => onEdit(record)}
             />
           </Tooltip>
-          <Tooltip title="Delete Program">
+          <Tooltip title={t('admin.programs.deleteProgram')}>
             <Popconfirm
-              title="Delete program?"
-              description="Are you sure you want to delete this program?"
+              title={t('admin.programs.deleteConfirmTitle')}
+              description={t('admin.programs.deleteConfirmDesc')}
               onConfirm={() => onDelete(record.id)}
               okButtonProps={{ loading: deletingId === record.id }}
             >
@@ -139,7 +160,7 @@ const ProgramTableView = ({
           onChange={onPageChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} programs`}
+          showTotal={(total, range) => t('admin.programs.pagination', { start: range[0], end: range[1], total })}
         />
       </div>
     </div>

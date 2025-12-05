@@ -1,8 +1,10 @@
 // src\app\pages\Trainee\Quiz\partials\QuizQuestion.jsx
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function QuizHeader({ title, timeLeftSec, totalSec, current, total }) {
+  const { t } = useTranslation();
   const pct = totalSec > 0 ? Math.max(0, Math.min(100, (1 - timeLeftSec / totalSec) * 100)) : 0;
 
   function fmt(sec) {
@@ -16,10 +18,10 @@ export default function QuizHeader({ title, timeLeftSec, totalSec, current, tota
       <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-slate-900">{title}</h1>
-          <p className="mt-1 text-slate-600 text-sm">Question {current} of {total}</p>
+          <p className="mt-1 text-slate-600 text-sm">{t('trainee.quizHeader.questionOf', { current, total })}</p>
         </div>
         <div className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-medium">
-          Time left: {fmt(timeLeftSec)}
+          {t('trainee.quizHeader.timeLeft')}: {fmt(timeLeftSec)}
         </div>
       </div>
 

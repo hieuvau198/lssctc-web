@@ -1,6 +1,7 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Alert, App, Button, Drawer, Empty, Form, Input, Skeleton } from "antd";
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { createClass, deleteClass, fetchClasses } from "../../../apis/ProgramManager/ClassApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
@@ -8,6 +9,7 @@ import ClassList from "./partials/ClassList";
 import AddClassForm from "./partials/AddClassForm";
 
 const PMClasses = () => {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const [classes, setClasses] = useState([]);
@@ -59,7 +61,7 @@ const PMClasses = () => {
     setDeletingId(id);
     try {
       await deleteClass(id);
-      message.success("Class deleted successfully");
+      message.success(t('admin.classes.deleteSuccess'));
       // Refresh list
       const params = { page, pageSize };
       if (searchTerm) params.searchTerm = searchTerm;
@@ -67,7 +69,7 @@ const PMClasses = () => {
       setClasses(data.items || []);
       setTotal(data.totalCount || 0);
     } catch (err) {
-      message.error(err?.response?.data?.message || err?.message || "Delete failed");
+      message.error(err?.response?.data?.message || err?.message || t('admin.classes.deleteError'));
     } finally {
       setDeletingId(null);
     }
@@ -89,7 +91,7 @@ const PMClasses = () => {
     setSubmitting(true);
     try {
       await createClass(values);
-      message.success('Class created successfully');
+      message.success(t('admin.classes.createSuccess'));
       // Refresh list
       const params = { page, pageSize };
       if (searchTerm) params.searchTerm = searchTerm;
@@ -98,7 +100,7 @@ const PMClasses = () => {
       setTotal(data.totalCount || 0);
       closeDrawer();
     } catch (err) {
-      message.error(err?.message || 'Create failed');
+      message.error(err?.message || t('admin.classes.createError'));
     } finally {
       setSubmitting(false);
     }
@@ -146,12 +148,12 @@ const PMClasses = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <span className="text-2xl">Class Management</span>
+        <span className="text-2xl">{t('admin.classes.title')}</span>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
         <Input.Search
-          placeholder="Search classes..."
+          placeholder={t('admin.classes.searchPlaceholder')}
           allowClear
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
@@ -160,14 +162,14 @@ const PMClasses = () => {
         />
         <div className="flex gap-2">
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-            Add Class
+            {t('admin.classes.addClass')}
           </Button>
           <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
         </div>
       </div>
 
       {classes.length === 0 ? (
-        <Empty description="No classes found." className="mt-16" />
+        <Empty description={t('admin.classes.noClasses')} className="mt-16" />
       ) : (
         <ClassList
           classes={classes}
@@ -188,7 +190,7 @@ const PMClasses = () => {
         open={drawerOpen}
         onClose={closeDrawer}
         width={720}
-        title="Create Class"
+        title={t('admin.classes.createClass')}
         destroyOnClose
       >
         <AddClassForm
