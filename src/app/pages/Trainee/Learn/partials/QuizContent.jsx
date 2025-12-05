@@ -1,12 +1,13 @@
 // src/app/pages/Trainee/Learn/partials/QuizContent.jsx
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import QuizAttempt from './QuizAttempt/QuizAttempt';
 import { Button, Alert, Tag, Progress } from 'antd';
 import { ClipboardList, Clock, Target, HelpCircle, CheckCircle2, XCircle, Trophy, Play } from 'lucide-react';
 
 // Child component for quiz start screen
-const QuizStartScreen = ({ quiz, onStart }) => (
+const QuizStartScreen = ({ quiz, onStart, t }) => (
   <div className="space-y-6">
     {/* Header Card */}
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -36,8 +37,8 @@ const QuizStartScreen = ({ quiz, onStart }) => (
                 <Clock className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <div className="text-sm text-slate-500">Time Limit</div>
-                <div className="text-lg font-bold text-slate-900">{quiz.timelimitMinute} mins</div>
+                <div className="text-sm text-slate-500">{t('trainee.quizContent.timeLimit')}</div>
+                <div className="text-lg font-bold text-slate-900">{quiz.timelimitMinute} {t('trainee.quizContent.mins')}</div>
               </div>
             </div>
           </div>
@@ -48,7 +49,7 @@ const QuizStartScreen = ({ quiz, onStart }) => (
                 <HelpCircle className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <div className="text-sm text-slate-500">Questions</div>
+                <div className="text-sm text-slate-500">{t('trainee.quizContent.questions')}</div>
                 <div className="text-lg font-bold text-slate-900">{quiz.questions?.length || 0}</div>
               </div>
             </div>
@@ -60,7 +61,7 @@ const QuizStartScreen = ({ quiz, onStart }) => (
                 <Target className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <div className="text-sm text-slate-500">Pass Score</div>
+                <div className="text-sm text-slate-500">{t('trainee.quizContent.passScore')}</div>
                 <div className="text-lg font-bold text-slate-900">{quiz.passScoreCriteria}/{quiz.totalScore}</div>
               </div>
             </div>
@@ -69,12 +70,12 @@ const QuizStartScreen = ({ quiz, onStart }) => (
 
         {/* Instructions */}
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-          <h3 className="font-semibold text-amber-800 mb-2">Instructions</h3>
+          <h3 className="font-semibold text-amber-800 mb-2">{t('trainee.quizContent.instructions')}</h3>
           <ul className="text-sm text-amber-700 space-y-1">
-            <li>• Read each question carefully before answering</li>
-            <li>• You can navigate between questions</li>
-            <li>• The quiz will auto-submit when time runs out</li>
-            <li>• Make sure you have a stable internet connection</li>
+            <li>• {t('trainee.quizContent.instruction1')}</li>
+            <li>• {t('trainee.quizContent.instruction2')}</li>
+            <li>• {t('trainee.quizContent.instruction3')}</li>
+            <li>• {t('trainee.quizContent.instruction4')}</li>
           </ul>
         </div>
 
@@ -87,7 +88,7 @@ const QuizStartScreen = ({ quiz, onStart }) => (
             icon={<Play className="w-4 h-4" />}
             className="px-8 shadow-lg shadow-purple-200"
           >
-            Start Quiz
+            {t('trainee.quizContent.startQuiz')}
           </Button>
         </div>
       </div>
@@ -96,7 +97,7 @@ const QuizStartScreen = ({ quiz, onStart }) => (
 );
 
 // Child component for quiz result screen
-const QuizResultScreen = ({ quiz, onRestart }) => {
+const QuizResultScreen = ({ quiz, onRestart, t }) => {
   const isPass = (quiz.attemptScore || 0) >= (quiz.passScoreCriteria || 0);
   const scorePercent = (quiz.totalScore > 0) ? Math.round((quiz.attemptScore / quiz.totalScore) * 100) : 0;
 
@@ -112,10 +113,10 @@ const QuizResultScreen = ({ quiz, onRestart }) => {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Tag color={isPass ? 'success' : 'error'} className="text-xs font-medium">
-                  {isPass ? 'Passed' : 'Not Passed'}
+                  {isPass ? t('trainee.quizContent.passed') : t('trainee.quizContent.notPassed')}
                 </Tag>
               </div>
-              <h1 className="text-xl font-bold text-slate-900">Quiz Result</h1>
+              <h1 className="text-xl font-bold text-slate-900">{t('trainee.quizContent.quizResult')}</h1>
               <p className="text-slate-600">{quiz.quizName}</p>
             </div>
           </div>
@@ -143,8 +144,8 @@ const QuizResultScreen = ({ quiz, onRestart }) => {
           {/* Result Message */}
           {isPass ? (
             <Alert
-              message="Congratulations! You Passed."
-              description={`You scored ${quiz.attemptScore} out of ${quiz.totalScore} points.`}
+              message={t('trainee.quizContent.congratulations')}
+              description={t('trainee.quizContent.passedDesc', { score: quiz.attemptScore, total: quiz.totalScore })}
               type="success"
               showIcon
               icon={<CheckCircle2 className="w-5 h-5" />}
@@ -152,8 +153,8 @@ const QuizResultScreen = ({ quiz, onRestart }) => {
             />
           ) : (
             <Alert
-              message="You Did Not Pass."
-              description={`You scored ${quiz.attemptScore} out of ${quiz.totalScore}. A score of ${quiz.passScoreCriteria} is required to pass.`}
+              message={t('trainee.quizContent.notPassedMsg')}
+              description={t('trainee.quizContent.notPassedDesc', { score: quiz.attemptScore, total: quiz.totalScore, required: quiz.passScoreCriteria })}
               type="error"
               showIcon
               icon={<XCircle className="w-5 h-5" />}
@@ -163,7 +164,7 @@ const QuizResultScreen = ({ quiz, onRestart }) => {
 
           {/* Completion Info */}
           <div className="bg-slate-50 rounded-xl p-4 text-center">
-            <div className="text-sm text-slate-500">Completed on</div>
+            <div className="text-sm text-slate-500">{t('trainee.quizContent.completedOn')}</div>
             <div className="font-medium text-slate-900">
               {new Date(quiz.lastAttemptDate).toLocaleString()}
             </div>
@@ -176,6 +177,7 @@ const QuizResultScreen = ({ quiz, onRestart }) => {
 
 // Main component
 export default function QuizContent({ sectionQuiz, partition, onReload, onSubmitAttempt }) {
+  const { t } = useTranslation();
   // state: 'start', 'attempting', 'result'
   const [quizState, setQuizState] = useState(
     sectionQuiz.isCompleted ? 'result' : 'start'
@@ -220,6 +222,7 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
       <QuizResultScreen
         quiz={sectionQuiz}
         onRestart={() => setQuizState('start')}
+        t={t}
       />
     );
   }
@@ -229,6 +232,7 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
     <QuizStartScreen
       quiz={sectionQuiz}
       onStart={handleStartQuiz}
+      t={t}
     />
   );
 }

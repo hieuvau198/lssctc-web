@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
 import { Input, Skeleton, Alert, Empty, Pagination } from "antd";
+import { useTranslation } from 'react-i18next';
 import ProgramCard from "../../../components/ProgramCard";
 import { useNavigate } from "react-router";
 import PageNav from "../../../components/PageNav/PageNav";
@@ -8,6 +9,7 @@ import PageNav from "../../../components/PageNav/PageNav";
 const { Search } = Input;
 
 const Program = () => {
+  const { t } = useTranslation();
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -73,8 +75,8 @@ const Program = () => {
   if (loading)
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <PageNav nameMap={{ program: 'Programs' }} />
-        <h2 className="text-2xl font-bold mb-6">Programs</h2>
+        <PageNav nameMap={{ program: t('trainee.programs.title') }} />
+        <h2 className="text-2xl font-bold mb-6">{t('trainee.programs.title')}</h2>
         <div className="mb-8">
           <Skeleton.Input active size="large" className="!w-full md:!w-1/2" />
         </div>
@@ -101,10 +103,10 @@ const Program = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <PageNav nameMap={{ program: 'Programs' }} />
-      <span className="text-2xl mb-4">Programs</span>
+      <PageNav nameMap={{ program: t('trainee.programs.title') }} />
+      <span className="text-2xl mb-4">{t('trainee.programs.title')}</span>
       <Search
-        placeholder="Search programs by name"
+        placeholder={t('trainee.programs.searchPlaceholder')}
         allowClear
         className="mb-8"
         value={searchInput}
@@ -115,7 +117,7 @@ const Program = () => {
         enterButton
       />
       {programs.length === 0 ? (
-        <Empty description="No programs found." className="mt-16 min-h-[350px]" />
+        <Empty description={t('trainee.programs.noPrograms')} className="mt-16 min-h-[350px]" />
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

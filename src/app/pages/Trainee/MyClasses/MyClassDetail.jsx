@@ -2,6 +2,7 @@
 import { Empty, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageNav from '../../../components/PageNav/PageNav';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
@@ -14,6 +15,7 @@ import Sections from './partials/Sections';
 import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
 
 export default function MyClassDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const authState = useAuthStore();
   const traineeIdFromStore = authState.nameid;
@@ -70,7 +72,7 @@ export default function MyClassDetail() {
   if (loading) {
     return (
       <div className="max-w-7xl flex flex-col min-h-screen mx-auto px-4 py-8 text-center justify-center">
-        <Spin size="large" tip="Loading class details..." />
+        <Spin size="large" tip={t('trainee.myClassDetail.loading')} />
       </div>
     );
   }
@@ -80,7 +82,7 @@ export default function MyClassDetail() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <PageNav items={[{ title: 'My Classes', href: '/my-classes' }]} />
         <div className="min-h-screen flex flex-col items-center justify-center mt-2 text-center">
-          <Empty description="No classes found" className="py-16" />
+          <Empty description={t('trainee.myClassDetail.noClasses')} className="py-16" />
         </div>
       </div>
     );

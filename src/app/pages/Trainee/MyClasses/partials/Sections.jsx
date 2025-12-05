@@ -2,13 +2,15 @@ import { Card, Empty, Progress, Skeleton, message } from 'antd';
 import { Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getLearningSectionsByClassIdAndTraineeId } from '../../../../apis/Trainee/TraineeLearningApi';
+import { useTranslation } from 'react-i18next';
+import { getLearningSectionsByClassIdAndTraineeId, getActivityRecordsByClassAndSection } from '../../../../apis/Trainee/TraineeLearningApi';
 import { getAuthToken } from '../../../../libs/cookies';
 import { decodeToken } from '../../../../libs/jwtDecode';
 import { getFirstPartitionPath } from '../../../../mocks/lessonPartitions';
 import useAuthStore from '../../../../store/authStore';
 
 export default function Sections({ classId }) {
+	const { t } = useTranslation();
 	const authState = useAuthStore();
 	const traineeIdFromStore = authState.nameid;
 	const [sections, setSections] = useState([]);
@@ -33,13 +35,28 @@ export default function Sections({ classId }) {
 			setLoading(true);
 			try {
 				const sectionsRes = await getLearningSectionsByClassIdAndTraineeId(classId, resolvedTraineeId);
+				
+				// Fetch first activity for each section
+				const sectionsWithActivities = await Promise.all(
+					sectionsRes.map(async (section) => {
+						try {
+							const activities = await getActivityRecordsByClassAndSection(classId, section.sectionId);
+							const firstActivity = activities && activities.length > 0 ? activities[0] : null;
+							return { ...section, firstActivity };
+						} catch (err) {
+							console.error(`Failed to fetch activities for section ${section.sectionId}:`, err);
+							return { ...section, firstActivity: null };
+						}
+					})
+				);
+				
 				if (mounted) {
-					setSections(Array.isArray(sectionsRes) ? sectionsRes : []);
+					setSections(Array.isArray(sectionsWithActivities) ? sectionsWithActivities : []);
 				}
 			} catch (err) {
 				console.error('Failed to fetch sections:', err);
 				if (mounted) {
-					message.error('Không tải được danh sách sections');
+					message.error(t('trainee.sections.loadFailed'));
 					setSections([]);
 				}
 			} finally {
@@ -49,7 +66,7 @@ export default function Sections({ classId }) {
 
 		fetchSections();
 		return () => { mounted = false; };
-	}, [classId, traineeIdFromStore]);
+	}, [classId, traineeIdFromStore, t]);
 
 	if (loading) {
 		return (
@@ -63,7 +80,7 @@ export default function Sections({ classId }) {
 		return (
 			<div className="my-4">
 				<Card className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-					<Empty description="No sections available at the moment" className="py-16" />
+					<Empty description={t('trainee.sections.noSections')} className="py-16" />
 				</Card>
 			</div>
 		);
@@ -74,7 +91,11 @@ export default function Sections({ classId }) {
 			<Card className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
 				<div className="space-y-5">
 					{sections.map((section) => {
-						const deepLink = getFirstPartitionPath(classId) || `/learnings/${classId}`;
+						// Build link to first activity of this section
+						const deepLink = section.firstActivity 
+							? `/learnings/${classId}/${section.sectionId}/${section.firstActivity.activityId}`
+							: getFirstPartitionPath(classId) || `/learnings/${classId}`;
+						
 						return (
 							<Link key={section.sectionId} to={deepLink} className="block">
 								<div className="flex items-start justify-between p-5 border border-slate-200 rounded-lg bg-slate-50/30 hover:bg-slate-50 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer">
@@ -86,7 +107,7 @@ export default function Sections({ classId }) {
 													<div className="mb-3 text-xs text-slate-500">
 														<div className="flex items-center justify-center gap-1">
 															<Clock className="w-3 h-3" />
-															<span>{section.durationMinutes} mins</span>
+															<span>{section.durationMinutes} {t('trainee.sections.mins')}</span>
 														</div>
 													</div>
 												</div>
@@ -94,7 +115,7 @@ export default function Sections({ classId }) {
 
 												<div className="space-y-2">
 													<div className="flex items-center justify-between text-sm">
-														<span className="text-slate-600">Progress</span>
+														<span className="text-slate-600">{t('trainee.sections.progress')}</span>
 														<span className="font-medium text-slate-900">{section.sectionProgress}%</span>
 													</div>
 													<Progress

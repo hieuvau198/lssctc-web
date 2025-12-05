@@ -1,6 +1,7 @@
 // src/app/pages/Trainee/Learn/LearnContent.jsx
 
 import React, { useEffect, useState, useCallback } from "react";
+import { useTranslation } from 'react-i18next';
 import { useParams } from "react-router-dom";
 import VideoContent from "./partials/VideoContent";
 import ReadingContent from "./partials/ReadingContent";
@@ -29,6 +30,7 @@ import useAuthStore from "../../../store/authStore";
 import { useLearningSidebar } from "../../../contexts/LearningSidebarContext";
 
 export default function LearnContent() {
+  const { t } = useTranslation();
   const { courseId, sectionId, partitionId } = useParams();
   const activityId = parseInt(partitionId, 10);
 
@@ -58,7 +60,7 @@ export default function LearnContent() {
       null;
 
     if (!resolvedTraineeId) {
-      setError("Trainee ID not available. Please log in again.");
+      setError(t('trainee.learn.traineeIdNotAvailable'));
       setLoading(false);
     } else {
       setTraineeId(resolvedTraineeId);
@@ -213,7 +215,7 @@ export default function LearnContent() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-slate-600">Loading content...</p>
+        <p className="text-slate-600">{t('trainee.learn.loadingContent')}</p>
       </div>
     );
   }
@@ -221,7 +223,7 @@ export default function LearnContent() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-xl font-semibold text-red-600 mb-2">Error</h2>
+        <h2 className="text-xl font-semibold text-red-600 mb-2">{t('common.error')}</h2>
         <p className="text-slate-600">{error}</p>
       </div>
     );
@@ -231,10 +233,10 @@ export default function LearnContent() {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold text-slate-900 mb-2">
-          Content Not Found
+          {t('trainee.learn.contentNotFound')}
         </h2>
         <p className="text-slate-600">
-          The requested lesson content could not be found.
+          {t('trainee.learn.contentNotFoundDesc')}
         </p>
       </div>
     );
@@ -295,10 +297,10 @@ export default function LearnContent() {
           ) : (
             <div className="text-center py-12">
               <h2 className="text-xl font-semibold text-slate-900 mb-2">
-                No Materials Found
+                {t('trainee.learn.noMaterials')}
               </h2>
               <p className="text-slate-600">
-                This activity has no learning materials attached.
+                {t('trainee.learn.noMaterialsDesc')}
               </p>
             </div>
           )}
@@ -340,11 +342,10 @@ export default function LearnContent() {
       return (
         <div className="text-center py-12">
           <h2 className="text-xl font-semibold text-slate-900 mb-2">
-            Unsupported Content Type
+            {t('trainee.learn.unsupportedType')}
           </h2>
           <p className="text-slate-600">
-            This type of content (type {activityRecord.activityType}) is not yet
-            supported.
+            {t('trainee.learn.unsupportedTypeDesc', { type: activityRecord.activityType })}
           </p>
         </div>
       );
