@@ -163,11 +163,24 @@ const QuizResultScreen = ({ quiz, onRestart, t }) => {
           )}
 
           {/* Completion Info */}
-          <div className="bg-slate-50 rounded-xl p-4 text-center">
+          <div className="bg-slate-50 rounded-xl p-4 text-center mb-6">
             <div className="text-sm text-slate-500">{t('trainee.quizContent.completedOn')}</div>
             <div className="font-medium text-slate-900">
               {new Date(quiz.lastAttemptDate).toLocaleString()}
             </div>
+          </div>
+
+          {/* Retake Button */}
+          <div className="text-center">
+            <Button 
+              type="primary" 
+              size="large" 
+              onClick={onRestart}
+              icon={<Play className="w-4 h-4" />}
+              className="px-8 shadow-lg"
+            >
+              {t('trainee.quizContent.retakeQuiz')}
+            </Button>
           </div>
         </div>
       </div>

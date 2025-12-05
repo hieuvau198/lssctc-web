@@ -31,7 +31,7 @@ export default function CourseCompletion() {
   const options = {
     chart: { id: 'completion-trends', toolbar: { show: false } },
     stroke: { curve: 'smooth', width: 3 },
-    xaxis: { categories: data.map(d => `${t('admin.dashboard.charts.day')} ${d.day}`) },
+    xaxis: { categories: data.map(d => `day ${d.day}`) },
     colors: ['#10b981'],
     dataLabels: { enabled: false },
     fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05, stops: [0, 90, 100] } },

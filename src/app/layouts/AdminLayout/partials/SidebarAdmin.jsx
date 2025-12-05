@@ -1,4 +1,4 @@
-import { Tooltip, App, Avatar, Dropdown, Menu, Space, Typography } from 'antd';
+import { Tooltip, App, Avatar, Dropdown, Menu, Space, Typography, Switch } from 'antd';
 import { NavLink, useNavigate } from 'react-router';
 import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, PanelLeft, LogOut, MoreVertical } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ const getItems = (t) => [
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
   const { message } = App.useApp();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const ITEMS = getItems(t);
 
   return (
@@ -113,18 +113,47 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
               const avatarContent = avatarUrl ? null : (fullName ? fullName.split(' ').filter(Boolean).map(n => n[0]).slice(0,2).join('') : 'U');
 
               const menu = (
-                  <Menu onClick={async ({ key }) => {
-                  if (key === 'logout') {
-                    try { await logout(); } catch (e) { message.error(t('common.logoutFailed')); }
-                    clearAvatarUrl();
-                    try { window.location.assign('/'); } catch { navigate('/'); }
-                  } else if (key === 'profile') {
-                    navigate('/admin/profile');
-                  }
-                }}>
-                  <Menu.Item key="profile">{t('common.profile')}</Menu.Item>
-                  <Menu.Item key="logout" danger>{t('common.logout')}</Menu.Item>
-                </Menu>
+                  <Menu
+                    onClick={async ({ key }) => {
+                      if (key === 'logout') {
+                        try { await logout(); } catch (e) { message.error(t('common.logoutFailed')); }
+                        clearAvatarUrl();
+                        try { window.location.assign('/'); } catch { navigate('/'); }
+                      } else if (key === 'profile') {
+                        navigate('/admin/profile');
+                      }
+                    }}
+                    items={[
+                      {
+                        key: 'profile',
+                        label: t('common.profile')
+                      },
+                      {
+                        key: 'language',
+                        label: (
+                          <div 
+                            className="flex items-center justify-between gap-3"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span>{t('common.language')}</span>
+                            <Switch
+                              checked={i18n.language === 'vi'}
+                              onChange={(checked) => i18n.changeLanguage(checked ? 'vi' : 'en')}
+                              checkedChildren="Vi"
+                              unCheckedChildren="En"
+                              size="small"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          </div>
+                        )
+                      },
+                      {
+                        key: 'logout',
+                        label: t('common.logout'),
+                        danger: true
+                      }
+                    ]}
+                  />
               );
 
               return collapsed ? (

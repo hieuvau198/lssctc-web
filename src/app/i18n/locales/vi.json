@@ -424,6 +424,46 @@
     "startPractice": "Bắt đầu Thực hành",
     "completePractice": "Hoàn thành Thực hành"
   },
+  "attendance": {
+    "slot": "Buổi học",
+    "date": "Ngày",
+    "time": "Giờ",
+    "topic": "Chủ đề",
+    "location": "Địa điểm",
+    "students": "Học viên",
+    "attendanceStatus": "Điểm danh",
+    "takeAttendance": "Điểm danh",
+    "submitAttendance": "Gửi điểm danh",
+    "viewAttendance": "Xem điểm danh",
+    "classSchedule": "Lịch học lớp",
+    "weeklySchedule": "Lịch tuần",
+    "myWeeklySchedule": "Lịch học tuần của tôi",
+    "today": "Hôm nay",
+    "noSlots": "Không có buổi học",
+    "totalSlots": "Tổng buổi học",
+    "attendanceRate": "Tỷ lệ tham gia",
+    "present": "Có mặt",
+    "absent": "Vắng mặt",
+    "late": "Đi trễ",
+    "excused": "Có phép",
+    "submitted": "Đã gửi",
+    "pending": "Chờ xử lý",
+    "noRecord": "Chưa có",
+    "note": "Ghi chú",
+    "notePlaceholder": "Thêm ghi chú (tùy chọn)",
+    "summary": "Tổng kết",
+    "searchStudent": "Tìm học viên theo tên, email hoặc mã...",
+    "markAllPresent": "Đánh dấu tất cả Có mặt",
+    "markAllAbsent": "Đánh dấu tất cả Vắng",
+    "markedAll": "Đã đánh dấu tất cả {{status}}",
+    "submitSuccess": "Gửi điểm danh thành công",
+    "submitFailed": "Gửi điểm danh thất bại",
+    "status": {
+      "scheduled": "Đã lên lịch",
+      "completed": "Hoàn thành",
+      "cancelled": "Đã hủy"
+    }
+  },
   "trainee": {
     "title": "Học viên",
     "myClasses": "Lớp học của tôi",
@@ -449,7 +489,8 @@
       "loading": "Đang tải chi tiết lớp học...",
       "noClasses": "Không tìm thấy lớp học",
       "students": "học viên",
-      "hrs": "giờ"
+      "hrs": "giờ",
+      "learning": "Học tập"
     },
     "classOverview": {
       "title": "Tổng quan lớp học",
@@ -463,7 +504,7 @@
     },
     "instructorInfo": {
       "title": "Giảng viên",
-      "code": "Mã",
+      "code": "Mã giảng viên",
       "noInstructor": "Không có thông tin giảng viên",
       "loadFailed": "Không tải được thông tin giảng viên"
     },
@@ -624,7 +665,8 @@
       "passedDesc": "Bạn đạt {{score}} / {{total}} điểm.",
       "notPassedMsg": "Bạn chưa đạt.",
       "notPassedDesc": "Bạn đạt {{score}} / {{total}} điểm. Cần {{required}} điểm để đạt.",
-      "completedOn": "Hoàn thành lúc"
+      "completedOn": "Hoàn thành lúc",
+      "retakeQuiz": "Làm lại bài kiểm tra"
     },
     "learn": {
       "traineeIdNotAvailable": "Không có ID học viên. Vui lòng đăng nhập lại.",
@@ -1830,6 +1872,53 @@
       "failedToSave": "Lưu nhiệm vụ thất bại"
     }
   },
+  "simulator": {
+    "title": "Nền tảng Mô phỏng 3D",
+    "subtitle": "Tải xuống và cài đặt ứng dụng mô phỏng cần cẩu 3D để thực hành các tình huống vận hành với vật lý thực tế và theo dõi đánh giá.",
+    "download": {
+      "tabTitle": "Tải File",
+      "latestBuild": "Phiên bản Mô phỏng Mới nhất",
+      "version": "Phiên bản",
+      "approxSize": "Kích thước ước tính",
+      "platform": "Nền tảng",
+      "preparing": "Đang chuẩn bị…",
+      "downloadButton": "Tải Mô phỏng",
+      "unavailable": "Không khả dụng",
+      "envVarNotSet": "Biến môi trường",
+      "notSet": "chưa được thiết lập."
+    },
+    "backup": {
+      "tabTitle": "Link Dự phòng",
+      "title": "Google Drive Dự phòng",
+      "description": "Nếu tải xuống chính không hoạt động, bạn có thể sử dụng liên kết dự phòng này.",
+      "button": "Mở Link Dự phòng"
+    },
+    "installation": {
+      "title": "Hướng dẫn Cài đặt",
+      "step1": "Nhấp vào <strong>Tải Mô phỏng</strong> để tải trình cài đặt (.exe).",
+      "step2": "Xác minh chữ ký file nếu chính sách của bạn yêu cầu (nhấp chuột phải → Properties → Digital Signatures).",
+      "step3": "Chạy trình cài đặt và làm theo các bước trên màn hình. Chấp nhận các phần phụ thuộc cần thiết (Visual C++ runtime, DirectX) nếu được nhắc.",
+      "step4": "Khởi chạy ứng dụng. Lần đầu tiên khởi động, bạn sẽ được yêu cầu nhập thông tin đăng nhập (giống như đăng nhập web).",
+      "step5": "Cho phép truy cập mạng ra ngoài để theo dõi dữ liệu thời gian thực (cổng 443)."
+    },
+    "usage": {
+      "title": "Tổng quan Sử dụng",
+      "intro": "Sau khi đăng nhập, chọn một <strong>Tình huống</strong> từ bảng bên trái. Mỗi tình huống mô tả các mục tiêu cần thiết và ngưỡng an toàn.",
+      "controlsMapping": "<strong>Ánh xạ Điều khiển:</strong> Mở Settings → Controls để xem cách bố trí joystick / bàn phím.",
+      "telemetryPanel": "<strong>Bảng Telemetry:</strong> Các chỉ số tải, góc cần cẩu, tốc độ gió và lề an toàn theo thời gian thực.",
+      "assessmentMode": "<strong>Chế độ Đánh giá:</strong> Khi được bật, các hành động của bạn sẽ được ghi lại để giảng viên xem xét.",
+      "replay": "<strong>Phát lại:</strong> Sử dụng dòng thời gian phát lại để phân tích hiệu suất và các sự cố suýt xảy ra.",
+      "advanced": "Cần cấu hình nâng cao (bộ nhớ đệm ngoại tuyến, điều chỉnh đồ họa)? Tham khảo <em>Phụ lục Kỹ thuật</em> sắp tới hoặc liên hệ hỗ trợ."
+    },
+    "support": {
+      "text": "Gặp vấn đề cài đặt? Gửi email",
+      "email": "support@lssctc.example",
+      "withDetails": "với phiên bản hệ điều hành và file log của bạn"
+    },
+    "error": {
+      "downloadUrlNotConfigured": "URL tải xuống chưa được cấu hình. Vui lòng liên hệ hỗ trợ."
+    }
+  },
   "home": {
     "banner": {
       "platform": "Nền tảng",
@@ -1958,7 +2047,15 @@
         "enrollmentTrend": "Xu hướng đăng ký",
         "roleDistribution": "Phân bố vai trò",
         "courseCompletion": "Hoàn thành khóa học",
-        "upcomingSessions": "Buổi học sắp tới"
+        "upcomingSessions": "Buổi học sắp tới",
+        "dailyCourseCompletions": "Hoàn thành khóa học hàng ngày",
+        "mostActiveTrainees": "Học viên hoạt động nhiều nhất",
+        "completions": "Hoàn thành",
+        "completed": "Đã hoàn thành",
+        "enrollments": "Đăng ký",
+        "totalEnrollments": "Tổng đăng ký",
+        "courses": "Khóa học",
+        "enrolledCourses": "Khóa học đã đăng ký"
       }
     },
     "users": {

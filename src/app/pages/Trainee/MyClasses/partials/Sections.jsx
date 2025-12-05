@@ -88,7 +88,7 @@ export default function Sections({ classId }) {
 
 	return (
 		<div className="my-4">
-			<Card className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+			{/* <Card className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"> */}
 				<div className="space-y-5">
 					{sections.map((section) => {
 						// Build link to first activity of this section
@@ -134,7 +134,7 @@ export default function Sections({ classId }) {
 						);
 					})}
 				</div>
-			</Card>
+			{/* </Card> */}
 		</div>
 	);
 }

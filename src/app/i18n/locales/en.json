@@ -449,7 +449,8 @@
       "loading": "Loading class details...",
       "noClasses": "No classes found",
       "students": "students",
-      "hrs": "hrs"
+      "hrs": "hrs",
+      "learning": "Learning"
     },
     "classOverview": {
       "title": "Class Overview",
@@ -624,7 +625,8 @@
       "passedDesc": "You scored {{score}} out of {{total}} points.",
       "notPassedMsg": "You Did Not Pass.",
       "notPassedDesc": "You scored {{score}} out of {{total}}. A score of {{required}} is required to pass.",
-      "completedOn": "Completed on"
+      "completedOn": "Completed on",
+      "retakeQuiz": "Retake quiz"
     },
     "learn": {
       "traineeIdNotAvailable": "Trainee ID not available. Please log in again.",
@@ -666,6 +668,46 @@
       "practiceSummary": "Practice Summary",
       "tasksCompleted": "Tasks Completed",
       "averageScore": "Average Score"
+    }
+  },
+  "attendance": {
+    "slot": "Slot",
+    "date": "Date",
+    "time": "Time",
+    "topic": "Topic",
+    "location": "Location",
+    "students": "Students",
+    "attendanceStatus": "Attendance",
+    "takeAttendance": "Take Attendance",
+    "submitAttendance": "Submit Attendance",
+    "viewAttendance": "View Attendance",
+    "classSchedule": "Class Schedule",
+    "weeklySchedule": "Weekly Schedule",
+    "myWeeklySchedule": "My Weekly Schedule",
+    "today": "Today",
+    "noSlots": "No slots scheduled",
+    "totalSlots": "Total Slots",
+    "attendanceRate": "Attendance Rate",
+    "present": "Present",
+    "absent": "Absent",
+    "late": "Late",
+    "excused": "Excused",
+    "submitted": "Submitted",
+    "pending": "Pending",
+    "noRecord": "No Record",
+    "note": "Note",
+    "notePlaceholder": "Add note (optional)",
+    "summary": "Summary",
+    "searchStudent": "Search student by name, email or ID...",
+    "markAllPresent": "Mark All Present",
+    "markAllAbsent": "Mark All Absent",
+    "markedAll": "Marked all as {{status}}",
+    "submitSuccess": "Attendance submitted successfully",
+    "submitFailed": "Failed to submit attendance",
+    "status": {
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
     }
   },
   "instructor": {
@@ -1830,6 +1872,53 @@
       "failedToSave": "Failed to save task"
     }
   },
+  "simulator": {
+    "title": "3D Simulation Platform",
+    "subtitle": "Download and install the native 3D crane simulation client to practice operational scenarios with realistic physics and assessment tracking.",
+    "download": {
+      "tabTitle": "Download File",
+      "latestBuild": "Latest Simulator Build",
+      "version": "Version",
+      "approxSize": "Approx size",
+      "platform": "Platform",
+      "preparing": "Preparing…",
+      "downloadButton": "Download Simulator",
+      "unavailable": "Unavailable",
+      "envVarNotSet": "Environment variable",
+      "notSet": "not set."
+    },
+    "backup": {
+      "tabTitle": "Backup Link",
+      "title": "Google Drive Mirror",
+      "description": "If the main download is not working, you can use this backup link.",
+      "button": "Open Backup Link"
+    },
+    "installation": {
+      "title": "Installation Guide",
+      "step1": "Click <strong>Download Simulator</strong> to obtain the installer (.exe).",
+      "step2": "Verify the file signature if your policy requires (right-click → Properties → Digital Signatures).",
+      "step3": "Run the installer & follow on-screen steps. Accept required dependencies (Visual C++ runtime, DirectX) if prompted.",
+      "step4": "Launch the application. On first start you will be asked for your platform credentials (same as web login).",
+      "step5": "Allow outbound network access for real-time telemetry (port 443)."
+    },
+    "usage": {
+      "title": "Usage Overview",
+      "intro": "After signing in, choose a <strong>Scenario</strong> from the left panel. Each scenario describes required objectives and safety thresholds.",
+      "controlsMapping": "<strong>Controls Mapping:</strong> Open Settings → Controls to review joystick / keyboard layout.",
+      "telemetryPanel": "<strong>Telemetry Panel:</strong> Real-time load, boom angle, wind speed, and safety margin indicators.",
+      "assessmentMode": "<strong>Assessment Mode:</strong> When enabled, your actions are recorded for instructor review.",
+      "replay": "<strong>Replay:</strong> Use the replay timeline to analyze performance and near-miss events.",
+      "advanced": "Need advanced configuration (offline caching, graphics tuning)? Refer to the upcoming <em>Technical Addendum</em> or contact support."
+    },
+    "support": {
+      "text": "Having installation issues? Email",
+      "email": "support@lssctc.example",
+      "withDetails": "with your OS version and log file"
+    },
+    "error": {
+      "downloadUrlNotConfigured": "Download URL not configured. Please contact support."
+    }
+  },
   "home": {
     "banner": {
       "platform": "Platform",
@@ -1958,7 +2047,15 @@
         "enrollmentTrend": "Enrollment Trend",
         "roleDistribution": "Role Distribution",
         "courseCompletion": "Course Completion",
-        "upcomingSessions": "Upcoming Sessions"
+        "upcomingSessions": "Upcoming Sessions",
+        "dailyCourseCompletions": "Daily Course Completions",
+        "mostActiveTrainees": "Most Active Trainees",
+        "completions": "Completions",
+        "completed": "Completed",
+        "enrollments": "Enrollments",
+        "totalEnrollments": "Total Enrollments",
+        "courses": "Courses",
+        "enrolledCourses": "Enrolled Courses"
       }
     },
     "users": {

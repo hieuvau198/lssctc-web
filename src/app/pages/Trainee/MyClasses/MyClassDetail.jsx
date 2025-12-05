@@ -1,5 +1,5 @@
 // src\app\pages\Trainee\MyClasses\MyClassDetail.jsx
-import { Empty, Spin } from 'antd';
+import { Empty, Spin, Tabs } from 'antd';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,10 @@ import ClassOverview from './partials/ClassOverview';
 import ClassSchedule from './partials/ClassSchedule';
 import InstructorInfo from './partials/InstructorInfo';
 import Sections from './partials/Sections';
+import TraineeClassSchedule from './partials/TraineeClassSchedule';
+import TraineeWeeklySchedule from './partials/TraineeWeeklySchedule';
 import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
+import { mockTeachingSlots, mockWeeklySchedule, mockTraineeAttendance } from '../../../mocks/teachingSlots';
 
 export default function MyClassDetail() {
   const { t } = useTranslation();
@@ -88,20 +91,59 @@ export default function MyClassDetail() {
     );
   }
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <PageNav items={[{ title: 'My Classes', href: '/my-classes' }, { title: classData?.name }]} />
-      <div className="mt-2">
-        <ClassHeader classData={classData} />
+  // Mock data - filter slots for current class
+  const classSlots = mockTeachingSlots.filter(slot => slot.classId === id);
+  const enrolledClasses = [
+    { classId: id, className: classData?.name },
+  ];
+
+  const tabItems = [
+    {
+      key: 'learning',
+      label: t('trainee.myClassDetail.learning'),
+      children: (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            {/* <ClassOverview classData={classData} /> */}
             <Sections classId={classData.id} />
           </div>
           <div className="space-y-8">
             <InstructorInfo classId={classData.id}/>
             <ClassSchedule classData={classData} />
           </div>
+        </div>
+      ),
+    },
+    {
+      key: 'schedule',
+      label: t('attendance.classSchedule'),
+      children: (
+        <TraineeClassSchedule
+          classId={id}
+          className={classData?.name}
+          slots={classSlots}
+          attendanceRecords={mockTraineeAttendance}
+        />
+      ),
+    },
+    {
+      key: 'weekly',
+      label: t('attendance.weeklySchedule'),
+      children: (
+        <TraineeWeeklySchedule
+          enrolledClasses={enrolledClasses}
+          weeklySchedule={mockWeeklySchedule}
+        />
+      ),
+    },
+  ];
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <PageNav items={[{ title: 'My Classes', href: '/my-classes' }, { title: classData?.name }]} />
+      <div className="mt-2">
+        <ClassHeader classData={classData} />
+        <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+          <Tabs items={tabItems} defaultActiveKey="learning" />
         </div>
       </div>
     </div>
