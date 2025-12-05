@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Table, Tag, Pagination, Avatar, Empty } from 'antd';
 import { getInstructors } from '../../../../apis/Admin/AdminUser';
 
@@ -12,38 +13,39 @@ const getInitials = (name = '') => {
     .join('');
 };
 
-const COLUMNS = [
-  { title: '#', dataIndex: 'idx', width: 60, align: 'center' },
-  {
-    title: 'Avatar',
-    dataIndex: 'avatar',
-    width: 80,
-    render: (src, record) => (
-      <Avatar src={src} alt={record.fullName} style={{ backgroundColor: '#f3f4f6' }}>
-        {!src && getInitials(record.fullName)}
-      </Avatar>
-    ),
-  },
-  { title: 'Full name', dataIndex: 'fullName' },
-  { title: 'Email', dataIndex: 'email' },
-  { title: 'Phone', dataIndex: 'phoneNumber', width: 160 },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    render: (s) => (
-      <Tag color={s === 'active' ? 'green' : 'red'}>{s}</Tag>
-    ),
-    width: 120,
-  },
-];
-
 export default function InstructorTable() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
   const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  const COLUMNS = [
+    { title: '#', dataIndex: 'idx', width: 60, align: 'center' },
+    {
+      title: t('admin.users.table.avatar'),
+      dataIndex: 'avatar',
+      width: 80,
+      render: (src, record) => (
+        <Avatar src={src} alt={record.fullName} style={{ backgroundColor: '#f3f4f6' }}>
+          {!src && getInitials(record.fullName)}
+        </Avatar>
+      ),
+    },
+    { title: t('admin.users.table.fullName'), dataIndex: 'fullName' },
+    { title: t('admin.users.table.email'), dataIndex: 'email' },
+    { title: t('admin.users.table.phone'), dataIndex: 'phoneNumber', width: 160 },
+    {
+      title: t('admin.users.table.status'),
+      dataIndex: 'status',
+      render: (s) => (
+        <Tag color={s === 'active' ? 'green' : 'red'}>{s === 'active' ? t('common.active') : t('common.inactive')}</Tag>
+      ),
+      width: 120,
+    },
+  ];
 
   const fetchData = useCallback(async (p = 1, ps = 10) => {
     setLoading(true);
@@ -78,7 +80,7 @@ export default function InstructorTable() {
     <div>
       <div className="min-h-[430px] overflow-auto">
         {data.length === 0 && !loading ? (
-          <Empty description="No instructors" />
+          <Empty description={t('admin.users.noInstructors')} />
         ) : (
           <Table
             columns={COLUMNS}
@@ -98,7 +100,7 @@ export default function InstructorTable() {
           onChange={(p, s) => { setPage(p); setPageSize(s); setSearchParams({ page: p.toString(), pageSize: s.toString() }); }}
           showSizeChanger
           pageSizeOptions={["5", "10", "20"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} instructors`}
+          showTotal={(total, range) => t('admin.users.pagination', { start: range[0], end: range[1], total })}
         />
       </div>
     </div>

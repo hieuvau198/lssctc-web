@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Tag, Divider, Empty, Skeleton } from "antd";
 import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
 import CourseCard from "./CourseCard";
 import AssignCourseModal from "./AssignCourseModal";
 
 const ProgramDetailView = ({ program, loading }) => {
+  const { t } = useTranslation();
   const [courses, setCourses] = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
 
@@ -30,7 +32,7 @@ const ProgramDetailView = ({ program, loading }) => {
   }
 
   if (!program) {
-    return <Empty description="No program data" />;
+    return <Empty description={t('admin.programs.noData')} />;
   }
 
   return (
@@ -50,16 +52,16 @@ const ProgramDetailView = ({ program, loading }) => {
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-semibold">{program.name}</h3>
             <Tag color={program.isActive ? 'green' : 'red'}>
-              {program.isActive ? 'Active' : 'Inactive'}
+              {program.isActive ? t('common.active') : t('common.inactive')}
             </Tag>
           </div>
           <div className="flex flex-wrap gap-4 text-sm text-slate-600">
             <span>
-              <span className="font-medium">Total Courses:</span> {program.totalCourses || 0}
+              <span className="font-medium">{t('admin.programs.totalCourses')}:</span> {program.totalCourses || 0}
             </span>
           </div>
           <div>
-            <div className="text-sm font-medium text-slate-800 mb-1">Description</div>
+            <div className="text-sm font-medium text-slate-800 mb-1">{t('admin.programs.form.description')}</div>
             <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line max-h-[120px] overflow-auto pr-2">
               {program.description}
             </div>
@@ -69,7 +71,7 @@ const ProgramDetailView = ({ program, loading }) => {
 
       {/* Courses */}
       <div>
-        <Divider orientation="left">Courses</Divider>
+        <Divider orientation="left">{t('admin.programs.courses')}</Divider>
         <div className="ml-3">
           <AssignCourseModal program={program} onAssigned={() => {
             // refresh courses after assign
@@ -89,7 +91,7 @@ const ProgramDetailView = ({ program, loading }) => {
             ))}
           </div>
         ) : (
-          <Empty description="No courses assigned" />
+          <Empty description={t('admin.programs.noCoursesAssigned')} />
         )}
       </div>
 

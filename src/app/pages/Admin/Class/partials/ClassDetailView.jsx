@@ -1,4 +1,5 @@
 import { Button, Empty, Skeleton, Tag } from "antd";
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import EditClassStatus from "../../../../components/ClassStatus/EditClassStatus";
@@ -8,6 +9,7 @@ import ClassMembersTable from "./ClassMembersTable";
 import { ArrowLeft } from "lucide-react";
 
 const ClassDetailView = ({ classItem, loading, onRefresh }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (loading) {
@@ -15,7 +17,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   }
 
   if (!classItem) {
-    return <Empty description="No class data" />;
+    return <Empty description={t('admin.classes.noClassData')} />;
   }
 
   return (
@@ -28,7 +30,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             <span className="text-xl font-semibold">{classItem.name}</span>
             {(() => {
               const s = getClassStatus(classItem.status);
-              return <Tag color={s.color}>{s.label}</Tag>;
+              return <Tag color={s.color}>{t(`common.classStatus.${s.key}`)}</Tag>;
             })()}
             <EditClassStatus 
               classId={classItem.id} 
@@ -37,28 +39,28 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             />
           </div>
           <div>
-            <Button onClick={() => navigate(`/admin/class/${classItem.id}/edit`)}>Edit Class Details</Button>
+            <Button onClick={() => navigate(`/admin/class/${classItem.id}/edit`)}>{t('admin.classes.editClassDetails')}</Button>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600">
           <div>
-            <span className="font-medium">Start Date:</span>{' '}
+            <span className="font-medium">{t('admin.classes.form.startDate')}:</span>{' '}
             <DayTimeFormat value={classItem.startDate} />
           </div>
           <div>
-            <span className="font-medium">End Date:</span>{' '}
+            <span className="font-medium">{t('admin.classes.form.endDate')}:</span>{' '}
             <DayTimeFormat value={classItem.endDate} />
           </div>
           <div>
-            <span className="font-medium">Capacity:</span> {classItem.capacity}
+            <span className="font-medium">{t('admin.classes.columns.capacity')}:</span> {classItem.capacity}
           </div>
           <div>
-            <span className="font-medium">Class Code:</span> {classItem.classCode?.name || classItem.classCode || "-"}
+            <span className="font-medium">{t('admin.classes.columns.classCode')}:</span> {classItem.classCode?.name || classItem.classCode || "-"}
           </div>
         </div>
         {classItem.description && (
           <div className="text-sm text-slate-600">
-            <span className="font-medium">Description:</span>{" "}
+            <span className="font-medium">{t('common.description')}:</span>{" "}
             <span className="whitespace-pre-line">{classItem.description}</span>
           </div>
         )}

@@ -1,82 +1,86 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import { Card, Tag, Button, Tooltip, Popconfirm, Pagination } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 // Individual Card component
-const ProgramCard = ({ program, onView, onEdit, onDelete, deletingId }) => (
-  <Card
-    hoverable
-    className="rounded-lg shadow flex flex-col h-full"
-    cover={
-      <div
-        className="h-40 overflow-hidden cursor-pointer"
-        onClick={() => onView(program)}
-      >
-        <img
-          alt={program.name}
-          src={program.imageUrl}
-          className="object-cover h-full w-full"
-        />
-      </div>
-    }
-    actions={[
-      <Tooltip title="View Details" key="view">
-        <Button
-          type="text"
-          icon={<EyeOutlined />}
+const ProgramCard = ({ program, onView, onEdit, onDelete, deletingId }) => {
+  const { t } = useTranslation();
+  return (
+    <Card
+      hoverable
+      className="rounded-lg shadow flex flex-col h-full"
+      cover={
+        <div
+          className="h-40 overflow-hidden cursor-pointer"
           onClick={() => onView(program)}
-        />
-      </Tooltip>,
-      <Tooltip title="Edit Program" key="edit">
-        <Button
-          type="text"
-          icon={<EditOutlined />}
-          onClick={() => onEdit(program)}
-        />
-      </Tooltip>,
-      <Tooltip title="Delete Program" key="delete">
-        <Popconfirm
-          title="Delete program?"
-          description="Are you sure you want to delete this program?"
-          onConfirm={() => onDelete(program.id)}
-          okButtonProps={{ loading: deletingId === program.id }}
         >
+          <img
+            alt={program.name}
+            src={program.imageUrl}
+            className="object-cover h-full w-full"
+          />
+        </div>
+      }
+      actions={[
+        <Tooltip title={t('common.viewDetails')} key="view">
           <Button
             type="text"
-            danger
-            icon={<DeleteOutlined />}
-            loading={deletingId === program.id}
+            icon={<EyeOutlined />}
+            onClick={() => onView(program)}
           />
-        </Popconfirm>
-      </Tooltip>,
-    ]}
-  >
-    <div className="flex-1 flex flex-col">
-      <div className="flex items-start justify-between gap-2 mb-1">
-        <h3
-          className="font-semibold text-slate-900 line-clamp-2 flex-1 cursor-pointer"
-          onClick={() => onView(program)}
-        >
-          {program.name}
-        </h3>
-        <Tag color={program.isActive ? "green" : "red"} className="m-0">
-          {program.isActive ? "Active" : "Inactive"}
-        </Tag>
-      </div>
-      <p className="text-xs text-slate-600 line-clamp-2 mb-2">
-        {program.description}
-      </p>
-      <div className="mt-auto pt-3 border-t text-xs text-slate-700 space-y-1">
-        <div>
-          <span className="font-medium">Duration:</span> {program.durationHours}h
+        </Tooltip>,
+        <Tooltip title={t('admin.programs.editProgram')} key="edit">
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => onEdit(program)}
+          />
+        </Tooltip>,
+        <Tooltip title={t('admin.programs.deleteProgram')} key="delete">
+          <Popconfirm
+            title={t('admin.programs.deleteConfirmTitle')}
+            description={t('admin.programs.deleteConfirmDesc')}
+            onConfirm={() => onDelete(program.id)}
+            okButtonProps={{ loading: deletingId === program.id }}
+          >
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deletingId === program.id}
+            />
+          </Popconfirm>
+        </Tooltip>,
+      ]}
+    >
+      <div className="flex-1 flex flex-col">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <h3
+            className="font-semibold text-slate-900 line-clamp-2 flex-1 cursor-pointer"
+            onClick={() => onView(program)}
+          >
+            {program.name}
+          </h3>
+          <Tag color={program.isActive ? "green" : "red"} className="m-0">
+            {program.isActive ? t('common.active') : t('common.inactive')}
+          </Tag>
         </div>
-        <div>
-          <span className="font-medium">Total Courses:</span> {program.totalCourses || 0}
+        <p className="text-xs text-slate-600 line-clamp-2 mb-2">
+          {program.description}
+        </p>
+        <div className="mt-auto pt-3 border-t text-xs text-slate-700 space-y-1">
+          <div>
+            <span className="font-medium">{t('admin.programs.duration')}:</span> {program.durationHours}h
+          </div>
+          <div>
+            <span className="font-medium">{t('admin.programs.totalCourses')}:</span> {program.totalCourses || 0}
+          </div>
         </div>
       </div>
-    </div>
-  </Card>
-);
+    </Card>
+  );
+};
 
 // Main Card View component
 const ProgramCardView = ({ 
@@ -90,6 +94,7 @@ const ProgramCardView = ({
   onDelete, 
   deletingId 
 }) => {
+  const { t } = useTranslation();
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -112,9 +117,7 @@ const ProgramCardView = ({
           onChange={onPageChange}
           showSizeChanger={true}
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(total, range) =>
-            `${range[0]}-${range[1]} of ${total} programs`
-          }
+          showTotal={(total, range) => t('admin.programs.pagination', { start: range[0], end: range[1], total })}
         />
       </div>
     </>

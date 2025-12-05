@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Chart from 'react-apexcharts';
 import { Skeleton, Select } from 'antd';
 import { getDailyCompletionTrends } from '../../../../../apis/Admin/AdminDashboard';
 
 export default function CourseCompletion() {
+  const { t } = useTranslation();
   const currentDate = new Date();
   const [month, setMonth] = useState(currentDate.getMonth() + 1);
   const [year, setYear] = useState(currentDate.getFullYear());
@@ -25,16 +27,16 @@ export default function CourseCompletion() {
     fetchData();
   }, [month, year]);
 
-  const series = [{ name: 'Completions', data: data.map(d => d.completedCount) }];
+  const series = [{ name: t('admin.dashboard.charts.completions'), data: data.map(d => d.completedCount) }];
   const options = {
     chart: { id: 'completion-trends', toolbar: { show: false } },
     stroke: { curve: 'smooth', width: 3 },
-    xaxis: { categories: data.map(d => `Day ${d.day}`) },
+    xaxis: { categories: data.map(d => `${t('admin.dashboard.charts.day')} ${d.day}`) },
     colors: ['#10b981'],
     dataLabels: { enabled: false },
     fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05, stops: [0, 90, 100] } },
     grid: { borderColor: '#eee' },
-    tooltip: { theme: 'light', y: { formatter: (val) => val + ' completed' } }
+    tooltip: { theme: 'light', y: { formatter: (val) => val + ' ' + t('admin.dashboard.charts.completed') } }
   };
 
   const months = [
@@ -49,7 +51,7 @@ export default function CourseCompletion() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-sm font-medium text-gray-700">Daily Course Completions</h2>
+        <h2 className="text-sm font-medium text-gray-700">{t('admin.dashboard.charts.dailyCourseCompletions')}</h2>
         <div className="flex gap-2">
           <Select
             size="small"

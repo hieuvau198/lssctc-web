@@ -73,19 +73,19 @@ export default function InstructorClassDetail() {
   const tabItems = [
     {
       key: "overview",
-      label: t('instructor.classes.overview'),
+      label: t('instructor.classes.overviewTitle'),
       children: <ClassOverview classData={classDetail} />,
     },
     {
       key: "sections",
-      label: t('instructor.classes.sections'),
+      label: t('instructor.classes.sectionsTitle'),
       // classDetail is now guaranteed to be non-null
       // We still use optional chaining just in case programCourseId is null
       children: <ClassSections courseId={classDetail?.courseId} classId={classId}/>,
     },
     {
       key: "members",
-      label: t('instructor.classes.members'),
+      label: t('instructor.classes.membersTitle'),
       children: <ClassMembers classId={classId} />,
     },
   ];

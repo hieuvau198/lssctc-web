@@ -1,4 +1,4 @@
-import axios from "axios";
+import apiClient from '../../libs/axios';
 const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
 
 // Fetch list of programs with paging and search
@@ -8,7 +8,7 @@ export async function fetchPrograms(params = {}) {
   if (params.pageSize) searchParams.append("PageSize", params.pageSize);
   if (params.searchTerm) searchParams.append("SearchTerm", params.searchTerm);
 
-  const response = await axios.get(`${API_BASE_URL}/Programs/paged?${searchParams}`);
+  const response = await apiClient.get(`${API_BASE_URL}/Programs/paged?${searchParams}`);
   // normalize: if backend returns plain array, convert to { items, totalCount }
   if (Array.isArray(response.data)) return { items: response.data, totalCount: response.totalCount };
   return response.data;
@@ -16,26 +16,20 @@ export async function fetchPrograms(params = {}) {
 
 // Fetch program detail by id
 export async function fetchProgramDetail(id) {
-  const response = await axios.get(`${API_BASE_URL}/Programs/${id}`);
+  const response = await apiClient.get(`${API_BASE_URL}/Programs/${id}`);
   return response.data;
 }
 
 // Update program basic info
 export async function updateProgramBasic(id, payload) {
-  const response = await axios.put(
-    `${API_BASE_URL}/Programs/${id}`,
-    payload
-  );
+  const response = await apiClient.put(`${API_BASE_URL}/Programs/${id}`, payload);
   return response.data;
 }
 
 // Update program courses (with order)
 export async function updateProgramCourses(id, courses) {
   try {
-    const response = await axios.put(
-      `${API_BASE_URL}/Programs/${id}/courses`,
-      courses
-    );
+    const response = await apiClient.put(`${API_BASE_URL}/Programs/${id}/courses`, courses);
     return response.data;
   } catch (err) {
     // Return error response for special case
@@ -49,7 +43,7 @@ export async function updateProgramCourses(id, courses) {
 // Add a single course to a program by POSTing to /Programs/{programId}/courses/{courseId}
 export async function addCourseToProgram(programId, courseId) {
   try {
-    const response = await axios.post(`${API_BASE_URL}/Programs/${programId}/courses/${courseId}`);
+    const response = await apiClient.post(`${API_BASE_URL}/Programs/${programId}/courses/${courseId}`);
     return response.data;
   } catch (err) {
     if (err.response && err.response.data && err.response.data.message) {
@@ -61,22 +55,19 @@ export async function addCourseToProgram(programId, courseId) {
 
 // Update program entry requirements
 export async function updateProgramEntryRequirements(id, requirements) {
-  const response = await axios.put(
-    `${API_BASE_URL}/Programs/${id}/entry-requirements`,
-    requirements
-  );
+  const response = await apiClient.put(`${API_BASE_URL}/Programs/${id}/entry-requirements`, requirements);
   return response.data;
 }
 
 // Create a new program
 export async function createProgram(payload) {
-  const response = await axios.post(`${API_BASE_URL}/Programs`, payload);
+  const response = await apiClient.post(`${API_BASE_URL}/Programs`, payload);
   return response.data;
 }
 
 // Delete program by id
 export async function deleteProgram(id) {
-  const response = await axios.delete(`${API_BASE_URL}/Programs/${id}`);
+  const response = await apiClient.delete(`${API_BASE_URL}/Programs/${id}`);
   return response.data;
 }
 
@@ -91,13 +82,13 @@ export async function fetchCourses(params = {}) {
   if (params.isActive !== undefined)
     searchParams.append("IsActive", params.isActive);
 
-  const response = await axios.get(`${API_BASE_URL}/Courses?${searchParams}`);
+  const response = await apiClient.get(`${API_BASE_URL}/Courses?${searchParams}`);
   if (Array.isArray(response.data)) return { items: response.data, totalCount: response.data.length };
   return response.data;
 }
 
 // Fetch course detail by id
 export async function fetchCourseDetail(id) {
-  const response = await axios.get(`${API_BASE_URL}/Courses/${id}`);
+  const response = await apiClient.get(`${API_BASE_URL}/Courses/${id}`);
   return response.data;
 }

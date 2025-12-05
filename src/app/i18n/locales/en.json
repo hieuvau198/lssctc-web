@@ -66,7 +66,27 @@
     "expected": "Expected",
     "na": "N/A",
     "tableView": "Table View",
-    "cardView": "Card View"
+    "cardView": "Card View",
+    "avatar": "Avatar",
+    "fullName": "Full Name",
+    "category": "Category",
+    "level": "Level",
+    "price": "Price",
+    "duration": "Duration",
+    "clickToPreview": "Click to preview",
+    "noImage": "No image",
+    "viewDetails": "View Details",
+    "pagination": {
+      "showTotal": "{{start}}-{{end}} of {{total}}"
+    },
+    "classStatus": {
+      "Draft": "Draft",
+      "Published": "Published",
+      "Inprogress": "In Progress",
+      "Completed": "Completed",
+      "Open": "Open",
+      "Cancelled": "Cancelled"
+    }
   },
   "class": {
     "publishClass": "Publish Class",
@@ -322,31 +342,6 @@
     "updateSuccess": "Course updated successfully",
     "deleteSuccess": "Course deleted successfully"
   },
-  "class": {
-    "title": "Class Management",
-    "classList": "Class List",
-    "createClass": "Create Class",
-    "editClass": "Edit Class",
-    "deleteClass": "Delete Class",
-    "className": "Class Name",
-    "classCode": "Class Code",
-    "classDescription": "Class Description",
-    "instructor": "Instructor",
-    "trainees": "Trainees",
-    "startDate": "Start Date",
-    "endDate": "End Date",
-    "status": "Status",
-    "draft": "Draft",
-    "open": "Open",
-    "inProgress": "In Progress",
-    "completed": "Completed",
-    "cancelled": "Cancelled",
-    "enrollTrainee": "Enroll Trainee",
-    "deleteConfirm": "Are you sure you want to delete this class?",
-    "createSuccess": "Class created successfully",
-    "updateSuccess": "Class updated successfully",
-    "deleteSuccess": "Class deleted successfully"
-  },
   "user": {
     "title": "User Management",
     "userList": "User List",
@@ -501,9 +496,9 @@
     "classes": {
       "title": "My Classes",
       "classDetail": "Class Detail",
-      "overview": "Overview",
-      "members": "Members",
-      "sections": "Sections",
+      "overviewTitle": "Overview",
+      "membersTitle": "Members",
+      "sectionsTitle": "Sections",
       "activities": "Activities",
       "activityDetails": "Activity Details",
       "addActivity": "Add Activity",
@@ -1442,8 +1437,6 @@
       "taskRemovedSuccess": "Task removed from practice successfully!",
       "selectTaskFirst": "Please select a task first",
       "taskAlreadyAdded": "This task is already added to the practice",
-      "taskDeleteSuccess": "Task deleted successfully!",
-      "taskDeleteFailed": "Failed to delete task. Please try again.",
       "confirmDeleteSystemTaskTitle": "Delete Task",
       "confirmDeleteSystemTaskDesc": "Are you sure you want to delete this task from the system? This action cannot be undone.",
       "backToPractices": "Back to Practices",
@@ -1709,6 +1702,363 @@
         "version": "Version 0.3 preview",
         "apiReady": "API Ready",
         "swrHooks": "SWR Hooks Soon"
+      }
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Dashboard",
+      "totalUsers": "Total Users",
+      "totalPrograms": "Total Programs",
+      "totalCourses": "Total Courses",
+      "totalClasses": "Total Classes",
+      "recentActivities": "Recent Activities",
+      "quickStats": "Quick Stats",
+      "stats": {
+        "totalPrograms": "Total Programs",
+        "totalCourses": "Total Courses",
+        "totalTrainees": "Total Trainees",
+        "totalInstructors": "Total Instructors",
+        "totalClasses": "Total Classes",
+        "totalPractices": "Total Practices"
+      },
+      "charts": {
+        "popularCourses": "Popular Courses",
+        "classStatusDistribution": "Class Status Distribution",
+        "enrollmentTrend": "Enrollment Trend",
+        "roleDistribution": "Role Distribution",
+        "courseCompletion": "Course Completion",
+        "upcomingSessions": "Upcoming Sessions"
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "createUser": "Create User",
+      "editUser": "Edit User",
+      "userList": "User List",
+      "trainee": "Trainees",
+      "instructor": "Instructors",
+      "simulatorManager": "Simulation Managers",
+      "addTrainee": "Add Trainee",
+      "addInstructor": "Add Instructor",
+      "addSimulationManager": "Add Simulation Manager",
+      "user": "User",
+      "noTrainees": "No trainees found",
+      "noInstructors": "No instructors found",
+      "noSimulationManagers": "No simulation managers found",
+      "columns": {
+        "avatar": "Avatar",
+        "fullName": "Full Name",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role",
+        "status": "Status",
+        "action": "Action"
+      },
+      "table": {
+        "avatar": "Avatar",
+        "fullName": "Full Name",
+        "email": "Email",
+        "phone": "Phone",
+        "status": "Status"
+      },
+      "form": {
+        "username": "Username",
+        "usernameRequired": "Please enter username",
+        "fullName": "Full Name",
+        "fullNameRequired": "Please enter full name",
+        "email": "Email",
+        "emailRequired": "Please enter email",
+        "emailInvalid": "Please enter a valid email",
+        "phoneNumber": "Phone Number",
+        "phoneRequired": "Please enter phone number",
+        "phoneInvalid": "Phone number must start with 0 and be 10 digits",
+        "role": "Role",
+        "password": "Password",
+        "passwordRequired": "Please enter password",
+        "passwordMin": "Password must be at least 6 characters",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordRequired": "Please confirm password",
+        "passwordMismatch": "Passwords do not match",
+        "avatarUrl": "Avatar URL",
+        "avatarPreview": "Avatar Preview"
+      },
+      "validation": {
+        "fullNameRequired": "Please enter full name",
+        "emailRequired": "Please enter email",
+        "emailInvalid": "Please enter a valid email",
+        "phoneRequired": "Please enter phone number",
+        "roleRequired": "Please select a role",
+        "passwordRequired": "Please enter password",
+        "passwordMin": "Password must be at least 6 characters",
+        "confirmPasswordRequired": "Please confirm password",
+        "passwordMismatch": "Passwords do not match"
+      },
+      "messages": {
+        "createSuccess": "User created successfully",
+        "createFailed": "Failed to create user",
+        "updateSuccess": "User updated successfully",
+        "updateFailed": "Failed to update user",
+        "deleteSuccess": "User deleted successfully",
+        "deleteFailed": "Failed to delete user",
+        "loadFailed": "Failed to load users"
+      },
+      "popconfirm": {
+        "deleteUser": "Are you sure you want to delete this user?",
+        "activateUser": "Activate this user?",
+        "deactivateUser": "Deactivate this user?"
+      },
+      "pagination": "{{start}}-{{end}} of {{total}} users"
+    },
+    "programs": {
+      "title": "Program Management",
+      "createProgram": "Create Program",
+      "addProgram": "Add Program",
+      "editProgram": "Edit Program",
+      "deleteProgram": "Delete Program",
+      "programList": "Program List",
+      "duration": "Duration",
+      "assignCourses": "Assign Courses",
+      "viewDetails": "View Details",
+      "noData": "No program data",
+      "totalCourses": "Total Courses",
+      "courses": "Courses",
+      "searchPlaceholder": "Search programs...",
+      "noPrograms": "No programs found",
+      "noCoursesAssigned": "No courses assigned to this program",
+      "deleteSuccess": "Program deleted successfully",
+      "deleteError": "Failed to delete program",
+      "deleteConfirmTitle": "Delete Program",
+      "deleteConfirmDesc": "Are you sure you want to delete this program?",
+      "pagination": "{{start}}-{{end}} of {{total}} programs",
+      "table": {
+        "image": "Image",
+        "name": "Program Name",
+        "duration": "Duration",
+        "courses": "Courses",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "form": {
+        "name": "Program Name",
+        "nameRequired": "Please enter program name",
+        "namePlaceholder": "Enter program name",
+        "imageUrl": "Image URL",
+        "imageUrlRequired": "Please enter image URL",
+        "imageUrlInvalid": "Please enter a valid URL",
+        "imagePreview": "Image Preview",
+        "description": "Description",
+        "descriptionRequired": "Please enter description",
+        "descriptionPlaceholder": "Enter program description"
+      },
+      "assignCourse": {
+        "title": "Assign Courses to Program",
+        "button": "Assign courses",
+        "modalTitle": "Assign Courses",
+        "cancel": "Cancel",
+        "total": "Total {{total}} courses",
+        "assignSelected": "Assign Selected ({{count}})",
+        "selectWarning": "Please select at least one course",
+        "assignSuccess": "Successfully assigned {{count}} course(s)",
+        "loadError": "Failed to load courses",
+        "allAssigned": "All courses are already assigned to this program",
+        "columns": {
+          "courseName": "Course Name",
+          "description": "Description"
+        }
+      }
+    },
+    "courses": {
+      "title": "Course Management",
+      "createCourse": "Create Course",
+      "addCourse": "Add Course",
+      "editCourse": "Edit Course",
+      "deleteCourseTitle": "Delete Course",
+      "deleteConfirm": "Are you sure you want to delete this course?",
+      "viewDetails": "View Details",
+      "courseList": "Course List",
+      "noCourses": "No courses found",
+      "deleteSuccess": "Course deleted successfully",
+      "createSuccess": "Course created successfully",
+      "updateSuccess": "Course updated successfully",
+      "deleteError": "Failed to delete course",
+      "createError": "Failed to create course",
+      "updateError": "Failed to update course",
+      "loadDetailError": "Failed to load course details",
+      "pagination": "{{start}}-{{end}} of {{total}} courses",
+      "columns": {
+        "image": "Image",
+        "courseName": "Course Name",
+        "durationHours": "Duration (Hours)"
+      },
+      "form": {
+        "name": "Course Name",
+        "nameRequired": "Please enter course name",
+        "namePlaceholder": "Enter course name",
+        "categoryRequired": "Please select category",
+        "categoryPlaceholder": "Select category",
+        "noCategories": "No categories available",
+        "levelRequired": "Please select level",
+        "levelPlaceholder": "Select level",
+        "noLevels": "No levels available",
+        "priceRequired": "Please enter price",
+        "durationHours": "Duration (Hours)",
+        "durationRequired": "Please enter duration",
+        "imageUrl": "Image URL",
+        "imageUrlRequired": "Please enter image URL",
+        "imageUrlInvalid": "Please enter a valid URL",
+        "imagePreview": "Image Preview",
+        "description": "Description",
+        "descriptionRequired": "Please enter description",
+        "descriptionPlaceholder": "Enter course description",
+        "courseCode": "Course Code",
+        "courseCodeRequired": "Please enter course code",
+        "courseCodePlaceholder": "Enter course code",
+        "preview": "Preview"
+      },
+      "filters": {
+        "category": "Filter by Category",
+        "level": "Filter by Level",
+        "status": "Filter by Status",
+        "allCategories": "All Categories",
+        "allLevels": "All Levels",
+        "allStatus": "All Status"
+      },
+      "sections": {
+        "title": "Course Sections",
+        "addSection": "Add Section",
+        "addNewSection": "Add New Section",
+        "importExcel": "Import Excel",
+        "noSections": "No sections available",
+        "loadError": "Failed to load sections",
+        "removeSuccess": "Section removed successfully",
+        "removeError": "Failed to remove section",
+        "removeTitle": "Remove Section",
+        "removeDescription": "Are you sure you want to remove this section?",
+        "durationMins": "{{mins}} mins",
+        "columns": {
+          "title": "Section Title"
+        },
+        "form": {
+          "title": "Section Title",
+          "titlePlaceholder": "Enter section title",
+          "titleRequired": "Please enter section title",
+          "description": "Description",
+          "descriptionPlaceholder": "Enter section description",
+          "durationMinutes": "Duration (Minutes)",
+          "durationMinutesPlaceholder": "Enter duration in minutes"
+        }
+      }
+    },
+    "classes": {
+      "title": "Class Management",
+      "createClass": "Create Class",
+      "editClass": "Edit Class",
+      "editClassDetails": "Edit Class Details",
+      "deleteClass": "Delete Class",
+      "deleteClassTitle": "Delete Class",
+      "deleteConfirm": "Are you sure you want to delete this class?",
+      "viewDetails": "View Details",
+      "editTitle": "Edit Class",
+      "start": "Start date",
+      "end": "End date",
+      "code": "Class Code",
+      "addClass": "Add Class",
+      "classList": "Class List",
+      "searchPlaceholder": "Search Classes...",
+      "noClass": "No Classes found",
+      "noClassData": "No class data available",
+      "deleteSuccess": "Class deleted successfully",
+      "deleteError": "Failed to delete class",
+      "createSuccess": "Class created successfully",
+      "createError": "Failed to create class",
+      "updateSuccess": "Class updated successfully",
+      "buttons": {
+        "updateClass": "Update Class",
+        "deleteClass": "Delete Class"
+      },
+      "columns": {
+        "className": "Class Name",
+        "classCode": "Class Code",
+        "capacity": "Capacity",
+        "enrollDate": "Enroll Date"
+      },
+      "detail": {
+        "instructor": "Instructor",
+        "members": "Members",
+        "instructorCode": "Instructor Code",
+        "hireDate": "Hire Date"
+      },
+      "form": {
+        "className": "Class Name",
+        "classNameRequired": "Please enter class name",
+        "classNamePlaceholder": "Enter class name",
+        "classCode": "Class Code",
+        "classCodeRequired": "Please enter class code",
+        "classCodePlaceholder": "Enter class code",
+        "program": "Program",
+        "programRequired": "Please select a program",
+        "programPlaceholder": "Select a program",
+        "course": "Course",
+        "courseRequired": "Please select a course",
+        "coursePlaceholder": "Select a course",
+        "startDate": "Start Date",
+        "startDateRequired": "Please select start date",
+        "endDate": "End Date",
+        "endDateRequired": "Please select end date",
+        "endDateAfterStart": "End date must be after start date",
+        "capacity": "Capacity",
+        "capacityRequired": "Please enter capacity",
+        "capacityMin": "Capacity must be at least 1",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter class description",
+        "noCourses": "No courses available. Please select a program first.",
+        "selectProgramFirst": "Please select a program first"
+      },
+      "drawer": {
+        "addClassTitle": "Add New Class"
+      },
+      "messages": {
+        "loadInstructorsFailed": "Failed to load instructors",
+        "loadTraineesFailed": "Failed to load available trainees",
+        "selectInstructor": "Please select an instructor",
+        "assignInstructorSuccess": "Instructor assigned to class",
+        "assignInstructorFailed": "Failed to assign instructor",
+        "noInstructorsAvailable": "No instructors available",
+        "selectTrainee": "Please select at least one trainee to enroll",
+        "enrollSuccess": "Successfully enrolled {{count}} trainee(s) to class",
+        "enrollFailed": "Failed to enroll trainees",
+        "noAvailableTrainees": "No available trainees to add. All trainees are already enrolled in this class.",
+        "approveSuccess": "Enrollment approved successfully",
+        "approveFailed": "Failed to approve enrollment",
+        "rejectSuccess": "Enrollment rejected successfully",
+        "rejectFailed": "Failed to reject enrollment"
+      },
+      "popconfirm": {
+        "approveEnrollment": "Approve enrollment",
+        "approveEnrollmentDesc": "Are you sure you want to approve this trainee?",
+        "rejectEnrollment": "Reject enrollment",
+        "rejectEnrollmentDesc": "Are you sure you want to reject this trainee?",
+        "deleteClass": "Are you sure you want to delete this class? This action cannot be undone."
+      },
+      "instructor": {
+        "title": "Instructor Information",
+        "noInstructor": "No instructor assigned",
+        "assignInstructor": "Assign Instructor",
+        "instructorCode": "Code",
+        "hireDate": "Hire Date"
+      },
+      "members": {
+        "title": "Class Members",
+        "addTrainee": "Add Trainee",
+        "noMembers": "No members enrolled",
+        "pagination": "{{start}}-{{end}} of {{total}} trainees",
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "modal": {
+        "addTraineeTitle": "Add Trainees to Class",
+        "enrollSelected": "Enroll Selected ({{count}})"
       }
     }
   }

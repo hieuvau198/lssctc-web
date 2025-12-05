@@ -1,11 +1,13 @@
 // src\app\pages\ProgramManager\Course\partials\CourseDetail.jsx
 
 import React, { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { fetchCourseDetail } from "../../../../apis/ProgramManager/CourseApi";
 import { Card, Skeleton, Alert, Button, Tag } from "antd";
 import SectionList from './Sections/SectionList';
 
 const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) => {
+  const { t } = useTranslation();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,7 +39,7 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
       <div className="max-w-md mx-auto mt-10">
         <Alert message="Error" description={error} type="error" showIcon />
         <Button className="mt-4" onClick={onBack}>
-          Back
+          {t('common.back')}
         </Button>
       </div>
     );
@@ -66,25 +68,25 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
             <div className="flex items-center gap-2">
               <h3 className="text-xl font-semibold">{course.name}</h3>
               <Tag color={course.isActive ? 'green' : 'red'}>
-                {course.isActive ? 'Active' : 'Inactive'}
+                {course.isActive ? t('common.active') : t('common.inactive')}
               </Tag>
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-slate-600">
               <span>
-                <span className="font-medium">Category:</span> {course.category}
+                <span className="font-medium">{t('common.category')}:</span> {course.category}
               </span>
               <span>
-                <span className="font-medium">Level:</span> {course.level}
+                <span className="font-medium">{t('common.level')}:</span> {course.level}
               </span>
               <span>
-                <span className="font-medium">Duration:</span> {course.durationHours}h
+                <span className="font-medium">{t('common.duration')}:</span> {course.durationHours}h
               </span>
               <span>
-                <span className="font-medium">Price:</span> ${course.price}
+                <span className="font-medium">{t('common.price')}:</span> ${course.price}
               </span>
             </div>
             <div>
-              <div className="text-sm font-medium text-slate-800 mb-1">Description</div>
+              <div className="text-sm font-medium text-slate-800 mb-1">{t('common.description')}</div>
               <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line max-h-20 md:max-h-40 overflow-auto pr-2">
                 {course.description}
               </div>

@@ -1,8 +1,11 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import { Card, Tag, Button, Tooltip, Popconfirm } from "antd";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
 const CourseCard = ({ course, onSelect, onEdit, onDelete, deletingId }) => {
+  const { t } = useTranslation();
+
   return (
     <Card
       hoverable
@@ -20,24 +23,24 @@ const CourseCard = ({ course, onSelect, onEdit, onDelete, deletingId }) => {
         </div>
       }
       actions={[
-        <Tooltip title="View Details" key="view">
+        <Tooltip title={t('admin.courses.viewDetails')} key="view">
           <Button
             type="text"
             icon={<Eye className="w-4 h-4" />}
             onClick={() => onSelect(course)}
           />
         </Tooltip>,
-        <Tooltip title="Edit Course" key="edit">
+        <Tooltip title={t('admin.courses.editCourse')} key="edit">
           <Button
             type="text"
             icon={<Pencil className="w-4 h-4" />}
             onClick={() => onEdit(course)}
           />
         </Tooltip>,
-        <Tooltip title="Delete Course" key="delete">
+        <Tooltip title={t('admin.courses.deleteCourseTitle')} key="delete">
           <Popconfirm
-            title="Delete course?"
-            description="Are you sure you want to delete this course?"
+            title={t('admin.courses.deleteCourseTitle')}
+            description={t('admin.courses.deleteConfirm')}
             onConfirm={() => onDelete(course.id)}
             okButtonProps={{ loading: deletingId === course.id }}
           >
@@ -60,7 +63,7 @@ const CourseCard = ({ course, onSelect, onEdit, onDelete, deletingId }) => {
             {course.name}
           </h3>
           <Tag color={course.isActive ? "green" : "red"} className="m-0">
-            {course.isActive ? "Active" : "Inactive"}
+            {course.isActive ? t('common.active') : t('common.inactive')}
           </Tag>
         </div>
         <p className="text-xs text-slate-600 line-clamp-2 mb-2">
@@ -68,13 +71,13 @@ const CourseCard = ({ course, onSelect, onEdit, onDelete, deletingId }) => {
         </p>
         <div className="mt-auto pt-3 border-t text-xs text-slate-700 space-y-1">
           <div>
-            <span className="font-medium">Category:</span> {course.categoryName}
+            <span className="font-medium">{t('common.category')}:</span> {course.category}
           </div>
           <div>
-            <span className="font-medium">Level:</span> {course.levelName}
+            <span className="font-medium">{t('common.level')}:</span> {course.level}
           </div>
           <div>
-            <span className="font-medium">Duration:</span> {course.durationHours}h
+            <span className="font-medium">{t('common.duration')}:</span> {course.durationHours}h
           </div>
         </div>
       </div>

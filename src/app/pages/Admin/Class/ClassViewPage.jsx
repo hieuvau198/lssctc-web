@@ -1,11 +1,13 @@
 import { App, Button, Skeleton } from 'antd';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchClassDetail } from '../../../apis/ProgramManager/ClassApi';
 import ClassDetailView from './partials/ClassDetailView';
 
 const ClassViewPage = () => {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -18,7 +20,7 @@ const ClassViewPage = () => {
     fetchClassDetail(id)
       .then((d) => setClassItem(d))
       .catch((err) => {
-        message.error(err?.message || 'Failed to load class');
+        message.error(err?.message || t('admin.classes.loadError'));
       })
       .finally(() => setLoading(false));
   };

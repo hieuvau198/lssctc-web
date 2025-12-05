@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Skeleton } from 'antd';
 import { getSystemSummary } from '../../../../../apis/Admin/AdminDashboard';
 
@@ -25,15 +26,16 @@ const icons = {
 };
 
 const statConfig = [
-  { key: 'programs', label: 'Total Programs', dataKey: 'totalPrograms', color: 'bg-indigo-50 text-indigo-600 border-indigo-100', accent: 'text-indigo-600' },
-  { key: 'courses', label: 'Total Courses', dataKey: 'totalCourses', color: 'bg-blue-50 text-blue-600 border-blue-100', accent: 'text-blue-600' },
-  { key: 'trainees', label: 'Total Trainees', dataKey: 'totalTrainees', color: 'bg-emerald-50 text-emerald-600 border-emerald-100', accent: 'text-emerald-600' },
-  { key: 'instructors', label: 'Total Instructors', dataKey: 'totalInstructors', color: 'bg-amber-50 text-amber-600 border-amber-100', accent: 'text-amber-600' },
-  { key: 'classes', label: 'Total Classes', dataKey: 'totalClasses', color: 'bg-fuchsia-50 text-fuchsia-600 border-fuchsia-100', accent: 'text-fuchsia-600' },
-  { key: 'practices', label: 'Total Practices', dataKey: 'totalPractices', color: 'bg-slate-50 text-slate-600 border-slate-100', accent: 'text-slate-600' },
+  { key: 'programs', labelKey: 'admin.dashboard.stats.totalPrograms', dataKey: 'totalPrograms', color: 'bg-indigo-50 text-indigo-600 border-indigo-100', accent: 'text-indigo-600' },
+  { key: 'courses', labelKey: 'admin.dashboard.stats.totalCourses', dataKey: 'totalCourses', color: 'bg-blue-50 text-blue-600 border-blue-100', accent: 'text-blue-600' },
+  { key: 'trainees', labelKey: 'admin.dashboard.stats.totalTrainees', dataKey: 'totalTrainees', color: 'bg-emerald-50 text-emerald-600 border-emerald-100', accent: 'text-emerald-600' },
+  { key: 'instructors', labelKey: 'admin.dashboard.stats.totalInstructors', dataKey: 'totalInstructors', color: 'bg-amber-50 text-amber-600 border-amber-100', accent: 'text-amber-600' },
+  { key: 'classes', labelKey: 'admin.dashboard.stats.totalClasses', dataKey: 'totalClasses', color: 'bg-fuchsia-50 text-fuchsia-600 border-fuchsia-100', accent: 'text-fuchsia-600' },
+  { key: 'practices', labelKey: 'admin.dashboard.stats.totalPractices', dataKey: 'totalPractices', color: 'bg-slate-50 text-slate-600 border-slate-100', accent: 'text-slate-600' },
 ];
 
 export default function SystemStats() {
+  const { t } = useTranslation();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -71,7 +73,7 @@ export default function SystemStats() {
           <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-40 blur-2xl pointer-events-none transition group-hover:scale-110 ${s.color}`} />
           <div className="flex items-start justify-between relative z-10">
             <div className="space-y-1">
-              <p className="text-xs uppercase tracking-wide text-gray-500">{s.label}</p>
+              <p className="text-xs uppercase tracking-wide text-gray-500">{t(s.labelKey)}</p>
               <p className="text-2xl font-semibold text-gray-800">{summary?.[s.dataKey] ?? 0}</p>
             </div>
             <div className={`h-9 w-9 inline-flex items-center justify-center rounded-md border text-sm shadow-sm bg-white ${s.color}`}>{icons[s.key]}</div>

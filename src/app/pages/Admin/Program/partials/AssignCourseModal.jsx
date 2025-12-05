@@ -1,10 +1,12 @@
 import React, { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Modal, App, Empty, Spin, Table, Tag, Pagination } from 'antd';
 import { Plus } from 'lucide-react';
 import { addCourseToProgram } from '../../../../apis/ProgramManager/ProgramManagerCourseApi';
 import { fetchCoursesPaged, fetchCoursesByProgram } from '../../../../apis/ProgramManager/CourseApi';
 
 const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
+    const { t } = useTranslation();
     const { message } = App.useApp();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [allCourses, setAllCourses] = useState([]);
@@ -42,11 +44,11 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
             setTotalCount(allCoursesData.totalCount || 0);
 
             if (availableCourses.length === 0 && allCoursesList.length > 0) {
-                message.info('All courses on this page are already assigned');
+                message.info(t('admin.programs.assignCourse.allAssigned'));
             }
         } catch (err) {
             console.error('Error fetching courses:', err);
-            message.error('Failed to load available courses');
+            message.error(t('admin.programs.assignCourse.loadError'));
             setAllCourses([]);
             setTotalCount(0);
         } finally {
@@ -79,7 +81,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
     // Assign selected courses
     const handleAssign = async () => {
         if (selectedCourseIds.length === 0) {
-            message.warning('Please select at least one course to assign');
+            message.warning(t('admin.programs.assignCourse.selectWarning'));
             return;
         }
 
@@ -89,7 +91,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
             for (const courseId of selectedCourseIds) {
                 await addCourseToProgram(program.id, courseId);
             }
-            message.success(`Successfully assigned ${selectedCourseIds.length} course(s) to program`);
+            message.success(t('admin.programs.assignCourse.assignSuccess', { count: selectedCourseIds.length }));
             setIsModalVisible(false);
             setSelectedCourseIds([]);
             onAssigned?.(); // Callback to reload parent list
@@ -114,13 +116,13 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
     // Table columns
     const columns = [
         {
-            title: 'Course Name',
+            title: t('admin.programs.assignCourse.columns.courseName'),
             dataIndex: 'name',
             key: 'name',
             ellipsis: true,
         },
         {
-            title: 'Description',
+            title: t('admin.programs.assignCourse.columns.description'),
             dataIndex: 'description',
             key: 'description',
             ellipsis: true,
@@ -128,14 +130,14 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
             render: (desc) => desc || '-',
         },
         {
-            title: 'Status',
+            title: t('common.status'),
             dataIndex: 'isActive',
             key: 'isActive',
             width: 100,
             align: 'center',
             render: (isActive) => (
                 <Tag color={isActive ? 'green' : 'red'}>
-                    {isActive ? 'Active' : 'Inactive'}
+                    {isActive ? t('common.active') : t('common.inactive')}
                 </Tag>
             ),
         },
@@ -159,18 +161,18 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                     icon={<Plus size={16} />}
                     onClick={handleOpen}
                 >
-                    Assign Course
+                    {t('admin.programs.assignCourse.button')}
                 </Button>
             </div>
             <Modal
-                title="Assign Courses to Program"
+                title={t('admin.programs.assignCourse.modalTitle')}
                 open={isModalVisible}
                 onCancel={handleClose}
                 width={900}
                 centered
                 footer={[
                     <Button key="cancel" onClick={handleClose}>
-                        Cancel
+                        {t('common.cancel')}
                     </Button>,
                     <Button
                         key="assign"
@@ -180,7 +182,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                         disabled={selectedCourseIds.length === 0}
                         onClick={handleAssign}
                     >
-                        Assign Selected ({selectedCourseIds.length})
+                        {t('admin.programs.assignCourse.assignSelected', { count: selectedCourseIds.length })}
                     </Button>,
                 ]}
             >
@@ -189,7 +191,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                         <Spin size="large" />
                     </div>
                 ) : allCourses.length === 0 ? (
-                    <Empty description="No available courses to assign. All courses are already assigned to this program." />
+                    <Empty description={t('admin.programs.assignCourse.noAvailable')} />
                 ) : (
                     <div className="flex flex-col h-[500px]">
                         {/* Table with fixed height, scrollable */}
@@ -211,7 +213,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                                 pageSize={pageSize}
                                 total={totalCount}
                                 onChange={handlePageChange}
-                                showTotal={(total) => `Total ${total} courses`}
+                                showTotal={(total) => t('admin.programs.assignCourse.total', { total })}
                             />
                         </div>
                     </div>

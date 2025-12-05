@@ -1,10 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { Button, Modal, App, Empty, Spin, Table, Tag, Pagination, Avatar } from 'antd';
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getTrainees } from '../../../../apis/Admin/AdminUser';
 import { enrollTrainee } from '../../../../apis/ProgramManager/ClassesApi';
 
 const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => {
+    const { t } = useTranslation();
     const { message } = App.useApp();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [allTrainees, setAllTrainees] = useState([]);
@@ -28,7 +30,7 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
             setAllTrainees(availableTrainees);
         } catch (err) {
             console.error('Error fetching trainees:', err);
-            message.error('Failed to load available trainees');
+            message.error(t('admin.classes.messages.loadTraineesFailed'));
             setAllTrainees([]);
         } finally {
             setLoading(false);
@@ -53,7 +55,7 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
     // Enroll selected trainees
     const handleEnroll = async () => {
         if (selectedTraineeIds.length === 0) {
-            message.warning('Please select at least one trainee to enroll');
+            message.warning(t('admin.classes.messages.selectTrainee'));
             return;
         }
 
@@ -63,13 +65,13 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
             for (const traineeId of selectedTraineeIds) {
                 await enrollTrainee({ classId: classItem.id, traineeId });
             }
-            message.success(`Successfully enrolled ${selectedTraineeIds.length} trainee(s) to class`);
+            message.success(t('admin.classes.messages.enrollSuccess', { count: selectedTraineeIds.length }));
             setIsModalVisible(false);
             setSelectedTraineeIds([]);
             onAssigned?.(); // Callback to reload parent list
         } catch (e) {
             console.error('Error enrolling trainees:', e);
-            let errorMsg = 'Failed to enroll trainees';
+            let errorMsg = t('admin.classes.messages.enrollFailed');
             if (e.response?.data?.error?.details?.exceptionMessage) {
                 errorMsg = e.response.data.error.details.exceptionMessage;
             } else if (e.response?.data?.error?.message) {
@@ -88,7 +90,7 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
     // Table columns
     const columns = [
         {
-            title: 'Avatar',
+            title: t('common.avatar'),
             dataIndex: 'avatarUrl',
             key: 'avatar',
             width: 70,
@@ -100,34 +102,34 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
             ),
         },
         {
-            title: 'Full Name',
+            title: t('common.fullName'),
             dataIndex: 'fullName',
             key: 'fullName',
             ellipsis: true,
         },
         {
-            title: 'Email',
+            title: t('common.email'),
             dataIndex: 'email',
             key: 'email',
             ellipsis: true,
             width: 220,
         },
         {
-            title: 'Phone',
+            title: t('common.phone'),
             dataIndex: 'phoneNumber',
             key: 'phoneNumber',
             width: 140,
             render: (phone) => phone || '-',
         },
         {
-            title: 'Status',
+            title: t('common.status'),
             dataIndex: 'isActive',
             key: 'isActive',
             width: 100,
             align: 'center',
             render: (isActive) => (
                 <Tag color={isActive ? 'green' : 'red'}>
-                    {isActive ? 'Active' : 'Inactive'}
+                    {isActive ? t('common.active') : t('common.inactive')}
                 </Tag>
             ),
         },
@@ -151,18 +153,18 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
                     icon={<Plus size={16} />}
                     onClick={handleOpen}
                 >
-                    Add Trainee
+                    {t('admin.classes.buttons.addTrainee')}
                 </Button>
             </div>
             <Modal
-                title="Add Trainees to Class"
+                title={t('admin.classes.modal.addTraineeTitle')}
                 open={isModalVisible}
                 onCancel={handleClose}
                 width={850}
                 centered
                 footer={[
                     <Button key="cancel" onClick={handleClose}>
-                        Cancel
+                        {t('common.cancel')}
                     </Button>,
                     <Button
                         key="enroll"
@@ -172,7 +174,7 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
                         disabled={selectedTraineeIds.length === 0}
                         onClick={handleEnroll}
                     >
-                        Enroll Selected ({selectedTraineeIds.length})
+                        {t('admin.classes.buttons.enrollSelected', { count: selectedTraineeIds.length })}
                     </Button>,
                 ]}
             >
@@ -181,7 +183,7 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
                         <Spin size="large" />
                     </div>
                 ) : allTrainees.length === 0 ? (
-                    <Empty description="No available trainees to add. All trainees are already enrolled in this class." />
+                    <Empty description={t('admin.classes.messages.noAvailableTrainees')} />
                 ) : (
                     <div className="flex flex-col h-[500px]">
                         {/* Table with fixed height, scrollable */}
@@ -203,7 +205,7 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
                                 pageSize={pageSize}
                                 total={allTrainees.length}
                                 onChange={setCurrentPage}
-                                showTotal={(total) => `Total ${total} trainees`}
+                                showTotal={(total) => t('admin.classes.pagination.totalTrainees', { total })}
                             />
                         </div>
                     </div>

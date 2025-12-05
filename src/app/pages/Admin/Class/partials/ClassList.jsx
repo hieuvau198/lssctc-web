@@ -1,4 +1,5 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { useTranslation } from 'react-i18next';
 import { Button, Empty, Pagination, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
 import { getClassStatus } from "../../../../utils/classStatus";
 import PMClassCard from "./PMClassCard";
@@ -15,6 +16,8 @@ const ClassTableView = ({
   onDelete,
   deletingId
 }) => {
+  const { t } = useTranslation();
+
   const tableColumns = [
     {
       title: "#",
@@ -29,7 +32,7 @@ const ClassTableView = ({
       ),
     },
     {
-      title: "Class Name",
+      title: t('admin.classes.columns.className'),
       dataIndex: "name",
       key: "name",
       width: 200,
@@ -43,36 +46,36 @@ const ClassTableView = ({
       ),
     },
     {
-      title: "Class Code",
+      title: t('admin.classes.columns.classCode'),
       dataIndex: "classCode",
       key: "classCode",
       width: 120,
       render: (classCode) => classCode?.name || classCode || "-",
     },
     {
-      title: "Capacity",
+      title: t('admin.classes.columns.capacity'),
       dataIndex: "capacity",
       key: "capacity",
       width: 100,
     },
     {
-      title: "Status",
+      title: t('common.status'),
       dataIndex: "status",
       key: "status",
       width: 120,
       render: (status) => {
         const s = getClassStatus(status);
-        return <Tag color={s.color}>{s.label}</Tag>;
+        return <Tag color={s.color}>{t(`common.classStatus.${s.key}`)}</Tag>;
       },
     },
     {
-      title: "Actions",
+      title: t('common.actions'),
       key: "actions",
       width: 120,
       fixed: "right",
       render: (_, record) => (
         <Space size="small">
-          <Tooltip title="View Details">
+          <Tooltip title={t('admin.classes.viewDetails')}>
             <Button
               type="text"
               size="small"
@@ -80,7 +83,7 @@ const ClassTableView = ({
               onClick={() => onView(record)}
             />
           </Tooltip>
-          <Tooltip title="Edit Class">
+          <Tooltip title={t('admin.classes.editClass')}>
             <Button
               type="text"
               size="small"
@@ -89,10 +92,10 @@ const ClassTableView = ({
               disabled={getClassStatus(record.status).key !== 'Draft'}
             />
           </Tooltip>
-          <Tooltip title="Delete Class">
+          <Tooltip title={t('admin.classes.deleteClass')}>
             <Popconfirm
-              title="Delete class?"
-              description="Are you sure you want to delete this class?"
+              title={t('admin.classes.deleteClassTitle')}
+              description={t('admin.classes.deleteConfirm')}
               onConfirm={() => onDelete(record.id)}
               okButtonProps={{ loading: deletingId === record.id }}
             >
@@ -130,7 +133,7 @@ const ClassTableView = ({
           onChange={onPageChange}
           showSizeChanger
           pageSizeOptions={["5", "10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} classes`}
+          showTotal={(total, range) => t('common.pagination.showTotal', { start: range[0], end: range[1], total })}
         />
       </div>
     </div>
@@ -149,6 +152,7 @@ const ClassCardView = ({
   onDelete,
   deletingId
 }) => {
+  const { t } = useTranslation();
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -172,7 +176,7 @@ const ClassCardView = ({
           showSizeChanger={true}
           pageSizeOptions={["5", "10", "20", "50"]}
           showTotal={(total, range) =>
-            `${range[0]}-${range[1]} of ${total} classes`
+            t('common.pagination.showTotal', { start: range[0], end: range[1], total })
           }
         />
       </div>
@@ -193,8 +197,10 @@ const ClassList = ({
   onDelete,
   deletingId
 }) => {
+  const { t } = useTranslation();
+
   if (classes.length === 0) {
-    return <Empty description="No classes found." className="mt-16" />;
+    return <Empty description={t('admin.classes.noClasses')} className="mt-16" />;
   }
 
   if (viewMode === "table") {

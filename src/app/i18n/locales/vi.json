@@ -66,7 +66,27 @@
     "expected": "Kỳ vọng",
     "na": "N/A",
     "tableView": "Xem dạng bảng",
-    "cardView": "Xem dạng thẻ"
+    "cardView": "Xem dạng thẻ",
+    "avatar": "Avatar",
+    "fullName": "Họ và tên",
+    "category": "Danh mục",
+    "level": "Cấp độ",
+    "price": "Giá",
+    "duration": "Thời lượng",
+    "clickToPreview": "Nhấn để xem trước",
+    "noImage": "Không có hình ảnh",
+    "viewDetails": "Xem chi tiết",
+    "pagination": {
+      "showTotal": "{{start}}-{{end}} của {{total}}"
+    },
+    "classStatus": {
+      "Draft": "Bản nháp",
+      "Published": "Đã xuất bản",
+      "InProgress": "Đang diễn ra",
+      "Inprogress": "Đang diễn ra",
+      "Completed": "Đã hoàn thành",
+      "Cancelled": "Đã hủy"
+    }
   },
   "class": {
     "publishClass": "Xuất bản Lớp",
@@ -322,31 +342,6 @@
     "updateSuccess": "Cập nhật khóa học thành công",
     "deleteSuccess": "Xóa khóa học thành công"
   },
-  "class": {
-    "title": "Quản lý Lớp học",
-    "classList": "Danh sách Lớp học",
-    "createClass": "Tạo Lớp học",
-    "editClass": "Sửa Lớp học",
-    "deleteClass": "Xóa Lớp học",
-    "className": "Tên Lớp học",
-    "classCode": "Mã Lớp học",
-    "classDescription": "Mô tả Lớp học",
-    "instructor": "Giảng viên",
-    "trainees": "Học viên",
-    "startDate": "Ngày bắt đầu",
-    "endDate": "Ngày kết thúc",
-    "status": "Trạng thái",
-    "draft": "Bản nháp",
-    "open": "Mở đăng ký",
-    "inProgress": "Đang diễn ra",
-    "completed": "Hoàn thành",
-    "cancelled": "Đã hủy",
-    "enrollTrainee": "Đăng ký Học viên",
-    "deleteConfirm": "Bạn có chắc chắn muốn xóa lớp học này?",
-    "createSuccess": "Tạo lớp học thành công",
-    "updateSuccess": "Cập nhật lớp học thành công",
-    "deleteSuccess": "Xóa lớp học thành công"
-  },
   "user": {
     "title": "Quản lý Người dùng",
     "userList": "Danh sách Người dùng",
@@ -501,9 +496,9 @@
     "classes": {
       "title": "Lớp học của tôi",
       "classDetail": "Chi tiết Lớp học",
-      "overview": "Tổng quan",
-      "members": "Thành viên",
-      "sections": "Chương học",
+      "overviewTitle": "Tổng quan",
+      "membersTitle": "Thành viên",
+      "sectionsTitle": "Chương học",
       "activities": "Hoạt động",
       "activityDetails": "Chi tiết Hoạt động",
       "addActivity": "Thêm Hoạt động",
@@ -1442,8 +1437,6 @@
       "taskRemovedSuccess": "Đã xóa nhiệm vụ khỏi bài thực hành thành công!",
       "selectTaskFirst": "Vui lòng chọn một nhiệm vụ trước",
       "taskAlreadyAdded": "Nhiệm vụ này đã được thêm vào bài thực hành",
-      "taskDeleteSuccess": "Xóa nhiệm vụ thành công!",
-      "taskDeleteFailed": "Xóa nhiệm vụ thất bại. Vui lòng thử lại.",
       "confirmDeleteSystemTaskTitle": "Xóa nhiệm vụ",
       "confirmDeleteSystemTaskDesc": "Bạn có chắc chắn muốn xóa nhiệm vụ này khỏi hệ thống? Hành động này không thể hoàn tác.",
       "backToPractices": "Quay lại danh sách",
@@ -1709,6 +1702,361 @@
         "version": "Phiên bản 0.3 xem trước",
         "apiReady": "Sẵn sàng API",
         "swrHooks": "SWR Hooks sắp ra mắt"
+      }
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Bảng điều khiển",
+      "totalUsers": "Tổng người dùng",
+      "totalPrograms": "Tổng chương trình",
+      "totalCourses": "Tổng khóa học",
+      "totalClasses": "Tổng lớp học",
+      "recentActivities": "Hoạt động gần đây",
+      "quickStats": "Thống kê nhanh",
+      "stats": {
+        "totalPrograms": "Tổng chương trình",
+        "totalCourses": "Tổng khóa học",
+        "totalTrainees": "Tổng học viên",
+        "totalInstructors": "Tổng giảng viên",
+        "totalClasses": "Tổng lớp học",
+        "totalPractices": "Tổng bài thực hành"
+      },
+      "charts": {
+        "popularCourses": "Khóa học phổ biến",
+        "classStatusDistribution": "Phân bố trạng thái lớp",
+        "enrollmentTrend": "Xu hướng đăng ký",
+        "roleDistribution": "Phân bố vai trò",
+        "courseCompletion": "Hoàn thành khóa học",
+        "upcomingSessions": "Buổi học sắp tới"
+      }
+    },
+    "users": {
+      "title": "Quản lý người dùng",
+      "createUser": "Tạo người dùng",
+      "editUser": "Sửa người dùng",
+      "userList": "Danh sách người dùng",
+      "trainee": "Học viên",
+      "instructor": "Giảng viên",
+      "simulatorManager": "Quản lý Mô phỏng",
+      "addTrainee": "Thêm học viên",
+      "addInstructor": "Thêm giảng viên",
+      "addSimulationManager": "Thêm quản lý mô phỏng",
+      "user": "Người dùng",
+      "noTrainees": "Không tìm thấy học viên nào",
+      "noInstructors": "Không tìm thấy giảng viên nào",
+      "noSimulationManagers": "Không tìm thấy quản lý mô phỏng nào",
+      "columns": {
+        "avatar": "Avatar",
+        "fullName": "Họ và tên",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "action": "Hành động"
+      },
+      "table": {
+        "avatar": "Avatar",
+        "fullName": "Họ và tên",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "status": "Trạng thái"
+      },
+      "form": {
+        "username": "Tên đăng nhập",
+        "usernameRequired": "Vui lòng nhập tên đăng nhập",
+        "fullName": "Họ và tên",
+        "fullNameRequired": "Vui lòng nhập họ và tên",
+        "email": "Email",
+        "emailRequired": "Vui lòng nhập email",
+        "emailInvalid": "Vui lòng nhập email hợp lệ",
+        "phoneNumber": "Số điện thoại",
+        "phoneRequired": "Vui lòng nhập số điện thoại",
+        "phoneInvalid": "Số điện thoại phải bắt đầu bằng 0 và có 10 chữ số",
+        "role": "Vai trò",
+        "password": "Mật khẩu",
+        "passwordRequired": "Vui lòng nhập mật khẩu",
+        "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
+        "confirmPassword": "Xác nhận mật khẩu",
+        "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu",
+        "passwordMismatch": "Mật khẩu không khớp",
+        "avatarUrl": "URL ảnh đại diện",
+        "avatarPreview": "Xem trước ảnh đại diện"
+      },
+      "validation": {
+        "fullNameRequired": "Vui lòng nhập họ và tên",
+        "emailRequired": "Vui lòng nhập email",
+        "emailInvalid": "Vui lòng nhập email hợp lệ",
+        "phoneRequired": "Vui lòng nhập số điện thoại",
+        "roleRequired": "Vui lòng chọn vai trò",
+        "passwordRequired": "Vui lòng nhập mật khẩu",
+        "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
+        "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu",
+        "passwordMismatch": "Mật khẩu không khớp"
+      },
+      "messages": {
+        "createSuccess": "Tạo người dùng thành công",
+        "createFailed": "Không thể tạo người dùng",
+        "updateSuccess": "Cập nhật người dùng thành công",
+        "updateFailed": "Không thể cập nhật người dùng",
+        "deleteSuccess": "Xóa người dùng thành công",
+        "deleteFailed": "Không thể xóa người dùng",
+        "loadFailed": "Không thể tải danh sách người dùng"
+      },
+      "popconfirm": {
+        "deleteUser": "Bạn có chắc chắn muốn xóa người dùng này?",
+        "activateUser": "Kích hoạt người dùng này?",
+        "deactivateUser": "Vô hiệu hóa người dùng này?"
+      },
+      "pagination": "{{start}}-{{end}} của {{total}} người dùng"
+    },
+    "programs": {
+      "title": "Quản lý chương trình",
+      "createProgram": "Tạo chương trình",
+      "addProgram": "Thêm chương trình",
+      "editProgram": "Sửa chương trình",
+      "deleteProgram": "Xóa chương trình",
+      "programList": "Danh sách chương trình",
+      "assignCourses": "Gán khóa học",
+      "viewDetails": "Xem chi tiết",
+      "duration": "Thời lượng",
+      "searchPlaceholder": "Tìm kiếm theo tên chương trình",
+      "noData": "Không có dữ liệu chương trình",
+      "totalCourses": "Tổng khóa học",
+      "courses": "Khóa học",
+      "noCoursesAssigned": "Chưa có khóa học nào được gán cho chương trình này",
+      "deleteSuccess": "Xóa chương trình thành công",
+      "deleteError": "Không thể xóa chương trình",
+      "deleteConfirmTitle": "Xóa chương trình",
+      "deleteConfirmDesc": "Bạn có chắc chắn muốn xóa chương trình này?",
+      "pagination": "{{start}}-{{end}} của {{total}} chương trình",
+      "table": {
+        "image": "Hình ảnh",
+        "name": "Tên chương trình",
+        "duration": "Thời lượng",
+        "courses": "Khóa học",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "form": {
+        "name": "Tên chương trình",
+        "nameRequired": "Vui lòng nhập tên chương trình",
+        "namePlaceholder": "Nhập tên chương trình",
+        "imageUrl": "URL hình ảnh",
+        "imageUrlRequired": "Vui lòng nhập URL hình ảnh",
+        "imageUrlInvalid": "Vui lòng nhập URL hợp lệ",
+        "imagePreview": "Xem trước hình ảnh",
+        "description": "Mô tả",
+        "descriptionRequired": "Vui lòng nhập mô tả",
+        "descriptionPlaceholder": "Nhập mô tả chương trình"
+      },
+      "assignCourse": {
+        "title": "Gán khóa học vào chương trình",
+        "button": "Gán khóa học",
+        "modalTitle": "Gán khóa học",
+        "cancel": "Hủy",
+        "total": "Tổng {{total}} khóa học",
+        "assignSelected": "Gán đã chọn ({{count}})",
+        "selectWarning": "Vui lòng chọn ít nhất một khóa học",
+        "assignSuccess": "Đã gán {{count}} khóa học thành công",
+        "loadError": "Không thể tải danh sách khóa học",
+        "allAssigned": "Tất cả khóa học đã được gán vào chương trình này",
+        "columns": {
+          "courseName": "Tên khóa học",
+          "description": "Mô tả"
+        }
+      }
+    },
+    "courses": {
+      "title": "Quản lý khóa học",
+      "createCourse": "Tạo khóa học",
+      "addCourse": "Thêm khóa học",
+      "editCourse": "Sửa khóa học",
+      "deleteCourseTitle": "Xóa khóa học",
+      "deleteConfirm": "Bạn có chắc chắn muốn xóa khóa học này?",
+      "viewDetails": "Xem chi tiết",
+      "courseList": "Danh sách khóa học",
+      "noCourses": "Không tìm thấy khóa học nào",
+      "deleteSuccess": "Xóa khóa học thành công",
+      "createSuccess": "Tạo khóa học thành công",
+      "updateSuccess": "Cập nhật khóa học thành công",
+      "deleteError": "Không thể xóa khóa học",
+      "createError": "Không thể tạo khóa học",
+      "updateError": "Không thể cập nhật khóa học",
+      "loadDetailError": "Không thể tải chi tiết khóa học",
+      "pagination": "{{start}}-{{end}} của {{total}} khóa học",
+      "columns": {
+        "image": "Hình ảnh",
+        "courseName": "Tên khóa học",
+        "durationHours": "Thời lượng (Giờ)"
+      },
+      "form": {
+        "name": "Tên khóa học",
+        "nameRequired": "Vui lòng nhập tên khóa học",
+        "namePlaceholder": "Nhập tên khóa học",
+        "categoryRequired": "Vui lòng chọn danh mục",
+        "categoryPlaceholder": "Chọn danh mục",
+        "noCategories": "Không có danh mục nào",
+        "levelRequired": "Vui lòng chọn cấp độ",
+        "levelPlaceholder": "Chọn cấp độ",
+        "noLevels": "Không có cấp độ nào",
+        "priceRequired": "Vui lòng nhập giá",
+        "durationHours": "Thời lượng (Giờ)",
+        "durationRequired": "Vui lòng nhập thời lượng",
+        "imageUrl": "URL hình ảnh",
+        "imageUrlRequired": "Vui lòng nhập URL hình ảnh",
+        "imageUrlInvalid": "Vui lòng nhập URL hợp lệ",
+        "imagePreview": "Xem trước hình ảnh",
+        "description": "Mô tả",
+        "descriptionRequired": "Vui lòng nhập mô tả",
+        "descriptionPlaceholder": "Nhập mô tả khóa học",
+        "courseCode": "Mã khóa học",
+        "courseCodeRequired": "Vui lòng nhập mã khóa học",
+        "courseCodePlaceholder": "Nhập mã khóa học",
+        "preview": "Xem trước"
+      },
+      "filters": {
+        "category": "Lọc theo danh mục",
+        "level": "Lọc theo cấp độ",
+        "status": "Lọc theo trạng thái",
+        "allCategories": "Tất cả danh mục",
+        "allLevels": "Tất cả cấp độ",
+        "allStatus": "Tất cả trạng thái"
+      },
+      "sections": {
+        "title": "Chương học của khóa",
+        "addSection": "Thêm chương",
+        "addNewSection": "Thêm chương mới",
+        "importExcel": "Nhập từ Excel",
+        "noSections": "Chưa có chương học nào",
+        "loadError": "Không thể tải danh sách chương",
+        "removeSuccess": "Xóa chương thành công",
+        "removeError": "Không thể xóa chương",
+        "removeTitle": "Xóa chương",
+        "removeDescription": "Bạn có chắc chắn muốn xóa chương này?",
+        "durationMins": "{{mins}} phút",
+        "columns": {
+          "title": "Tiêu đề chương"
+        },
+        "form": {
+          "title": "Tiêu đề chương",
+          "titlePlaceholder": "Nhập tiêu đề chương",
+          "titleRequired": "Vui lòng nhập tiêu đề chương",
+          "description": "Mô tả",
+          "descriptionPlaceholder": "Nhập mô tả chương",
+          "durationMinutes": "Thời lượng (Phút)",
+          "durationMinutesPlaceholder": "Nhập thời lượng tính bằng phút"
+        }
+      }
+    },
+    "classes": {
+      "title": "Quản lý lớp học",
+      "createClass": "Tạo lớp học",
+      "editClass": "Sửa lớp học",
+      "editClassDetails": "Chỉnh sửa chi tiết lớp học",
+      "deleteClass": "Xóa lớp học",
+      "deleteClassTitle": "Xóa lớp học",
+      "deleteConfirm": "Bạn có chắc chắn muốn xóa lớp học này?",
+      "viewDetails": "Xem chi tiết",
+      "editTitle": "Sửa lớp học",
+      "addClass": "Thêm lớp học",
+      "start": "Bắt đầu",
+      "end": "Kết thúc",
+      "code": "Mã lớp học",
+      "searchPlaceholder": "Tìm kiếm theo tên hoặc mã lớp học",
+      "noPrograms": "No programs found",
+      "classList": "Danh sách lớp học",
+      "noClassData": "Không có dữ liệu lớp học",
+      "deleteSuccess": "Xóa lớp học thành công",
+      "deleteError": "Không thể xóa lớp học",
+      "createSuccess": "Tạo lớp học thành công",
+      "createError": "Không thể tạo lớp học",
+      "updateSuccess": "Cập nhật lớp học thành công",
+      "buttons": {
+        "updateClass": "Cập nhật lớp học",
+        "deleteClass": "Xóa lớp học"
+      },
+      "columns": {
+        "className": "Tên lớp học",
+        "classCode": "Mã lớp học",
+        "capacity": "Sức chứa",
+        "enrollDate": "Ngày đăng ký"
+      },
+      "detail": {
+        "instructor": "Giảng viên",
+        "members": "Thành viên",
+        "instructorCode": "Mã Giảng viên",
+        "hireDate": "Ngày tuyển dụng"
+      },
+      "form": {
+        "className": "Tên lớp học",
+        "classNameRequired": "Vui lòng nhập tên lớp học",
+        "classNamePlaceholder": "Nhập tên lớp học",
+        "classCode": "Mã lớp học",
+        "classCodeRequired": "Vui lòng nhập mã lớp học",
+        "classCodePlaceholder": "Nhập mã lớp học",
+        "program": "Chương trình",
+        "programRequired": "Vui lòng chọn chương trình",
+        "programPlaceholder": "Chọn chương trình",
+        "course": "Khóa học",
+        "courseRequired": "Vui lòng chọn khóa học",
+        "coursePlaceholder": "Chọn khóa học",
+        "startDate": "Ngày bắt đầu",
+        "startDateRequired": "Vui lòng chọn ngày bắt đầu",
+        "endDate": "Ngày kết thúc",
+        "endDateRequired": "Vui lòng chọn ngày kết thúc",
+        "endDateAfterStart": "Ngày kết thúc phải sau ngày bắt đầu",
+        "capacity": "Sức chứa",
+        "capacityRequired": "Vui lòng nhập sức chứa",
+        "capacityMin": "Sức chứa phải ít nhất 1",
+        "description": "Mô tả",
+        "descriptionPlaceholder": "Nhập mô tả lớp học",
+        "noCourses": "Không có khóa học nào. Vui lòng chọn chương trình trước.",
+        "selectProgramFirst": "Vui lòng chọn chương trình trước"
+      },
+      "drawer": {
+        "addClassTitle": "Thêm lớp học mới"
+      },
+      "messages": {
+        "loadInstructorsFailed": "Không thể tải danh sách giảng viên",
+        "loadTraineesFailed": "Không thể tải danh sách học viên",
+        "selectInstructor": "Vui lòng chọn giảng viên",
+        "assignInstructorSuccess": "Gán giảng viên vào lớp thành công",
+        "assignInstructorFailed": "Không thể gán giảng viên",
+        "noInstructorsAvailable": "Không có giảng viên khả dụng",
+        "selectTrainee": "Vui lòng chọn ít nhất một học viên để đăng ký",
+        "enrollSuccess": "Đã đăng ký {{count}} học viên vào lớp thành công",
+        "enrollFailed": "Không thể đăng ký học viên",
+        "noAvailableTrainees": "Không có học viên khả dụng. Tất cả học viên đã đăng ký vào lớp này.",
+        "approveSuccess": "Phê duyệt đăng ký thành công",
+        "approveFailed": "Không thể phê duyệt đăng ký",
+        "rejectSuccess": "Từ chối đăng ký thành công",
+        "rejectFailed": "Không thể từ chối đăng ký"
+      },
+      "popconfirm": {
+        "approveEnrollment": "Phê duyệt đăng ký",
+        "approveEnrollmentDesc": "Bạn có chắc chắn muốn phê duyệt học viên này?",
+        "rejectEnrollment": "Từ chối đăng ký",
+        "rejectEnrollmentDesc": "Bạn có chắc chắn muốn từ chối học viên này?"
+      },
+      "instructor": {
+        "title": "Thông tin giảng viên",
+        "noInstructor": "Chưa có giảng viên được gán",
+        "assignInstructor": "Gán giảng viên",
+        "instructorCode": "Mã",
+        "hireDate": "Ngày tuyển dụng"
+      },
+      "members": {
+        "title": "Thành viên lớp học",
+        "addTrainee": "Thêm học viên",
+        "noMembers": "Chưa có thành viên nào đăng ký",
+        "pagination": "{{start}}-{{end}} của {{total}} học viên",
+        "approve": "Phê duyệt",
+        "reject": "Từ chối"
+      },
+      "modal": {
+        "addTraineeTitle": "Thêm học viên vào lớp",
+        "enrollSelected": "Đăng ký đã chọn ({{count}})"
       }
     }
   }
