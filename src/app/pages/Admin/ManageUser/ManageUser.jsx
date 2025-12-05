@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Plus, FileSpreadsheet } from 'lucide-react';
 import DrawerAdd from './partials/DrawerAdd';
 import ImportTraineeModal from './partials/ImportTraineeModal';
+import ImportInstructorModal from './partials/ImportInstructorModal';
 
 export default function ManageUser() {
   const { t } = useTranslation();
@@ -25,6 +26,7 @@ export default function ManageUser() {
   // derive active key from current pathname (last segment)
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [importModalVisible, setImportModalVisible] = useState(false);
+  const [importInstructorModalVisible, setImportInstructorModalVisible] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const activeKey = useMemo(() => {
@@ -60,6 +62,14 @@ export default function ManageUser() {
             <Button
               icon={<FileSpreadsheet size={18} />}
               onClick={() => setImportModalVisible(true)}
+            >
+              Import Excel
+            </Button>
+          )}
+          {activeKey === 'instructors' && (
+            <Button
+              icon={<FileSpreadsheet size={18} />}
+              onClick={() => setImportInstructorModalVisible(true)}
             >
               Import Excel
             </Button>
@@ -101,6 +111,15 @@ export default function ManageUser() {
         onSuccess={() => {
           setImportModalVisible(false);
           // message.success('Trainees imported successfully'); // Moved to Modal for better control
+          setRefreshTrigger(prev => prev + 1);
+        }}
+      />
+
+      <ImportInstructorModal
+        visible={importInstructorModalVisible}
+        onCancel={() => setImportInstructorModalVisible(false)}
+        onSuccess={() => {
+          setImportInstructorModalVisible(false);
           setRefreshTrigger(prev => prev + 1);
         }}
       />
