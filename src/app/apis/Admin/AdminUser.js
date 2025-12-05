@@ -140,6 +140,8 @@ export default {
 	importTraineeFromExcel,
 	downloadInstructorTemplate,
 	importInstructorFromExcel,
+	downloadSimulationManagerTemplate,
+	importSimulationManagerFromExcel,
 };
 
 /**
@@ -283,6 +285,78 @@ export async function importInstructorFromExcel(file) {
 		return data;
 	} catch (err) {
 		console.error('Error importing instructors from Excel:', err);
+		throw err;
+	}
+}
+
+/**
+ * Download simulation manager import template
+ * Uses the same template as trainee/instructor
+ */
+export async function downloadSimulationManagerTemplate() {
+	try {
+		const response = await apiClient.get('user-downloads/trainee-template', {
+			responseType: 'blob',
+		});
+
+		let filename = 'SimulationManager_Import_Template.xlsx';
+		const contentDisposition = response.headers['content-disposition'];
+
+		if (contentDisposition) {
+			const filenameStarMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+			if (filenameStarMatch && filenameStarMatch[1]) {
+				filename = decodeURIComponent(filenameStarMatch[1]);
+			} else {
+				const filenameMatch = contentDisposition.match(/filename[^;=\n]*=["']?([^"';\n]+)["']?/i);
+				if (filenameMatch && filenameMatch[1]) {
+					filename = filenameMatch[1].trim();
+				}
+			}
+		}
+
+		const blob = new Blob([response.data], {
+			type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		});
+		const url = window.URL.createObjectURL(blob);
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = filename;
+		link.style.display = 'none';
+
+		document.body.appendChild(link);
+
+		setTimeout(() => {
+			link.click();
+			setTimeout(() => {
+				document.body.removeChild(link);
+				window.URL.revokeObjectURL(url);
+			}, 100);
+		}, 0);
+
+	} catch (err) {
+		console.error('Error downloading simulation manager template:', err);
+		throw err;
+	}
+}
+
+/**
+ * Import simulation managers from Excel file
+ * @param {File} file - Excel file
+ */
+export async function importSimulationManagerFromExcel(file) {
+	try {
+		const formData = new FormData();
+		formData.append('file', file);
+
+		const { data } = await apiClient.post('/Users/import-simulation-managers', formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
+
+		return data;
+	} catch (err) {
+		console.error('Error importing simulation managers from Excel:', err);
 		throw err;
 	}
 }

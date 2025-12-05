@@ -11,6 +11,7 @@ import { Plus, FileSpreadsheet } from 'lucide-react';
 import DrawerAdd from './partials/DrawerAdd';
 import ImportTraineeModal from './partials/ImportTraineeModal';
 import ImportInstructorModal from './partials/ImportInstructorModal';
+import ImportSimulationManagerModal from './partials/ImportSimulationManagerModal';
 
 export default function ManageUser() {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ export default function ManageUser() {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [importModalVisible, setImportModalVisible] = useState(false);
   const [importInstructorModalVisible, setImportInstructorModalVisible] = useState(false);
+  const [importSimManagerModalVisible, setImportSimManagerModalVisible] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const activeKey = useMemo(() => {
@@ -70,6 +72,14 @@ export default function ManageUser() {
             <Button
               icon={<FileSpreadsheet size={18} />}
               onClick={() => setImportInstructorModalVisible(true)}
+            >
+              Import Excel
+            </Button>
+          )}
+          {activeKey === 'simulation-managers' && (
+            <Button
+              icon={<FileSpreadsheet size={18} />}
+              onClick={() => setImportSimManagerModalVisible(true)}
             >
               Import Excel
             </Button>
@@ -120,6 +130,15 @@ export default function ManageUser() {
         onCancel={() => setImportInstructorModalVisible(false)}
         onSuccess={() => {
           setImportInstructorModalVisible(false);
+          setRefreshTrigger(prev => prev + 1);
+        }}
+      />
+
+      <ImportSimulationManagerModal
+        visible={importSimManagerModalVisible}
+        onCancel={() => setImportSimManagerModalVisible(false)}
+        onSuccess={() => {
+          setImportSimManagerModalVisible(false);
           setRefreshTrigger(prev => prev + 1);
         }}
       />
