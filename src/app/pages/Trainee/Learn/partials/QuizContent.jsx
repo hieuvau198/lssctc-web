@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QuizAttempt from './QuizAttempt/QuizAttempt';
 import { Button, Alert, Tag, Progress } from 'antd';
-import { ClipboardList, Clock, Target, HelpCircle, CheckCircle2, XCircle, Trophy, Play } from 'lucide-react';
+import { ClipboardList, Clock, Target, HelpCircle, CheckCircle2, XCircle, Trophy, Play, RotateCcw } from 'lucide-react';
 
 // Child component for quiz start screen
 const QuizStartScreen = ({ quiz, onStart, t }) => (
@@ -204,7 +204,7 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
 
   // This function is called by QuizAttempt
   const handleSubmit = async (answers) => {
-    console.log('[QuizContent] handleSubmit triggered. Forwarding to LearnContent...'); // <-- LOG
+    console.log('[QuizContent] handleSubmit triggered. Forwarding to LearnContent...'); 
     setIsSubmitting(true);
     try {
       // Call the submit function passed from LearnContent
@@ -212,7 +212,7 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
       // On success, LearnContent will trigger 'onReload'
       // which will cause this component to show the 'result' state
       setQuizState('result');
-      console.log('[QuizContent] Submission successful.'); // <-- LOG
+      console.log('[QuizContent] Submission successful.'); 
     } catch (error) {
       console.error('Submission failed in QuizContent:', error);
     } finally {
