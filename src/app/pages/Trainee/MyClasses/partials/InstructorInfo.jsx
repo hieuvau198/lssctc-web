@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Divider, Tag, Skeleton, message } from 'antd';
 import { Mail, Phone } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { fetchClassInstructor } from '../../../../apis/ProgramManager/ClassesApi';
 
 export default function InstructorInfo({ classId }) {
+	const { t } = useTranslation();
 
 	const [remoteInstructor, setRemoteInstructor] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -24,7 +26,7 @@ export default function InstructorInfo({ classId }) {
 			} catch (err) {
 				console.error('fetchClassInstructor error', err);
 				if (mounted) {
-					message.error('Không tải được thông tin instructor');
+					message.error(t('trainee.instructorInfo.loadFailed'));
 					setRemoteInstructor(null);
 				}
 			} finally {
@@ -38,7 +40,7 @@ export default function InstructorInfo({ classId }) {
 	if (loading) {
 		return (
 			<div className="my-4">
-				<Card title="Instructor" className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+				<Card title={t('trainee.instructorInfo.title')} className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
 					<Skeleton active avatar paragraph={{ rows: 3 }} />
 				</Card>
 			</div>
@@ -48,9 +50,9 @@ export default function InstructorInfo({ classId }) {
 	if (!remoteInstructor) {
 		return (
 			<div className="my-4">
-				<Card title="Instructor" className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+				<Card title={t('trainee.instructorInfo.title')} className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
 					<div className="text-center text-slate-500 py-4">
-						Không có thông tin instructor
+						{t('trainee.instructorInfo.noInstructor')}
 					</div>
 				</Card>
 			</div>
@@ -69,7 +71,7 @@ export default function InstructorInfo({ classId }) {
 
 	return (
 		<div className="my-4">
-			<Card title="Instructor" className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+			<Card title={t('trainee.instructorInfo.title')} className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
 				<div className="space-y-4">
 					<div className="flex items-start gap-3">
 						{avatarUrl ? (
@@ -82,7 +84,7 @@ export default function InstructorInfo({ classId }) {
 
 						<div className="flex-1">
 							<h4 className="font-semibold text-slate-900 mb-1">{name}</h4>
-							{code && <div className="text-sm text-slate-600 mb-1">Code: <span className="font-medium">{code}</span></div>}
+							{code && <div className="text-sm text-slate-600 mb-1">{t('trainee.instructorInfo.code')}: <span className="font-medium">{code}</span></div>}
 							{/* {hireDate && <div className="text-xs text-slate-500">Hired: {hireDate.toLocaleDateString()}</div>} */}
 						</div>
 					</div>

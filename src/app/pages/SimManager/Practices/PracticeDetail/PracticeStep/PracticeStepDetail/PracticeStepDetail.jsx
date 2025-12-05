@@ -1,5 +1,6 @@
 // src\app\pages\SimManager\Practices\PracticeDetail\PracticeStep\PracticeStepDetail\PracticeStepDetail.jsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   getPracticeStepComponents,
   createPracticeStepComponent,
@@ -13,6 +14,7 @@ export default function PracticeStepDetail({
   onDelete,
   initiallyOpen = false,
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(initiallyOpen);
   const [componentLoading, setComponentLoading] = useState(false);
   const [components, setComponents] = useState(null);
@@ -59,7 +61,7 @@ export default function PracticeStepDetail({
   };
 
   const handleRemoveComponent = async (compId) => {
-    if (window.confirm('Remove this component from step?')) {
+    if (window.confirm(t('simManager.practiceSteps.removeComponentConfirm'))) {
       await deletePracticeStepComponent(compId);
       fetchComponents();
     }
@@ -71,14 +73,14 @@ export default function PracticeStepDetail({
       <div className="flex items-center cursor-pointer" onClick={handleToggle}>
         <span className="mr-2">{open ? '▼' : '▶'}</span>
         <span className="font-semibold">{step.stepName}</span>
-        <span className="text-xs text-slate-400 ml-4">Order: {step.stepOrder}</span>
+        <span className="text-xs text-slate-400 ml-4">{t('simManager.practiceSteps.order')}: {step.stepOrder}</span>
       </div>
       <div className="ml-6 mt-1">
         {step.stepDescription && (
           <div className="text-xs text-slate-700 mb-1">{step.stepDescription}</div>
         )}
         {step.expectedResult && (
-          <div className="text-xs text-slate-500">Expected: {step.expectedResult}</div>
+          <div className="text-xs text-slate-500">{t('simManager.practiceSteps.expectedResult')}: {step.expectedResult}</div>
         )}
         <div className="mt-1 flex gap-2">
           <button
@@ -88,16 +90,16 @@ export default function PracticeStepDetail({
               onEdit(step);
             }}
           >
-            Edit
+            {t('simManager.practiceSteps.edit')}
           </button>
           <button
             className="text-red-500 hover:underline"
             onClick={(e) => {
               e.stopPropagation();
-              if (window.confirm('Delete this step?')) onDelete(step.id);
+              if (window.confirm(t('simManager.practiceSteps.deleteStepConfirm'))) onDelete(step.id);
             }}
           >
-            Delete
+            {t('simManager.practiceSteps.delete')}
           </button>
           <button
             className="text-green-600 hover:underline"
@@ -106,7 +108,7 @@ export default function PracticeStepDetail({
               handleAddComponent();
             }}
           >
-            + Add Component
+            {t('simManager.practiceSteps.addComponent')}
           </button>
         </div>
       </div>
@@ -115,7 +117,7 @@ export default function PracticeStepDetail({
       {open && (
         <div className="mt-3 ml-8">
           {componentLoading && !components ? (
-            <div>Loading components...</div>
+            <div>{t('simManager.practiceSteps.loadingComponents')}</div>
           ) : components && components.length > 0 ? (
             <ul className="border-l-2 border-green-200 pl-4 space-y-1">
               {components.map((comp) => (
@@ -134,7 +136,7 @@ export default function PracticeStepDetail({
                     <span className="text-slate-500 ml-2">{comp.description}</span>
                   )}
                   <span className="text-xs text-slate-400 ml-2">
-                    Order: {comp.componentOrder}
+                    {t('simManager.practiceSteps.order')}: {comp.componentOrder}
                   </span>
                   <button
                     className="ml-2 text-red-400 hover:underline"
@@ -143,14 +145,14 @@ export default function PracticeStepDetail({
                       handleRemoveComponent(comp.id);
                     }}
                   >
-                    Remove
+                    {t('simManager.practiceSteps.remove')}
                   </button>
                 </li>
               ))}
             </ul>
           ) : (
             <div className="text-slate-400">
-              No components assigned for this step.
+              {t('simManager.practiceSteps.noComponents')}
             </div>
           )}
         </div>
@@ -160,13 +162,13 @@ export default function PracticeStepDetail({
       {showAddModal && (
         <div className="fixed top-0 left-0 w-full h-full z-50 bg-black/40 flex items-center justify-center">
           <div className="bg-white p-5 rounded shadow-lg min-w-[320px]">
-            <h3 className="text-lg mb-2 font-semibold">Assign a Component</h3>
+            <h3 className="text-lg mb-2 font-semibold">{t('simManager.practiceSteps.assignComponent')}</h3>
             <select
               className="border p-2 w-full"
               value={selectedComponentId}
               onChange={(e) => setSelectedComponentId(e.target.value)}
             >
-              <option value="">Select Component...</option>
+              <option value="">{t('simManager.practiceSteps.selectComponent')}</option>
               {availableComponents.map((comp) => (
                 <option key={comp.id} value={comp.id}>
                   {comp.name}
@@ -178,14 +180,14 @@ export default function PracticeStepDetail({
                 className="bg-slate-200 px-4 py-1 rounded"
                 onClick={() => setShowAddModal(false)}
               >
-                Cancel
+                {t('simManager.practiceSteps.cancel')}
               </button>
               <button
                 className="bg-blue-600 text-white px-4 py-1 rounded"
                 onClick={handleAddConfirm}
                 disabled={!selectedComponentId}
               >
-                Add
+                {t('simManager.practiceSteps.add')}
               </button>
             </div>
           </div>

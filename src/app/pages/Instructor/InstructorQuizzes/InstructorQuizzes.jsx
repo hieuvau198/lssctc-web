@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Skeleton, Pagination, Alert, Button, Tooltip, Popconfirm, Space, Tag, App } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { getQuizzes, deleteQuiz } from '../../../apis/Instructor/InstructorQuiz';
 import QuizFilters from './partials/QuizFilters';
 import ImportQuizModal from './partials/ImportQuizModal';
@@ -10,6 +11,7 @@ import CreateQuizDrawer from './partials/CreateQuizDrawer';
 export default function InstructorQuizzes() {
   const navigate = useNavigate();
   const { message } = App.useApp();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
@@ -29,7 +31,7 @@ export default function InstructorQuizzes() {
       setQuizzes(res.items || []);
       setTotal(res.totalCount || 0);
     } catch (e) {
-      setError(e?.message || 'Failed to load quizzes');
+      setError(e?.message || t('instructor.quizzes.messages.loadFailed'));
       setQuizzes([]);
       setTotal(0);
     } finally {
@@ -57,11 +59,11 @@ export default function InstructorQuizzes() {
   const handleDelete = async (record) => {
     try {
       await deleteQuiz(record.id);
-      message.success(`Quiz "${record.name}" deleted successfully`);
+      message.success(t('instructor.quizzes.messages.deleteSuccess', { name: record.name }));
       load(); // Reload list
     } catch (e) {
       console.error('Failed to delete quiz:', e);
-      message.error(e?.message || 'Failed to delete quiz');
+      message.error(e?.message || t('instructor.quizzes.messages.deleteFailed'));
     }
   };
 
@@ -77,7 +79,7 @@ export default function InstructorQuizzes() {
 
   const columns = [
     {
-      title: '#',
+      title: t('instructor.quizzes.table.index'),
       key: 'index',
       width: 64,
       align: 'center',
@@ -85,14 +87,14 @@ export default function InstructorQuizzes() {
       fixed: 'left',
     },
     {
-      title: 'Quiz Code',
+      title: t('instructor.quizzes.table.quizCode'),
       dataIndex: 'id',
       key: 'id',
       width: 100,
       render: (id) => <span className="text-gray-500">Q-{id}</span>
     },
     {
-      title: 'Name',
+      title: t('instructor.quizzes.table.name'),
       dataIndex: 'name',
       key: 'name',
       width: 260,
@@ -106,7 +108,7 @@ export default function InstructorQuizzes() {
       )
     },
     {
-      title: 'Time (min)',
+      title: t('instructor.quizzes.table.timeMinutes'),
       dataIndex: 'timelimitMinute',
       key: 'timelimitMinute',
       width: 120,
@@ -114,30 +116,30 @@ export default function InstructorQuizzes() {
       render: (v) => <span>{v}</span>
     },
     {
-      title: 'Pass Score',
+      title: t('instructor.quizzes.table.passScore'),
       dataIndex: 'passScoreCriteria',
       key: 'passScoreCriteria',
       width: 120,
       align: 'center',
-      render: (v) => <Tag color="blue">{v} pts</Tag>
+      render: (v) => <Tag color="blue">{v} {t('instructor.quizzes.detail.pts')}</Tag>
     },
     {
-      title: 'Total Score',
+      title: t('instructor.quizzes.table.totalScore'),
       dataIndex: 'totalScore',
       key: 'totalScore',
       width: 120,
       align: 'center',
-      render: (v) => <span>{v} pts</span>
+      render: (v) => <span>{v} {t('instructor.quizzes.detail.pts')}</span>
     },
     {
-      title: 'Actions',
+      title: t('instructor.quizzes.table.actions'),
       key: 'actions',
       width: 120,
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
         <Space size="small">
-          <Tooltip title="View Details">
+          <Tooltip title={t('instructor.quizzes.tooltip.viewDetails')}>
             <Button
               type="text"
               size="small"
@@ -145,7 +147,7 @@ export default function InstructorQuizzes() {
               onClick={() => handleView(record)}
             />
           </Tooltip>
-          <Tooltip title="Edit Quiz">
+          <Tooltip title={t('instructor.quizzes.tooltip.editQuiz')}>
             <Button
               type="text"
               size="small"
@@ -153,13 +155,13 @@ export default function InstructorQuizzes() {
               onClick={() => handleEdit(record)}
             />
           </Tooltip>
-          <Tooltip title="Delete Quiz">
+          <Tooltip title={t('instructor.quizzes.tooltip.deleteQuiz')}>
             <Popconfirm
-              title="Delete Quiz"
-              description={`Are you sure you want to delete "${record.name}"?`}
+              title={t('instructor.quizzes.deleteConfirm.title')}
+              description={t('instructor.quizzes.deleteConfirm.description', { name: record.name })}
               onConfirm={() => handleDelete(record)}
-              okText="Yes"
-              cancelText="No"
+              okText={t('instructor.quizzes.deleteConfirm.yes')}
+              cancelText={t('instructor.quizzes.deleteConfirm.no')}
               okButtonProps={{ danger: true }}
             >
               <Button
@@ -195,7 +197,7 @@ export default function InstructorQuizzes() {
 
   if (error) return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-      <Alert type="error" message="Error" description={error} />
+      <Alert type="error" message={t('common.error')} description={error} />
     </div>
   );
 
@@ -203,7 +205,7 @@ export default function InstructorQuizzes() {
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-2xl font-semibold">Quizzes</span>
+        <span className="text-2xl font-semibold">{t('instructor.quizzes.title')}</span>
       </div>
 
       {/* Search */}
@@ -218,14 +220,14 @@ export default function InstructorQuizzes() {
             icon={<UploadOutlined />}
             onClick={() => setImportModalVisible(true)}
           >
-            Import Excel
+            {t('instructor.quizzes.importExcel')}
           </Button>
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => setCreateDrawerVisible(true)}
           >
-            Create Quiz
+            {t('instructor.quizzes.createQuiz')}
           </Button>
         </div>
       </div>
@@ -251,7 +253,7 @@ export default function InstructorQuizzes() {
             onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }}
             showSizeChanger
             pageSizeOptions={["10", "20", "50"]}
-            showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} quizzes`}
+            showTotal={(total, r) => t('instructor.quizzes.table.pagination', { start: r[0], end: r[1], total })}
           />
         </div>
       </div>

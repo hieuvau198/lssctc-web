@@ -1,6 +1,7 @@
 // src/app/pages/Trainee/Learn/partials/PracticeContent.jsx
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Progress, Tag } from 'antd';
 import { Settings, CheckCircle2, Clock, Play, ListTodo, ChevronsRight, Monitor, Download, LogIn, MousePointer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +13,7 @@ export default function PracticeContent({
 	description, 
 	tasks = [] 
 }) {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 
 	const completedTasks = tasks.filter(t => t.isPass).length;
@@ -31,9 +33,9 @@ export default function PracticeContent({
 							</div>
 							<div>
 								<div className="flex items-center gap-2 mb-1">
-									<Tag color="orange" className="text-xs font-medium">Practice</Tag>
+									<Tag color="orange" className="text-xs font-medium">{t('trainee.learn.practice')}</Tag>
 									{completed && (
-										<Tag color="success" className="text-xs font-medium">Completed</Tag>
+										<Tag color="success" className="text-xs font-medium">{t('trainee.learn.completed')}</Tag>
 									)}
 								</div>
 								<h1 className="text-xl font-bold text-slate-900">{title}</h1>
@@ -55,8 +57,8 @@ export default function PracticeContent({
 									<Clock className="w-5 h-5 text-slate-600" />
 								</div>
 								<div>
-									<div className="text-sm text-slate-500">Practice Time</div>
-									<div className="text-lg font-bold text-slate-900">{duration || 'Flexible'}</div>
+									<div className="text-sm text-slate-500">{t('trainee.learn.practiceTime')}</div>
+									<div className="text-lg font-bold text-slate-900">{duration || t('trainee.learn.flexible')}</div>
 								</div>
 							</div>
 						</div>
@@ -67,8 +69,8 @@ export default function PracticeContent({
 									<Monitor className="w-5 h-5 text-orange-600" />
 								</div>
 								<div>
-									<div className="text-sm text-slate-500">Type</div>
-									<div className="text-lg font-bold text-slate-900">Simulator</div>
+									<div className="text-sm text-slate-500">{t('trainee.learn.type')}</div>
+									<div className="text-lg font-bold text-slate-900">{t('trainee.learn.simulator')}</div>
 								</div>
 							</div>
 						</div>
@@ -78,7 +80,7 @@ export default function PracticeContent({
 					<div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6">
 						<h3 className="text-base font-semibold text-blue-900 mb-4 flex items-center gap-2">
 							<ListTodo className="w-5 h-5" />
-							Practice Tasks ({tasks.length})
+							{t('trainee.learn.practiceTasks')} ({tasks.length})
 						</h3>
 						{tasks.length > 0 ? (
 							<ul className="space-y-3">
@@ -105,7 +107,7 @@ export default function PracticeContent({
 								))}
 							</ul>
 						) : (
-							<p className="text-slate-600 text-sm">No specific tasks listed for this practice.</p>
+							<p className="text-slate-600 text-sm">{t('trainee.learn.noTasks')}</p>
 						)}
 					</div>
 
@@ -113,16 +115,16 @@ export default function PracticeContent({
 					<div className="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
 						<h3 className="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
 							<ChevronsRight className="w-5 h-5" />
-							How to Complete
+							{t('trainee.learn.howToComplete')}
 						</h3>
 						<ol className="space-y-3">
 							{[
-								{ icon: <Play className="w-4 h-4" />, text: 'Click "Start Practice" to go to the simulator page' },
-								{ icon: <Download className="w-4 h-4" />, text: 'Download the simulator application' },
-								{ icon: <MousePointer className="w-4 h-4" />, text: 'Open the downloaded .exe file to run the simulator' },
-								{ icon: <LogIn className="w-4 h-4" />, text: 'Log in with the same account as the website' },
-								{ icon: <ListTodo className="w-4 h-4" />, text: 'Select your class and the correct practice' },
-								{ icon: <CheckCircle2 className="w-4 h-4" />, text: 'Follow the in-simulator guide to complete tasks' },
+								{ icon: <Play className="w-4 h-4" />, text: t('trainee.learn.step1') },
+								{ icon: <Download className="w-4 h-4" />, text: t('trainee.learn.step2') },
+								{ icon: <MousePointer className="w-4 h-4" />, text: t('trainee.learn.step3') },
+								{ icon: <LogIn className="w-4 h-4" />, text: t('trainee.learn.step4') },
+								{ icon: <ListTodo className="w-4 h-4" />, text: t('trainee.learn.step5') },
+								{ icon: <CheckCircle2 className="w-4 h-4" />, text: t('trainee.learn.step6') },
 							].map((step, i) => (
 								<li key={i} className="flex items-start gap-3">
 									<div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 text-slate-500">
@@ -143,7 +145,7 @@ export default function PracticeContent({
 							className="px-8 shadow-lg shadow-orange-200"
 							onClick={() => navigate('/simulator')}
 						>
-							{completed ? 'Practice Again' : 'Start Practice'}
+							{completed ? t('trainee.learn.practiceAgain') : t('trainee.learn.startPractice')}
 						</Button>
 					</div>
 				</div>
@@ -155,7 +157,7 @@ export default function PracticeContent({
 					<div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-green-50 to-emerald-50">
 						<h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
 							<CheckCircle2 className="w-5 h-5 text-green-600" />
-							Practice Summary
+							{t('trainee.learn.practiceSummary')}
 						</h3>
 					</div>
 					<div className="p-6">
@@ -167,13 +169,13 @@ export default function PracticeContent({
 						/>
 						<div className="grid grid-cols-2 gap-6">
 							<div className="bg-slate-50 rounded-xl p-4 text-center">
-								<div className="text-sm text-slate-500 mb-1">Tasks Completed</div>
+								<div className="text-sm text-slate-500 mb-1">{t('trainee.learn.tasksCompleted')}</div>
 								<div className="text-2xl font-bold text-slate-900">
 									{completedTasks} / {tasks.length}
 								</div>
 							</div>
 							<div className="bg-green-50 rounded-xl p-4 text-center">
-								<div className="text-sm text-slate-500 mb-1">Average Score</div>
+								<div className="text-sm text-slate-500 mb-1">{t('trainee.learn.averageScore')}</div>
 								<div className="text-2xl font-bold text-green-600">
 									{avgScore}%
 								</div>

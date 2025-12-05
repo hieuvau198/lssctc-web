@@ -3,6 +3,7 @@ import {
   Card, Spin, Alert, Button, Descriptions, Tag
 } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   getPractices
 } from '../../../../apis/Instructor/InstructorPractice';
@@ -11,6 +12,7 @@ import PracticeTaskList from './PracticeTaskList';
 import { ArrowLeft } from 'lucide-react';
 
 export default function PracticeDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [practice, setPractice] = useState(null);
@@ -27,11 +29,11 @@ export default function PracticeDetail() {
       setError(null);
     } catch (err) {
       console.error('Error:', err);
-      setError(err.message || 'Failed to load data');
+      setError(err.message || t('instructor.practices.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     fetchData();
@@ -41,7 +43,7 @@ export default function PracticeDetail() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <Spin size="large" tip="Loading practice details..." className="w-full py-16" />
+        <Spin size="large" tip={t('common.loading')} className="w-full py-16" />
       </div>
     );
   }
@@ -49,7 +51,7 @@ export default function PracticeDetail() {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <Alert message="Error" description={error} type="error" showIcon />
+        <Alert message={t('common.error')} description={error} type="error" showIcon />
       </div>
     );
   }
@@ -68,7 +70,7 @@ export default function PracticeDetail() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Button type="default" icon={<ArrowLeft size={16} />} onClick={() => navigate(-1)} />
-            <span className="text-2xl text-slate-900">Practice Details</span>
+            <span className="text-2xl text-slate-900">{t('instructor.practices.practiceDetails')}</span>
           </div>
         </div>
       </div>
@@ -76,34 +78,34 @@ export default function PracticeDetail() {
       {/* Practice Information Card */}
       <div className="mb-6">
         <Card
-          title="Practice Information"
+          title={t('instructor.practices.practiceInformation')}
           className="shadow mb-6"
         >
           <Descriptions bordered column={2}>
-            <Descriptions.Item label="Practice Name" span={2}>
+            <Descriptions.Item label={t('instructor.practices.info.practiceName')} span={2}>
               {practice.practiceName}
             </Descriptions.Item>
-            <Descriptions.Item label="Practice Code" span={2}>
+            <Descriptions.Item label={t('instructor.practices.info.practiceCode')} span={2}>
               {practice.practiceCode}
             </Descriptions.Item>
-            <Descriptions.Item label="Duration">
-              {practice.estimatedDurationMinutes} minutes
+            <Descriptions.Item label={t('instructor.practices.info.duration')}>
+              {practice.estimatedDurationMinutes} {t('instructor.practices.info.minutes')}
             </Descriptions.Item>
-            <Descriptions.Item label="Difficulty">
+            <Descriptions.Item label={t('instructor.practices.info.difficulty')}>
               <Tag color={getDifficultyColor(practice.difficultyLevel)}>
                 {practice.difficultyLevel}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Max Attempts">
+            <Descriptions.Item label={t('instructor.practices.info.maxAttempts')}>
               {practice.maxAttempts}
             </Descriptions.Item>
-            <Descriptions.Item label="Status">
+            <Descriptions.Item label={t('instructor.practices.info.status')}>
               <Tag color={practice.isActive ? 'green' : 'red'}>
-                {practice.isActive ? 'Active' : 'Inactive'}
+                {practice.isActive ? t('instructor.practices.info.active') : t('instructor.practices.info.inactive')}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Description" span={2}>
-              {practice.practiceDescription || 'N/A'}
+            <Descriptions.Item label={t('instructor.practices.info.description')} span={2}>
+              {practice.practiceDescription || t('instructor.practices.info.na')}
             </Descriptions.Item>
           </Descriptions>
         </Card>

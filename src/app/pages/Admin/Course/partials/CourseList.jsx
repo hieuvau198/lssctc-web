@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import { Empty, Pagination, Table, Tag, Button, Space, Tooltip, Popconfirm } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import CourseCard from "./CourseCard";
@@ -15,6 +16,8 @@ const CourseTableView = ({
   onDelete, 
   deletingId 
 }) => {
+  const { t } = useTranslation();
+
   const tableColumns = [
     {
       title: "#",
@@ -28,7 +31,7 @@ const CourseTableView = ({
       ),
     },
     {
-      title: "Image",
+      title: t('admin.courses.columns.image'),
       dataIndex: "imageUrl",
       key: "imageUrl",
       width: 50,
@@ -45,7 +48,7 @@ const CourseTableView = ({
       ),
     },
     {
-      title: "Course Name",
+      title: t('admin.courses.columns.courseName'),
       dataIndex: "name",
       key: "name",
       width: 200,
@@ -59,43 +62,43 @@ const CourseTableView = ({
       ),
     },
     {
-      title: "Category",
+      title: t('common.category'),
       dataIndex: "category",
       key: "category",
       width: 120,
     },
     {
-      title: "Level",
+      title: t('common.level'),
       dataIndex: "level",
       key: "level",
       width: 80,
     },
     {
-      title: "Duration (h)",
+      title: t('admin.courses.columns.durationHours'),
       dataIndex: "durationHours",
       key: "durationHours",
       width: 100,
       render: (hours) => <span>{hours}</span>,
     },
     {
-      title: "Status",
+      title: t('common.status'),
       dataIndex: "isActive",
       key: "isActive",
       width: 100,
       render: (isActive) => (
         <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "Active" : "Inactive"}
+          {isActive ? t('common.active') : t('common.inactive')}
         </Tag>
       ),
     },
     {
-      title: "Actions",
+      title: t('common.actions'),
       key: "actions",
       width: 120,
       fixed: "right",
       render: (_, record) => (
         <Space size="small">
-          <Tooltip title="View Details">
+          <Tooltip title={t('admin.courses.viewDetails')}>
             <Button
               type="text"
               size="small"
@@ -103,7 +106,7 @@ const CourseTableView = ({
               onClick={() => onView(record)}
             />
           </Tooltip>
-          <Tooltip title="Edit Course">
+          <Tooltip title={t('admin.courses.editCourse')}>
             <Button
               type="text"
               size="small"
@@ -111,10 +114,10 @@ const CourseTableView = ({
               onClick={() => onEdit(record)}
             />
           </Tooltip>
-          <Tooltip title="Delete Course">
+          <Tooltip title={t('admin.courses.deleteCourseTitle')}>
             <Popconfirm
-              title="Delete course?"
-              description="Are you sure you want to delete this course?"
+              title={t('admin.courses.deleteCourseTitle')}
+              description={t('admin.courses.deleteConfirm')}
               onConfirm={() => onDelete(record.id)}
               okButtonProps={{ loading: deletingId === record.id }}
             >
@@ -152,7 +155,7 @@ const CourseTableView = ({
           onChange={onPageChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} courses`}
+          showTotal={(total, range) => t('common.pagination.showTotal', { start: range[0], end: range[1], total })}
         />
       </div>
     </div>
@@ -171,6 +174,8 @@ const CourseCardView = ({
   onDelete, 
   deletingId 
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -194,7 +199,7 @@ const CourseCardView = ({
           showSizeChanger={true}
           pageSizeOptions={["10", "20", "50"]}
           showTotal={(total, range) =>
-            `${range[0]}-${range[1]} of ${total} courses`
+            t('common.pagination.showTotal', { start: range[0], end: range[1], total })
           }
         />
       </div>
@@ -215,8 +220,10 @@ const CourseList = ({
   onDelete,
   deletingId
 }) => {
+  const { t } = useTranslation();
+
   if (courses.length === 0) {
-    return <Empty description="No courses found." className="mt-16" />;
+    return <Empty description={t('admin.courses.noCourses')} className="mt-16" />;
   }
 
   if (viewMode === "table") {

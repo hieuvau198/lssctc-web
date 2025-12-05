@@ -1,7 +1,11 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import { Card, Button, Popconfirm } from "antd";
 
-const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
+const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => {
+  const { t } = useTranslation();
+
+  return (
   <Card
     hoverable
     className="rounded-lg shadow flex flex-col h-full"
@@ -27,11 +31,11 @@ const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
     </div>
     <div className="flex flex-wrap gap-4 text-sm mt-4 mb-2 border-t pt-3">
       <span>
-        <span className="font-medium">Duration:</span> {program.durationHours}{" "}
-        hours
+        <span className="font-medium">{t('common.duration')}:</span> {program.durationHours}{" "}
+        {t('common.hours')}
       </span>
       <span>
-        <span className="font-medium">Total Courses:</span>{" "}
+        <span className="font-medium">{t('admin.programs.totalCourses')}:</span>{" "}
         {program.totalCourses}
       </span>
     </div>
@@ -43,13 +47,13 @@ const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
           onEdit();
         }}
       >
-        Edit
+        {t('common.edit')}
       </Button>
       <Popconfirm
-        title={`Are you sure you want to delete "${program.name}"?`}
-        okText="Delete"
+        title={t('admin.programs.deleteConfirm', { name: program.name })}
+        okText={t('common.delete')}
         okType="danger"
-        cancelText="Cancel"
+        cancelText={t('common.cancel')}
         onConfirm={(e) => {
           e.stopPropagation();
           onDelete && onDelete();
@@ -57,11 +61,12 @@ const ManagerProgramCard = ({ program, onEdit, onDelete, onDetail }) => (
         onCancel={(e) => e.stopPropagation()}
       >
         <Button type="default" danger onClick={(e) => e.stopPropagation()}>
-          Delete
+          {t('common.delete')}
         </Button>
       </Popconfirm>
     </div>
   </Card>
 );
+};
 
 export default ManagerProgramCard;

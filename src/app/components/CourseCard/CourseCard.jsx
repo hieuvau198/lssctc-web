@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function CourseCard({ course }) {
+  const { t } = useTranslation();
   const {
     title,
     provider,
@@ -37,7 +39,7 @@ export default function CourseCard({ course }) {
             {duration && (
               <div className="flex items-center">
                 <span className="px-2 py-1 items-center rounded-md text-[11px] font-medium bg-blue-600/90 text-white shadow-sm">
-                  {duration} hrs
+                  {duration} {t('common.hours')}
                 </span>
               </div>
             )}

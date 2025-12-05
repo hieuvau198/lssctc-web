@@ -2,6 +2,7 @@ import { ArrowLeftOutlined, BookOutlined, VideoCameraOutlined } from '@ant-desig
 import { Button, Card, Form, Input, Radio, Space, message, App } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { updateMaterial, getMaterials } from '../../../../apis/Instructor/InstructorMaterialsApi';
 
 function useQuery() {
@@ -10,6 +11,7 @@ function useQuery() {
 }
 
 export default function EditMaterials({ onSuccess }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { modal } = App.useApp();
   const { id } = useParams();
@@ -41,12 +43,12 @@ export default function EditMaterials({ onSuccess }) {
           });
         } else {
           console.log('Material not found. Materials:', materials);
-          message.error('Material not found');
+          message.error(t('instructor.materials.messages.materialNotFound'));
           navigate('/instructor/materials');
         }
       } catch (e) {
         console.error('Load material error', e);
-        message.error('Failed to load material');
+        message.error(t('instructor.materials.messages.loadMaterialFailed'));
         navigate('/instructor/materials');
       } finally {
         setLoading(false);
@@ -73,9 +75,9 @@ export default function EditMaterials({ onSuccess }) {
       await updateMaterial(id, payload);
       
       modal.success({
-        title: 'Success',
-        content: 'Material updated successfully',
-        okText: 'OK',
+        title: t('instructor.materials.modal.success'),
+        content: t('instructor.materials.messages.updateSuccess'),
+        okText: t('instructor.materials.modal.ok'),
         centered: true,
         onOk: () => {
           // Always navigate back and let parent component refresh
@@ -85,7 +87,7 @@ export default function EditMaterials({ onSuccess }) {
     } catch (e) {
       console.error('Update material error', e);
       
-      let errorMsg = e?.message || 'Failed to update material';
+      let errorMsg = e?.message || t('instructor.materials.messages.updateFailed');
       // Handle API error responses
       if (e?.response?.data) {
         const data = e.response.data;
@@ -107,9 +109,9 @@ export default function EditMaterials({ onSuccess }) {
       }
       
       modal.error({
-        title: 'Error Updating Material',
+        title: t('instructor.materials.messages.updateError'),
         content: errorMsg,
-        okText: 'Close',
+        okText: t('instructor.materials.modal.close'),
         centered: true,
       });
     } finally {
@@ -136,7 +138,7 @@ export default function EditMaterials({ onSuccess }) {
           onClick={onCancel}
           className="p-0"
         />
-        <span className="text-2xl">Edit Material</span>
+        <span className="text-2xl">{t('instructor.materials.editMaterial')}</span>
       </div>
 
       <Card>
@@ -146,56 +148,56 @@ export default function EditMaterials({ onSuccess }) {
           onFinish={onFinish}
         >
           <Form.Item
-            label="Title"
+            label={t('instructor.materials.form.title')}
             name="title"
-            rules={[{ required: true, message: 'Please enter title' }]}
+            rules={[{ required: true, message: t('instructor.materials.form.titleRequired') }]}
           >
-            <Input placeholder="Enter material title" />
+            <Input placeholder={t('instructor.materials.form.titlePlaceholderEdit')} />
           </Form.Item>
 
           <Form.Item
-            label="Type"
+            label={t('instructor.materials.form.type')}
             name="typeId"
-            rules={[{ required: true, message: 'Please select type' }]}
+            rules={[{ required: true, message: t('instructor.materials.form.typeRequired') }]}
           >
             <Radio.Group>
               <Radio value={1}>
                 <BookOutlined className="mr-2" />
-                Document
+                {t('instructor.materials.document')}
               </Radio>
               <Radio value={2}>
                 <VideoCameraOutlined className="mr-2" />
-                Video
+                {t('instructor.materials.video')}
               </Radio>
             </Radio.Group>
           </Form.Item>
 
           <Form.Item
-            label="URL"
+            label={t('instructor.materials.form.url')}
             name="url"
             rules={[
-              { required: true, message: 'Please enter URL' },
-              { type: 'url', message: 'Please enter valid URL' },
+              { required: true, message: t('instructor.materials.form.urlRequired') },
+              { type: 'url', message: t('instructor.materials.form.urlInvalid') },
             ]}
           >
-            <Input placeholder="Enter material URL" />
+            <Input placeholder={t('instructor.materials.form.urlPlaceholderEdit')} />
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label={t('instructor.materials.form.description')}
             name="description"
           >
             <Input.TextArea
               rows={4}
-              placeholder="Enter material description (optional)"
+              placeholder={t('instructor.materials.form.descriptionPlaceholderEdit')}
             />
           </Form.Item>
 
           <Space>
             <Button type="primary" htmlType="submit" loading={submitting}>
-              Update
+              {t('instructor.materials.buttons.update')}
             </Button>
-            <Button onClick={onCancel}>Cancel</Button>
+            <Button onClick={onCancel}>{t('instructor.materials.buttons.cancel')}</Button>
           </Space>
         </Form>
       </Card>

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Chart from 'react-apexcharts';
 import { Skeleton } from 'antd';
 import { getClassStatusDistribution } from '../../../../../apis/Admin/AdminDashboard';
 
 export default function RoleDistribution() {
+  const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,7 +37,7 @@ export default function RoleDistribution() {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col">
-      <h2 className="text-sm font-medium mb-2 text-gray-700">Class Status Distribution</h2>
+      <h2 className="text-sm font-medium mb-2 text-gray-700">{t('admin.dashboard.charts.classStatusDistribution')}</h2>
       {loading ? (
         <Skeleton active paragraph={{ rows: 4 }} />
       ) : (

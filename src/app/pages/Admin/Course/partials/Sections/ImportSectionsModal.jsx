@@ -1,10 +1,12 @@
 // src/app/pages/Admin/Course/partials/Sections/ImportSectionsModal.jsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal, Upload, Button, message, Alert } from 'antd';
 import { UploadOutlined, FileExcelOutlined } from '@ant-design/icons';
 import { importSections } from '../../../../../apis/ProgramManager/SectionApi';
 
 const ImportSectionsModal = ({ visible, onCancel, onSuccess, courseId }) => {
+  const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const [fileList, setFileList] = useState([]);
 
@@ -16,11 +18,11 @@ const ImportSectionsModal = ({ visible, onCancel, onSuccess, courseId }) => {
 
     try {
       await importSections(courseId, file);
-      message.success('Sections imported successfully');
+      message.success(t('admin.courses.sections.importSuccess'));
       setFileList([]);
       onSuccess();
     } catch (error) {
-      message.error(error.response?.data?.message || 'Import failed');
+      message.error(error.response?.data?.message || t('admin.courses.sections.importError'));
     } finally {
       setUploading(false);
     }
@@ -33,7 +35,7 @@ const ImportSectionsModal = ({ visible, onCancel, onSuccess, courseId }) => {
     beforeUpload: (file) => {
       const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.name.endsWith('.xlsx');
       if (!isExcel) {
-        message.error(`${file.name} is not an Excel file`);
+        message.error(t('admin.courses.sections.notExcelFile', { name: file.name }));
         return Upload.LIST_IGNORE;
       }
       setFileList([file]);
@@ -44,25 +46,25 @@ const ImportSectionsModal = ({ visible, onCancel, onSuccess, courseId }) => {
 
   return (
     <Modal
-      title="Import Sections from Excel"
+      title={t('admin.courses.sections.importTitle')}
       open={visible}
       onCancel={onCancel}
       footer={[
-        <Button key="back" onClick={onCancel}>Cancel</Button>,
+        <Button key="back" onClick={onCancel}>{t('common.cancel')}</Button>,
         <Button key="submit" type="primary" loading={uploading} disabled={fileList.length === 0} onClick={handleUpload}>
-          Import
+          {t('admin.courses.sections.import')}
         </Button>,
       ]}
     >
       <div className="space-y-4">
         <Alert
-          message="Template Instructions"
+          message={t('admin.courses.sections.templateInstructions')}
           description={
             <ul className="list-disc pl-4 text-sm">
-              <li>Row 1: Headers (Title, Description, Duration) - Skipped</li>
-              <li>Column A: <b>Section Title</b> (Required)</li>
-              <li>Column B: Description (Optional)</li>
-              <li>Column C: Duration in minutes (Number)</li>
+              <li>{t('admin.courses.sections.templateRow1')}</li>
+              <li>{t('admin.courses.sections.templateColumnA')}</li>
+              <li>{t('admin.courses.sections.templateColumnB')}</li>
+              <li>{t('admin.courses.sections.templateColumnC')}</li>
             </ul>
           }
           type="info"
@@ -70,7 +72,7 @@ const ImportSectionsModal = ({ visible, onCancel, onSuccess, courseId }) => {
         />
         
         <Upload {...props} maxCount={1}>
-          <Button icon={<UploadOutlined />}>Select Excel File (.xlsx)</Button>
+          <Button icon={<UploadOutlined />}>{t('admin.courses.sections.selectExcel')}</Button>
         </Upload>
       </div>
     </Modal>

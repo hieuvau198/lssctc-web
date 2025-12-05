@@ -12,6 +12,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
 import {
   deleteClass,
@@ -44,6 +45,7 @@ const EditDeleteClassForm = ({
   onDeleted,
 }) => {
   const [form] = Form.useForm();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -80,7 +82,7 @@ const EditDeleteClassForm = ({
       onClose();
     } catch (err) {
       setError(
-        err?.response?.data || err?.message || "Failed to update class"
+        err?.response?.data || err?.message || t('admin.classes.messages.updateFailed')
       );
     } finally {
       setSaving(false);
@@ -96,7 +98,7 @@ const EditDeleteClassForm = ({
       onClose();
     } catch (err) {
       setDeleteError(
-        err?.response?.data || err?.message || "Failed to delete class"
+        err?.response?.data || err?.message || t('admin.classes.messages.deleteFailed')
       );
     } finally {
       setDeleting(false);
@@ -178,30 +180,30 @@ const EditDeleteClassForm = ({
         className={embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4" : undefined}
       >
         <Form.Item
-          label="Class Name"
+          label={t('admin.classes.form.className')}
           name="name"
-          rules={[{ required: true, message: "Please enter class name" }]}
+          rules={[{ required: true, message: t('admin.classes.validation.classNameRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input placeholder="Class name" allowClear showCount maxLength={120} />
+          <Input placeholder={t('admin.classes.placeholders.className')} allowClear showCount maxLength={120} />
         </Form.Item>
         <Form.Item
-          label="Class Code"
+          label={t('admin.classes.form.classCode')}
           name="classCode"
-          rules={[{ required: true, message: "Please enter class code" }]}
+          rules={[{ required: true, message: t('admin.classes.validation.classCodeRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input placeholder="Class code" allowClear showCount maxLength={50} />
+          <Input placeholder={t('admin.classes.placeholders.classCode')} allowClear showCount maxLength={50} />
         </Form.Item>
 
         <Form.Item
-          label="Program"
+          label={t('admin.classes.form.program')}
           name="programId"
-          rules={[{ required: true, message: 'Please select a program' }]}
+          rules={[{ required: true, message: t('admin.classes.validation.programRequired') }]}
           className={embedded ? 'md:col-span-1' : undefined}
         >
           <Select
-            placeholder="Select a program"
+            placeholder={t('admin.classes.placeholders.selectProgram')}
             loading={loadingPrograms}
             showSearch
             allowClear
@@ -220,13 +222,13 @@ const EditDeleteClassForm = ({
         </Form.Item>
 
         <Form.Item
-          label="Course"
+          label={t('admin.classes.form.course')}
           name="courseId"
-          rules={[{ required: true, message: "Please select a course" }]}
+          rules={[{ required: true, message: t('admin.classes.validation.courseRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
           <Select
-            placeholder="Course"
+            placeholder={t('admin.classes.placeholders.selectCourse')}
             loading={loadingCourses}
             disabled={!selectedProgram}
             showSearch
@@ -245,24 +247,24 @@ const EditDeleteClassForm = ({
         </Form.Item>
 
         <Form.Item
-          label="Start Date"
+          label={t('admin.classes.form.startDate')}
           name="startDate"
-          rules={[{ required: true, message: "Please select start date" }]}
+          rules={[{ required: true, message: t('admin.classes.validation.startDateRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
           <DatePicker className="w-full" />
         </Form.Item>
         <Form.Item
-          label="End Date"
+          label={t('admin.classes.form.endDate')}
           name="endDate"
           rules={[
-            { required: true, message: "Please select end date" },
+            { required: true, message: t('admin.classes.validation.endDateRequired') },
             ({ getFieldValue }) => ({
               validator(_, value) {
                 const start = getFieldValue('startDate');
                 if (!value || !start) return Promise.resolve();
                 if (value.isAfter(start)) return Promise.resolve();
-                return Promise.reject(new Error('End date must be after start date'));
+                return Promise.reject(new Error(t('admin.classes.validation.endDateAfterStart')));
               }
             })
           ]}
@@ -272,14 +274,14 @@ const EditDeleteClassForm = ({
         </Form.Item>
 
         <Form.Item
-          label="Capacity"
+          label={t('admin.classes.form.capacity')}
           name="capacity"
           rules={[
             {
               required: true,
               type: "number",
               min: 1,
-              message: "Capacity must be at least 1",
+              message: t('admin.classes.validation.capacityMin'),
             },
           ]}
           className={embedded ? "md:col-span-1" : undefined}
@@ -287,8 +289,8 @@ const EditDeleteClassForm = ({
           <InputNumber min={1} className="w-full" />
         </Form.Item>
 
-        <Form.Item label="Description" name="description" className={embedded ? "md:col-span-2" : undefined}>
-          <Input.TextArea rows={3} placeholder="Description" showCount maxLength={500} allowClear />
+        <Form.Item label={t('admin.classes.form.description')} name="description" className={embedded ? "md:col-span-2" : undefined}>
+          <Input.TextArea rows={3} placeholder={t('admin.classes.placeholders.description')} showCount maxLength={500} allowClear />
         </Form.Item>
         <Form.Item>
           <Space>
@@ -296,13 +298,13 @@ const EditDeleteClassForm = ({
               if (onCancel) return onCancel();
               if (onClose) return onClose();
               navigate(-1);
-            }}>Cancel</Button>
+            }}>{t('common.cancel')}</Button>
             <Button
               type="primary"
               htmlType="submit"
               loading={embedded ? confirmLoading : saving}
             >
-              Update Class
+              {t('admin.classes.buttons.updateClass')}
             </Button>
           </Space>
         </Form.Item>
@@ -313,13 +315,13 @@ const EditDeleteClassForm = ({
             <Alert type="error" message={deleteError} showIcon className="mb-2" />
           )}
           <Popconfirm
-            title="Are you sure to delete this class?"
+            title={t('admin.classes.popconfirm.deleteClass')}
             onConfirm={handleDelete}
-            okText="Yes"
-            cancelText="No"
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
           >
             <Button danger loading={deleting} block>
-              Delete Class
+              {t('admin.classes.buttons.deleteClass')}
             </Button>
           </Popconfirm>
         </div>
@@ -334,7 +336,7 @@ const EditDeleteClassForm = ({
   return (
     <Modal
       open={open}
-      title="Edit Class"
+      title={t('admin.classes.modal.editClass')}
       onCancel={onClose}
       footer={null}
       destroyOnClose

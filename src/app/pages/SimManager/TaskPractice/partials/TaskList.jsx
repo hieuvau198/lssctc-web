@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pagination, Spin } from 'antd';
+import { useTranslation } from 'react-i18next';
 import TaskCard from '../../../../components/TaskCard/TaskCard';
 
 export default function TaskList({
@@ -10,6 +11,8 @@ export default function TaskList({
   onDelete = () => {},
   pagination = {},
 }) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className="flex justify-center py-16">
@@ -43,7 +46,7 @@ export default function TaskList({
           onChange={pagination.onChange}
           showSizeChanger
           pageSizeOptions={['9', '10', '20', '50']}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} tasks`}
+          showTotal={(total, range) => t('simManager.tasks.pagination', { start: range[0], end: range[1], total })}
         />
       </div>
     </div>

@@ -1,58 +1,74 @@
 import React, { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Modal, App, Empty, Spin, Table, Tag, Pagination } from 'antd';
 import { Plus } from 'lucide-react';
-import { fetchCourses, addCourseToProgram } from '../../../../apis/ProgramManager/ProgramManagerCourseApi';
-import { fetchCoursesByProgram } from '../../../../apis/ProgramManager/CourseApi';
+import { addCourseToProgram } from '../../../../apis/ProgramManager/ProgramManagerCourseApi';
+import { fetchCoursesPaged, fetchCoursesByProgram } from '../../../../apis/ProgramManager/CourseApi';
 
 const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
+    const { t } = useTranslation();
     const { message } = App.useApp();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [allCourses, setAllCourses] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [selectedCourseIds, setSelectedCourseIds] = useState([]);
     const [assignLoading, setAssignLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const [assignedCourseIds, setAssignedCourseIds] = useState(new Set());
 
-    // Fetch available courses when modal opens
-    const fetchAvailableCourses = useCallback(async () => {
+    // Fetch assigned courses once when modal opens
+    const fetchAssignedCourses = useCallback(async () => {
+        try {
+            const assignedCoursesData = await fetchCoursesByProgram(program.id);
+            const assignedCourses = assignedCoursesData.items || [];
+            setAssignedCourseIds(new Set(assignedCourses.map((c) => c.id)));
+        } catch (e) {
+            console.log('No courses assigned to program yet');
+            setAssignedCourseIds(new Set());
+        }
+    }, [program.id]);
+
+    // Fetch available courses with pagination
+    const fetchAvailableCourses = useCallback(async (page, size) => {
         setLoading(true);
         try {
-            // Fetch both all courses and assigned courses in parallel
-            const [allCoursesData, assignedCoursesData] = await Promise.all([
-                fetchCourses({ pageNumber: 1, pageSize: 1000 }),
-                fetchCoursesByProgram(program.id)
-            ]);
-
+            const allCoursesData = await fetchCoursesPaged({ pageNumber: page, pageSize: size });
             const allCoursesList = allCoursesData.items || [];
-            const assignedCourses = assignedCoursesData.items || [];
-
-            // Create set of assigned course IDs
-            const assignedIds = new Set(assignedCourses.map((c) => c.id));
 
             // Filter out assigned courses
-            const availableCourses = allCoursesList.filter(course => !assignedIds.has(course.id));
+            const availableCourses = allCoursesList.filter(course => !assignedCourseIds.has(course.id));
 
             setAllCourses(availableCourses);
+            setTotalCount(allCoursesData.totalCount || 0);
 
-            if (availableCourses.length === 0) {
-                message.info('All courses are already assigned to this program');
+            if (availableCourses.length === 0 && allCoursesList.length > 0) {
+                message.info(t('admin.programs.assignCourse.allAssigned'));
             }
         } catch (err) {
             console.error('Error fetching courses:', err);
-            message.error('Failed to load available courses');
+            message.error(t('admin.programs.assignCourse.loadError'));
             setAllCourses([]);
+            setTotalCount(0);
         } finally {
             setLoading(false);
         }
-    }, [program, message]);
+    }, [assignedCourseIds, message]);
 
     // Open modal and fetch courses
-    const handleOpen = () => {
+    const handleOpen = async () => {
         setIsModalVisible(true);
         setSelectedCourseIds([]);
         setCurrentPage(1);
-        fetchAvailableCourses();
+        await fetchAssignedCourses();
+        fetchAvailableCourses(1, pageSize);
+    };
+
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        fetchAvailableCourses(page, pageSize);
     };
 
     // Close modal
@@ -65,7 +81,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
     // Assign selected courses
     const handleAssign = async () => {
         if (selectedCourseIds.length === 0) {
-            message.warning('Please select at least one course to assign');
+            message.warning(t('admin.programs.assignCourse.selectWarning'));
             return;
         }
 
@@ -75,7 +91,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
             for (const courseId of selectedCourseIds) {
                 await addCourseToProgram(program.id, courseId);
             }
-            message.success(`Successfully assigned ${selectedCourseIds.length} course(s) to program`);
+            message.success(t('admin.programs.assignCourse.assignSuccess', { count: selectedCourseIds.length }));
             setIsModalVisible(false);
             setSelectedCourseIds([]);
             onAssigned?.(); // Callback to reload parent list
@@ -100,13 +116,13 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
     // Table columns
     const columns = [
         {
-            title: 'Course Name',
+            title: t('admin.programs.assignCourse.columns.courseName'),
             dataIndex: 'name',
             key: 'name',
             ellipsis: true,
         },
         {
-            title: 'Description',
+            title: t('admin.programs.assignCourse.columns.description'),
             dataIndex: 'description',
             key: 'description',
             ellipsis: true,
@@ -114,14 +130,14 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
             render: (desc) => desc || '-',
         },
         {
-            title: 'Status',
+            title: t('common.status'),
             dataIndex: 'isActive',
             key: 'isActive',
             width: 100,
             align: 'center',
             render: (isActive) => (
                 <Tag color={isActive ? 'green' : 'red'}>
-                    {isActive ? 'Active' : 'Inactive'}
+                    {isActive ? t('common.active') : t('common.inactive')}
                 </Tag>
             ),
         },
@@ -145,18 +161,18 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                     icon={<Plus size={16} />}
                     onClick={handleOpen}
                 >
-                    Assign Course
+                    {t('admin.programs.assignCourse.button')}
                 </Button>
             </div>
             <Modal
-                title="Assign Courses to Program"
+                title={t('admin.programs.assignCourse.modalTitle')}
                 open={isModalVisible}
                 onCancel={handleClose}
                 width={900}
                 centered
                 footer={[
                     <Button key="cancel" onClick={handleClose}>
-                        Cancel
+                        {t('common.cancel')}
                     </Button>,
                     <Button
                         key="assign"
@@ -166,16 +182,16 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                         disabled={selectedCourseIds.length === 0}
                         onClick={handleAssign}
                     >
-                        Assign Selected ({selectedCourseIds.length})
+                        {t('admin.programs.assignCourse.assignSelected', { count: selectedCourseIds.length })}
                     </Button>,
                 ]}
             >
                 {loading ? (
-                    <div className="flex justify-center py-8">
+                    <div className="flex justify-center items-center h-[500px] py-8">
                         <Spin size="large" />
                     </div>
                 ) : allCourses.length === 0 ? (
-                    <Empty description="No available courses to assign. All courses are already assigned to this program." />
+                    <Empty description={t('admin.programs.assignCourse.noAvailable')} />
                 ) : (
                     <div className="flex flex-col h-[500px]">
                         {/* Table with fixed height, scrollable */}
@@ -183,7 +199,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                             <Table
                                 rowSelection={rowSelection}
                                 columns={columns}
-                                dataSource={allCourses.slice((currentPage - 1) * pageSize, currentPage * pageSize)}
+                                dataSource={allCourses}
                                 rowKey="id"
                                 size="small"
                                 pagination={false}
@@ -195,9 +211,9 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                             <Pagination
                                 current={currentPage}
                                 pageSize={pageSize}
-                                total={allCourses.length}
-                                onChange={setCurrentPage}
-                                showTotal={(total) => `Total ${total} courses`}
+                                total={totalCount}
+                                onChange={handlePageChange}
+                                showTotal={(total) => t('admin.programs.assignCourse.total', { total })}
                             />
                         </div>
                     </div>

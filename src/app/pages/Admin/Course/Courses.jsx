@@ -13,6 +13,7 @@ import {
 } from "antd";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from "react-router-dom";
 import {
   addCourse,
@@ -33,6 +34,7 @@ const { Search } = Input;
 const { Option } = Select;
 
 const Courses = () => {
+  const { t } = useTranslation();
   const {message} = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const [courses, setCourses] = useState([]);
@@ -133,7 +135,7 @@ const Courses = () => {
     setDeletingId(id);
     try {
       const res = await deleteCourse(id);
-      message.success((res && res.message) || 'Course deleted successfully');
+      message.success((res && res.message) || t('admin.courses.deleteSuccess'));
       // Refresh list after delete
       const params = {
         pageNumber,
@@ -174,7 +176,7 @@ const Courses = () => {
       const detail = await fetchCourseDetail(course.id);
       setCurrentCourse(detail);
     } catch (err) {
-      message.error(err.message || 'Failed to load course detail');
+      message.error(err.message || t('admin.courses.loadDetailError'));
     } finally {
       setDetailLoading(false);
     }
@@ -198,7 +200,7 @@ const Courses = () => {
         isActive: detail.isActive,
       });
     } catch (err) {
-      message.error(err.message || 'Failed to load course detail');
+      message.error(err.message || t('admin.courses.loadDetailError'));
     } finally {
       setDetailLoading(false);
     }
@@ -235,7 +237,7 @@ const Courses = () => {
     setSubmitting(true);
     try {
       const res = await addCourse(values);
-      message.success((res && res.message) || 'Course created successfully');
+      message.success((res && res.message) || t('admin.courses.createSuccess'));
       // Refresh list
       const params = {
         pageNumber,
@@ -253,7 +255,7 @@ const Courses = () => {
       setTotal(data.totalCount || 0);
       closeDrawer();
     } catch (err) {
-      message.error(err.message || 'Create failed');
+      message.error(err.message || t('admin.courses.createError'));
     } finally {
       setSubmitting(false);
     }
@@ -264,7 +266,7 @@ const Courses = () => {
     setSubmitting(true);
     try {
       const res = await updateCourse(currentCourse.id, values);
-      message.success((res && res.message) || 'Course updated successfully');
+      message.success((res && res.message) || t('admin.courses.updateSuccess'));
       // Refresh list
       const params = {
         pageNumber,
@@ -285,7 +287,7 @@ const Courses = () => {
       setCurrentCourse(updated || null);
       setDrawerMode('view');
     } catch (err) {
-      message.error(err.message || 'Update failed');
+      message.error(err.message || t('admin.courses.updateError'));
     } finally {
       setSubmitting(false);
     }
@@ -345,7 +347,7 @@ const Courses = () => {
     <div className="max-w-7xl mx-auto px-2 py-2">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-2xl">Course Management</span>
+        <span className="text-2xl">{t('admin.courses.title')}</span>
       </div>
 
       {/* Search and Controls */}
@@ -404,7 +406,7 @@ const Courses = () => {
         </div> */}
         <div className="flex gap-2">
           <Button type="primary" icon={<Plus className="w-4 h-4" />} onClick={openCreate}>
-            Add Course
+            {t('admin.courses.addCourse')}
           </Button>
           <ViewModeToggle
             viewMode={viewMode}
@@ -415,7 +417,7 @@ const Courses = () => {
 
       {/* Content */}
       {courses.length === 0 ? (
-        <Empty description="No courses found." className="mt-16" />
+        <Empty description={t('admin.courses.noCourses')} className="mt-16" />
       ) : (
         <CourseList
           courses={courses}
@@ -438,23 +440,23 @@ const Courses = () => {
         width={720}
         title={
           drawerMode === 'create'
-            ? 'Create Course'
+            ? t('admin.courses.createCourse')
             : drawerMode === 'edit'
-              ? 'Edit Course'
-              : currentCourse?.name || 'Course Detail'
+              ? t('admin.courses.editCourse')
+              : currentCourse?.name || t('admin.courses.courseDetail')
         }
         extra={
           drawerMode === 'view' && currentCourse ? (
             <Space>
-              <Button onClick={switchToEdit}>Edit</Button>
+              <Button onClick={switchToEdit}>{t('common.edit')}</Button>
               <Popconfirm
-                title="Delete course?"
-                description="Are you sure you want to delete this course?"
+                title={t('admin.courses.deleteCourseTitle')}
+                description={t('admin.courses.deleteConfirm')}
                 onConfirm={() => handleDelete(currentCourse.id)}
                 okButtonProps={{ loading: deletingId === currentCourse.id }}
               >
                 <Button danger loading={deletingId === currentCourse.id}>
-                  Delete
+                  {t('common.delete')}
                 </Button>
               </Popconfirm>
             </Space>

@@ -1,10 +1,12 @@
 import { CheckCircle, XCircle, Pencil } from 'lucide-react';
 import { App, Button, Input, InputNumber, Switch, Table, Tag, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getQuizQuestionOptions, updateQuizQuestionOption } from '../../../../apis/Instructor/InstructorQuiz';
 
 export default function OptionList({ questionId }) {
   const { message } = App.useApp();
+  const { t } = useTranslation();
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingOptionId, setEditingOptionId] = useState(null);
@@ -22,7 +24,7 @@ export default function OptionList({ questionId }) {
       setOptions(resp.items || []);
     } catch (e) {
       console.error('Failed to load options:', e);
-      message.error('Failed to load options');
+      message.error(t('instructor.quizzes.messages.loadOptionsFailed'));
       setOptions([]);
     } finally {
       setLoading(false);
@@ -31,14 +33,14 @@ export default function OptionList({ questionId }) {
 
   const columns = [
     {
-      title: '#',
+      title: t('instructor.quizzes.table.index'),
       key: 'index',
       width: 56,
       align: 'center',
       render: (_, __, idx) => idx + 1,
     },
     {
-      title: 'Option',
+      title: t('instructor.quizzes.options.option'),
       dataIndex: 'name',
       key: 'name',
       ellipsis: true,
@@ -60,7 +62,7 @@ export default function OptionList({ questionId }) {
         ),
     },
     {
-      title: 'Correct',
+      title: t('instructor.quizzes.options.correct'),
       dataIndex: 'isCorrect',
       key: 'isCorrect',
       width: 120,
@@ -77,13 +79,13 @@ export default function OptionList({ questionId }) {
             }
           />
         ) : isCorrect ? (
-          <Tag color="success" icon={<CheckCircle className="w-3.5 h-3.5" />}>Correct</Tag>
+          <Tag color="success" icon={<CheckCircle className="w-3.5 h-3.5" />}>{t('instructor.quizzes.options.correct')}</Tag>
         ) : (
-          <Tag color="default" icon={<XCircle className="w-3.5 h-3.5" />}>Wrong</Tag>
+          <Tag color="default" icon={<XCircle className="w-3.5 h-3.5" />}>{t('instructor.quizzes.options.wrong')}</Tag>
         ),
     },
     {
-      title: 'Score',
+      title: t('instructor.quizzes.options.score'),
       dataIndex: 'optionScore',
       key: 'optionScore',
       width: 100,
@@ -107,7 +109,7 @@ export default function OptionList({ questionId }) {
         ),
     },
     {
-      title: 'Actions',
+      title: t('instructor.quizzes.table.actions'),
       key: 'actions',
       width: 120,
       align: 'center',
@@ -131,7 +133,7 @@ export default function OptionList({ questionId }) {
                     optionScore: Number(editingOptionValues[opt.id]?.optionScore) || 0,
                   };
                   await updateQuizQuestionOption(opt.id, payload);
-                  message.success('Option updated');
+                  message.success(t('instructor.quizzes.messages.optionUpdateSuccess'));
                   await fetchOptions(questionId);
                   setEditingOptionId(null);
                   setEditingOptionValues((prev) => {
@@ -141,13 +143,13 @@ export default function OptionList({ questionId }) {
                   });
                 } catch (e) {
                   console.error('Failed to update option:', e);
-                  message.error('Failed to update option');
+                  message.error(t('instructor.quizzes.messages.optionUpdateFailed'));
                 } finally {
                   setSavingOptions((s) => ({ ...s, [opt.id]: false }));
                 }
               }}
             >
-              Save
+              {t('common.save')}
             </Button>
             <Button
               size="small"
@@ -160,12 +162,12 @@ export default function OptionList({ questionId }) {
                 });
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
           </div>
         ) : (
           <div className="flex gap-2 justify-center">
-            <Tooltip title="Edit option inline">
+            <Tooltip title={t('instructor.quizzes.tooltip.editOption')}>
               <Button
                 type="text"
                 icon={<Pencil className="w-4 h-4" />}

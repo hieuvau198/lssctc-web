@@ -1,6 +1,7 @@
 // src\app\pages\Trainee\Quiz\Quiz.jsx
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PageNav from '../../../components/PageNav/PageNav';
 import QuizHeader from './partials/QuizHeader';
 import QuizProgress from './partials/QuizProgress';
@@ -47,6 +48,7 @@ const QUESTIONS = [
 ];
 
 export default function Quiz() {
+  const { t } = useTranslation();
   // Mock quiz data; replace later with API hook.
   const questions = QUESTIONS;
 
@@ -126,11 +128,11 @@ export default function Quiz() {
               <QuizProgress answers={answers} currentIndex={index} onJump={jumpTo} />
             </div>
             <div className="flex items-center gap-2 md:ml-auto order-1 md:order-2">
-              <button onClick={prevQ} disabled={index === 0} className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 bg-white disabled:opacity-50">Prev</button>
+              <button onClick={prevQ} disabled={index === 0} className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 bg-white disabled:opacity-50">{t('trainee.quiz.prev')}</button>
               {index < questions.length - 1 ? (
-                <button onClick={nextQ} className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700">Next</button>
+                <button onClick={nextQ} className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700">{t('trainee.quiz.next')}</button>
               ) : (
-                <button onClick={onSubmit} className="px-4 py-2 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700">Submit</button>
+                <button onClick={onSubmit} className="px-4 py-2 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700">{t('trainee.quiz.submit')}</button>
               )}
             </div>
           </div>

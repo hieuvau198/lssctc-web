@@ -11,6 +11,7 @@ import {
   Skeleton
 } from "antd";
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from "react-router-dom";
 import {
   createProgram,
@@ -27,6 +28,7 @@ import ProgramTableView from "./partials/ProgramTableView";
 // const { Search } = Input;
 
 const ManagerProgramList = () => {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const [programs, setPrograms] = useState([]);
@@ -83,7 +85,7 @@ const ManagerProgramList = () => {
     setDeletingId(id);
     try {
       await deleteProgram(id);
-      message.success("Program deleted successfully");
+      message.success(t('admin.programs.deleteSuccess'));
       // Refresh list (normalize response)
       fetchPrograms({ pageNumber, pageSize, searchTerm }).then((data) => {
         const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
@@ -177,7 +179,7 @@ const ManagerProgramList = () => {
     setSubmitting(true);
     try {
       await createProgram(values);
-      message.success('Program created successfully');
+      message.success(t('admin.programs.createSuccess'));
   // Refresh list (normalize response)
   const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
   const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
@@ -196,7 +198,7 @@ const ManagerProgramList = () => {
     setSubmitting(true);
     try {
       await updateProgramBasic(currentProgram.id, values);
-      message.success('Program updated successfully');
+      message.success(t('admin.programs.updateSuccess'));
   // Refresh list (normalize response)
   const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
   const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
@@ -260,13 +262,13 @@ const ManagerProgramList = () => {
     <div className="max-w-7xl mx-auto px-2 py-2">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">Program Management</span>
+        <span className="text-2xl">{t('admin.programs.title')}</span>
       </div>
 
       {/* Search and Controls */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
         <Input.Search
-          placeholder="Search programs..."
+          placeholder={t('admin.programs.searchPlaceholder')}
           allowClear
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
@@ -275,7 +277,7 @@ const ManagerProgramList = () => {
         />
         <div className="flex gap-2">
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-            Add Program
+            {t('admin.programs.addProgram')}
           </Button>
           <ViewModeToggle
             viewMode={viewMode}
@@ -286,7 +288,7 @@ const ManagerProgramList = () => {
 
       {/* Content */}
       {programs.length === 0 ? (
-        <Empty description="No programs found." className="mt-16" />
+        <Empty description={t('admin.programs.noPrograms')} className="mt-16" />
       ) : (
         <>
           {viewMode === "table" ? (

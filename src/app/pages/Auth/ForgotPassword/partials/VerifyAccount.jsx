@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Input, Button, Alert } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export default function VerifyAccount({ email, loading, error, info, onVerify, onResend, onBack }) {
+  const { t } = useTranslation();
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const inputsRef = useRef([]);
   const [localError, setLocalError] = useState('');
@@ -79,11 +81,11 @@ export default function VerifyAccount({ email, loading, error, info, onVerify, o
     e.preventDefault();
     const joined = code.join('');
     if (joined.length !== 6) {
-      setLocalError('Enter the 6-digit code');
+      setLocalError(t('auth.enter6DigitCode'));
       return;
     }
     if (!/^\d{6}$/.test(joined)) {
-      setLocalError('Code must contain only digits 0-9');
+      setLocalError(t('auth.codeMustBeDigits'));
       return;
     }
     onVerify(joined);
@@ -91,9 +93,9 @@ export default function VerifyAccount({ email, loading, error, info, onVerify, o
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">Verify your account</h1>
-      <p className="text-gray-500 text-sm mb-3 text-center">Enter the 6-digit code we sent to <span className="font-medium">{email}</span></p>
-  <div className="text-center text-lg text-gray-500 mb-4">Time remaining: <span className="font-medium text-gray-700">{String(Math.floor(remaining/60)).padStart(2,'0')}:{String(remaining%60).padStart(2,'0')}</span></div>
+      <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">{t('auth.verifyAccount')}</h1>
+      <p className="text-gray-500 text-sm mb-3 text-center">{t('auth.enterVerificationCode', { email })}</p>
+  <div className="text-center text-lg text-gray-500 mb-4">{t('auth.timeRemaining')} <span className="font-medium text-gray-700">{String(Math.floor(remaining/60)).padStart(2,'0')}:{String(remaining%60).padStart(2,'0')}</span></div>
       {(error || localError || info) && (
         <div className="mb-4 space-y-2">
           {error && <Alert message={error} type="error" showIcon />}
@@ -131,11 +133,11 @@ export default function VerifyAccount({ email, loading, error, info, onVerify, o
           className="w-full h-11"
           style={{ backgroundColor: '#2563eb', borderColor: '#2563eb' }}
         >
-          {loading ? 'Verifying…' : 'Verify code'}
+          {loading ? t('auth.verifying') : t('auth.verifyCode')}
         </Button>
       </form>
       <div className="mt-6 text-center text-sm text-gray-600">
-        Didn't get a code?{' '}
+        {t('auth.didntGetCode')}{' '}
         <Button
           type="link"
           size="small"
@@ -143,7 +145,7 @@ export default function VerifyAccount({ email, loading, error, info, onVerify, o
           onClick={() => { onResend(); setRemaining(5*60); }}
           className="p-0 h-auto font-medium text-blue-600 hover:text-blue-700"
         >
-          Resend
+          {t('auth.resend')}
         </Button>
       </div>
     </div>

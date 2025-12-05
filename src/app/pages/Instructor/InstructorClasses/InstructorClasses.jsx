@@ -3,10 +3,13 @@ import {
   Alert,
   Skeleton,
   Empty,
-  App
+  App,
+  Button
 } from "antd";
+import { Calendar } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from 'react-i18next';
 import { getInstructorClasses } from "../../../apis/Instructor/InstructorApi";
 import ClassTable from "./partials/ClassTable";
 import useAuthStore from "../../../store/authStore";
@@ -14,6 +17,7 @@ import { getAuthToken } from "../../../libs/cookies";
 import { decodeToken } from "../../../libs/jwtDecode";
 
 export default function InstructorClasses() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +43,7 @@ export default function InstructorClasses() {
       null;
 
     if (!resolvedInstructorId) {
-      setError("Instructor ID not available. Please log in again.");
+      setError(t('instructor.classes.instructorIdNotAvailable'));
       setLoading(false);
     } else {
       setInstructorId(resolvedInstructorId);
@@ -75,7 +79,7 @@ export default function InstructorClasses() {
       setError(null);
     } catch (err) {
       console.error('Failed to load classes', err);
-      message.error('Load classes thất bại');
+      message.error(t('instructor.classes.loadFailed'));
       setClasses([]);
       setTotal(0);
     } finally {
@@ -113,12 +117,12 @@ export default function InstructorClasses() {
     <div className="max-w-7xl mx-auto px-4 py-2">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">My Classes</span>
+        <span className="text-2xl">{t('instructor.classes.title')}</span>
       </div>
 
       {/* Content */}
       {(!classes || classes.length === 0) ? (
-        <Empty description="Không có class" className="mt-16" />
+        <Empty description={t('instructor.classes.noClasses')} className="mt-16" />
       ) : (
         <div className="bg-white rounded-lg shadow">
           <div className="overflow-hidden">

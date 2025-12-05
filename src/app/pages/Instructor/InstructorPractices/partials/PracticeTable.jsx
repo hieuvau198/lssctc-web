@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const PracticeTable = ({
   practices = [],
@@ -10,9 +11,11 @@ const PracticeTable = ({
   onPageChange = () => {},
   onView = () => {},
 }) => {
+  const { t } = useTranslation();
+  
   const tableColumns = [
     {
-      title: '#',
+      title: t('instructor.practices.table.index'),
       key: 'index',
       width: 64,
       align: 'center',
@@ -20,13 +23,13 @@ const PracticeTable = ({
       fixed: 'left',
     },
     {
-      title: 'Practice Code',
+      title: t('instructor.practices.table.practiceCode'),
       dataIndex: 'practiceCode',
       key: 'practiceCode',
       width: 140,
     },
     {
-      title: 'Name',
+      title: t('instructor.practices.table.name'),
       dataIndex: 'practiceName',
       key: 'practiceName',
       width: 260,
@@ -40,7 +43,7 @@ const PracticeTable = ({
       ),
     },
     {
-      title: 'Duration (min)',
+      title: t('instructor.practices.table.duration'),
       dataIndex: 'estimatedDurationMinutes',
       key: 'estimatedDurationMinutes',
       width: 130,
@@ -48,15 +51,15 @@ const PracticeTable = ({
       render: (v) => <span>{v}</span>,
     },
     {
-      title: 'Difficulty',
+      title: t('instructor.practices.table.difficulty'),
       dataIndex: 'difficultyLevel',
       key: 'difficultyLevel',
       width: 140,
       align: 'center',
-      render: (level) => <Tag color={level === 'Entry' ? 'green' : level === 'Intermediate' ? 'orange' : 'red'}>{level || 'N/A'}</Tag>,
+      render: (level) => <Tag color={level === 'Entry' ? 'green' : level === 'Intermediate' ? 'orange' : 'red'}>{level || t('common.na')}</Tag>,
     },
     {
-      title: 'Max Attempts',
+      title: t('instructor.practices.table.maxAttempts'),
       dataIndex: 'maxAttempts',
       key: 'maxAttempts',
       width: 120,
@@ -64,14 +67,14 @@ const PracticeTable = ({
       render: (v) => <span>{v}</span>,
     },
     {
-      title: 'Actions',
+      title: t('instructor.practices.table.actions'),
       key: 'actions',
       width: 120,
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
         <Space size="small">
-          <Tooltip title="View Details">
+          <Tooltip title={t('instructor.practices.table.viewDetails')}>
             <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(record)} />
           </Tooltip>
         </Space>
@@ -100,7 +103,7 @@ const PracticeTable = ({
           onChange={onPageChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} practices`}
+          showTotal={(total, range) => t('instructor.practices.table.pagination', { start: range[0], end: range[1], total })}
         />
       </div>
     </div>
