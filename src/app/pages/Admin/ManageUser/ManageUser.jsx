@@ -7,8 +7,9 @@ import { App, Menu, Button } from 'antd';
 import { Outlet, Link, useLocation } from 'react-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus } from 'lucide-react';
+import { Plus, FileSpreadsheet } from 'lucide-react';
 import DrawerAdd from './partials/DrawerAdd';
+import ImportTraineeModal from './partials/ImportTraineeModal';
 
 export default function ManageUser() {
   const { t } = useTranslation();
@@ -23,6 +24,8 @@ export default function ManageUser() {
 
   // derive active key from current pathname (last segment)
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [importModalVisible, setImportModalVisible] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const activeKey = useMemo(() => {
     const parts = location.pathname.split('/').filter(Boolean);
@@ -52,9 +55,19 @@ export default function ManageUser() {
     <div className="max-w-7xl mx-auto px-2 py-2">
       <div className="mb-4 flex justify-between items-center">
         <span className="text-2xl">{t('admin.users.title')}</span>
-        <Button type="primary" icon={<Plus size={18}/>} onClick={() => setDrawerVisible(true)}>
-          {getButtonLabel()}
-        </Button>
+        <div className="flex gap-2">
+          {activeKey === 'trainees' && (
+            <Button
+              icon={<FileSpreadsheet size={18} />}
+              onClick={() => setImportModalVisible(true)}
+            >
+              Import Excel
+            </Button>
+          )}
+          <Button type="primary" icon={<Plus size={18} />} onClick={() => setDrawerVisible(true)}>
+            {getButtonLabel()}
+          </Button>
+        </div>
       </div>
 
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
@@ -72,7 +85,7 @@ export default function ManageUser() {
 
         <div className="p-4">
           {/* Render the nested route (trainees, instructors, simulation-managers) */}
-          <Outlet context={{ setDrawerVisible }} />
+          <Outlet context={{ setDrawerVisible, refreshTrigger }} />
         </div>
       </div>
 
@@ -80,6 +93,16 @@ export default function ManageUser() {
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
         role={getRole()}
+      />
+
+      <ImportTraineeModal
+        visible={importModalVisible}
+        onCancel={() => setImportModalVisible(false)}
+        onSuccess={() => {
+          setImportModalVisible(false);
+          // message.success('Trainees imported successfully'); // Moved to Modal for better control
+          setRefreshTrigger(prev => prev + 1);
+        }}
       />
     </div>
   );
