@@ -52,7 +52,32 @@ export const getAttendanceList = async (timeslotId) => {
  * @returns {Promise}
  */
 export const submitAttendance = async (timeslotId, attendanceData) => {
-  const response = await apiClient.post(`/Timeslots/${timeslotId}/submit-attendance`, attendanceData);
+  // Backend expects a wrapper `dto` containing `timeslotId` and `attendanceRecords`.
+  // Each attendance record should be { enrollmentId, status (number), note }.
+  const mapStatusToNumber = (s) => {
+    if (s == null) return 1; // NotStarted
+    const v = String(s).toLowerCase();
+    if (v === 'present' || v === '2' || v === 'presented') return 2;
+    if (v === 'absent' || v === '3') return 3;
+    if (v === 'cancelled' || v === '4') return 4;
+    // default to NotStarted
+    return 1;
+  };
+
+  const attendanceRecords = (attendanceData || []).map(item => ({
+    enrollmentId: item.enrollmentId || item.traineeId || item.id || null,
+    status: mapStatusToNumber(item.status || item.attendanceStatus),
+    note: item.note || '',
+  }));
+
+  const payload = {
+    dto: {
+      timeslotId: Number(timeslotId),
+      attendanceRecords,
+    },
+  };
+
+  const response = await apiClient.post(`/Timeslots/${timeslotId}/submit-attendance`, payload);
   return response.data;
 };
 

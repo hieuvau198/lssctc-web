@@ -701,6 +701,8 @@
     "notePlaceholder": "Enter note (optional)...",
     "summary": "Summary",
     "searchStudent": "Search student...",
+    "quickActions": "Quick Actions",
+    "totalStudents": "Total students in class:",
     "markAllPresent": "All Present",
     "markAllAbsent": "All Absent",
     "markedAllPresent": "Marked all as present",
