@@ -1,12 +1,11 @@
-import { useState, useMemo, useEffect } from 'react';
+import { App, Spin } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Spin, Alert, App } from 'antd';
-import { mockTimeSlots, weekDays } from '../../../mocks/instructorSchedule';
 import { getInstructorWeeklySchedule } from '../../../apis/TimeSlot/TimeSlot';
-import WeekNavigation from './partials/WeekNavigation';
-import ScheduleGrid from './partials/ScheduleGrid';
-import StatusLegend from './partials/StatusLegend';
+import { mockTimeSlots, weekDays } from '../../../mocks/instructorSchedule';
 import './InstructorSchedule.css';
+import ScheduleGrid from './partials/ScheduleGrid';
+import WeekNavigation from './partials/WeekNavigation';
 
 export default function InstructorSchedule() {
     const navigate = useNavigate();

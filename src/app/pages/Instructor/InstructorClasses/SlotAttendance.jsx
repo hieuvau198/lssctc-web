@@ -104,6 +104,7 @@ export default function SlotAttendance() {
 
                 const mapped = (source || []).map(item => ({
                     traineeId: item.traineeId || item.id || item.enrollmentId,
+                    enrollmentId: item.enrollmentId || item.id,
                     fullName: item.fullName || item.traineeName || item.name || '',
                     email: item.email || '',
                     avatar: item.avatar || item.avatarUrl || null,
@@ -158,7 +159,7 @@ export default function SlotAttendance() {
         setSubmitting(true);
         try {
             const payload = attendanceData.map(item => ({
-                traineeId: item.traineeId,
+                enrollmentId: item.enrollmentId,
                 status: item.status,
                 note: item.note,
             }));
