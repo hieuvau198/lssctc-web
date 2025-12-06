@@ -113,7 +113,8 @@
     "about": "About",
     "myClasses": "My Classes",
     "myEnrollments": "My Enrollments",
-    "accomplishments": "Accomplishments"
+    "accomplishments": "Accomplishments",
+    "schedule": "Schedule"
   },
   "footer": {
     "description": "Training & Simulator platform for modern crane operation and logistics safety.",
@@ -2135,7 +2136,38 @@
         "activateUser": "Activate this user?",
         "deactivateUser": "Deactivate this user?"
       },
-      "pagination": "{{start}}-{{end}} of {{total}} users"
+      "pagination": "{{start}}-{{end}} of {{total}} users",
+      "import": {
+        "title": "Import from Excel",
+        "importTrainee": "Import Trainees from Excel",
+        "importInstructor": "Import Instructors from Excel",
+        "importSimManager": "Import Simulation Managers from Excel",
+        "uploadFile": "Upload File",
+        "needTemplate": "Need a template?",
+        "dragOrClick": "Click or drag file here",
+        "onlyXlsx": "Only .xlsx files",
+        "downloadTemplate": "Download Template",
+        "downloadTemplateDesc": "Download standard template to ensure correct format.",
+        "downloadSuccess": "Template downloaded successfully",
+        "downloadFailed": "Failed to download template",
+        "importBtn": "Import",
+        "importTraineeBtn": "Import Trainees",
+        "importInstructorBtn": "Import Instructors",
+        "importSimManagerBtn": "Import Managers",
+        "importSuccess": "Import successful!",
+        "importFailed": "Import failed.",
+        "importResult": "Import Result",
+        "selectFile": "Please select an Excel file",
+        "invalidFile": "is not a valid Excel file",
+        "instructions": "Excel File Structure Guide",
+        "instructionsList": {
+          "downloadTemplate": "Please download the template to ensure correct format.",
+          "fillInfo": "Fill in the information in the corresponding columns.",
+          "requiredFields": "Required fields",
+          "requiredFieldsList": "Username, Email, Fullname, Password",
+          "noChangeHeader": "Do not change the header row."
+        }
+      }
     },
     "programs": {
       "title": "Program Management",

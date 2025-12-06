@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { Modal, Upload, Button, App, Row, Col, Card, Typography, Collapse } from 'antd';
-import { FileSpreadsheet, Upload as UploadIcon, Download, Info } from 'lucide-react';
+import { App, Button, Card, Col, Collapse, Modal, Row, Typography, Upload } from 'antd';
+import { Download, FileSpreadsheet, Info, Upload as UploadIcon } from 'lucide-react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { downloadSimulationManagerTemplate, importSimulationManagerFromExcel } from '../../../../apis/Admin/AdminUser';
 
 const { Text } = Typography;
 
 const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
     const { modal, message } = App.useApp();
+    const { t } = useTranslation();
     const [uploading, setUploading] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [downloading, setDownloading] = useState(false);
@@ -15,10 +17,10 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
         setDownloading(true);
         try {
             await downloadSimulationManagerTemplate();
-            message.success('Tải file mẫu thành công');
+            message.success(t('admin.users.import.downloadSuccess'));
         } catch (error) {
             console.error('Download error:', error);
-            message.error(error.message || 'Tải file mẫu thất bại.');
+            message.error(error.message || t('admin.users.import.downloadFailed'));
         } finally {
             setDownloading(false);
         }
@@ -26,7 +28,7 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
 
     const handleImport = async () => {
         if (fileList.length === 0) {
-            message.error('Vui lòng chọn file Excel');
+            message.error(t('admin.users.import.selectFile'));
             return;
         }
 
@@ -39,7 +41,7 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
 
             if (msg.includes('Skipped') || msg.includes('Errors') || msg.includes('Imported 0')) {
                 modal.warning({
-                    title: 'Kết quả Import',
+                    title: t('admin.users.import.importResult'),
                     content: (
                         <div className="max-h-[300px] overflow-auto whitespace-pre-wrap">
                             {msg}
@@ -52,13 +54,13 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
                     }
                 });
             } else {
-                message.success(msg || 'Import quản lý mô phỏng thành công!');
+                message.success(msg || t('admin.users.import.importSuccess'));
                 setFileList([]);
                 onSuccess();
             }
         } catch (error) {
             console.error('Import error:', error);
-            message.error(error.response?.data?.message || error.message || 'Import thất bại.');
+            message.error(error.response?.data?.message || error.message || t('admin.users.import.importFailed'));
         } finally {
             setUploading(false);
         }
@@ -69,7 +71,7 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
         beforeUpload: (file) => {
             const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.name.endsWith('.xlsx');
             if (!isExcel) {
-                message.error(`${file.name} không phải là file Excel hợp lệ`);
+                message.error(`${file.name} ${t('admin.users.import.invalidFile')}`);
                 return Upload.LIST_IGNORE;
             }
             setFileList([file]);
@@ -82,16 +84,16 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
     const instructionItems = [
         {
             key: '1',
-            label: <span className="font-medium flex items-center gap-2"><Info className="w-4 h-4" /> Hướng dẫn cấu trúc file Excel</span>,
+            label: <span className="font-medium flex items-center gap-2"><Info className="w-4 h-4" /> {t('admin.users.import.instructions')}</span>,
             children: (
                 <div className="text-sm text-gray-600 space-y-4">
                     <div>
-                        <h4 className="font-semibold text-gray-800 mb-2">Hướng dẫn</h4>
+                        <h4 className="font-semibold text-gray-800 mb-2">{t('admin.users.import.instructions')}</h4>
                         <ul className="list-disc pl-5 space-y-1">
-                            <li>Vui lòng tải file mẫu để đảm bảo đúng định dạng.</li>
-                            <li>Điền thông tin quản lý mô phỏng vào các cột tương ứng.</li>
-                            <li>Các trường bắt buộc: <Text strong>Username, Email, Fullname, Password</Text>.</li>
-                            <li>Không thay đổi hàng tiêu đề.</li>
+                            <li>{t('admin.users.import.instructionsList.downloadTemplate')}</li>
+                            <li>{t('admin.users.import.instructionsList.fillInfo')}</li>
+                            <li>{t('admin.users.import.instructionsList.requiredFields')}: <Text strong>{t('admin.users.import.instructionsList.requiredFieldsList')}</Text>.</li>
+                            <li>{t('admin.users.import.instructionsList.noChangeHeader')}</li>
                         </ul>
                     </div>
                 </div>
@@ -105,13 +107,13 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
             title={
                 <div className="flex items-center gap-2">
                     <FileSpreadsheet className="w-5 h-5 text-green-600" />
-                    <span>Import Quản lý mô phỏng từ Excel</span>
+                    <span>{t('admin.users.import.importSimManager')}</span>
                 </div>
             }
             onCancel={onCancel}
             footer={[
                 <Button key="cancel" onClick={onCancel}>
-                    Hủy
+                    {t('common.cancel')}
                 </Button>,
                 <Button
                     key="import"
@@ -120,7 +122,7 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
                     onClick={handleImport}
                     disabled={fileList.length === 0}
                 >
-                    Import Quản lý
+                    {t('admin.users.import.importSimManagerBtn')}
                 </Button>,
             ]}
             width={700}
@@ -129,30 +131,30 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
             <div className="py-4 space-y-6">
                 <Row gutter={24}>
                     <Col span={12}>
-                        <Card size="small" title="1. Tải file lên" className="h-full bg-gray-50">
+                        <Card size="small" title={`1. ${t('admin.users.import.uploadFile')}`} className="h-full bg-gray-50">
                             <Upload.Dragger {...uploadProps} className="w-full bg-white" height={120}>
                                 <p className="ant-upload-drag-icon">
                                     <UploadIcon className="w-8 h-8 text-blue-500 mx-auto" />
                                 </p>
-                                <p className="ant-upload-text text-sm">Nhấn hoặc kéo thả file vào đây</p>
+                                <p className="ant-upload-text text-sm">{t('admin.users.import.dragOrClick')}</p>
                                 <p className="ant-upload-hint text-xs text-gray-400">
-                                    Chỉ file .xlsx
+                                    {t('admin.users.import.onlyXlsx')}
                                 </p>
                             </Upload.Dragger>
                         </Card>
                     </Col>
                     <Col span={12}>
-                        <Card size="small" title="2. Cần file mẫu?" className="h-full bg-gray-50">
+                        <Card size="small" title={`2. ${t('admin.users.import.needTemplate')}`} className="h-full bg-gray-50">
                             <div className="flex flex-col items-center justify-center h-[120px] gap-3">
                                 <p className="text-gray-500 text-center text-sm px-4">
-                                    Tải file mẫu chuẩn để đảm bảo đúng định dạng.
+                                    {t('admin.users.import.downloadTemplateDesc')}
                                 </p>
                                 <Button
                                     icon={<Download className="w-4 h-4" />}
                                     onClick={handleDownloadTemplate}
                                     loading={downloading}
                                 >
-                                    Tải file mẫu
+                                    {t('admin.users.import.downloadTemplate')}
                                 </Button>
                             </div>
                         </Card>
