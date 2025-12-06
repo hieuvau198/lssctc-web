@@ -7,6 +7,7 @@ import { getQuizzes, deleteQuiz } from '../../../apis/Instructor/InstructorQuiz'
 import QuizFilters from './partials/QuizFilters';
 import ImportQuizModal from './partials/ImportQuizModal';
 import CreateQuizDrawer from './partials/CreateQuizDrawer';
+import { FileSpreadsheet } from 'lucide-react';
 
 export default function InstructorQuizzes() {
   const navigate = useNavigate();
@@ -217,7 +218,7 @@ export default function InstructorQuizzes() {
         />
         <div className="flex items-center gap-2">
           <Button
-            icon={<UploadOutlined />}
+            icon={<FileSpreadsheet />}
             onClick={() => setImportModalVisible(true)}
           >
             {t('instructor.quizzes.importExcel')}

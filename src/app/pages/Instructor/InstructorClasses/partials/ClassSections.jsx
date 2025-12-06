@@ -124,7 +124,7 @@ const ClassSections = ({ courseId, classId }) => {
 
   return (
     <>
-      <div className="p-6 space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto">
+      <div className="p-6 space-y-3 max-h-[calc(100vh-180px)] overflow-y-auto">
         <Collapse 
           accordion 
           bordered={false} 

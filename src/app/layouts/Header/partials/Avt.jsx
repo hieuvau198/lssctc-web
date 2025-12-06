@@ -32,6 +32,7 @@ export default function Avt({ onLogout }) {
     { key: 'profile', label: <NavLink to="/profile" target="_top">{t('common.profile')}</NavLink> },
     { key: 'my-classes', label: <NavLink to="/my-classes" target="_top">{t('header.myClasses')}</NavLink> },
     { key: 'my-enrollments', label: <NavLink to="/my-enrollments" target="_top">{t('header.myEnrollments')}</NavLink> },
+    { key: 'schedule', label: <NavLink to="/schedule" target="_top">{t('header.schedule')}</NavLink> },
     { key: 'certificate', label: <NavLink to="/certificate" target="_top">{t('header.accomplishments')}</NavLink> },
     { type: 'divider' },
     { key: 'logout', label: <span className="text-red-600">{t('common.logout')}</span> },

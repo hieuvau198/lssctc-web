@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import { Tooltip, App, Avatar, Dropdown, Menu, Switch } from 'antd';
-import { BookOpen, FileText, HelpCircle, Dumbbell, User, PanelLeftClose, PanelLeft, LayoutDashboard, LogOut, MoreVertical } from 'lucide-react';
+import { BookOpen, FileText, HelpCircle, Dumbbell, User, PanelLeftClose, PanelLeft, LayoutDashboard, LogOut, MoreVertical, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
 import useAuthStore from '../../../store/authStore';
@@ -11,6 +11,7 @@ import { sAvatarUrl, setAvatarUrl, clearAvatarUrl } from '../../../store/userAva
 
 const getItems = (t) => [
   { to: '/instructor/dashboard', label: t('sidebar.dashboard'), icon: <LayoutDashboard className="w-5 h-5" /> },
+  { to: '/instructor/schedule', label: t('sidebar.schedule'), icon: <Calendar className="w-5 h-5" /> },
   { to: '/instructor/classes', label: t('sidebar.class'), icon: <BookOpen className="w-5 h-5" /> },
   { to: '/instructor/materials', label: t('sidebar.material'), icon: <FileText className="w-5 h-5" /> },
   { to: '/instructor/quizzes', label: t('sidebar.quiz'), icon: <HelpCircle className="w-5 h-5" /> },

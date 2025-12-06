@@ -3,15 +3,15 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { App, Menu, Button } from 'antd';
-import { Outlet, Link, useLocation } from 'react-router';
+import { App, Button, Menu } from 'antd';
+import { FileSpreadsheet, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, FileSpreadsheet } from 'lucide-react';
+import { Link, Outlet, useLocation } from 'react-router';
 import DrawerAdd from './partials/DrawerAdd';
-import ImportTraineeModal from './partials/ImportTraineeModal';
 import ImportInstructorModal from './partials/ImportInstructorModal';
 import ImportSimulationManagerModal from './partials/ImportSimulationManagerModal';
+import ImportTraineeModal from './partials/ImportTraineeModal';
 
 export default function ManageUser() {
   const { t } = useTranslation();
@@ -65,7 +65,7 @@ export default function ManageUser() {
               icon={<FileSpreadsheet size={18} />}
               onClick={() => setImportModalVisible(true)}
             >
-              Import Excel
+              {t('admin.users.import.importTraineeBtn')}
             </Button>
           )}
           {activeKey === 'instructors' && (
@@ -73,7 +73,7 @@ export default function ManageUser() {
               icon={<FileSpreadsheet size={18} />}
               onClick={() => setImportInstructorModalVisible(true)}
             >
-              Import Excel
+              {t('admin.users.import.importInstructorBtn')}
             </Button>
           )}
           {activeKey === 'simulation-managers' && (
@@ -81,7 +81,7 @@ export default function ManageUser() {
               icon={<FileSpreadsheet size={18} />}
               onClick={() => setImportSimManagerModalVisible(true)}
             >
-              Import Excel
+              {t('admin.users.import.importSimManagerBtn')}
             </Button>
           )}
           <Button type="primary" icon={<Plus size={18} />} onClick={() => setDrawerVisible(true)}>
