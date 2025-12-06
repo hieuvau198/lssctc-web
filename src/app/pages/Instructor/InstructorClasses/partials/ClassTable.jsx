@@ -2,6 +2,7 @@ import React from 'react';
 import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import getClassStatus from '../../../../utils/classStatus';
 
 const ClassTable = ({
   classes = [],
@@ -13,15 +14,6 @@ const ClassTable = ({
 }) => {
   const { t } = useTranslation();
   
-  const getStatusColor = (status) => {
-    const map = {
-      'NotStarted': 'default',
-      'InProgress': 'blue',
-      'Completed': 'green',
-      'Cancelled': 'red',
-    };
-    return map[status] || 'default';
-  };
 
   const tableColumns = [
     {
@@ -81,11 +73,14 @@ const ClassTable = ({
       key: 'status',
       width: 120,
       align: 'center',
-      render: (status) => (
-        <Tag color={getStatusColor(status)}>
-          {status || t('common.na')}
-        </Tag>
-      ),
+      render: (status) => {
+        const s = getClassStatus(status);
+        return (
+          <Tag color={s.color}>
+            {s.label || t('common.na')}
+          </Tag>
+        );
+      },
     },
     {
       title: t('instructor.classes.table.actions'),

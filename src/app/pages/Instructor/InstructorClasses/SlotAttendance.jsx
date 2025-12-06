@@ -176,7 +176,7 @@ export default function SlotAttendance() {
             );
 
             // Navigate back to class detail
-            navigate(`/instructor/classes/${classId}`, { state: { activeTab: 'schedule' } });
+            navigate(-1);
         } catch {
             messageApi.error(t('attendance.submitFailed', 'Lưu điểm danh thất bại. Vui lòng thử lại.'));
         } finally {

@@ -25,11 +25,17 @@ export const getInstructorClassTimeslots = async (classId) => {
 /**
  * GET /api/Timeslots/instructor-schedule/week
  * API cho giảng viên xem danh sách tất cả slot dạy trong mỗi tuần
- * @param {Object} params - Query params (có thể bao gồm weekStart, weekEnd)
+ * @param {Object} params - Query params (backend expects `dateInWeek` as the week reference)
  * @returns {Promise}
  */
 export const getInstructorWeeklySchedule = async (params = {}) => {
-  const response = await apiClient.get('/Timeslots/instructor-schedule/week', { params });
+  // backend expects the week reference under `dateInWeek` (e.g. ?dateInWeek=2025-12-01)
+  const q = { ...params };
+  if (params.weekStart) {
+    q.dateInWeek = params.weekStart;
+    delete q.weekStart;
+  }
+  const response = await apiClient.get('/Timeslots/instructor-schedule/week', { params: q });
   return response.data;
 };
 

@@ -16,11 +16,13 @@ export default function InstructorSchedule() {
     const [error, setError] = useState(null);
     const [scheduleData, setScheduleData] = useState([]);
 
-    // Calculate Monday of current week
+    // Calculate Monday of current week (ISO-style: Monday is the first day)
     const getMondayOfWeek = (date = new Date()) => {
-        const dayOfWeek = date.getDay();
-        const monday = new Date(date);
-        monday.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+        const d = new Date(date);
+        // convert JS getDay() -> ISO day index where Monday=0, Sunday=6
+        const isoDayIndex = (d.getDay() + 6) % 7;
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - isoDayIndex);
         monday.setHours(0, 0, 0, 0);
         return monday;
     };
@@ -33,9 +35,10 @@ export default function InstructorSchedule() {
             setLoading(true);
             setError(null);
 
-            try {
-                const weekStart = currentWeekStart.toISOString().split('T')[0];
-                const data = await getInstructorWeeklySchedule({ weekStart });
+                try {
+                    // Use today's date as the reference for the week rather than forcing the week's Monday
+                    const today = new Date().toISOString().split('T')[0];
+                    const data = await getInstructorWeeklySchedule({ dateInWeek: today });
                 setScheduleData(data || []);
             } catch (err) {
                 setError(err.message || 'Failed to load schedule');
