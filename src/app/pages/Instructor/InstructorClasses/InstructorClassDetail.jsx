@@ -7,10 +7,9 @@ import BackButton from "../../../components/BackButton/BackButton";
 import ClassMembers from "./partials/ClassMembers";
 import ClassOverview from "./partials/ClassOverview";
 import ClassSections from "./partials/ClassSections";
-import ClassScheduleSlots from "./partials/ClassScheduleSlots";
-import WeeklyScheduleView from "./partials/WeeklyScheduleView";
+import ClassTimeslotSchedule from "./partials/ClassTimeslotSchedule";
 import AttendanceModal from "./partials/AttendanceModal";
-import { mockTeachingSlots, mockWeeklySchedule, mockAttendanceList } from "../../../mocks/teachingSlots";
+import { mockAttendanceList } from "../../../mocks/teachingSlots";
 
 export default function InstructorClassDetail() {
   const { t } = useTranslation();
@@ -75,9 +74,6 @@ export default function InstructorClassDetail() {
     );
   }
 
-  // Mock data - filter slots for current class
-  const classSlots = mockTeachingSlots.filter(slot => slot.classId === classId);
-
   // Define tabItems ONLY when data is guaranteed to be available.
   const tabItems = [
     {
@@ -101,42 +97,18 @@ export default function InstructorClassDetail() {
       key: "schedule",
       label: t('attendance.classSchedule'),
       children: (
-        <ClassScheduleSlots
+        <ClassTimeslotSchedule
           classId={classId}
           className={classDetail?.courseName || classDetail?.name}
-          slots={classSlots}
-          onTakeAttendance={(slot) => {
-            setSelectedSlot(slot);
-            setAttendanceModalOpen(true);
-          }}
         />
       ),
-    },
-    {
-      key: "weekly",
-      label: t('attendance.weeklySchedule'),
-      children: <WeeklyScheduleView weeklySchedule={mockWeeklySchedule} />,
     },
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-      <div className="flex justify-start items-center mb-4">
+      <div>
         <BackButton />
-        {/* <Breadcrumb
-          className="text-lg"
-          items={[
-            {
-              title: <Link to="/instructor/classes">My Classes</Link>,
-            },
-            {
-              title: classDetail.courseName || "Class Detail",
-            },
-          ]}
-        /> */}
-      </div>
-
-      <div className="bg-white rounded-lg shadow-sm p-6">
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
