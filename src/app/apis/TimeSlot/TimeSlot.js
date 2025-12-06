@@ -71,10 +71,8 @@ export const submitAttendance = async (timeslotId, attendanceData) => {
   }));
 
   const payload = {
-    dto: {
-      timeslotId: Number(timeslotId),
-      attendanceRecords,
-    },
+    timeslotId: Number(timeslotId),
+    attendanceRecords,
   };
 
   const response = await apiClient.post(`/Timeslots/${timeslotId}/submit-attendance`, payload);
