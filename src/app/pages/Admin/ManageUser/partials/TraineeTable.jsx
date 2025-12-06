@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Table, Tag, Pagination, Empty, Avatar } from 'antd';
 import { getTrainees } from '../../../../apis/Admin/AdminUser';
@@ -16,6 +16,7 @@ const getInitials = (name = '') => {
 export default function TraineeTable() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { refreshTrigger } = useOutletContext() || {};
   const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
   const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [data, setData] = useState([]);
@@ -76,7 +77,7 @@ export default function TraineeTable() {
 
   useEffect(() => {
     fetchData(page, pageSize);
-  }, [fetchData, page, pageSize]);
+  }, [fetchData, page, pageSize, refreshTrigger]);
 
   return (
     <div>
