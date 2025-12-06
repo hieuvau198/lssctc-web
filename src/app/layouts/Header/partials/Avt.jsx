@@ -65,7 +65,7 @@ export default function Avt({ onLogout }) {
     <Dropdown
       trigger={["click"]}
       menu={{ items, onClick: handleClick }}
-      placement="bottomRight"
+      placement="bottom"
     >
       <button
         type="button"
