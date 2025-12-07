@@ -2364,6 +2364,14 @@
         "capacity": "Capacity",
         "enrollDate": "Enroll Date"
       },
+      "filters": {
+        "status": "Status",
+        "sortByDate": "Sort Date",
+        "startDateNewest": "Latest Start Date",
+        "startDateOldest": "Earliest Start Date",
+        "endDateNewest": "Latest End Date",
+        "endDateOldest": "Earliest End Date"
+      },
       "detail": {
         "instructor": "Instructor",
         "members": "Members",

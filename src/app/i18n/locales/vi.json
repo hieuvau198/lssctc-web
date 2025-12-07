@@ -2364,6 +2364,14 @@
         "capacity": "Sức chứa",
         "enrollDate": "Ngày đăng ký"
       },
+      "filters": {
+        "status": "Trạng thái",
+        "sortByDate": "Sắp xếp theo ngày",
+        "startDateNewest": "Ngày bắt đầu trễ nhất",
+        "startDateOldest": "Ngày bắt đầu sớm nhất",
+        "endDateNewest": "Ngày kết thúc trễ nhất",
+        "endDateOldest": "Ngày kết thúc sớm nhất"
+      },
       "detail": {
         "instructor": "Giảng viên",
         "members": "Thành viên",

@@ -1,12 +1,13 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Alert, App, Button, Drawer, Empty, Form, Input, Skeleton } from "antd";
+import { Alert, App, Button, Drawer, Empty, Form, Input, Skeleton, Select } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { createClass, deleteClass, fetchClasses } from "../../../apis/ProgramManager/ClassApi";
+import { createClass, deleteClass, fetchClasses } from "../../../apis/ProgramManager/ClassesApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import ClassList from "./partials/ClassList";
 import AddClassForm from "./partials/AddClassForm";
+const { Option } = Select;
 
 const PMClasses = () => {
   const { t } = useTranslation();
@@ -16,7 +17,10 @@ const PMClasses = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchValue, setSearchValue] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('searchTerm') || "");
+  const [status, setStatus] = useState(searchParams.get('status') || undefined);
+  const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'startDate');
+  const [sortDirection, setSortDirection] = useState(searchParams.get('sortDirection') || 'desc');
   const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
   const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [total, setTotal] = useState(0);
@@ -30,8 +34,17 @@ const PMClasses = () => {
 
   useEffect(() => {
     setLoading(true);
-    const params = { page, pageSize };
-    if (searchTerm) params.searchTerm = searchTerm;
+    const params = {
+      pageNumber: page,
+      pageSize,
+      searchTerm,
+      status,
+      sortBy,
+      sortDirection
+    };
+
+    // Clean undefined params
+    Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
 
     fetchClasses(params)
       .then((data) => {
@@ -43,18 +56,48 @@ const PMClasses = () => {
         setError(err.message || "Failed to fetch classes");
         setLoading(false);
       });
-  }, [page, pageSize, searchTerm]);
+  }, [page, pageSize, searchTerm, status, sortBy, sortDirection]);
 
   const handleSearch = (value) => {
     setSearchTerm(value);
     setPage(1);
-    setSearchParams({ page: '1', pageSize: pageSize.toString() });
+    updateSearchParams({ searchTerm: value, page: '1' });
+  };
+
+  const handleStatusChange = (value) => {
+    setStatus(value);
+    setPage(1);
+    updateSearchParams({ status: value, page: '1' });
+  };
+
+  const handleSortChange = (value) => {
+    const [field, direction] = value.split('_');
+    setSortBy(field);
+    setSortDirection(direction);
+    setPage(1);
+    updateSearchParams({ sortBy: field, sortDirection: direction, page: '1' });
   };
 
   const handlePageChange = (newPage, newPageSize) => {
     setPage(newPage);
     setPageSize(newPageSize);
-    setSearchParams({ page: newPage.toString(), pageSize: newPageSize.toString() });
+    updateSearchParams({ page: newPage.toString(), pageSize: newPageSize.toString() });
+  };
+
+  const updateSearchParams = (newParams) => {
+    const currentParams = {};
+    searchParams.forEach((value, key) => { currentParams[key] = value; });
+
+    const updatedParams = { ...currentParams, ...newParams };
+
+    // Remove undefined/empty values
+    Object.keys(updatedParams).forEach(key => {
+      if (updatedParams[key] === undefined || updatedParams[key] === null || updatedParams[key] === "") {
+        delete updatedParams[key];
+      }
+    });
+
+    setSearchParams(updatedParams);
   };
 
   const handleDelete = async (id) => {
@@ -63,8 +106,17 @@ const PMClasses = () => {
       await deleteClass(id);
       message.success(t('admin.classes.deleteSuccess'));
       // Refresh list
-      const params = { page, pageSize };
-      if (searchTerm) params.searchTerm = searchTerm;
+      // Refresh list
+      const params = {
+        pageNumber: page,
+        pageSize,
+        searchTerm,
+        status,
+        sortBy,
+        sortDirection
+      };
+
+      Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
       const data = await fetchClasses(params);
       setClasses(data.items || []);
       setTotal(data.totalCount || 0);
@@ -93,8 +145,17 @@ const PMClasses = () => {
       await createClass(values);
       message.success(t('admin.classes.createSuccess'));
       // Refresh list
-      const params = { page, pageSize };
-      if (searchTerm) params.searchTerm = searchTerm;
+      // Refresh list
+      const params = {
+        pageNumber: page,
+        pageSize,
+        searchTerm,
+        status,
+        sortBy,
+        sortDirection
+      };
+
+      Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
       const data = await fetchClasses(params);
       setClasses(data.items || []);
       setTotal(data.totalCount || 0);
@@ -151,16 +212,50 @@ const PMClasses = () => {
         <span className="text-2xl">{t('admin.classes.title')}</span>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <Input.Search
-          placeholder={t('admin.classes.searchPlaceholder')}
-          allowClear
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onSearch={handleSearch}
-          className="w-full md:w-80"
-        />
-        <div className="flex gap-2">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-2 w-full xl:w-auto items-center flex-1">
+          {/* Search */}
+          <Input.Search
+            placeholder={t('admin.classes.searchPlaceholder') || "Search classes..."}
+            allowClear
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onSearch={handleSearch}
+            style={{ width: '100%', maxWidth: 600 }}
+            className="md:w-[600px]"
+          />
+
+          {/* Filters */}
+          <div className="flex gap-2 w-full md:w-auto">
+            <Select
+              placeholder={t('admin.classes.filters.status') || "Status"}
+              allowClear
+              value={status}
+              onChange={handleStatusChange}
+              style={{ width: 150 }}
+            >
+              <Option value="Draft">{t('common.classStatus.Draft') || "Draft"}</Option>
+              <Option value="Open">{t('common.classStatus.Open') || "Open"}</Option>
+              <Option value="Inprogress">{t('common.classStatus.Inprogress') || "In Progress"}</Option>
+              <Option value="Completed">{t('common.classStatus.Completed') || "Completed"}</Option>
+              <Option value="Cancelled">{t('common.classStatus.Cancelled') || "Cancelled"}</Option>
+            </Select>
+            <Select
+              placeholder={t('admin.classes.filters.sortByDate') || "Sort Date"}
+              value={`${sortBy}_${sortDirection}`}
+              onChange={handleSortChange}
+              style={{ width: 280 }}
+            >
+              <Option value="startDate_desc">{t('admin.classes.filters.startDateNewest') || "Latest Start Date"}</Option>
+              <Option value="startDate_asc">{t('admin.classes.filters.startDateOldest') || "Earliest Start Date"}</Option>
+              <Option value="endDate_desc">{t('admin.classes.filters.endDateNewest') || "Latest End Date"}</Option>
+              <Option value="endDate_asc">{t('admin.classes.filters.endDateOldest') || "Earliest End Date"}</Option>
+            </Select>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2 w-full md:w-auto justify-end shrink-0">
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             {t('admin.classes.addClass')}
           </Button>

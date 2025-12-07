@@ -17,29 +17,29 @@ function buildQuery(params = {}) {
 }
 
 /**
- * Get all classes with pagination
- * GET /api/Classes?page=&pageSize=
- * @param {{page?:number,pageSize?:number}} options
+ * Get all classes with pagination, search, filter, and sort
+ * GET /api/Classes/paged?pageNumber=&pageSize=&searchTerm=&status=&sortBy=&sortDirection=
+ * @param {{pageNumber?:number,pageSize?:number,searchTerm?:string,status?:string,sortBy?:string,sortDirection?:string}} params
  */
-export async function fetchClasses({ page = 1, pageSize = 10 } = {}) {
-	const qs = buildQuery({ page, pageSize });
-	const { data } = await apiClient.get(`${CLASSES_BASE}${qs}`);
+export async function fetchClasses({ pageNumber = 1, pageSize = 10, searchTerm, status, sortBy, sortDirection } = {}) {
+	const searchParams = new URLSearchParams();
+	searchParams.append("pageNumber", pageNumber);
+	searchParams.append("pageSize", pageSize);
+	if (searchTerm) searchParams.append("searchTerm", searchTerm);
+	if (status) searchParams.append("status", status);
+	if (sortBy) searchParams.append("sortBy", sortBy);
+	if (sortDirection) searchParams.append("sortDirection", sortDirection);
 
-	// Normalize when backend returns a plain array
-	if (Array.isArray(data)) {
-		const totalCount = data.length;
-		const totalPages = pageSize > 0 ? Math.ceil(totalCount / pageSize) : 1;
-		return {
-			items: data,
-			totalCount,
-			page,
-			pageSize,
-			totalPages,
-		};
-	}
+	const qs = searchParams.toString();
+	const { data } = await apiClient.get(`${CLASSES_BASE}/paged?${qs}`);
 
-	// otherwise assume server returned paged shape already
-	return data;
+	return {
+		items: data.items || [],
+		totalCount: data.totalCount || 0,
+		page: data.page || pageNumber,
+		pageSize: data.pageSize || pageSize,
+		totalPages: data.totalPages || 0,
+	};
 }
 
 /**
@@ -322,11 +322,23 @@ export async function createSyllabusSection(payload) {
 	return data;
 }
 
+/**
+ * Delete class by id
+ * DELETE /api/Classes/{id}
+ * @param {number|string} id
+ */
+export async function deleteClass(id) {
+	if (id == null) throw new Error("id is required");
+	const { data } = await apiClient.delete(`${CLASSES_BASE}/${id}`);
+	return data;
+}
+
 // Export grouped object (optional convenience)
 export const ClassesApi = {
 	fetchClasses,
 	fetchClassesByProgramCourse,
 	createClass,
+	deleteClass,
 	assignInstructor,
 	addInstructorToClass,
 	assignTrainee,
