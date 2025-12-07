@@ -2155,6 +2155,8 @@
         "deactivateUser": "Deactivate this user?"
       },
       "pagination": "{{start}}-{{end}} of {{total}} users",
+      "searchPlaceholder": "Search user...",
+      "filterStatus": "Status",
       "import": {
         "title": "Import from Excel",
         "importTrainee": "Import Trainees from Excel",

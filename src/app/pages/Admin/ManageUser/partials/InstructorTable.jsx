@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useSearchParams, useOutletContext } from 'react-router-dom';
+import { Avatar, Empty, Pagination, Table, Tag } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Tag, Pagination, Avatar, Empty } from 'antd';
-import { getInstructors } from '../../../../apis/Admin/AdminUser';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
 
 const getInitials = (name = '') => {
   return name
@@ -16,12 +15,16 @@ const getInitials = (name = '') => {
 export default function InstructorTable() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { refreshTrigger } = useOutletContext() || {};
-  const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
-  const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
+  const {
+    instructorData,
+    loadingInstructors,
+    page,
+    pageSize,
+    setPage,
+    setPageSize
+  } = useOutletContext() || {};
+
   const [data, setData] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
 
   const COLUMNS = [
     { title: '#', dataIndex: 'idx', width: 60, align: 'center' },
@@ -48,14 +51,12 @@ export default function InstructorTable() {
     },
   ];
 
-  const fetchData = useCallback(async (p = 1, ps = 10) => {
-    setLoading(true);
-    try {
-      const res = await getInstructors({ page: p, pageSize: ps });
-      const items = Array.isArray(res.items) ? res.items : [];
+  useEffect(() => {
+    if (instructorData?.items) {
+      const items = Array.isArray(instructorData.items) ? instructorData.items : [];
       const rows = items.map((it, idx) => ({
         key: it.id,
-        idx: (p - 1) * ps + idx + 1,
+        idx: (page - 1) * pageSize + idx + 1,
         fullName: it.fullName || it.fullname || it.username || '',
         email: it.email || '',
         phoneNumber: it.phoneNumber || it.phone || it.phone_number || '-',
@@ -63,24 +64,13 @@ export default function InstructorTable() {
         status: it.isActive ? 'active' : 'inactive',
       }));
       setData(rows);
-      setTotal(Number(res.total) || rows.length);
-    } catch (err) {
-      console.error('Failed to load instructors:', err);
-      setData([]);
-      setTotal(0);
-    } finally {
-      setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchData(page, pageSize);
-  }, [fetchData, page, pageSize, refreshTrigger]);
+  }, [instructorData, page, pageSize]);
 
   return (
     <div>
       <div className="min-h-[430px] overflow-auto">
-        {data.length === 0 && !loading ? (
+        {(!data.length && !loadingInstructors) ? (
           <Empty description={t('admin.users.noInstructors')} />
         ) : (
           <Table
@@ -88,7 +78,7 @@ export default function InstructorTable() {
             dataSource={data}
             pagination={false}
             rowKey="key"
-            loading={loading}
+            loading={loadingInstructors}
             scroll={{ y: 380 }}
           />
         )}
@@ -97,10 +87,13 @@ export default function InstructorTable() {
         <Pagination
           current={page}
           pageSize={pageSize}
-          total={total}
-          onChange={(p, s) => { setPage(p); setPageSize(s); setSearchParams({ page: p.toString(), pageSize: s.toString() }); }}
+          total={instructorData?.totalCount || 0}
+          onChange={(p, s) => {
+            setPage(p);
+            setPageSize(s);
+          }}
           showSizeChanger
-          pageSizeOptions={["5", "10", "20"]}
+          pageSizeOptions={["10", "20", "50"]}
           showTotal={(total, range) => t('admin.users.pagination', { start: range[0], end: range[1], total })}
         />
       </div>

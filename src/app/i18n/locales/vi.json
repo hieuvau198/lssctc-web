@@ -2156,6 +2156,8 @@
         "deactivateUser": "Vô hiệu hóa người dùng này?"
       },
       "pagination": "{{start}}-{{end}} của {{total}} người dùng",
+      "searchPlaceholder": "Tìm kiếm người dùng...",
+      "filterStatus": "Trạng thái",
       "import": {
         "title": "Import từ Excel",
         "importTrainee": "Import Học viên từ Excel",
