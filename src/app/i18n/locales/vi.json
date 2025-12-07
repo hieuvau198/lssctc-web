@@ -2247,6 +2247,10 @@
     },
     "courses": {
       "title": "Quản lý khóa học",
+      "searchPlaceholder": "Tìm kiếm khóa học...",
+      "sortBy": "Sắp xếp theo",
+      "priceLowToHigh": "Giá: Thấp đến Cao",
+      "priceHighToLow": "Giá: Cao đến Thấp",
       "createCourse": "Tạo khóa học",
       "addCourse": "Thêm khóa học",
       "editCourse": "Sửa khóa học",

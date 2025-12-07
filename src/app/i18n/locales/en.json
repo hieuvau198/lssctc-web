@@ -2247,6 +2247,10 @@
     },
     "courses": {
       "title": "Course Management",
+      "searchPlaceholder": "Search courses...",
+      "sortBy": "Sort by",
+      "priceLowToHigh": "Price: Low to High",
+      "priceHighToLow": "Price: High to Low",
       "createCourse": "Create Course",
       "addCourse": "Add Course",
       "editCourse": "Edit Course",
