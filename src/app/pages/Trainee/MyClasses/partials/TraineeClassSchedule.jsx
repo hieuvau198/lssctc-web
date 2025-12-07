@@ -1,199 +1,201 @@
-import React from 'react';
-import { Card, Table, Tag, Empty, Progress } from 'antd';
-import { Calendar, Clock, MapPin, CheckCircle, XCircle } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { App, Spin } from 'antd';
+// read-only view for trainees — no navigation required
 import { useTranslation } from 'react-i18next';
+import { getTraineeClassTimeslots } from '../../../../apis/TimeSlot/TimeSlot';
+import { mockTimeSlots, weekDays } from '../../../../mocks/instructorSchedule';
+import ScheduleGrid from '../../../Instructor/InstructorSchedule/partials/ScheduleGrid';
+import WeekNavigation from '../../../Instructor/InstructorSchedule/partials/WeekNavigation';
 
-export default function TraineeClassSchedule({ classId, className, slots = [], attendanceRecords = [] }) {
+export default function TraineeClassSchedule({ classId, className }) {
   const { t } = useTranslation();
+  // no navigation needed for trainee read-only schedule
+  const { message } = App.useApp();
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'present':
-        return 'success';
-      case 'absent':
-        return 'error';
-      case 'late':
-        return 'warning';
-      case 'excused':
-        return 'default';
-      default:
-        return 'default';
-    }
+  const [loading, setLoading] = useState(false);
+  const [scheduleData, setScheduleData] = useState([]);
+
+  // Calculate Monday of current week (ISO-style: Monday is the first day)
+  const getMondayOfWeek = (date = new Date()) => {
+    const d = new Date(date);
+    const isoDayIndex = (d.getDay() + 6) % 7;
+    const monday = new Date(d);
+    monday.setDate(d.getDate() - isoDayIndex);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
   };
 
-  const getAttendanceForSlot = (slotId) => {
-    return attendanceRecords.find(record => record.slotId === slotId);
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => getMondayOfWeek());
+
+  // Fetch schedule data for this class
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      if (!classId) return;
+      setLoading(true);
+      try {
+        const data = await getTraineeClassTimeslots(classId);
+        setScheduleData(data || []);
+      } catch (err) {
+        message.error(t('attendance.loadError', 'Không thể tải lịch học.'));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSchedule();
+  }, [classId, message, t]);
+
+  // Get dates for the current week
+  const weekDates = useMemo(() => {
+    return weekDays.map((day, index) => {
+      const date = new Date(currentWeekStart);
+      date.setDate(currentWeekStart.getDate() + index);
+      return {
+        ...day,
+        date,
+        dateStr: date.toISOString().split('T')[0],
+        dayNum: date.getDate(),
+        monthNum: date.getMonth() + 1,
+      };
+    });
+  }, [currentWeekStart]);
+
+  // Build schedule grid from API data
+  const scheduleGrid = useMemo(() => {
+    const grid = {};
+
+    mockTimeSlots.forEach(slot => {
+      grid[slot.id] = {};
+      weekDays.forEach(day => {
+        grid[slot.id][day.key] = null;
+      });
+    });
+
+    const timeToMinutes = (timeStr) => {
+      const [h, m] = timeStr.split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    const isoToMinutes = (iso) => {
+      const d = new Date(iso);
+      return d.getHours() * 60 + d.getMinutes();
+    };
+
+    scheduleData.forEach(item => {
+      try {
+        const itemDate = new Date(item.startTime);
+        const itemDateStr = itemDate.toISOString().split('T')[0];
+
+        const day = weekDays.find(d => {
+          const date = new Date(currentWeekStart);
+          const idx = weekDays.indexOf(d);
+          date.setDate(currentWeekStart.getDate() + idx);
+          return date.toISOString().split('T')[0] === itemDateStr;
+        });
+
+        if (!day) return;
+
+        const dayKey = day.key;
+        const itemStartMin = isoToMinutes(item.startTime);
+        const itemEndMin = item.endTime ? isoToMinutes(item.endTime) : itemStartMin + 60;
+
+        let matchedSlotId = null;
+        for (const slot of mockTimeSlots) {
+          const slotStartMin = timeToMinutes(slot.startTime);
+          const slotEndMin = timeToMinutes(slot.endTime);
+          const overlaps = itemStartMin < slotEndMin && itemEndMin > slotStartMin;
+          if (overlaps) {
+            matchedSlotId = slot.id;
+            break;
+          }
+        }
+
+        if (!matchedSlotId) {
+          let best = null;
+          let bestDiff = Infinity;
+          for (const slot of mockTimeSlots) {
+            const slotStartMin = timeToMinutes(slot.startTime);
+            const diff = Math.abs(itemStartMin - slotStartMin);
+            if (diff < bestDiff) {
+              bestDiff = diff;
+              best = slot.id;
+            }
+          }
+          matchedSlotId = best;
+        }
+
+        if (matchedSlotId && grid[matchedSlotId]) {
+          const mapped = {
+            ...item,
+            classCode: item.classCode ?? item.name ?? item.className,
+            room: item.locationRoom ?? item.room ?? null,
+            raw: item,
+          };
+
+          if (!grid[matchedSlotId][dayKey]) {
+            grid[matchedSlotId][dayKey] = mapped;
+          } else {
+            const existing = grid[matchedSlotId][dayKey];
+            if (Array.isArray(existing)) {
+              existing.push(mapped);
+            } else {
+              grid[matchedSlotId][dayKey] = [existing, mapped];
+            }
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    });
+
+    return grid;
+  }, [scheduleData, currentWeekStart]);
+
+  // Navigation handlers
+  const handlePreviousWeek = () => {
+    const newStart = new Date(currentWeekStart);
+    newStart.setDate(newStart.getDate() - 7);
+    setCurrentWeekStart(newStart);
   };
 
-  const columns = [
-    {
-      title: t('attendance.slot'),
-      dataIndex: 'slotNumber',
-      key: 'slotNumber',
-      width: 80,
-      render: (num) => <span className="font-semibold">#{num}</span>,
-    },
-    {
-      title: t('attendance.date'),
-      dataIndex: 'date',
-      key: 'date',
-      width: 130,
-      render: (date, record) => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-blue-600" />
-          <div>
-            <div className="font-medium">{date}</div>
-            <div className="text-xs text-slate-500">{record.dayOfWeek}</div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: t('attendance.time'),
-      key: 'time',
-      width: 120,
-      render: (_, record) => (
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-slate-500" />
-          <span className="text-sm">{record.startTime} - {record.endTime}</span>
-        </div>
-      ),
-    },
-    {
-      title: t('attendance.topic'),
-      dataIndex: 'topic',
-      key: 'topic',
-      ellipsis: true,
-    },
-    {
-      title: t('attendance.location'),
-      dataIndex: 'location',
-      key: 'location',
-      width: 120,
-      render: (location) => (
-        <div className="flex items-center gap-1 text-sm">
-          <MapPin className="w-4 h-4 text-slate-400" />
-          {location}
-        </div>
-      ),
-    },
-    {
-      title: t('common.status'),
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      render: (status, record) => {
-        const attendance = getAttendanceForSlot(record.id);
-        
-        if (status === 'completed' && attendance) {
-          return (
-            <div>
-              <Tag color={getStatusColor(attendance.status)}>
-                {t(`attendance.${attendance.status}`)}
-              </Tag>
-              {attendance.note && (
-                <div className="text-xs text-slate-500 mt-1">{attendance.note}</div>
-              )}
-            </div>
-          );
-        }
-        
-        if (status === 'scheduled') {
-          return <Tag color="blue">{t('attendance.status.scheduled')}</Tag>;
-        }
-        
-        if (status === 'completed') {
-          return <Tag color="default">{t('attendance.noRecord')}</Tag>;
-        }
-        
-        return <Tag>{t(`attendance.status.${status}`)}</Tag>;
-      },
-    },
-  ];
+  const handleNextWeek = () => {
+    const newStart = new Date(currentWeekStart);
+    newStart.setDate(newStart.getDate() + 7);
+    setCurrentWeekStart(newStart);
+  };
 
-  // Calculate attendance statistics
-  const completedSlots = slots.filter(s => s.status === 'completed');
-  const attendedSlots = completedSlots.filter(s => {
-    const record = getAttendanceForSlot(s.id);
-    return record && (record.status === 'present' || record.status === 'late');
-  });
-  const attendanceRate = completedSlots.length > 0 
-    ? Math.round((attendedSlots.length / completedSlots.length) * 100) 
-    : 0;
+  const handleToday = () => {
+    setCurrentWeekStart(getMondayOfWeek());
+  };
+
+  const handleWeekChange = (newWeekStart) => {
+    setCurrentWeekStart(newWeekStart);
+  };
+
+  // Trainee view: slots are view-only (no click handler)
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Spin size="large" tip={t('common.loading', 'Đang tải...')} />
+      </div>
+    );
+  }
 
   return (
-    <Card
-      title={
-        <div>
-          <h3 className="text-lg font-semibold">{t('attendance.classSchedule')}</h3>
-          <p className="text-sm text-slate-500 font-normal mt-1">{className}</p>
-        </div>
-      }
-      extra={
-        completedSlots.length > 0 && (
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="text-xs text-slate-500">{t('attendance.attendanceRate')}</div>
-              <div className="text-lg font-bold text-blue-600">{attendanceRate}%</div>
-            </div>
-            <Progress
-              type="circle"
-              percent={attendanceRate}
-              width={50}
-              strokeColor={{
-                '0%': '#108ee9',
-                '100%': '#87d068',
-              }}
-            />
-          </div>
-        )
-      }
-      className="shadow-sm"
-    >
-      <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-slate-50 rounded-lg p-3">
-          <div className="text-xs text-slate-500">{t('attendance.totalSlots')}</div>
-          <div className="text-2xl font-bold text-slate-900">{slots.length}</div>
-        </div>
-        <div className="bg-blue-50 rounded-lg p-3">
-          <div className="text-xs text-blue-600">{t('attendance.status.scheduled')}</div>
-          <div className="text-2xl font-bold text-blue-600">
-            {slots.filter(s => s.status === 'scheduled').length}
-          </div>
-        </div>
-        <div className="bg-green-50 rounded-lg p-3">
-          <div className="text-xs text-green-600">{t('attendance.present')}</div>
-          <div className="text-2xl font-bold text-green-600">
-            {attendanceRecords.filter(r => r.status === 'present').length}
-          </div>
-        </div>
-        <div className="bg-red-50 rounded-lg p-3">
-          <div className="text-xs text-red-600">{t('attendance.absent')}</div>
-          <div className="text-2xl font-bold text-red-600">
-            {attendanceRecords.filter(r => r.status === 'absent').length}
-          </div>
-        </div>
-      </div>
-
-      <Table
-        columns={columns}
-        dataSource={slots}
-        rowKey="id"
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => t('common.pagination.showTotal', { start: 1, end: total, total }),
-        }}
-        locale={{
-          emptyText: (
-            <Empty
-              description={t('attendance.noSlots')}
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
-          ),
-        }}
-        scroll={{ x: 800 }}
+    <div className="p-2 w-full">
+      <WeekNavigation
+        currentWeekStart={currentWeekStart}
+        onPreviousWeek={handlePreviousWeek}
+        onNextWeek={handleNextWeek}
+        onToday={handleToday}
+        onWeekChange={handleWeekChange}
       />
-    </Card>
+      <ScheduleGrid
+        timeSlots={mockTimeSlots}
+        weekDates={weekDates}
+        scheduleGrid={scheduleGrid}
+      />
+    </div>
   );
 }
+

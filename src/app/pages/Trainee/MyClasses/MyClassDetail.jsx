@@ -13,9 +13,7 @@ import ClassSchedule from './partials/ClassSchedule';
 import InstructorInfo from './partials/InstructorInfo';
 import Sections from './partials/Sections';
 import TraineeClassSchedule from './partials/TraineeClassSchedule';
-import TraineeWeeklySchedule from './partials/TraineeWeeklySchedule';
 import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
-import { mockTeachingSlots, mockWeeklySchedule, mockTraineeAttendance } from '../../../mocks/teachingSlots';
 
 export default function MyClassDetail() {
   const { t } = useTranslation();
@@ -91,12 +89,6 @@ export default function MyClassDetail() {
     );
   }
 
-  // Mock data - filter slots for current class
-  const classSlots = mockTeachingSlots.filter(slot => slot.classId === id);
-  const enrolledClasses = [
-    { classId: id, className: classData?.name },
-  ];
-
   const tabItems = [
     {
       key: 'learning',
@@ -120,18 +112,6 @@ export default function MyClassDetail() {
         <TraineeClassSchedule
           classId={id}
           className={classData?.name}
-          slots={classSlots}
-          attendanceRecords={mockTraineeAttendance}
-        />
-      ),
-    },
-    {
-      key: 'weekly',
-      label: t('attendance.weeklySchedule'),
-      children: (
-        <TraineeWeeklySchedule
-          enrolledClasses={enrolledClasses}
-          weeklySchedule={mockWeeklySchedule}
         />
       ),
     },

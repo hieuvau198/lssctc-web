@@ -1,13 +1,12 @@
 import { App, Spin } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { getInstructorWeeklySchedule } from '../../../apis/TimeSlot/TimeSlot';
+import { getTraineeWeeklySchedule } from '../../../apis/TimeSlot/TimeSlot';
 import { mockTimeSlots, weekDays } from '../../../mocks/instructorSchedule';
-import './InstructorSchedule.css';
-import ScheduleGrid from './partials/ScheduleGrid';
-import WeekNavigation from './partials/WeekNavigation';
+import ScheduleGrid from '../../Instructor/InstructorSchedule/partials/ScheduleGrid';
+import WeekNavigation from '../../Instructor/InstructorSchedule/partials/WeekNavigation';
 
-export default function InstructorSchedule() {
+export default function TraineeSchedule() {
     const navigate = useNavigate();
     const { message } = App.useApp();
 
@@ -35,17 +34,18 @@ export default function InstructorSchedule() {
             setLoading(true);
             setError(null);
 
-                        try {
-                            // The instructor weekly API accepts a single reference date `dateInWeek`.
-                            // Use the Thursday of the currently selected week as the reference and
-                            // format it in local timezone (YYYY-MM-DD) to avoid UTC offset issues.
-                            const pad = (n) => String(n).padStart(2, '0');
-                            const thursday = new Date(currentWeekStart);
-                            thursday.setDate(currentWeekStart.getDate() + 3);
-                            const dateInWeek = `${thursday.getFullYear()}-${pad(thursday.getMonth() + 1)}-${pad(thursday.getDate())}`;
-                            const data = await getInstructorWeeklySchedule({ dateInWeek });
-                            setScheduleData(data || []);
-                
+            try {
+                // The trainee weekly API expects a single reference date under `dateInWeek` (YYYY-MM-DD).
+                // Backend returns entire week (Mon-Sun) containing that date.
+                // Use the Monday of the currently selected week as reference.
+                // Format date in local timezone to avoid UTC offset issues.
+                const pad = (n) => String(n).padStart(2, '0');
+                // Use Thursday of the selected week as the reference date (Monday + 3 days)
+                const thursday = new Date(currentWeekStart);
+                thursday.setDate(currentWeekStart.getDate() + 3);
+                const weekRef = `${thursday.getFullYear()}-${pad(thursday.getMonth() + 1)}-${pad(thursday.getDate())}`;
+                const data = await getTraineeWeeklySchedule({ dateInWeek: weekRef });
+                setScheduleData(data || []);
             } catch (err) {
                 setError(err.message || 'Failed to load schedule');
                 message.error('Không thể tải lịch học. Vui lòng thử lại.');
@@ -197,9 +197,11 @@ export default function InstructorSchedule() {
         setCurrentWeekStart(newWeekStart);
     };
 
-    // Handle class click - navigate to class detail
+    // Handle class click - navigate to trainee class detail
     const handleClassClick = (classId) => {
-        navigate(`/instructor/classes/${classId}`);
+        if (classId) {
+            navigate(`/my-classes/${classId}`);
+        }
     };
 
     // Show loading state
@@ -212,7 +214,7 @@ export default function InstructorSchedule() {
     }
 
     return (
-        <div className="p-2 w-full">
+        <div className="min-h-screen p-4 w-full max-w-7xl mx-auto">
             {/* Header & Navigation */}
             <WeekNavigation
                 currentWeekStart={currentWeekStart}
@@ -222,19 +224,6 @@ export default function InstructorSchedule() {
                 onWeekChange={handleWeekChange}
             />
 
-            {/* Error Alert */}
-            {/* {error && (
-                <Alert
-                    type="error"
-                    message="Lỗi tải lịch học"
-                    description={error}
-                    closable
-                    onClose={() => setError(null)}
-                    className="mb-4"
-                />
-            )} */}
-
-
             {/* Schedule Grid */}
             <ScheduleGrid
                 timeSlots={mockTimeSlots}
@@ -242,9 +231,6 @@ export default function InstructorSchedule() {
                 scheduleGrid={scheduleGrid}
                 onClassClick={handleClassClick}
             />
-            
-            {/* Status Legend */}
-            {/* <StatusLegend /> */}
         </div>
     );
 }
