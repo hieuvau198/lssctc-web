@@ -3,25 +3,45 @@ import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
 import { Input, Skeleton, Alert, Empty, Pagination } from "antd";
 import { useTranslation } from 'react-i18next';
 import ProgramCard from "../../../components/ProgramCard";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PageNav from "../../../components/PageNav/PageNav";
 
 const { Search } = Input;
 
 const Program = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // searchInput: current text user is typing (no fetch on each key)
-  // searchValue: committed term (Enter / search button) used to fetch
-  const [searchInput, setSearchInput] = useState("");
-  const [searchValue, setSearchValue] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [total, setTotal] = useState(0);
-  const navigate = useNavigate();
 
+  // Read from URL params on first render, else use defaults
+  const [searchInput, setSearchInput] = useState(
+    () => searchParams.get("search") || ""
+  );
+  const [searchValue, setSearchValue] = useState(
+    () => searchParams.get("search") || ""
+  );
+  const [pageNumber, setPageNumber] = useState(
+    () => Number(searchParams.get("page")) || 1
+  );
+  const [pageSize, setPageSize] = useState(
+    () => Number(searchParams.get("pageSize")) || 10
+  );
+  const [total, setTotal] = useState(0);
+
+  // Sync state to URL whenever pageNumber, pageSize, or searchValue changes
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchValue) params.set("search", searchValue);
+    params.set("page", pageNumber);
+    params.set("pageSize", pageSize);
+    setSearchParams(params);
+  }, [pageNumber, pageSize, searchValue, setSearchParams]);
+
+  // Fetch programs whenever params change
   useEffect(() => {
     let isCancelled = false;
     setLoading(true);
@@ -67,80 +87,82 @@ const Program = () => {
     };
   }, [pageNumber, pageSize, searchValue]);
 
-  // Optional: Reset to first page when searching
-  useEffect(() => {
-    setPageNumber(1);
-  }, [searchValue]);
-
-  if (loading)
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <PageNav nameMap={{ program: t('trainee.programs.title') }} />
-        <h2 className="text-2xl font-bold mb-6">{t('trainee.programs.title')}</h2>
-        <div className="mb-8">
-          <Skeleton.Input active size="large" className="!w-full md:!w-1/2" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 6 }).map((_, idx) => (
-            <div key={idx} className="bg-white rounded-lg shadow">
-              <div className="w-full h-40 overflow-hidden rounded-t-lg">
-                <Skeleton.Image active className="!w-full !h-40" />
-              </div>
-              <div className="p-4">
-                <Skeleton active title={{ width: '60%' }} paragraph={{ rows: 2 }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  if (error)
-    return (
-      <div className="max-w-md mx-auto mt-10">
-        <Alert message="Error" description={error} type="error" showIcon />
-      </div>
-    );
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <PageNav nameMap={{ program: t('trainee.programs.title') }} />
       <span className="text-2xl mb-4">{t('trainee.programs.title')}</span>
-      <Search
-        placeholder={t('trainee.programs.searchPlaceholder')}
-        allowClear
-        className="mb-8"
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
-        onSearch={(v) => {
-          setSearchValue(v.trim());
-        }}
-        enterButton
-      />
-      {programs.length === 0 ? (
-        <Empty description={t('trainee.programs.noPrograms')} className="mt-16 min-h-[350px]" />
+      {/* prevent full page reload when pressing Enter */}
+      <form onSubmit={(e) => e.preventDefault()}>
+        <Search
+          placeholder={t('trainee.programs.searchPlaceholder')}
+          allowClear
+          className="mb-8"
+          value={searchInput}
+          onChange={(e) => {
+            const v = e.target.value;
+            setSearchInput(v);
+            // if user cleared the input using the clear button, trigger search immediately
+            if (v === "") {
+              setSearchValue("");
+              setPageNumber(1);
+            }
+          }}
+          onSearch={(v) => {
+            const trimmed = v.trim();
+            setSearchValue(trimmed);
+            setPageNumber(1);
+          }}
+          enterButton
+        />
+      </form>
+
+      {/* Content area: keep search visible while swapping only cards/pagination */}
+      {error ? (
+        <div className="max-w-md mx-auto mt-4">
+          <Alert message="Error" description={error} type="error" showIcon />
+        </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {programs.map((program) => (
-              <ProgramCard
-                key={program.id}
-                program={program}
-                onClick={() => navigate(`/program/${program.id}`)}
-              />
-            ))}
-          </div>
-          <div className="mt-8 flex justify-center">
-            <Pagination
-              current={pageNumber}
-              pageSize={pageSize}
-              total={total}
-              showSizeChanger
-              onChange={(page, size) => {
-                setPageNumber(page);
-                setPageSize(size);
-              }}
-            />
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 6 }).map((_, idx) => (
+                <div key={idx} className="bg-white rounded-lg shadow">
+                  <div className="w-full h-40 overflow-hidden rounded-t-lg">
+                    <Skeleton.Image active className="!w-full !h-40" />
+                  </div>
+                  <div className="p-4">
+                    <Skeleton active title={{ width: '60%' }} paragraph={{ rows: 2 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : programs.length === 0 ? (
+            <Empty description={t('trainee.programs.noPrograms')} className="mt-16 min-h-[350px]" />
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {programs.map((program) => (
+                  <ProgramCard
+                    key={program.id}
+                    program={program}
+                    onClick={() => navigate(`/program/${program.id}`)}
+                  />
+                ))}
+              </div>
+              <div className="mt-8 flex justify-center">
+                <Pagination
+                  current={pageNumber}
+                  pageSize={pageSize}
+                  total={total}
+                  showSizeChanger
+                  onChange={(page, size) => {
+                    setPageNumber(page);
+                    setPageSize(size);
+                  }}
+                />
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
