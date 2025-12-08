@@ -67,7 +67,12 @@ export async function addCourse(course) {
     const resp = await apiClient.post(BASE_URL, course);
     return resp.data;
   } catch (err) {
-    const msg = err?.response?.data || err.message;
+    let msg = err.message || 'Error adding course';
+    if (err.response && err.response.data) {
+      msg = typeof err.response.data === 'object'
+        ? JSON.stringify(err.response.data)
+        : err.response.data;
+    }
     console.error('Error adding course:', msg);
     throw new Error(msg);
   }

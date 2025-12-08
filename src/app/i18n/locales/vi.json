@@ -2398,6 +2398,16 @@
         "courseCode": "Mã khóa học",
         "courseCodeRequired": "Vui lòng nhập mã khóa học",
         "courseCodePlaceholder": "Nhập mã khóa học",
+        "nameMin": "Tên khóa học phải có ít nhất 3 ký tự",
+        "nameMax": "Tên khóa học phải từ 3 đến 200 ký tự",
+        "courseCodeMax": "Mã khóa học không được vượt quá 50 ký tự",
+        "categoryIdInvalid": "ID danh mục phải là số dương",
+        "levelIdInvalid": "ID cấp độ phải là số dương",
+        "priceRange": "Giá phải nằm trong khoảng từ 0 đến 10.000.000",
+        "durationRange": "Thời lượng phải từ 1 đến 500 giờ",
+        "urlInvalid": "URL hình ảnh phải là một đường dẫn hợp lệ",
+        "descriptionMax": "Mô tả không được vượt quá 500 ký tự",
+        "validationFailed": "Xác thực thất bại",
         "preview": "Xem trước"
       },
       "filters": {
@@ -2521,7 +2531,7 @@
         "selectProgram": "Chọn chương trình",
         "selectCourse": "Chọn khóa học",
         "description": "Nhập mô tả lớp học",
-        "selectInstructor":"Chọn giảng viên"
+        "selectInstructor": "Chọn giảng viên"
       },
       "validation": {
         "classNameRequired": "Vui lòng nhập tên lớp học",
