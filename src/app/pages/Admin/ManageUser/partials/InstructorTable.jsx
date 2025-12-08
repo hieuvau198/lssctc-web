@@ -1,8 +1,10 @@
-import { Avatar, Empty, Pagination, Table, Tag, Modal, Descriptions, Spin, App } from 'antd';
+import { Avatar, Empty, Pagination, Table, Tag, Modal, Descriptions, Spin, message, Button, Tooltip } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { getUserById } from '../../../../apis/Admin/AdminUser';
+import DrawerEdit from './DrawerEdit';
 
 const getInitials = (name = '') => {
   return name
@@ -15,7 +17,6 @@ const getInitials = (name = '') => {
 
 export default function InstructorTable() {
   const { t } = useTranslation();
-  const { message } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const {
     instructorData,
@@ -30,6 +31,19 @@ export default function InstructorTable() {
   const [viewingUser, setViewingUser] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
+
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
+
+  const handleEditUser = (e, id) => {
+    e.stopPropagation();
+    setEditingUserId(id);
+    setIsEditDrawerOpen(true);
+  };
+
+  const handleUpdateSuccess = () => {
+    window.location.reload();
+  };
 
   const handleViewUser = async (id) => {
     setIsViewModalOpen(true);
@@ -80,6 +94,21 @@ export default function InstructorTable() {
       ),
       width: 120,
     },
+    {
+      title: t('common.action') || "Action",
+      key: 'action',
+      width: 80,
+      align: 'center',
+      render: (_, record) => (
+        <Tooltip title={t('common.edit') || "Edit"}>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={(e) => handleEditUser(e, record.key)}
+          />
+        </Tooltip>
+      )
+    }
   ];
 
   useEffect(() => {
@@ -171,6 +200,13 @@ export default function InstructorTable() {
           <Empty description="No Data" />
         )}
       </Modal>
+
+      <DrawerEdit
+        visible={isEditDrawerOpen}
+        onClose={() => setIsEditDrawerOpen(false)}
+        userId={editingUserId}
+        onUpdated={handleUpdateSuccess}
+      />
     </div>
   );
 }
