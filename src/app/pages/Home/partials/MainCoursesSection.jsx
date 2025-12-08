@@ -57,7 +57,15 @@ export default function MainCoursesSection() {
               <ProgramCard
                 key={prog.id}
                 program={prog}
-                onClick={() => navigate(`/program/${prog.id}`)}
+                onClick={() => {
+                  try {
+                    if (window && window.top) {
+                      window.top.location.href = `/program/${prog.id}`;
+                      return;
+                    }
+                  } catch (e) {}
+                  navigate(`/program/${prog.id}`);
+                }}
               />
             ))}
           </div>

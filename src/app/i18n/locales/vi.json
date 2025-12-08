@@ -117,22 +117,6 @@
     "accomplishments": "Thành tích",
     "schedule": "Lịch học"
   },
-  "attendance": {
-    "title": "Điểm danh",
-    "attendance": "Điểm danh",
-    "classSchedule": "Lịch lớp",
-    "slot": "Ca học",
-    "date": "Ngày",
-    "location": "Phòng",
-    "recorded": "Đã điểm danh",
-    "notRecorded": "Chưa điểm danh",
-    "noSlots": "Không tìm thấy ca học",
-    "traineeCannotMarkAttendance": "Chỉ giảng viên mới có thể điểm danh",
-    "attendanceRate": "Tỷ lệ điểm danh",
-    "totalSlots": "Tổng ca",
-    "present": "Có mặt",
-    "absent": "Vắng"
-  },
   "exam": {
     "finalExam": "Bài thi cuối kỳ",
     "examName": "Tên bài thi",
@@ -490,6 +474,11 @@
     "completePractice": "Hoàn thành Thực hành"
   },
   "attendance": {
+    "title": "Điểm danh",
+    "attendance": "Điểm danh",
+    "recorded": "Đã điểm danh",
+    "notRecorded": "Chưa điểm danh",
+    "traineeCannotMarkAttendance": "Chỉ giảng viên mới có thể điểm danh",
     "slot": "Buổi học",
     "date": "Ngày",
     "time": "Giờ",
@@ -576,6 +565,8 @@
     "instructorInfo": {
       "title": "Giảng viên",
       "code": "Mã giảng viên",
+      "email": "Email",
+      "phone": "Điện thoại",
       "noInstructor": "Không có thông tin giảng viên",
       "loadFailed": "Không tải được thông tin giảng viên"
     },
@@ -779,6 +770,18 @@
       "practiceSummary": "Tổng kết thực hành",
       "tasksCompleted": "Nhiệm vụ hoàn thành",
       "averageScore": "Điểm trung bình"
+    },
+    "classes": {
+      "code": "Mã lớp",
+      "start": "Bắt đầu",
+      "end": "Kết thúc",
+      "enrollButton": "Đăng ký",
+      "noClasses": "Không có lớp học nào",
+      "enrollSuccess": "Đăng ký thành công vào lớp {{name}}",
+      "confirmTitle": "Xác nhận đăng ký",
+      "confirmEnrollment": "Đăng ký ngay",
+      "noteTitle": "Lưu ý:",
+      "noteBody": "Sau khi đăng ký, bạn sẽ có quyền truy cập vào tất cả tài liệu khóa học và có thể bắt đầu học ngay lập tức."
     }
   },
   "instructor": {

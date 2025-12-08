@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal } from 'antd';
+import { Modal, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { mockExamQuestions } from '../../../mocks/finalExam';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { mockExamQuestions, mockFinalExam } from '../../../mocks/finalExam';
+import CryptoJS from 'crypto-js';
 import HeaderTimer from './partials/HeaderTimer';
 import QuestionCard from './partials/QuestionCard';
 import QuestionSidebar from './partials/QuestionSidebar';
@@ -12,45 +13,190 @@ export default function ExamTaking() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
-    const examData = location.state?.examData;
+    const { id } = useParams();
+    // Try to restore examData from location.state, then sessionStorage, then mock
+    const persisted = (() => {
+        try {
+            const key = id ? `finalExam_${id}_data` : null;
+            if (location.state?.examData) return location.state.examData;
+            if (key) {
+                const raw = sessionStorage.getItem(key);
+                if (raw) return JSON.parse(raw);
+            }
+            // fallback to mock if available and id matches
+            if (mockFinalExam && String(mockFinalExam.id) === String(id)) return mockFinalExam;
+            return null;
+        } catch (e) {
+            return null;
+        }
+    })();
+    const [examData, setExamData] = useState(persisted);
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState({});
-    const [timeRemaining, setTimeRemaining] = useState(examData?.duration * 60 || 3600); // in seconds
+    const answersRef = useRef(answers);
+    const [timeRemaining, setTimeRemaining] = useState(() => (examData?.duration ? examData.duration * 60 : 3600)); // in seconds
     const [showSubmitModal, setShowSubmitModal] = useState(false);
+    const [saveLoading, setSaveLoading] = useState(false);
     const [leaveViolations, setLeaveViolations] = useState(0);
     const hiddenTimerRef = useRef(null);
     const leaveViolationsRef = useRef(0); // track violations without triggering re-render inside event handler
     const modalOpenRef = useRef(false);
 
-    // Timer countdown
-    useEffect(() => {
-        if (timeRemaining <= 0) {
-            handleAutoSubmit();
-            return;
+    // (Replaced) timer is driven by authoritative start timestamp effect below
+
+    // Encryption key for local storage (fallback to deterministic dev key)
+    const ENC_KEY = import.meta.env.VITE_CRYPTO_KEY || 'lssctc-dev-fallback-key-2024';
+    const answersKey = id ? `finalExam_${id}_answers` : null;
+
+    const encrypt = (obj) => {
+        try {
+            return CryptoJS.AES.encrypt(JSON.stringify(obj), ENC_KEY).toString();
+        } catch (e) {
+            console.error('encrypt error', e);
+            return null;
         }
+    };
 
-        const timer = setInterval(() => {
-            setTimeRemaining((prev) => prev - 1);
-        }, 1000);
+    const decrypt = (str) => {
+        try {
+            const bytes = CryptoJS.AES.decrypt(str, ENC_KEY);
+            const plain = bytes.toString(CryptoJS.enc.Utf8);
+            if (!plain) return null;
+            return JSON.parse(plain);
+        } catch (e) {
+            console.error('decrypt error', e);
+            return null;
+        }
+    };
 
-        return () => clearInterval(timer);
-    }, [timeRemaining]);
+    const saveAnswersToStorage = (payload) => {
+        if (!answersKey) return;
+        try {
+            const toSave = { answers: payload || answersRef.current || {}, ts: Date.now() };
+            const cipher = encrypt(toSave);
+            if (cipher) localStorage.setItem(answersKey, cipher);
+        } catch (e) {
+            console.error('Failed to save answers to storage', e);
+        }
+    };
+
+    const loadAnswersFromStorage = () => {
+        if (!answersKey) return null;
+        try {
+            const raw = localStorage.getItem(answersKey);
+            if (!raw) return null;
+            const parsed = decrypt(raw);
+            if (!parsed || !parsed.answers) return null;
+            return parsed.answers;
+        } catch (e) {
+            console.error('Failed to load answers from storage', e);
+            return null;
+        }
+    };
+
+    const clearAnswersStorage = () => {
+        if (!answersKey) return;
+        try { localStorage.removeItem(answersKey); } catch (e) {}
+    };
 
     // Redirect if no exam data
     useEffect(() => {
         if (!examData) {
             navigate('/final-exam/1');
+            return;
         }
-    }, [examData, navigate]);
+        // persist examData to sessionStorage so refresh preserves it
+        try {
+            const key = id ? `finalExam_${id}_data` : null;
+            if (key) sessionStorage.setItem(key, JSON.stringify(examData));
+        } catch (e) {}
+    }, [examData, navigate, id]);
+
+    // Restore answers from localStorage when examData is ready
+    useEffect(() => {
+        if (!examData) return;
+        const saved = loadAnswersFromStorage();
+        if (saved) {
+            setAnswers(saved);
+            answersRef.current = saved;
+        }
+    }, [examData]);
+
+    // Autosave answers every 60 seconds
+    useEffect(() => {
+        if (!examData) return;
+        const intervalId = setInterval(() => {
+            saveAnswersToStorage();
+            // lightweight feedback in console
+            // console.debug('[Exam] autosaved answers');
+        }, 60000);
+        return () => clearInterval(intervalId);
+    }, [examData]);
+
+    // Manage start timestamp and make timer resilient to refresh: store start time once
+    useEffect(() => {
+        if (!examData) return;
+        const startKey = id ? `finalExam_${id}_start` : null;
+        try {
+            let start = startKey ? sessionStorage.getItem(startKey) : null;
+            if (!start) {
+                // set start now
+                start = String(Date.now());
+                if (startKey) sessionStorage.setItem(startKey, start);
+            }
+
+            // compute remaining based on elapsed
+            const elapsed = Math.floor((Date.now() - Number(start)) / 1000);
+            const rem = Math.max((examData.duration || 60) * 60 - elapsed, 0);
+            setTimeRemaining(rem);
+
+            // update timer from authoritative start timestamp every second
+            const tick = () => {
+                try {
+                    const s = startKey ? Number(sessionStorage.getItem(startKey) || start) : Number(start);
+                    const r = Math.max((examData.duration || 60) * 60 - Math.floor((Date.now() - s) / 1000), 0);
+                    setTimeRemaining(r);
+                    if (r <= 0) {
+                        // auto submit when time up
+                        handleAutoSubmit();
+                    }
+                } catch (err) {
+                    console.error('Timer tick error', err);
+                }
+            };
+            const timerId = setInterval(tick, 1000);
+            return () => clearInterval(timerId);
+        } catch (e) {
+            console.error('Failed to init exam timer', e);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [examData, id]);
 
     const currentQuestion = mockExamQuestions[currentQuestionIndex];
 
     const handleAnswerChange = (questionId, answerId) => {
-        setAnswers((prev) => ({
-            ...prev,
-            [questionId]: answerId,
-        }));
+        setAnswers((prev) => {
+            const next = { ...prev, [questionId]: answerId };
+            answersRef.current = next;
+            return next;
+        });
+    };
+
+    const handleManualSave = async () => {
+        if (saveLoading) return;
+        setSaveLoading(true);
+        try {
+            saveAnswersToStorage();
+            // Ensure loading visible at least 1s so users notice
+            await new Promise((res) => setTimeout(res, 1000));
+            message.success('Đã lưu đáp án tạm thời');
+        } catch (e) {
+            console.error('Manual save error', e);
+            message.error('Lưu thất bại');
+        } finally {
+            setSaveLoading(false);
+        }
     };
 
     const handlePrevious = () => {
@@ -85,8 +231,16 @@ export default function ExamTaking() {
             clearTimeout(hiddenTimerRef.current);
             hiddenTimerRef.current = null;
         }
+        // clear persisted state
+        try {
+            if (id) {
+                sessionStorage.removeItem(`finalExam_${id}_start`);
+                sessionStorage.removeItem(`finalExam_${id}_data`);
+                clearAnswersStorage();
+            }
+        } catch (e) {}
         // navigate to result with zero score and a flag
-        navigate('/final-exam/1/result', {
+        navigate(`/final-exam/${id}/result`, {
             state: {
                 examData,
                 answers,
@@ -109,8 +263,15 @@ export default function ExamTaking() {
 
         const score = Math.round((correctCount / mockExamQuestions.length) * 100);
 
+        try {
+            if (id) {
+                sessionStorage.removeItem(`finalExam_${id}_start`);
+                sessionStorage.removeItem(`finalExam_${id}_data`);
+                clearAnswersStorage();
+            }
+        } catch (e) {}
         // Navigate to result page
-        navigate('/final-exam/1/result', {
+        navigate(`/final-exam/${id}/result`, {
             state: {
                 examData,
                 answers,
@@ -345,16 +506,16 @@ export default function ExamTaking() {
     if (!examData) return null;
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
             {overlay.visible && (
-                <div className="fixed inset-0 z-[200100] flex items-center justify-center bg-black/50">
-                    <div className={`w-full max-w-2xl mx-4 bg-white rounded shadow-lg p-6`}> 
-                        <h3 className="text-lg font-semibold mb-3">{overlay.type === 'final' ? t('exam.leaveWarningFinalTitle','Bài thi bị hủy') : t('exam.leaveWarningTitle','Cảnh báo')}</h3>
-                        <div className="mb-4 text-sm">{overlay.msg}</div>
+                <div className="fixed inset-0 z-[200100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className={`w-full max-w-2xl mx-4 bg-white rounded-xl shadow-2xl p-8 border border-blue-100`}> 
+                        <h3 className="text-xl font-bold mb-4 text-slate-800">{overlay.type === 'final' ? t('exam.leaveWarningFinalTitle','Bài thi bị hủy') : t('exam.leaveWarningTitle','Cảnh báo')}</h3>
+                        <div className="mb-6 text-slate-600 leading-relaxed">{overlay.msg}</div>
                         <div className="flex justify-end">
                             <button
                                 ref={overlayBtnRef}
-                                className="px-4 py-2 bg-blue-600 text-white rounded"
+                                className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-medium shadow-lg shadow-blue-200 transition-all"
                                 onClick={() => {
                                     setOverlay({ visible: false, type: null, msg: '' });
                                     if (overlay.type === 'final') {
@@ -370,7 +531,7 @@ export default function ExamTaking() {
             )}
             <HeaderTimer name={examData.name} current={currentQuestionIndex + 1} total={mockExamQuestions.length} answeredCount={answeredCount} timeRemaining={timeRemaining} />
 
-            <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <div className="lg:col-span-3">
                         <QuestionCard
@@ -382,6 +543,8 @@ export default function ExamTaking() {
                             isFirst={currentQuestionIndex === 0}
                             isLast={currentQuestionIndex === mockExamQuestions.length - 1}
                             onSubmitClick={handleSubmitClick}
+                            onSaveAnswers={handleManualSave}
+                            saveLoading={saveLoading}
                             timeWarning={timeRemaining < 300}
                         />
                     </div>

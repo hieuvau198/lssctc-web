@@ -116,22 +116,6 @@
     "accomplishments": "Accomplishments",
     "schedule": "Schedule"
   },
-  "attendance": {
-    "title": "Attendance",
-    "attendance": "Attendance",
-    "classSchedule": "Class Schedule",
-    "slot": "Slot",
-    "date": "Date",
-    "location": "Location",
-    "recorded": "Recorded",
-    "notRecorded": "Not recorded",
-    "noSlots": "No slots found",
-    "traineeCannotMarkAttendance": "Only instructors can mark attendance",
-    "attendanceRate": "Attendance rate",
-    "totalSlots": "Total slots",
-    "present": "Present",
-    "absent": "Absent"
-  },
   "exam": {
     "finalExam": "Final Exam",
     "examName": "Exam Name",
@@ -529,6 +513,8 @@
     "instructorInfo": {
       "title": "Instructor",
       "code": "Code",
+      "email": "Email",
+      "phone": "Phone",
       "noInstructor": "No instructor information available",
       "loadFailed": "Failed to load instructor info"
     },
@@ -732,6 +718,18 @@
       "practiceSummary": "Practice Summary",
       "tasksCompleted": "Tasks Completed",
       "averageScore": "Average Score"
+    },
+    "classes": {
+      "code": "Code",
+      "start": "Start",
+      "end": "End",
+      "enrollButton": "Enroll",
+      "noClasses": "No available classes",
+      "enrollSuccess": "Successfully enrolled in {{name}}",
+      "confirmTitle": "Confirm Enrollment",
+      "confirmEnrollment": "Enroll Now",
+      "noteTitle": "Note:",
+      "noteBody": "Once enrolled, you will have access to all course materials and can start learning immediately."
     }
   },
   "attendance": {
@@ -739,6 +737,11 @@
     "date": "Date",
     "time": "Time",
     "topic": "Topic",
+    "title": "Attendance",
+    "attendance": "Attendance",
+    "recorded": "Recorded",
+    "notRecorded": "Not recorded",
+    "traineeCannotMarkAttendance": "Only instructors can mark attendance",
     "location": "Location",
     "students": "Students",
     "attendanceStatus": "Attendance",

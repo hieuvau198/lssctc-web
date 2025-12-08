@@ -95,8 +95,9 @@ export default function ExamResult() {
                         <Button
                             type="primary"
                             size="large"
+                            href="/"
+                            target="_top"
                             icon={<HomeOutlined />}
-                            onClick={() => navigate('/')}
                         >
                             {t('common.home', 'Back to Home')}
                         </Button>
