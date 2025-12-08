@@ -166,7 +166,7 @@ export async function createInstructor(payload = {}) {
 
 export async function createSimulationManager(payload = {}) {
 	try {
-		const { data } = await apiClient.post(`/Users/simulation-managers`, payload);
+		const { data } = await apiClient.post(`/Users/simulation-managers`, { ...payload, role: 'SimulationManager' });
 		if (!data) throw new Error('Failed to create simulation manager');
 		return mapUserFromApi(data);
 	} catch (err) {
