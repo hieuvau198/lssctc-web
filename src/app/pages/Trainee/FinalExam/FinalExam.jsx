@@ -138,6 +138,7 @@ export default function FinalExam() {
                       size="large"
                       block
                       loading={loading}
+                      target='_top'
                       className="font-semibold text-lg h-12 shadow-lg shadow-blue-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0"
                     >
                       {t('exam.startExam', 'Start Exam')}

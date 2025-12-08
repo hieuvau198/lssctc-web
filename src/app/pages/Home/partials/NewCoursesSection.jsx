@@ -95,7 +95,15 @@ export default function NewCoursesSection() {
             {courses.map((course) => (
               <div key={course.id} className="px-3">
                 <div
-                  onClick={() => navigate(`/course/${course.id}`)}
+                  onClick={() => {
+                    try {
+                      if (window && window.top) {
+                        window.top.location.href = `/course/${course.id}`;
+                        return;
+                      }
+                    } catch (e) {}
+                    navigate(`/course/${course.id}`);
+                  }}
                   className="cursor-pointer"
                 >
                   <CourseCard
