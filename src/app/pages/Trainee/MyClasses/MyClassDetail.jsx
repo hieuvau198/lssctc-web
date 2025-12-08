@@ -13,6 +13,7 @@ import ClassSchedule from './partials/ClassSchedule';
 import InstructorInfo from './partials/InstructorInfo';
 import Sections from './partials/Sections';
 import TraineeClassSchedule from './partials/TraineeClassSchedule';
+import TraineeAttendance from './partials/TraineeAttendance';
 import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
 
 export default function MyClassDetail() {
@@ -113,6 +114,13 @@ export default function MyClassDetail() {
           classId={id}
           className={classData?.name}
         />
+      ),
+    },
+    {
+      key: 'attendance',
+      label: t('attendance.attendance') || 'Attendance',
+      children: (
+        <TraineeAttendance classId={id} />
       ),
     },
   ];
