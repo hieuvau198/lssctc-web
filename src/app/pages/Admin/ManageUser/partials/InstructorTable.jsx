@@ -1,7 +1,8 @@
-import { Avatar, Empty, Pagination, Table, Tag } from 'antd';
+import { Avatar, Empty, Pagination, Table, Tag, Modal, Descriptions, Spin, App } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { getUserById } from '../../../../apis/Admin/AdminUser';
 
 const getInitials = (name = '') => {
   return name
@@ -14,6 +15,7 @@ const getInitials = (name = '') => {
 
 export default function InstructorTable() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const {
     instructorData,
@@ -25,6 +27,24 @@ export default function InstructorTable() {
   } = useOutletContext() || {};
 
   const [data, setData] = useState([]);
+  const [viewingUser, setViewingUser] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewLoading, setViewLoading] = useState(false);
+
+  const handleViewUser = async (id) => {
+    setIsViewModalOpen(true);
+    setViewLoading(true);
+    try {
+      const user = await getUserById(id);
+      setViewingUser(user);
+    } catch (error) {
+      console.error(error);
+      message.error(t('common.error'));
+      setIsViewModalOpen(false);
+    } finally {
+      setViewLoading(false);
+    }
+  };
 
   const COLUMNS = [
     { title: '#', dataIndex: 'idx', width: 60, align: 'center' },
@@ -38,7 +58,18 @@ export default function InstructorTable() {
         </Avatar>
       ),
     },
-    { title: t('admin.users.table.fullName'), dataIndex: 'fullName' },
+    {
+      title: t('admin.users.table.fullName'),
+      dataIndex: 'fullName',
+      render: (text, record) => (
+        <a
+          onClick={() => handleViewUser(record.key)}
+          className="text-primary hover:underline font-medium cursor-pointer"
+        >
+          {text}
+        </a>
+      )
+    },
     { title: t('admin.users.table.email'), dataIndex: 'email' },
     { title: t('admin.users.table.phone'), dataIndex: 'phoneNumber', width: 160 },
     {
@@ -97,6 +128,49 @@ export default function InstructorTable() {
           showTotal={(total, range) => t('admin.users.pagination', { start: range[0], end: range[1], total })}
         />
       </div>
+
+      <Modal
+        title={t('admin.users.instructorDetail') || "Instructor Detail"}
+        open={isViewModalOpen}
+        onCancel={() => setIsViewModalOpen(false)}
+        footer={null}
+        width={600}
+      >
+        {viewLoading ? (
+          <div className="flex justify-center py-10">
+            <Spin size="large" />
+          </div>
+        ) : viewingUser ? (
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-4 border-b pb-4">
+              <Avatar
+                size={80}
+                src={viewingUser.avatarUrl}
+                style={{ backgroundColor: '#f3f4f6' }}
+              >
+                {getInitials(viewingUser.fullName)}
+              </Avatar>
+              <div>
+                <h3 className="text-xl font-bold m-0">{viewingUser.fullName}</h3>
+                <div className="text-gray-500">{viewingUser.email}</div>
+                <Tag color={viewingUser.isActive ? 'green' : 'red'} className="mt-2">
+                  {viewingUser.isActive ? t('common.active') : t('common.inactive')}
+                </Tag>
+              </div>
+            </div>
+
+            <Descriptions column={1} bordered>
+              <Descriptions.Item label={t('admin.users.table.fullName')}>{viewingUser.fullName}</Descriptions.Item>
+              <Descriptions.Item label={t('admin.users.table.email')}>{viewingUser.email}</Descriptions.Item>
+              <Descriptions.Item label={t('admin.users.table.phone')}>{viewingUser.phoneNumber || '-'}</Descriptions.Item>
+              <Descriptions.Item label="Role">{viewingUser.role}</Descriptions.Item>
+              <Descriptions.Item label="Username">{viewingUser.username}</Descriptions.Item>
+            </Descriptions>
+          </div>
+        ) : (
+          <Empty description="No Data" />
+        )}
+      </Modal>
     </div>
   );
 }
