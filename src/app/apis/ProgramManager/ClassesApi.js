@@ -60,7 +60,7 @@ export async function fetchClassesByProgramCourse(programCourseId) {
  * @param {Object} payload - matches ClassCreateDto
  */
 export async function createClass(payload) {
-	const { data } = await apiClient.post(`${CLASSES_BASE}/create`, payload);
+	const { data } = await apiClient.post(`${CLASSES_BASE}`, payload);
 	return data;
 }
 
