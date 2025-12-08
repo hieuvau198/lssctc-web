@@ -4,13 +4,11 @@ const API_BASE_URL = import.meta.env.VITE_API_Program_Service_URL;
 // Fetch list of programs with paging and search
 export async function fetchPrograms(params = {}) {
   const searchParams = new URLSearchParams();
-  if (params.pageNumber) searchParams.append("PageNumber", params.pageNumber);
-  if (params.pageSize) searchParams.append("PageSize", params.pageSize);
-  if (params.searchTerm) searchParams.append("SearchTerm", params.searchTerm);
+  if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber);
+  if (params.pageSize) searchParams.append("pageSize", params.pageSize);
+  if (params.searchTerm) searchParams.append("searchTerm", params.searchTerm);
 
   const response = await apiClient.get(`${API_BASE_URL}/Programs/paged?${searchParams}`);
-  // normalize: if backend returns plain array, convert to { items, totalCount }
-  if (Array.isArray(response.data)) return { items: response.data, totalCount: response.totalCount };
   return response.data;
 }
 

@@ -200,7 +200,7 @@ const AddClassForm = ({
             >
               {courses.map((course) => (
                 <Select.Option key={course.id} value={course.id}>
-                  {course.name} ({course.courseCodeName})
+                  {course.name} ({course.level})
                 </Select.Option>
               ))}
             </Select>

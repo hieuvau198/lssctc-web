@@ -2,27 +2,16 @@ import apiClient from '../../libs/axios';
 
 const BASE_URL = `${import.meta.env.VITE_API_Program_Service_URL}/Courses`;
 
-export async function fetchCourses({ pageNumber = 1, pageSize = 10, searchTerm, categoryId, levelId, isActive } = {}) {
-  try {
-    const searchParams = new URLSearchParams();
-    if (pageNumber) searchParams.append('PageNumber', pageNumber);
-    if (pageSize) searchParams.append('PageSize', pageSize);
-    if (searchTerm) searchParams.append('SearchTerm', searchTerm);
-    if (categoryId !== undefined && categoryId !== null) searchParams.append('CategoryId', categoryId);
-    if (levelId !== undefined && levelId !== null) searchParams.append('LevelId', levelId);
-    if (isActive !== undefined && isActive !== null) searchParams.append('IsActive', isActive);
+export async function fetchCourses(params = {}) {
+  const searchParams = new URLSearchParams();
+  if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber);
+  if (params.pageSize) searchParams.append("pageSize", params.pageSize);
+  if (params.searchTerm) searchParams.append("searchTerm", params.searchTerm);
+  if (params.sortBy) searchParams.append("sortBy", params.sortBy);
+  if (params.sortDirection) searchParams.append("sortDirection", params.sortDirection);
 
-    const url = `${BASE_URL}`;
-    const resp = await apiClient.get(url);
-    const data = resp.data;
-
-    // normalize to { items, totalCount }
-    if (Array.isArray(data)) return { items: data, totalCount: data.length };
-    return data;
-  } catch (err) {
-    console.error('Error fetching courses:', err);
-    throw err;
-  }
+  const response = await apiClient.get(`${BASE_URL}/paged?${searchParams}`);
+  return { items: response.data.items, totalCount: response.data.totalCount };
 }
 
 export async function fetchCoursesPaged({ pageNumber = 1, pageSize = 10, searchTerm } = {}) {

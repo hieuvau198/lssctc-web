@@ -2156,6 +2156,8 @@
         "deactivateUser": "Vô hiệu hóa người dùng này?"
       },
       "pagination": "{{start}}-{{end}} của {{total}} người dùng",
+      "searchPlaceholder": "Tìm kiếm người dùng...",
+      "filterStatus": "Trạng thái",
       "import": {
         "title": "Import từ Excel",
         "importTrainee": "Import Học viên từ Excel",
@@ -2247,6 +2249,10 @@
     },
     "courses": {
       "title": "Quản lý khóa học",
+      "searchPlaceholder": "Tìm kiếm khóa học...",
+      "sortBy": "Sắp xếp theo",
+      "priceLowToHigh": "Giá: Thấp đến Cao",
+      "priceHighToLow": "Giá: Cao đến Thấp",
       "createCourse": "Tạo khóa học",
       "addCourse": "Thêm khóa học",
       "editCourse": "Sửa khóa học",
@@ -2352,7 +2358,10 @@
       "updateSuccess": "Cập nhật lớp học thành công",
       "buttons": {
         "updateClass": "Cập nhật lớp học",
-        "deleteClass": "Xóa lớp học"
+        "deleteClass": "Xóa lớp học",
+        "assignInstructor": "Gán giảng viên",
+        "addTrainee": "Thêm học viên",
+        "enrollSelected": "Đăng ký đã chọn ({{count}})"
       },
       "columns": {
         "className": "Tên lớp học",
@@ -2360,11 +2369,24 @@
         "capacity": "Sức chứa",
         "enrollDate": "Ngày đăng ký"
       },
+      "pagination": {
+        "totalTrainees": "Tổng {{total}} học viên"
+      },
+      "filters": {
+        "status": "Trạng thái",
+        "sortByDate": "Sắp xếp theo ngày",
+        "startDateNewest": "Ngày bắt đầu trễ nhất",
+        "startDateOldest": "Ngày bắt đầu sớm nhất",
+        "endDateNewest": "Ngày kết thúc trễ nhất",
+        "endDateOldest": "Ngày kết thúc sớm nhất"
+      },
       "detail": {
         "instructor": "Giảng viên",
         "members": "Thành viên",
         "instructorCode": "Mã Giảng viên",
-        "hireDate": "Ngày tuyển dụng"
+        "hireDate": "Ngày tuyển dụng",
+        "noInstructor": "Chưa có giảng viên được gán",
+        "noMembers": "Chưa có thành viên nào đăng ký"
       },
       "form": {
         "className": "Tên lớp học",
@@ -2391,6 +2413,25 @@
         "descriptionPlaceholder": "Nhập mô tả lớp học",
         "noCourses": "Không có khóa học nào. Vui lòng chọn chương trình trước.",
         "selectProgramFirst": "Vui lòng chọn chương trình trước"
+      },
+      "placeholders": {
+        "className": "Nhập tên lớp học",
+        "classCode": "Nhập mã lớp học",
+        "selectProgram": "Chọn chương trình",
+        "selectCourse": "Chọn khóa học",
+        "description": "Nhập mô tả lớp học",
+        "selectInstructor":"Chọn giảng viên"
+      },
+      "validation": {
+        "classNameRequired": "Vui lòng nhập tên lớp học",
+        "classCodeRequired": "Vui lòng nhập mã lớp học",
+        "programRequired": "Vui lòng chọn chương trình",
+        "courseRequired": "Vui lòng chọn khóa học",
+        "startDateRequired": "Vui lòng chọn ngày bắt đầu",
+        "endDateRequired": "Vui lòng chọn ngày kết thúc",
+        "endDateAfterStart": "Ngày kết thúc phải sau ngày bắt đầu",
+        "capacityRequired": "Vui lòng nhập sức chứa",
+        "capacityMin": "Sức chứa phải ít nhất 1"
       },
       "drawer": {
         "addClassTitle": "Thêm lớp học mới"
@@ -2433,6 +2474,7 @@
         "reject": "Từ chối"
       },
       "modal": {
+        "editClass": "Chỉnh sửa lớp",
         "addTraineeTitle": "Thêm học viên vào lớp",
         "enrollSelected": "Đăng ký đã chọn ({{count}})"
       }

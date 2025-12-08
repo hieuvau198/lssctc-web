@@ -116,12 +116,12 @@ const ClassTableView = ({
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div style={{ height: 390 }} className="overflow-auto">
+      <div className="overflow-auto">
         <Table
           columns={tableColumns}
           dataSource={classes}
           rowKey="id"
-          scroll={{ x: 360 }}
+          scroll={{ y: 400 }}
           pagination={false}
         />
       </div>

@@ -177,7 +177,7 @@ const EditDeleteClassForm = ({
         form={form}
         layout="vertical"
         onFinish={handleFinish}
-        className={embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4" : undefined}
+        className={embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2" : undefined}
       >
         <Form.Item
           label={t('admin.classes.form.className')}
@@ -240,7 +240,7 @@ const EditDeleteClassForm = ({
           >
             {courses.map((course) => (
               <Select.Option key={course.id} value={course.id}>
-                {course.name} ({course.courseCodeName})
+                {course.name} ({course.level})
               </Select.Option>
             ))}
           </Select>
@@ -292,8 +292,8 @@ const EditDeleteClassForm = ({
         <Form.Item label={t('admin.classes.form.description')} name="description" className={embedded ? "md:col-span-2" : undefined}>
           <Input.TextArea rows={3} placeholder={t('admin.classes.placeholders.description')} showCount maxLength={500} allowClear />
         </Form.Item>
-        <Form.Item>
-          <Space>
+        <Form.Item className={embedded ? 'md:col-span-2' : undefined}>
+          <Space className="flex justify-end">
             <Button onClick={() => {
               if (onCancel) return onCancel();
               if (onClose) return onClose();

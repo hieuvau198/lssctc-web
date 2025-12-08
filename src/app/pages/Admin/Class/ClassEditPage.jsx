@@ -40,7 +40,7 @@ const ClassEditPage = () => {
   if (!classItem) return null;
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-4">
       <span className="text-xl font-semibold mb-4">{t('admin.classes.editTitle')}</span>
       <EditDeleteClassForm
         embedded

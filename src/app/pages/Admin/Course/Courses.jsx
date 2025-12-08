@@ -35,13 +35,14 @@ const { Option } = Select;
 
 const Courses = () => {
   const { t } = useTranslation();
-  const {message} = App.useApp();
+  const { message } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchValue, setSearchValue] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchValue, setSearchValue] = useState(searchParams.get('searchTerm') || "");
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('searchTerm') || "");
+  const [sortOrder, setSortOrder] = useState(searchParams.get('sortOrder') || undefined);
   const [pageNumber, setPageNumber] = useState(parseInt(searchParams.get('page')) || 1);
   const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [total, setTotal] = useState(0);
@@ -93,21 +94,8 @@ const Courses = () => {
 
   useEffect(() => {
     setLoading(true);
-    const params = {
-      pageNumber,
-      pageSize,
-      searchTerm,
-      categoryId,
-      levelId,
-      isActive: isActive === undefined ? undefined : String(isActive).toLowerCase(),
-    };
-
-    // Remove undefined values
-    Object.keys(params).forEach((key) =>
-      params[key] === undefined || params[key] === null ? delete params[key] : null
-    );
-
-    fetchCourses(params)
+    const [sortBy, sortDirection] = sortOrder ? sortOrder.split('_') : [undefined, undefined];
+    fetchCourses({ pageNumber, pageSize, searchTerm, sortBy, sortDirection })
       .then((data) => {
         setCourses(data.items || []);
         setTotal(data.totalCount || 0);
@@ -117,18 +105,39 @@ const Courses = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [pageNumber, pageSize, searchTerm, categoryId, levelId, isActive]);
+  }, [pageNumber, pageSize, searchTerm, sortOrder]);
+
+  const handleSortChange = (value) => {
+    setSortOrder(value);
+    setPageNumber(1);
+    setSearchParams({
+      page: '1',
+      pageSize: pageSize.toString(),
+      searchTerm: searchTerm || "",
+      sortOrder: value || ""
+    });
+  };
 
   const handleSearch = (value) => {
     setSearchTerm(value);
     setPageNumber(1);
-    setSearchParams({ page: '1', pageSize: pageSize.toString() });
+    setSearchParams({
+      page: '1',
+      pageSize: pageSize.toString(),
+      searchTerm: value || "",
+      sortOrder: sortOrder || ""
+    });
   };
 
   const handlePageChange = (page, size) => {
     setPageNumber(page);
     setPageSize(size);
-    setSearchParams({ page: page.toString(), pageSize: size.toString() });
+    setSearchParams({
+      page: page.toString(),
+      pageSize: size.toString(),
+      searchTerm: searchTerm || "",
+      sortOrder: sortOrder || ""
+    });
   };
 
   const handleDelete = async (id) => {
@@ -141,6 +150,7 @@ const Courses = () => {
         pageNumber,
         pageSize,
         searchTerm,
+        sortOrder,
         categoryId,
         levelId,
         isActive: isActive === undefined ? undefined : String(isActive).toLowerCase(),
@@ -239,18 +249,9 @@ const Courses = () => {
       const res = await addCourse(values);
       message.success((res && res.message) || t('admin.courses.createSuccess'));
       // Refresh list
-      const params = {
-        pageNumber,
-        pageSize,
-        searchTerm,
-        categoryId,
-        levelId,
-        isActive: isActive === undefined ? undefined : String(isActive).toLowerCase(),
-      };
-      Object.keys(params).forEach((key) =>
-        params[key] === undefined || params[key] === null ? delete params[key] : null
-      );
-      const data = await fetchCourses(params);
+      // Refresh list
+      const [sortBy, sortDirection] = sortOrder ? sortOrder.split('_') : [undefined, undefined];
+      const data = await fetchCourses({ pageNumber, pageSize, searchTerm, sortBy, sortDirection });
       setCourses(data.items || []);
       setTotal(data.totalCount || 0);
       closeDrawer();
@@ -268,18 +269,9 @@ const Courses = () => {
       const res = await updateCourse(currentCourse.id, values);
       message.success((res && res.message) || t('admin.courses.updateSuccess'));
       // Refresh list
-      const params = {
-        pageNumber,
-        pageSize,
-        searchTerm,
-        categoryId,
-        levelId,
-        isActive: isActive === undefined ? undefined : String(isActive).toLowerCase(),
-      };
-      Object.keys(params).forEach((key) =>
-        params[key] === undefined || params[key] === null ? delete params[key] : null
-      );
-      const data = await fetchCourses(params);
+      // Refresh list
+      const [sortBy, sortDirection] = sortOrder ? sortOrder.split('_') : [undefined, undefined];
+      const data = await fetchCourses({ pageNumber, pageSize, searchTerm, sortBy, sortDirection });
       setCourses(data.items || []);
       setTotal(data.totalCount || 0);
       // Update current course
@@ -351,59 +343,28 @@ const Courses = () => {
       </div>
 
       {/* Search and Controls */}
-      <div className="flex flex-col md:flex-row justify-end items-center gap-4 mb-4">
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="col-span-3">
-            <Input.Search
-              placeholder="Search courses..."
-              allowClear
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onSearch={handleSearch}
-              className="w-full md:w-80"
-            />
-          </div>
-          <div className="col-span-2 flex flex-wrap gap-2">
-            <Select
-              placeholder="All Categories"
-              allowClear
-              style={{ width: 150 }}
-              value={categoryId}
-              onChange={setCategoryId}
-              loading={metaLoading}
-            >
-              {categories.map((category) => (
-                <Option key={category.id} value={category.id}>
-                  {category.name}
-                </Option>
-              ))}
-            </Select>
-            <Select
-              placeholder="All Levels"
-              allowClear
-              style={{ width: 120 }}
-              value={levelId}
-              onChange={setLevelId}
-              loading={metaLoading}
-            >
-              {levels.map((level) => (
-                <Option key={level.id} value={level.id}>
-                  {level.name}
-                </Option>
-              ))}
-            </Select>
-            <Select
-              placeholder="All Status"
-              allowClear
-              style={{ width: 100 }}
-              value={isActive}
-              onChange={setIsActive}
-            >
-              <Option value={true}>Active</Option>
-              <Option value={false}>Inactive</Option>
-            </Select>
-          </div>
-        </div> */}
+      {/* Search and Controls */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <div className="flex flex-1 gap-2 w-full md:w-auto">
+          <Input.Search
+            placeholder={t('admin.courses.searchPlaceholder') || "Search courses..."}
+            allowClear
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onSearch={handleSearch}
+            className="w-full md:w-80"
+          />
+          <Select
+            placeholder={t('admin.courses.sortBy') || "Sort by"}
+            value={sortOrder}
+            onChange={handleSortChange}
+            style={{ width: 180 }}
+            allowClear
+          >
+            <Option value="price_asc">{t('admin.courses.priceLowToHigh') || "Price: Low to High"}</Option>
+            <Option value="price_desc">{t('admin.courses.priceHighToLow') || "Price: High to Low"}</Option>
+          </Select>
+        </div>
         <div className="flex gap-2">
           <Button type="primary" icon={<Plus className="w-4 h-4" />} onClick={openCreate}>
             {t('admin.courses.addCourse')}
