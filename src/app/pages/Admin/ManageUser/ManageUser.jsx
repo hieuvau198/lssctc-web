@@ -182,12 +182,12 @@ export default function ManageUser() {
   return (
     <div className="max-w-7xl mx-auto px-2 py-2">
       {/* Header Title */}
-      <div className="mb-4 flex justify-between items-center">
+      <div className="mb-2 flex justify-between items-center">
         <span className="text-2xl">{t('admin.users.title')}</span>
       </div>
 
       {/* Controls Row: Search/Filter + Actions */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-6">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-4">
         {/* Left Side: Search & Filters (Only for Trainees for now) */}
         <div className="flex flex-col md:flex-row gap-2 w-full xl:w-auto items-center flex-1">
           {['trainees', 'instructors', 'simulation-managers'].includes(activeKey) && (

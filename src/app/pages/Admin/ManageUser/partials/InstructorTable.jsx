@@ -69,7 +69,7 @@ export default function InstructorTable() {
 
   return (
     <div>
-      <div className="min-h-[430px] overflow-auto">
+      <div className="min-h-[380px] overflow-auto">
         {(!data.length && !loadingInstructors) ? (
           <Empty description={t('admin.users.noInstructors')} />
         ) : (
@@ -79,7 +79,7 @@ export default function InstructorTable() {
             pagination={false}
             rowKey="key"
             loading={loadingInstructors}
-            scroll={{ y: 380 }}
+            scroll={{ y: 350 }}
           />
         )}
       </div>

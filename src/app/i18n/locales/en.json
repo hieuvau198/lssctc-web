@@ -2358,13 +2358,19 @@
       "updateSuccess": "Class updated successfully",
       "buttons": {
         "updateClass": "Update Class",
-        "deleteClass": "Delete Class"
+        "deleteClass": "Delete Class",
+        "assignInstructor": "Assign Instructor",
+        "addTrainee": "Add Trainee",
+        "enrollSelected": "Enroll Selected ({{count}})"
       },
       "columns": {
         "className": "Class Name",
         "classCode": "Class Code",
         "capacity": "Capacity",
         "enrollDate": "Enroll Date"
+      },
+      "pagination": {
+        "totalTrainees": "Total of {{total}} trainees"
       },
       "filters": {
         "status": "Status",
@@ -2378,7 +2384,9 @@
         "instructor": "Instructor",
         "members": "Members",
         "instructorCode": "Instructor Code",
-        "hireDate": "Hire Date"
+        "hireDate": "Hire Date",
+        "noInstructor": "No instructor assigned",
+        "noMembers": "No members enrolled"
       },
       "form": {
         "className": "Class Name",
@@ -2405,6 +2413,25 @@
         "descriptionPlaceholder": "Enter class description",
         "noCourses": "No courses available. Please select a program first.",
         "selectProgramFirst": "Please select a program first"
+      },
+      "placeholders": {
+        "className": "Enter class name",
+        "classCode": "Enter class code",
+        "selectProgram": "Select a program",
+        "selectCourse": "Select a course",
+        "description": "Enter class description",
+        "selectInstructor":"Please select an instructor"
+      },
+      "validation": {
+        "classNameRequired": "Please enter class name",
+        "classCodeRequired": "Please enter class code",
+        "programRequired": "Please select a program",
+        "courseRequired": "Please select a course",
+        "startDateRequired": "Please select start date",
+        "endDateRequired": "Please select end date",
+        "endDateAfterStart": "End date must be after start date",
+        "capacityRequired": "Please enter capacity",
+        "capacityMin": "Capacity must be at least 1"
       },
       "drawer": {
         "addClassTitle": "Add New Class"
@@ -2448,6 +2475,7 @@
         "reject": "Reject"
       },
       "modal": {
+        "editClass": "Edit Class",
         "addTraineeTitle": "Add Trainees to Class",
         "enrollSelected": "Enroll Selected ({{count}})"
       }

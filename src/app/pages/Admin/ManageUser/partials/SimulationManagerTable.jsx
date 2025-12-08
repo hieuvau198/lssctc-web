@@ -69,7 +69,7 @@ export default function SimulationManagerTable() {
 
   return (
     <div>
-      <div className="min-h-[430px] overflow-auto">
+      <div className="min-h-[380px] overflow-auto">
         {(!data.length && !loadingSimManagers) ? (
           <Empty description={t('admin.users.noSimulationManagers')} />
         ) : (
@@ -79,7 +79,7 @@ export default function SimulationManagerTable() {
             pagination={false}
             rowKey="key"
             loading={loadingSimManagers}
-            scroll={{ y: 380 }}
+            scroll={{ y: 360 }}
           />
         )}
       </div>

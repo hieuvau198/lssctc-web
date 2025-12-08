@@ -70,7 +70,7 @@ export default function TraineeTable() {
 
   return (
     <div>
-      <div className="min-h-[430px] overflow-auto">
+      <div className="min-h-[380px] overflow-auto">
         {(!data.length && !loadingTrainees) ? (
           <Empty description={t('admin.users.noTrainees')} />
         ) : (
@@ -80,7 +80,7 @@ export default function TraineeTable() {
             pagination={false}
             rowKey="key"
             loading={loadingTrainees}
-            scroll={{ y: 380 }}
+            scroll={{ y: 350 }}
           />
         )}
       </div>
