@@ -1,6 +1,7 @@
 import { Card, Tag, Empty, Modal, App, Button, Skeleton } from 'antd';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { enrollMyClass } from '../../../../apis/Trainee/TraineeEnrollment';
 import { fetchClassesByCourse } from '../../../../apis/ProgramManager/CourseApi';
 import { CalendarOutlined, UserOutlined, InfoCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
@@ -9,6 +10,7 @@ import { getClassStatus } from '../../../../utils/classStatus';
 export default function ClassesSection({ courseId }) {
   const navigate = useNavigate();
   const { message } = App.useApp();
+  const { t } = useTranslation();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
@@ -49,10 +51,10 @@ export default function ClassesSection({ courseId }) {
   const handleEnrollConfirm = async () => {
     if (!selectedClass) return;
     
-    setEnrolling(true);
+      setEnrolling(true);
     try {
       await enrollMyClass({ classId: selectedClass.id });
-      message.success(`Successfully enrolled in "${selectedClass.name || selectedClass.className}"!`);
+      message.success(t('trainee.classes.enrollSuccess', { name: selectedClass.name || selectedClass.className }));
       setEnrollModalOpen(false);
       // Navigate to my classes page
       setTimeout(() => {
@@ -84,7 +86,7 @@ export default function ClassesSection({ courseId }) {
   }
 
   if (classes.length === 0) {
-    return <Empty description="No classes available for this course yet." className="py-8" />;
+    return <Empty description={t('trainee.classes.noClasses')} className="py-8" />;
   }
 
   return (
@@ -111,7 +113,7 @@ export default function ClassesSection({ courseId }) {
                 <div className="text-xs text-slate-500 mb-3 min-h-[1.25rem]">
                   {cls.classCode ? (
                     <>
-                      Code: <span className="font-mono font-medium">{cls.classCode}</span>
+                      {t('trainee.classes.code')} <span className="font-mono font-medium">{cls.classCode}</span>
                     </>
                   ) : (
                     <span className="invisible">-</span>
@@ -123,9 +125,9 @@ export default function ClassesSection({ courseId }) {
                     <CalendarOutlined className="text-slate-400" />
                     <span>
                       {cls.startDate ? (
-                        <>Start: {new Date(cls.startDate).toLocaleDateString('en-US')}</>
+                        <>{t('trainee.classes.start')} {new Date(cls.startDate).toLocaleDateString('en-US')}</>
                       ) : (
-                        <span className="text-slate-400">Start: TBD</span>
+                        <span className="text-slate-400">{t('trainee.classes.start')} TBD</span>
                       )}
                     </span>
                   </div>
@@ -133,9 +135,9 @@ export default function ClassesSection({ courseId }) {
                     <CalendarOutlined className="text-slate-400" />
                     <span>
                       {cls.endDate ? (
-                        <>End: {new Date(cls.endDate).toLocaleDateString('en-US')}</>
+                        <>{t('trainee.classes.end')} {new Date(cls.endDate).toLocaleDateString('en-US')}</>
                       ) : (
-                        <span className="text-slate-400">End: TBD</span>
+                        <span className="text-slate-400">{t('trainee.classes.end')} TBD</span>
                       )}
                     </span>
                   </div>
@@ -149,7 +151,7 @@ export default function ClassesSection({ courseId }) {
                   disabled={enrolling}
                   className="mt-auto"
                 >
-                  Enroll Class
+                  {t('trainee.classes.enrollButton')}
                 </Button>
               </div>
             </Card>
@@ -162,15 +164,15 @@ export default function ClassesSection({ courseId }) {
         title={
           <div className="flex items-center gap-2">
             <CheckCircleOutlined className="text-blue-500 text-xl" />
-            <span className="text-lg font-semibold">Confirm Class Enrollment</span>
+            <span className="text-lg font-semibold">{t('trainee.classes.confirmTitle')}</span>
           </div>
         }
         open={enrollModalOpen}
         onOk={handleEnrollConfirm}
         onCancel={handleEnrollCancel}
         confirmLoading={enrolling}
-        okText="Confirm Enrollment"
-        cancelText="Cancel"
+        okText={t('trainee.classes.confirmEnrollment')}
+        cancelText={t('common.cancel')}
         centered
         width={600}
         okButtonProps={{
@@ -242,8 +244,7 @@ export default function ClassesSection({ courseId }) {
             
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-gray-700">
-                <strong className="text-blue-700">Note:</strong> Are you sure you want to enroll in this class? 
-                After successful enrollment, you can start learning immediately.
+                <strong className="text-blue-700">{t('trainee.classes.noteTitle')}</strong> {t('trainee.classes.noteBody')}
               </p>
             </div>
           </div>

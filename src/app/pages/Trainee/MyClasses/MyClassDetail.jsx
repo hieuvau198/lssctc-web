@@ -118,7 +118,7 @@ export default function MyClassDetail() {
     },
     {
       key: 'attendance',
-      label: t('attendance.attendance') || 'Attendance',
+      label: t('attendance.attendance'),
       children: (
         <TraineeAttendance classId={id} />
       ),

@@ -101,7 +101,7 @@ export default function CourseDetail() {
           <PageNav
             className="mb-4"
             items={breadcrumbItems}
-            rootLabel="Home"
+            rootLabel={t('common.home')}
             rootHref="/"
             hideIds
           />
