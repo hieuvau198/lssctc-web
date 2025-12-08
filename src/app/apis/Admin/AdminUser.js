@@ -142,6 +142,16 @@ export async function getUserById(id) {
 
 }
 
+export async function updateUser(id, payload = {}) {
+	try {
+		const { data } = await apiClient.put(`/Users/${id}`, payload);
+		return data; // API returns 204 No Content typically, but if 200 data is returned
+	} catch (err) {
+		console.error('Error updating user:', err);
+		throw err;
+	}
+}
+
 export async function createTrainee(payload = {}) {
 	try {
 		const { data } = await apiClient.post(`/Users/trainees`, payload);
@@ -166,7 +176,7 @@ export async function createInstructor(payload = {}) {
 
 export async function createSimulationManager(payload = {}) {
 	try {
-		const { data } = await apiClient.post(`/Users/simulation-managers`, payload);
+		const { data } = await apiClient.post(`/Users/simulation-managers`, { ...payload, role: 'SimulationManager' });
 		if (!data) throw new Error('Failed to create simulation manager');
 		return mapUserFromApi(data);
 	} catch (err) {

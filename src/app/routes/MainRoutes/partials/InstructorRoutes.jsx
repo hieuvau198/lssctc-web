@@ -7,6 +7,7 @@ import ClassDetailSections from "../../../pages/Instructor/InstructorClasses/Cla
 import ClassDetailMembers from "../../../pages/Instructor/InstructorClasses/ClassDetailMembers";
 import ClassDetailSchedule from "../../../pages/Instructor/InstructorClasses/ClassDetailSchedule";
 import SlotAttendance from "../../../pages/Instructor/InstructorClasses/SlotAttendance";
+import InstructorFinalExam from "../../../pages/Instructor/InstructorFinalExam/InstructorFinalExam";
 import InstructorSchedule from "../../../pages/Instructor/InstructorSchedule/InstructorSchedule";
 import InstructorSections from "../../../pages/Instructor/InstructorSections/InstructorSections";
 import InstructorMaterials from "../../../pages/Instructor/InstructorMaterials/InstructorMaterials";
@@ -41,6 +42,7 @@ export default function InstructorRoutes() {
           <Route path="sections" element={<ClassDetailSections />} />
           <Route path="members" element={<ClassDetailMembers />} />
           <Route path="schedule" element={<ClassDetailSchedule />} />
+          <Route path="final-exam" element={<InstructorFinalExam />} />
         </Route>
         <Route path="/classes/:classId/attendance/:timeslotId" element={<SlotAttendance />} />
         <Route path="/sections" element={<InstructorSections />} />

@@ -97,6 +97,17 @@ export const getTraineeClassTimeslots = async (classId) => {
 };
 
 /**
+ * GET /api/Timeslots/class/{classId}/my-attendance
+ * API cho học viên lấy thông tin điểm danh của chính họ cho một lớp
+ * @param {string|number} classId - ID của lớp học
+ * @returns {Promise}
+ */
+export const getMyClassAttendance = async (classId) => {
+  const response = await apiClient.get(`/Timeslots/class/${classId}/my-attendance`);
+  return response.data;
+};
+
+/**
  * GET /api/Timeslots/trainee-schedule/week
  * API cho học viên xem danh sách tất cả slot cho 1 tuần
  * @param {Object} params - Query params (có thể bao gồm weekStart, weekEnd)
@@ -114,5 +125,6 @@ export default {
   getAttendanceList,
   submitAttendance,
   getTraineeClassTimeslots,
+  getMyClassAttendance,
   getTraineeWeeklySchedule,
 };

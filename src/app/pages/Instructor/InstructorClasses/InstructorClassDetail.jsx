@@ -13,7 +13,7 @@ export default function InstructorClassDetail() {
   const activeTab = useMemo(() => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
     const lastSegment = pathSegments[pathSegments.length - 1];
-    if (['overview', 'sections', 'members', 'schedule'].includes(lastSegment)) {
+    if (['overview', 'sections', 'members', 'schedule', 'final-exam'].includes(lastSegment)) {
       return lastSegment;
     }
     return 'overview';
@@ -40,6 +40,10 @@ export default function InstructorClassDetail() {
     {
       key: "schedule",
       label: <Link to={`/instructor/classes/${classId}/schedule`}>{t('attendance.classSchedule')}</Link>,
+    },
+    {
+      key: "final-exam",
+      label: <Link to={`/instructor/classes/${classId}/final-exam`}>{t('instructor.finalExam.tabTitle')}</Link>,
     },
   ];
 

@@ -1,4 +1,4 @@
-import { App, Button, Col, Drawer, Form, Image, Input, Row } from 'antd';
+import { Button, Col, Drawer, Form, Image, Input, Row, message } from 'antd';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createInstructor, createSimulationManager, createTrainee } from '../../../../apis/Admin/AdminUser';
@@ -8,7 +8,6 @@ export default function DrawerAdd({ visible = false, onClose = () => { }, role =
     const [loading, setLoading] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState(null);
     const [form] = Form.useForm();
-    const { message } = App.useApp();
 
     const getTitle = (r) => {
         const key = String(r || '').toLowerCase().replace(/[^a-z0-9]/g, '');

@@ -288,7 +288,7 @@ export default function ManageUser() {
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
         role={getRole()}
-        onSuccess={() => setRefreshTrigger(prev => prev + 1)}
+        onCreated={() => setRefreshTrigger(prev => prev + 1)}
       />
 
       <ImportTraineeModal
