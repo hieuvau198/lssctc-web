@@ -7,7 +7,7 @@ import apiClient from '../../libs/axios';
  * @returns {Promise<Object>}
  */
 export async function getMyPartialDetail(partialId) {
-  const response = await apiClient.get(`/api/finalExams/partial/${partialId}/my-detail`);
+  const response = await apiClient.get(`/FinalExams/partial/${partialId}/my-detail`);
   return response.data;
 }
 
@@ -19,7 +19,7 @@ export async function getMyPartialDetail(partialId) {
  * @returns {Promise<Object>}
  */
 export async function startTheoryExam(partialId, payload) {
-  const response = await apiClient.post(`/api/finalExams/partial/${partialId}/start-te`, payload);
+  const response = await apiClient.post(`/FinalExams/partial/${partialId}/start-te`, payload);
   return response.data;
 }
 
@@ -31,7 +31,7 @@ export async function startTheoryExam(partialId, payload) {
  * @returns {Promise<Object>}
  */
 export async function startSimulationExam(partialId, payload) {
-  const response = await apiClient.post(`/api/finalExams/partial/${partialId}/start-se`, payload);
+  const response = await apiClient.post(`/FinalExams/partial/${partialId}/start-se`, payload);
   return response.data;
 }
 
@@ -42,7 +42,7 @@ export async function startSimulationExam(partialId, payload) {
  * @returns {Promise<Object>}
  */
 export async function getMyPracticalSubmission(partialId) {
-  const response = await apiClient.get(`/api/finalExams/partial/${partialId}/my-pe-submission`);
+  const response = await apiClient.get(`/FinalExams/partial/${partialId}/my-pe-submission`);
   return response.data;
 }
 
@@ -53,7 +53,7 @@ export async function getMyPracticalSubmission(partialId) {
  * @returns {Promise<Object>}
  */
 export async function createPartial(payload) {
-  const response = await apiClient.post('/api/finalExams/partial', payload);
+  const response = await apiClient.post('/FinalExams/partial', payload);
   return response.data;
 }
 
@@ -64,7 +64,7 @@ export async function createPartial(payload) {
  * @returns {Promise<Object>}
  */
 export async function createClassPartial(payload) {
-  const response = await apiClient.post('/api/finalExams/class-partial', payload);
+  const response = await apiClient.post('/FinalExams/class-partial', payload);
   return response.data;
 }
 
@@ -75,7 +75,7 @@ export async function createClassPartial(payload) {
  * @returns {Promise<Object>}
  */
 export async function updateClassPartialConfig(payload) {
-  const response = await apiClient.put('/api/finalExams/class-partial-config', payload);
+  const response = await apiClient.put('/FinalExams/class-partial-config', payload);
   return response.data;
 }
 
@@ -87,7 +87,7 @@ export async function updateClassPartialConfig(payload) {
  * @returns {Promise<Object>}
  */
 export async function updatePartial(id, payload) {
-  const response = await apiClient.put(`/api/finalExams/partial/${id}`, payload);
+  const response = await apiClient.put(`/FinalExams/partial/${id}`, payload);
   return response.data;
 }
 
@@ -98,7 +98,7 @@ export async function updatePartial(id, payload) {
  * @returns {Promise<void>}
  */
 export async function deletePartial(id) {
-  const response = await apiClient.delete(`/api/finalExams/partial/${id}`);
+  const response = await apiClient.delete(`/FinalExams/partial/${id}`);
   return response.data;
 }
 
@@ -110,7 +110,7 @@ export async function deletePartial(id) {
  * @returns {Promise<Object>}
  */
 export async function submitPracticalEvaluation(partialId, payload) {
-  const response = await apiClient.post(`/api/finalExams/submit/pe/${partialId}`, payload);
+  const response = await apiClient.post(`/FinalExams/submit/pe/${partialId}`, payload);
   return response.data;
 }
 
@@ -122,7 +122,7 @@ export async function submitPracticalEvaluation(partialId, payload) {
  * @returns {Promise<Object>}
  */
 export async function submitTheoryExam(partialId, payload) {
-  const response = await apiClient.post(`/api/finalExams/submit/te/${partialId}`, payload);
+  const response = await apiClient.post(`/FinalExams/submit/te/${partialId}`, payload);
   return response.data;
 }
 
@@ -134,7 +134,7 @@ export async function submitTheoryExam(partialId, payload) {
  * @returns {Promise<Object>}
  */
 export async function submitSimulationExam(partialId, payload) {
-  const response = await apiClient.post(`/api/finalExams/submit/se/${partialId}`, payload);
+  const response = await apiClient.post(`/FinalExams/submit/se/${partialId}`, payload);
   return response.data;
 }
 
