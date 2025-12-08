@@ -88,13 +88,6 @@ export default function InstructorQuizzes() {
       fixed: 'left',
     },
     {
-      title: t('instructor.quizzes.table.quizCode'),
-      dataIndex: 'id',
-      key: 'id',
-      width: 100,
-      render: (id) => <span className="text-gray-500">Q-{id}</span>
-    },
-    {
       title: t('instructor.quizzes.table.name'),
       dataIndex: 'name',
       key: 'name',
