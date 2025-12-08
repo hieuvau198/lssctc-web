@@ -42,12 +42,28 @@ export async function getUsers(params = {}) {
 
 export async function getTrainees(params = {}) {
 	try {
-		const qs = buildQuery(params);
+		const apiParams = {
+			pageNumber: params.pageNumber || params.page || 1,
+			pageSize: params.pageSize || 10,
+		};
+		if (params.searchTerm) apiParams.searchTerm = params.searchTerm;
+		if (params.isActive !== undefined && params.isActive !== null && params.isActive !== '') {
+			apiParams.isActive = params.isActive;
+		}
+
+		const qs = buildQuery(apiParams);
 		const { data } = await apiClient.get(`/Users/trainees${qs}`);
-		if (!data) return { items: [], total: 0 };
-		const items = Array.isArray(data) ? data.map(mapUserFromApi) : (Array.isArray(data.items) ? data.items.map(mapUserFromApi) : []);
-		const total = data.total || data.totalCount || items.length;
-		return { items, total: Number(total) || items.length, raw: data };
+
+		if (!data) return { items: [], totalCount: 0 };
+
+		const items = (data.items || []).map(mapUserFromApi);
+		return {
+			items,
+			totalCount: data.totalCount || 0,
+			page: data.page,
+			pageSize: data.pageSize,
+			totalPages: data.totalPages
+		};
 	} catch (err) {
 		console.error('Error fetching trainees:', err);
 		throw err;
@@ -56,12 +72,28 @@ export async function getTrainees(params = {}) {
 
 export async function getInstructors(params = {}) {
 	try {
-		const qs = buildQuery(params);
+		const apiParams = {
+			pageNumber: params.pageNumber || params.page || 1,
+			pageSize: params.pageSize || 10,
+		};
+		if (params.searchTerm) apiParams.searchTerm = params.searchTerm;
+		if (params.isActive !== undefined && params.isActive !== null && params.isActive !== '') {
+			apiParams.isActive = params.isActive;
+		}
+
+		const qs = buildQuery(apiParams);
 		const { data } = await apiClient.get(`/Users/instructors${qs}`);
-		if (!data) return { items: [], total: 0 };
-		const items = Array.isArray(data) ? data.map(mapUserFromApi) : (Array.isArray(data.items) ? data.items.map(mapUserFromApi) : []);
-		const total = data.total || data.totalCount || items.length;
-		return { items, total: Number(total) || items.length, raw: data };
+
+		if (!data) return { items: [], totalCount: 0 };
+
+		const items = (data.items || []).map(mapUserFromApi);
+		return {
+			items,
+			totalCount: data.totalCount || 0,
+			page: data.page,
+			pageSize: data.pageSize,
+			totalPages: data.totalPages
+		};
 	} catch (err) {
 		console.error('Error fetching instructors:', err);
 		throw err;
@@ -70,12 +102,28 @@ export async function getInstructors(params = {}) {
 
 export async function getSimulationManagers(params = {}) {
 	try {
-		const qs = buildQuery(params);
+		const apiParams = {
+			pageNumber: params.pageNumber || params.page || 1,
+			pageSize: params.pageSize || 10,
+		};
+		if (params.searchTerm) apiParams.searchTerm = params.searchTerm;
+		if (params.isActive !== undefined && params.isActive !== null && params.isActive !== '') {
+			apiParams.isActive = params.isActive;
+		}
+
+		const qs = buildQuery(apiParams);
 		const { data } = await apiClient.get(`/Users/simulation-managers${qs}`);
-		if (!data) return { items: [], total: 0 };
-		const items = Array.isArray(data) ? data.map(mapUserFromApi) : (Array.isArray(data.items) ? data.items.map(mapUserFromApi) : []);
-		const total = data.total || data.totalCount || items.length;
-		return { items, total: Number(total) || items.length, raw: data };
+
+		if (!data) return { items: [], totalCount: 0 };
+
+		const items = (data.items || []).map(mapUserFromApi);
+		return {
+			items,
+			totalCount: data.totalCount || 0,
+			page: data.page,
+			pageSize: data.pageSize,
+			totalPages: data.totalPages
+		};
 	} catch (err) {
 		console.error('Error fetching simulation managers:', err);
 		throw err;

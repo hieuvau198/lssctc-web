@@ -34,8 +34,8 @@ const ManagerProgramList = () => {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchValue, setSearchValue] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchValue, setSearchValue] = useState(searchParams.get('searchTerm') || "");
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('searchTerm') || "");
   const [pageNumber, setPageNumber] = useState(parseInt(searchParams.get('page')) || 1);
   const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [total, setTotal] = useState(0);
@@ -57,10 +57,8 @@ const ManagerProgramList = () => {
     setLoading(true);
     fetchPrograms({ pageNumber, pageSize, searchTerm })
       .then((data) => {
-        // normalize response: some APIs return an array, others return { items, totalCount }
-        const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
-        setPrograms(resp.items || []);
-        setTotal(resp.totalCount || resp.total || 0);
+        setPrograms(data.items || []);
+        setTotal(data.totalCount || 0);
         setLoading(false);
       })
       .catch((err) => {
@@ -72,13 +70,21 @@ const ManagerProgramList = () => {
   const handleSearch = (value) => {
     setSearchTerm(value);
     setPageNumber(1);
-    setSearchParams({ page: '1', pageSize: pageSize.toString() });
+    setSearchParams({
+      page: '1',
+      pageSize: pageSize.toString(),
+      searchTerm: value || ""
+    });
   };
 
   const handlePageChange = (page, size) => {
     setPageNumber(page);
     setPageSize(size);
-    setSearchParams({ page: page.toString(), pageSize: size.toString() });
+    setSearchParams({
+      page: page.toString(),
+      pageSize: size.toString(),
+      searchTerm: searchTerm || ""
+    });
   };
 
   const handleDelete = async (id) => {
@@ -86,11 +92,10 @@ const ManagerProgramList = () => {
     try {
       await deleteProgram(id);
       message.success(t('admin.programs.deleteSuccess'));
-      // Refresh list (normalize response)
+      // Refresh list
       fetchPrograms({ pageNumber, pageSize, searchTerm }).then((data) => {
-        const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
-        setPrograms(resp.items || []);
-        setTotal(resp.totalCount || resp.total || 0);
+        setPrograms(data.items || []);
+        setTotal(data.totalCount || 0);
       });
       // Close drawer if current program is deleted
       if (currentProgram?.id === id) {
@@ -180,11 +185,10 @@ const ManagerProgramList = () => {
     try {
       await createProgram(values);
       message.success(t('admin.programs.createSuccess'));
-  // Refresh list (normalize response)
-  const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
-  const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
-  setPrograms(resp.items || []);
-  setTotal(resp.totalCount || resp.total || 0);
+      // Refresh list
+      const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
+      setPrograms(data.items || []);
+      setTotal(data.totalCount || 0);
       closeDrawer();
     } catch (err) {
       message.error(err.message || 'Create failed');
@@ -199,11 +203,10 @@ const ManagerProgramList = () => {
     try {
       await updateProgramBasic(currentProgram.id, values);
       message.success(t('admin.programs.updateSuccess'));
-  // Refresh list (normalize response)
-  const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
-  const resp = Array.isArray(data) ? { items: data, totalCount: data.length } : (data || {});
-  setPrograms(resp.items || []);
-  setTotal(resp.totalCount || resp.total || 0);
+      // Refresh list
+      const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
+      setPrograms(data.items || []);
+      setTotal(data.totalCount || 0);
       // Update current program
       const updated = data.items?.find(p => p.id === currentProgram.id);
       setCurrentProgram(updated || null);
