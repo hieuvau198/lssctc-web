@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { mockExamQuestions, mockFinalExam } from '../../../mocks/finalExam';
 import CryptoJS from 'crypto-js';
+import PartialApi from '../../../apis/FinalExam/PartialApi';
 import HeaderTimer from './partials/HeaderTimer';
 import QuestionCard from './partials/QuestionCard';
 import QuestionSidebar from './partials/QuestionSidebar';
@@ -56,8 +57,10 @@ export default function ExamTaking() {
     const [answers, setAnswers] = useState({});
     const answersRef = useRef(answers);
     const [timeRemaining, setTimeRemaining] = useState(() => (examData?.duration ? examData.duration * 60 : 3600)); // in seconds
+
     const [showSubmitModal, setShowSubmitModal] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [leaveViolations, setLeaveViolations] = useState(0);
     const hiddenTimerRef = useRef(null);
     const leaveViolationsRef = useRef(0); // track violations without triggering re-render inside event handler
@@ -272,34 +275,59 @@ export default function ExamTaking() {
         });
     };
 
-    const handleFinalSubmit = () => {
-        // Calculate score
-        let correctCount = 0;
-        questions.forEach((q) => {
-            if (answers[q.id] === q.correctAnswer) {
-                correctCount++;
-            }
-        });
+    const handleFinalSubmit = async () => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
 
-        const score = Math.round((correctCount / questions.length) * 100);
+        const answerList = Object.entries(answers).map(([qId, oId]) => ({
+            questionId: parseInt(qId),
+            optionId: oId // optionId is already the value in answers state
+        }));
+
+        // Create Vietnam time timestamp (UTC+7)
+        const now = new Date();
+        // Adjust for timezone offset manually to ensure +07:00 string representation
+        const vnTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+        const submissionTime = vnTime.toISOString().replace('Z', '+07:00');
+
+        const payload = {
+            answers: answerList,
+            submittedAt: submissionTime
+        };
 
         try {
-            if (id) {
-                sessionStorage.removeItem(`finalExam_${id}_start`);
-                sessionStorage.removeItem(`finalExam_${id}_data`);
-                clearAnswersStorage();
-            }
-        } catch (e) { }
-        // Navigate to result page
-        navigate(`/final-exam/${id}/result`, {
-            state: {
-                examData,
-                answers,
-                score,
-                correctCount,
-                totalQuestions: questions.length,
-            },
-        });
+            const result = await PartialApi.submitTheoryExam(id, payload);
+            message.success('Nộp bài thành công!');
+
+            // Clear local storage
+            try {
+                if (id) {
+                    sessionStorage.removeItem(`finalExam_${id}_start`);
+                    sessionStorage.removeItem(`finalExam_${id}_data`);
+                    sessionStorage.removeItem(`finalExam_${id}_questions`);
+                    clearAnswersStorage();
+                }
+            } catch (e) { }
+
+            // Navigate to result page with API result
+            navigate(`/final-exam/${id}/result`, {
+                state: {
+                    examData,
+                    resultData: result, // Pass the full API result
+                    score: result.totalMarks, // or use result.partials[0]?.marks if structure matches
+                    isPass: result.isPass,
+                    // keep these for fallback display if needed
+                    correctCount: result.partials?.[0]?.marks || 0, // approximation if count not returned
+                    totalQuestions: questions.length,
+                },
+            });
+        } catch (error) {
+            console.error('Submit error:', error);
+            const errorMsg = error.response?.data?.message || 'Không thể nộp bài. Vui lòng thử lại.';
+            message.error(errorMsg);
+            setIsSubmitting(false);
+            // Keep modal open if it was open, or user can try again
+        }
     };
 
     const answeredCount = Object.keys(answers).length;
@@ -575,7 +603,16 @@ export default function ExamTaking() {
                 </div>
             </div>
 
-            <SubmitModal open={showSubmitModal} onOk={() => { setShowSubmitModal(false); handleFinalSubmit(); }} onCancel={() => setShowSubmitModal(false)} total={questions.length} answeredCount={answeredCount} />
+            <SubmitModal
+                open={showSubmitModal}
+                onOk={() => { handleFinalSubmit(); }}
+                onCancel={() => {
+                    if (!isSubmitting) setShowSubmitModal(false);
+                }}
+                confirmLoading={isSubmitting}
+                total={questions.length}
+                answeredCount={answeredCount}
+            />
         </div>
     );
 }
