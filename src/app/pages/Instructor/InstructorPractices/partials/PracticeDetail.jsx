@@ -42,7 +42,7 @@ export default function PracticeDetail() {
   // --- Render Logic ---
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         <Spin size="large" tip={t('common.loading')} className="w-full py-16" />
       </div>
     );
@@ -50,7 +50,7 @@ export default function PracticeDetail() {
 
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         <Alert message={t('common.error')} description={error} type="error" showIcon />
       </div>
     );

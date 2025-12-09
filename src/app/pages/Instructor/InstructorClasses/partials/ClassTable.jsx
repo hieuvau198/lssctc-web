@@ -99,8 +99,8 @@ const ClassTable = ({
   ];
 
   return (
-    <div className="rounded-lg shadow overflow-hidden">
-      <div className="overflow-hidden min-h-[500px]">
+    <div className="rounded-lg shadow overflow-hidden ">
+      <div className="overflow-hidden min-h-[450px] border border-gray-200">
         <Table
           columns={tableColumns}
           dataSource={classes}

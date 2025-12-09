@@ -113,7 +113,7 @@ const ClassSections = ({ courseId, classId }) => {
   if (sections.length === 0) {
     return (
       <div className="p-6">
-        <div className="bg-slate-50 rounded-lg border border-slate-200 p-8 text-center">
+        <div className="bg-slate-50 rounded-lg border border-slate-200 p-6 text-center">
           <ReadOutlined className="text-4xl text-slate-400 mb-3" />
           <p className="text-slate-600 font-medium mb-1">{t('instructor.classes.sections.noSections')}</p>
           <p className="text-sm text-slate-500">{t('instructor.classes.sections.noSectionsDesc')}</p>

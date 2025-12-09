@@ -860,6 +860,7 @@
       "activityDetails": "Activity Details",
       "addActivity": "Add Activity",
       "noClasses": "No classes",
+      "noClassesDesc": "You don't have any classes assigned yet",
       "loadFailed": "Load classes failed",
       "instructorIdNotAvailable": "Instructor ID not available. Please log in again.",
       "table": {
@@ -1130,6 +1131,7 @@
     },
     "materials": {
       "title": "Materials",
+      "totalMaterials": "materials",
       "createMaterial": "Create Material",
       "addMaterial": "Add Material",
       "editMaterial": "Edit Material",
@@ -1384,6 +1386,7 @@
       },
       "detail": {
         "quizId": "Quiz ID: {{id}}",
+        "passCriteria": "Pass Criteria",
         "passScoreCriteria": "Pass Score Criteria",
         "outOfRequired": "out of {{total}} pts required",
         "totalScore": "Total Score",
@@ -1510,6 +1513,7 @@
     "finalExam": {
       "tabTitle": "Final Exam",
       "title": "Final Exam Management",
+      "subtitle": "Manage theoretical, simulation, and practical exams",
       "description": "Manage Theory Exam (TE), Simulation Exam (SE), and Practical Exam (PE). The combination of all three exams will result in the Final Exam (FE) score.",
       "noClass": "No class selected",
       "teTab": "Theory Exam (TE)",
@@ -1526,6 +1530,7 @@
       "totalTasks": "Total Tasks",
       "duration": "Duration",
       "passingScore": "Passing Score",
+      "submitScore": "Submit Score",
       "createExam": "Create Exam",
       "editExam": "Edit Exam",
       "viewExam": "View exam details",

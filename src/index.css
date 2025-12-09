@@ -5,3 +5,68 @@
   font-optical-sizing: auto;
   font-style: normal;
 }
+
+/* Modern Table Styling */
+.modern-table .ant-table {
+  background: transparent;
+}
+
+.modern-table .ant-table-thead > tr > th {
+  background: linear-gradient(to right, #f8fafc, #f1f5f9);
+  font-weight: 600;
+  color: #334155;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.modern-table .ant-table-tbody > tr {
+  transition: all 0.2s;
+}
+
+.modern-table .ant-table-tbody > tr:hover > td {
+  background: #f8fafc;
+}
+
+.modern-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Modern Tabs Styling */
+.modern-tabs .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.modern-tabs .ant-tabs-tab {
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.modern-tabs .ant-tabs-tab-active {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+}
+
+.modern-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: white;
+}
+
+.modern-tabs .ant-tabs-content {
+  padding: 24px;
+}
+
+/* Modern Collapse Styling */
+.modern-collapse .ant-collapse-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.modern-collapse .ant-collapse-header {
+  background: linear-gradient(to right, #f8fafc, #f1f5f9);
+  font-weight: 600;
+  padding: 16px 20px;
+}
+
+.modern-collapse .ant-collapse-content {
+  border-top: 1px solid #e2e8f0;
+}

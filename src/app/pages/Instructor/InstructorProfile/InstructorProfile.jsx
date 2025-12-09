@@ -60,8 +60,8 @@ export default function InstructorProfile() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <Skeleton avatar active paragraph={{ rows: 8 }} />
           </div>
         </div>
@@ -72,8 +72,8 @@ export default function InstructorProfile() {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <Alert
               message={t('instructor.profile.error.errorLoadingProfile')}
               description={error}
@@ -92,8 +92,8 @@ export default function InstructorProfile() {
   if (!profileData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="text-center text-gray-500">{t('instructor.profile.instructorNotFound')}</div>
           </div>
         </div>
@@ -114,11 +114,11 @@ export default function InstructorProfile() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         {/* Main Profile Card */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header Section with Avatar */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-12 text-white relative">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white relative">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
             
@@ -174,7 +174,7 @@ export default function InstructorProfile() {
           </div>
 
           {/* Details Section */}
-          <div className="p-8">
+          <div className="p-6">
             <Row gutter={[32, 32]}>
               {/* Personal Information */}
               <Col xs={24} lg={12}>
