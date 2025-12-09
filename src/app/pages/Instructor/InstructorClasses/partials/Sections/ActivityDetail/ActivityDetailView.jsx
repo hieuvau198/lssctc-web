@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Tag } from 'antd';
+import { Typography, Tag, Divider } from 'antd'; // Added Divider
 import {
   BookOutlined,
   FileTextOutlined,
@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import TraineeActivityRecords from './TraineeActivityRecords';
+import ActivitySessionManager from './ActivitySessionManager'; // <-- Import
 
 const { Title, Paragraph } = Typography;
 
@@ -32,6 +33,9 @@ const ActivityDetailView = ({ activity, classId, sectionId }) => {
     return null;
   }
 
+  // Check if we should show session manager (Quiz or Practice)
+  const isSessionManagable = ['quiz', 'practice'].includes(activity.type?.toLowerCase());
+
   return (
     <div>
       <Title level={3}>
@@ -47,6 +51,16 @@ const ActivityDetailView = ({ activity, classId, sectionId }) => {
       <Paragraph type="secondary" className="mb-6">
         {activity.description}
       </Paragraph>
+
+      {/* --- ADDED: Session Manager --- */}
+      {isSessionManagable && (
+        <ActivitySessionManager 
+          classId={classId} 
+          activityId={activity.id} 
+        />
+      )}
+      
+      {isSessionManagable && <Divider />}
 
       {/* Always render TraineeActivityRecords regardless of type.
          This allows viewing progress for Materials, Quizzes, and Practices.
