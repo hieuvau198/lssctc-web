@@ -210,18 +210,37 @@ export default function PEExam({ classId }) {
         width: '10%',
         render: (_, r) => {
           const p = r.partials?.find(p => p.type === 'Practical');
-          return p?.marks !== null && p?.marks !== undefined ? <Tag color="blue">{p.marks}</Tag> : '-';
+          return p?.marks !== null ? <Tag color="blue">{p.marks}</Tag> : '-';
         }
-      },
+    },
+    {
+      title: 'Result',
+      width: '10%',
+      render: (_, r) => {
+         const p = r.partials?.find(p => p.type === 'Practical');
+         if (!p) return '-';
+
+         if (p.status === 'NotYet') return <Tag color="default">Not Yet</Tag>;
+
+         if (p.isPass === true) return <Tag color="success">PASS</Tag>;
+         if (p.isPass === false) return <Tag color="error">FAIL</Tag>;
+         return '-';
+      }
+    },
     {
       title: 'Status',
       width: '15%',
       render: (_, r) => {
           const p = r.partials?.find(p => p.type === 'Practical');
+          let statusText = p?.status || 'Pending';
           let color = 'default';
+
           if (p?.status === 'Approved') color = 'green';
           else if (p?.status === 'Submitted') color = 'orange';
-          return <Tag color={color}>{p?.status || 'Pending'}</Tag>
+
+          if (statusText === 'NotYet') statusText = 'Not Yet';
+
+          return <Tag color={color}>{statusText}</Tag>;
       }
     },
     {
