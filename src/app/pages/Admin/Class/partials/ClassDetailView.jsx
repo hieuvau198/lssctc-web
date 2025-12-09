@@ -6,6 +6,7 @@ import EditClassStatus from "../../../../components/ClassStatus/EditClassStatus"
 import { getClassStatus } from "../../../../utils/classStatus";
 import InstructorCard from "./InstructorCard";
 import ClassMembersTable from "./ClassMembersTable";
+import ClassTimeslotManage from "./ClassTimeslotManage"; // Import the new component
 import { ArrowLeft } from "lucide-react";
 
 const ClassDetailView = ({ classItem, loading, onRefresh }) => {
@@ -71,6 +72,9 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
 
       {/* Members / Trainees Table */}
       <ClassMembersTable classItem={classItem} />
+
+      {/* Schedule / Timeslots - Added Component */}
+      <ClassTimeslotManage classItem={classItem} />
     </div>
   );
 };

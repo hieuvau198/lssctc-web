@@ -12,6 +12,18 @@ export const createTimeslot = async (data) => {
 };
 
 /**
+ * PUT /api/Timeslots/{id}
+ * API cho Admin/Giảng viên cập nhật timeslot
+ * @param {number|string} id - ID timeslot
+ * @param {Object} data - Dữ liệu cập nhật
+ * @returns {Promise}
+ */
+export const updateTimeslot = async (id, data) => {
+  const response = await apiClient.put(`/Timeslots/${id}`, data);
+  return response.data;
+};
+
+/**
  * GET /api/Timeslots/class/{classId}/instructor-view
  * API cho giảng viên xem danh sách slot dạy cho 1 lớp
  * @param {string|number} classId - ID của lớp học
@@ -120,6 +132,7 @@ export const getTraineeWeeklySchedule = async (params = {}) => {
 
 export default {
   createTimeslot,
+  updateTimeslot,
   getInstructorClassTimeslots,
   getInstructorWeeklySchedule,
   getAttendanceList,
