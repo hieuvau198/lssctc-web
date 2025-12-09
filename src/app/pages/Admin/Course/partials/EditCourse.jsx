@@ -107,11 +107,15 @@ const EditCourse = ({
           <Form.Item
             label={t('admin.courses.form.name')}
             name="name"
-            rules={[{ required: true, message: t('admin.courses.form.nameRequired') }]}
+            validateTrigger={['onBlur', 'onChange']}
+            rules={[
+              { required: true, message: t('admin.courses.form.nameRequired') },
+              { min: 3, message: t('admin.courses.form.nameMin') },
+              { max: 200, message: t('admin.courses.form.nameMax') }
+            ]}
             className={embedded ? "md:col-span-2" : undefined}
           >
-            <Input 
-              maxLength={120}
+            <Input
               showCount
               placeholder={t('admin.courses.form.namePlaceholder')}
             />
@@ -122,11 +126,15 @@ const EditCourse = ({
         <Form.Item
           label={t('admin.courses.form.name')}
           name="name"
-          rules={[{ required: true, message: t('admin.courses.form.nameRequired') }]}
+          validateTrigger={['onBlur', 'onChange']}
+          rules={[
+            { required: true, message: t('admin.courses.form.nameRequired') },
+            { min: 3, message: t('admin.courses.form.nameMin') },
+            { max: 200, message: t('admin.courses.form.nameMax') }
+          ]}
           className={embedded ? "md:col-span-2" : undefined}
         >
-          <Input 
-            maxLength={120}
+          <Input
             showCount
             placeholder={t('admin.courses.form.namePlaceholder')}
           />
@@ -136,6 +144,7 @@ const EditCourse = ({
       <Form.Item
         label={t('common.category')}
         name="categoryId"
+        validateTrigger={['onBlur', 'onChange']}
         rules={[{ required: true, message: t('admin.courses.form.categoryRequired') }]}
       >
         <Select
@@ -157,6 +166,7 @@ const EditCourse = ({
       <Form.Item
         label={t('common.level')}
         name="levelId"
+        validateTrigger={['onBlur', 'onChange']}
         rules={[{ required: true, message: t('admin.courses.form.levelRequired') }]}
       >
         <Select
@@ -178,22 +188,34 @@ const EditCourse = ({
       <Form.Item
         label={t('common.price')}
         name="price"
-        rules={[{ required: true, message: t('admin.courses.form.priceRequired') }]}
+        validateTrigger={['onBlur', 'onChange']}
+        rules={[
+          { required: true, message: t('admin.courses.form.priceRequired') },
+          { type: 'number', min: 0, max: 10000000, message: t('admin.courses.form.priceRange') }
+        ]}
       >
-        <InputNumber min={1} max={9999999999} style={{ width: "100%" }} />
+        <InputNumber step={0.01} style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item
         label={t('admin.courses.form.durationHours')}
         name="durationHours"
-        rules={[{ required: true, message: t('admin.courses.form.durationRequired') }]}
+        validateTrigger={['onBlur', 'onChange']}
+        rules={[
+          { required: true, message: t('admin.courses.form.durationRequired') },
+          { type: 'integer', min: 1, max: 500, message: t('admin.courses.form.durationRange') }
+        ]}
       >
-        <InputNumber min={1} style={{ width: "100%" }} />
+        <InputNumber style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item
         label={t('admin.courses.form.imageUrl')}
         name="imageUrl"
         allowClear
-        rules={[{ required: true, message: t('admin.courses.form.imageUrlRequired') }]}
+        validateTrigger={['onBlur', 'onChange']}
+        rules={[
+          { required: true, message: t('admin.courses.form.imageUrlRequired') },
+          { type: 'url', message: t('admin.courses.form.urlInvalid') }
+        ]}
       >
         <Input
           onChange={(e) => {
@@ -222,10 +244,14 @@ const EditCourse = ({
       <Form.Item
         label={t('common.description')}
         name="description"
-        rules={[{ required: true, message: t('admin.courses.form.descriptionRequired') }]}
+        validateTrigger={['onBlur', 'onChange']}
+        rules={[
+          { required: true, message: t('admin.courses.form.descriptionRequired') },
+          { max: 500, message: t('admin.courses.form.descriptionMax') }
+        ]}
         className={embedded ? "md:col-span-2" : undefined}
       >
-        <Input.TextArea rows={3} maxLength={500} showCount placeholder={t('admin.courses.form.descriptionPlaceholder')} />
+        <Input.TextArea rows={3} showCount placeholder={t('admin.courses.form.descriptionPlaceholder')} />
       </Form.Item>
       {embedded && (
         <div className="md:col-span-2 mt-4 flex justify-end gap-3">

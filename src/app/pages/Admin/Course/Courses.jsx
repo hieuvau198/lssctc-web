@@ -256,7 +256,11 @@ const Courses = () => {
       setTotal(data.totalCount || 0);
       closeDrawer();
     } catch (err) {
-      message.error(err.message || t('admin.courses.createError'));
+      if (err.message && err.message.includes("Internal Server Error")) {
+        message.error("Operation failed. Please check for duplicate course codes or invalid data.");
+      } else {
+        message.error(err.message || t('admin.courses.createError'));
+      }
     } finally {
       setSubmitting(false);
     }
