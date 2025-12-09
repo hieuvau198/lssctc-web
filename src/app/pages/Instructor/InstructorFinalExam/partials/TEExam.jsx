@@ -183,7 +183,7 @@ export default function TEExam({ classId }) {
         
         return (
           <div className="flex items-center gap-2">
-             <span className="font-mono font-bold text-blue-600">{record.examCode || 'Not generated'}</span>
+             <span className="font-mono font-bold text-blue-600">{record.examCode || '-'}</span>
              {!record.examCode && (
                <Button size="small" icon={<ReloadOutlined />} onClick={() => onGenerateCode(record.id)}>
                  Gen
@@ -202,11 +202,35 @@ export default function TEExam({ classId }) {
       }
     },
     {
+      title: 'Result',
+      key: 'result',
+      render: (_, r) => {
+         const p = r.partials?.find(p => p.type === 'Theory');
+         if (!p) return '-';
+         
+         // If status is NotYet, display Not Yet (Neutral)
+         if (p.status === 'NotYet') return <Tag color="default">Not Yet</Tag>;
+
+         if (p.isPass === true) return <Tag color="success">PASS</Tag>;
+         if (p.isPass === false) return <Tag color="error">FAIL</Tag>;
+         return '-';
+      }
+    },
+    {
       title: 'Status',
       key: 'status',
       render: (_, record) => {
-         const partial = record.partials?.find(p => p.type === 'Theory');
-         return <Tag>{partial?.status || 'Pending'}</Tag>;
+         const p = record.partials?.find(p => p.type === 'Theory');
+         let statusText = p?.status || 'Pending';
+         let color = 'default';
+
+         if (p?.status === 'Approved') color = 'green';
+         else if (p?.status === 'Submitted') color = 'orange';
+         
+         // Format 'NotYet' -> 'Not Yet'
+         if (statusText === 'NotYet') statusText = 'Not Yet';
+
+         return <Tag color={color}>{statusText}</Tag>;
       }
     }
   ];

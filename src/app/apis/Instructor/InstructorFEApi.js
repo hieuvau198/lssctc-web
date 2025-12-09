@@ -18,6 +18,9 @@ const InstructorFEApi = {
 
   // Finish/Finalize the exam for the class
   finishClassExam: (classId) => apiClient.post(`/FinalExams/class/${classId}/finish`),
+
+  // Submit Practical Exam Grade
+  submitPe: (partialId, data) => apiClient.post(`/FinalExams/submit/pe/${partialId}`, data),
 };
 
 export default InstructorFEApi;

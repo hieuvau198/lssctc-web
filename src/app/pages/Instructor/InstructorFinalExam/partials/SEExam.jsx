@@ -122,12 +122,36 @@ export default function SEExam({ classId }) {
       title: 'Score', 
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Simulation');
-        return p?.marks !== null && p?.marks !== undefined ? p.marks : '-';
+        return p?.marks !== null ? <Tag color="blue">{p.marks}</Tag> : '-';
+      }
+    },
+    {
+      title: 'Result',
+      render: (_, r) => {
+         const p = r.partials?.find(p => p.type === 'Simulation');
+         if (!p) return '-';
+
+         if (p.status === 'NotYet') return <Tag color="default">Not Yet</Tag>;
+
+         if (p.isPass === true) return <Tag color="success">PASS</Tag>;
+         if (p.isPass === false) return <Tag color="error">FAIL</Tag>;
+         return '-';
       }
     },
     {
       title: 'Status',
-      render: (_, r) => <Tag>{r.partials?.find(p => p.type === 'Simulation')?.status || 'Pending'}</Tag>
+      render: (_, r) => {
+        const p = r.partials?.find(p => p.type === 'Simulation');
+        let statusText = p?.status || 'Pending';
+        let color = 'default';
+
+        if (p?.status === 'Approved') color = 'green';
+        else if (p?.status === 'Submitted') color = 'orange';
+
+        if (statusText === 'NotYet') statusText = 'Not Yet';
+        
+        return <Tag color={color}>{statusText}</Tag>;
+      }
     }
   ];
 
