@@ -94,7 +94,7 @@ export default function InstructorSections() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between mb-6">
           <Skeleton.Button style={{ width: 220, height: 32 }} active />
         </div>
@@ -107,14 +107,14 @@ export default function InstructorSections() {
 
   if (error) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         <Alert message={t('common.error')} description={error} type="error" showIcon />
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="max-w-7xl mx-auto px-4 py-2">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-semibold">{t('instructor.sections.title')}</h1>
       </div>

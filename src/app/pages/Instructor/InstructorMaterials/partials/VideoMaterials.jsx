@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { deleteMaterial } from '../../../../apis/Instructor/InstructorMaterialsApi';
 import DrawerView from './DrawerView';
 
-export default function VideoMaterials({ materials = [], viewMode = 'table', onDelete }) {
+export default function VideoMaterials({ materials = [], viewMode = 'table', onDelete, onEdit }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -42,9 +42,9 @@ export default function VideoMaterials({ materials = [], viewMode = 'table', onD
 
   if (!materials || materials.length === 0) {
     return (
-      <Card title={t('instructor.materials.videos')}>
+      <div className="mb-4">
         <Empty description={t('instructor.materials.noVideos')} />
-      </Card>
+      </div>
     );
   }
 
@@ -80,7 +80,7 @@ export default function VideoMaterials({ materials = [], viewMode = 'table', onD
             <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(record); setDrawerVisible(true); }} />
           </Tooltip>
           <Tooltip title={t('instructor.materials.tooltip.editMaterial')}>
-            <Button type="default" icon={<EditOutlined />} onClick={() => navigate(`/instructor/materials/edit/${record.id}`)} />
+            <Button type="default" icon={<EditOutlined />} onClick={() => { if (typeof onEdit === 'function') return onEdit(record); return navigate(`/instructor/materials/edit/${record.id}`); }} />
           </Tooltip>
           <Tooltip title={t('instructor.materials.tooltip.deleteMaterial')}>
             <Button danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} loading={deleting} />
@@ -93,44 +93,45 @@ export default function VideoMaterials({ materials = [], viewMode = 'table', onD
   // Card view
   if (viewMode === 'card') {
     return (
-      <Card title={t('instructor.materials.videos')} className="mb-4">
+      <div className="mb-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {materials.map((m) => (
             <Card key={m.id} size="small" bodyStyle={{ height: 160, overflow: 'auto' }}>
               <div className="flex items-start justify-between">
-                  <div className="flex-1 pr-2">
-                    <div className="text-sm font-semibold line-clamp-1">{m.name}</div>
-                    <div className="text-xs text-gray-500 mt-1">{t('instructor.materials.video')}</div>
-                    <div className="text-sm text-gray-700 mt-2 truncate">{m.description}</div>
-                  </div>
-                  <div className="flex-shrink-0 ml-2 flex gap-1">
-                    <Tooltip title={t('instructor.materials.tooltip.openVideo')}>
-                      <Button type="primary" shape="circle" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(m); setDrawerVisible(true); }} />
-                    </Tooltip>
-                    <Tooltip title={t('instructor.materials.tooltip.editMaterial')}>
-                      <Button shape="circle" icon={<EditOutlined />} onClick={() => navigate(`/instructor/materials/edit/${m.id}`)} />
-                    </Tooltip>
-                    <Tooltip title={t('instructor.materials.tooltip.deleteMaterial')}>
-                      <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleDelete(m)} loading={deleting} />
-                    </Tooltip>
-                  </div>
+                <div className="flex-1 pr-2">
+                  <div className="text-sm font-semibold line-clamp-1">{m.name}</div>
+                  <div className="text-xs text-gray-500 mt-1">{t('instructor.materials.video')}</div>
+                  <div className="text-sm text-gray-700 mt-2 truncate">{m.description}</div>
+                </div>
+                <div className="flex-shrink-0 ml-2 flex gap-1">
+                  <Tooltip title={t('instructor.materials.tooltip.openVideo')}>
+                    <Button type="primary" shape="circle" icon={<PlayCircleOutlined />} onClick={() => { setSelectedMaterial(m); setDrawerVisible(true); }} />
+                  </Tooltip>
+                  <Tooltip title={t('instructor.materials.tooltip.editMaterial')}>
+                    <Button shape="circle" icon={<EditOutlined />} onClick={() => { if (typeof onEdit === 'function') return onEdit(m); return navigate(`/instructor/materials/edit/${m.id}`); }} />
+                  </Tooltip>
+                  <Tooltip title={t('instructor.materials.tooltip.deleteMaterial')}>
+                    <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleDelete(m)} loading={deleting} />
+                  </Tooltip>
+                </div>
               </div>
             </Card>
           ))}
         </div>
         <DrawerView visible={drawerVisible} onClose={() => setDrawerVisible(false)} material={selectedMaterial} />
-      </Card>
+      </div>
     );
   }
 
   return (
-    <Card title={t('instructor.materials.videos')} className="mb-4">
-      <div style={{ height: 370 }} className="overflow-auto">
+    <div className="mb-2">
+      <div className="overflow-auto min-h-[350px]">
         <Table
           columns={columns}
           dataSource={materials}
           rowKey="id"
           pagination={false}
+          scroll={{ y: 350}}
           size="middle"
         />
       </div>
@@ -146,7 +147,7 @@ export default function VideoMaterials({ materials = [], viewMode = 'table', onD
         />
       </div>
       <DrawerView visible={drawerVisible} onClose={() => setDrawerVisible(false)} material={selectedMaterial} />
-    </Card>
+    </div>
   );
 }
 
@@ -154,4 +155,5 @@ VideoMaterials.propTypes = {
   materials: PropTypes.array,
   viewMode: PropTypes.oneOf(['table', 'card']),
   onDelete: PropTypes.func,
+  onEdit: PropTypes.func,
 };

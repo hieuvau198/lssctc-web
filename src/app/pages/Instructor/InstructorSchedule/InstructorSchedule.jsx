@@ -35,17 +35,17 @@ export default function InstructorSchedule() {
             setLoading(true);
             setError(null);
 
-                        try {
-                            // The instructor weekly API accepts a single reference date `dateInWeek`.
-                            // Use the Thursday of the currently selected week as the reference and
-                            // format it in local timezone (YYYY-MM-DD) to avoid UTC offset issues.
-                            const pad = (n) => String(n).padStart(2, '0');
-                            const thursday = new Date(currentWeekStart);
-                            thursday.setDate(currentWeekStart.getDate() + 3);
-                            const dateInWeek = `${thursday.getFullYear()}-${pad(thursday.getMonth() + 1)}-${pad(thursday.getDate())}`;
-                            const data = await getInstructorWeeklySchedule({ dateInWeek });
-                            setScheduleData(data || []);
-                
+            try {
+                // The instructor weekly API accepts a single reference date `dateInWeek`.
+                // Use the Thursday of the currently selected week as the reference and
+                // format it in local timezone (YYYY-MM-DD) to avoid UTC offset issues.
+                const pad = (n) => String(n).padStart(2, '0');
+                const thursday = new Date(currentWeekStart);
+                thursday.setDate(currentWeekStart.getDate() + 3);
+                const dateInWeek = `${thursday.getFullYear()}-${pad(thursday.getMonth() + 1)}-${pad(thursday.getDate())}`;
+                const data = await getInstructorWeeklySchedule({ dateInWeek });
+                setScheduleData(data || []);
+
             } catch (err) {
                 setError(err.message || 'Failed to load schedule');
                 message.error('Không thể tải lịch học. Vui lòng thử lại.');
@@ -205,15 +205,30 @@ export default function InstructorSchedule() {
     // Show loading state
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Spin size="large" tip="Đang tải lịch học..." />
+            <div className="max-w-7xl mx-auto px-4 py-2">
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                            <span className="text-3xl">📅</span>
+                        </div>
+                        <div>
+                            <span className="text-3xl font-bold text-white">Lịch giảng dạy</span>
+                            <p className="text-orange-100 text-sm mt-1">Đang tải...</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white rounded-xl shadow-lg p-12 flex items-center justify-center">
+                    <Spin size="large" tip="Đang tải lịch học..." />
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="p-2 w-full">
-            {/* Header & Navigation */}
+        <div className="max-w-7xl mx-auto px-4 py-2">
+            {/* Modern Header with Gradient */}
+
+            {/* Navigation Card */}
             <WeekNavigation
                 currentWeekStart={currentWeekStart}
                 onPreviousWeek={handlePreviousWeek}
@@ -222,29 +237,15 @@ export default function InstructorSchedule() {
                 onWeekChange={handleWeekChange}
             />
 
-            {/* Error Alert */}
-            {/* {error && (
-                <Alert
-                    type="error"
-                    message="Lỗi tải lịch học"
-                    description={error}
-                    closable
-                    onClose={() => setError(null)}
-                    className="mb-4"
+            {/* Schedule Grid Card */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                <ScheduleGrid
+                    timeSlots={mockTimeSlots}
+                    weekDates={weekDates}
+                    scheduleGrid={scheduleGrid}
+                    onClassClick={handleClassClick}
                 />
-            )} */}
-
-
-            {/* Schedule Grid */}
-            <ScheduleGrid
-                timeSlots={mockTimeSlots}
-                weekDates={weekDates}
-                scheduleGrid={scheduleGrid}
-                onClassClick={handleClassClick}
-            />
-            
-            {/* Status Legend */}
-            {/* <StatusLegend /> */}
+            </div>
         </div>
     );
 }
