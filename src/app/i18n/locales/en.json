@@ -486,6 +486,10 @@
     "completed": "Completed",
     "inProgress": "In Progress",
     "notStarted": "Not Started",
+    "classCode": "Class Code",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "duration": "Duration",
     "myLearning": {
       "title": "My Learning",
       "inProgressTab": "In Progress",
@@ -2334,7 +2338,8 @@
           "requiredFieldsList": "Username, Email, Fullname, Password",
           "noChangeHeader": "Do not change the header row."
         }
-      }
+      },
+      "traineeDetail": "Trainee Detail"
     },
     "programs": {
       "title": "Program Management",
@@ -2518,6 +2523,7 @@
       },
       "pagination": {
         "totalTrainees": "Total of {{total}} trainees"
+      ,  "trainees": "{{start}}-{{end}} of {{total}} trainees"
       },
       "filters": {
         "status": "Status",

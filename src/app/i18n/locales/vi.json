@@ -83,7 +83,7 @@
     "classStatus": {
       "Draft": "Bản nháp",
       "Open": "Mở",
-      "Published": "Đã xuất bản",
+      "Published": "Đã Công khai",
       "InProgress": "Đang diễn ra",
       "Inprogress": "Đang diễn ra",
       "Completed": "Đã hoàn thành",
@@ -91,19 +91,19 @@
     }
   },
   "class": {
-    "publishClass": "Xuất bản Lớp",
+    "publishClass": "Công khai Lớp",
     "cancelClass": "Hủy Lớp",
     "startClass": "Bắt đầu Lớp",
     "completeClass": "Hoàn thành Lớp",
-    "publishConfirm": "Xuất bản lớp học này?",
-    "publishConfirmDesc": "Bạn có chắc chắn muốn xuất bản lớp học này?",
+    "publishConfirm": "Công khai lớp học này?",
+    "publishConfirmDesc": "Bạn có chắc chắn muốn công khai lớp học này?",
     "cancelConfirm": "Hủy lớp học này?",
     "cancelConfirmDesc": "Bạn có chắc chắn muốn hủy lớp học này?",
     "startConfirm": "Bắt đầu lớp học này?",
     "startConfirmDesc": "Bạn có chắc chắn muốn bắt đầu lớp học này?",
     "completeConfirm": "Hoàn thành lớp học này?",
     "completeConfirmDesc": "Bạn có chắc chắn muốn hoàn thành lớp học này?",
-    "publishSuccess": "Xuất bản lớp học thành công",
+    "publishSuccess": "Công khai lớp học thành công",
     "cancelSuccess": "Hủy lớp học thành công",
     "startSuccess": "Bắt đầu lớp học thành công",
     "completeSuccess": "Hoàn thành lớp học thành công"
@@ -538,6 +538,10 @@
     "completed": "Hoàn thành",
     "inProgress": "Đang học",
     "notStarted": "Chưa bắt đầu",
+    "classCode": "Mã lớp",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "duration": "Thời lượng",
     "myLearning": {
       "title": "Lớp học của tôi",
       "inProgressTab": "Đang học",
@@ -2335,7 +2339,8 @@
           "requiredFieldsList": "Username, Email, Fullname, Password",
           "noChangeHeader": "Không thay đổi hàng tiêu đề."
         }
-      }
+      },
+      "traineeDetail": "Chi tiết học viên"
     },
     "programs": {
       "title": "Quản lý chương trình",
@@ -2528,6 +2533,7 @@
       },
       "pagination": {
         "totalTrainees": "Tổng {{total}} học viên"
+      ,  "trainees": "{{start}}-{{end}} của {{total}} học viên"
       },
       "filters": {
         "status": "Trạng thái",

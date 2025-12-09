@@ -30,20 +30,12 @@ export default function EditMaterials({ onSuccess, open, onClose, initialData = 
         setLoading(true);
         if (initialData) {
           const material = initialData;
-          let typeId;
-          if (material.typeId) {
-            typeId = Number(material.typeId);
-          } else {
-            const name = material.learningMaterialType || material.learningMaterialTypeName || material.typeName || '';
-            const s = String(name).toLowerCase();
-            if (s.includes('video')) typeId = 1; // video = 1
-            else typeId = 2; // document = 2
-          }
+          const learningMaterialType = material.learningMaterialType || material.learningMaterialTypeName || material.typeName || '';
           form.setFieldsValue({
             title: material.name,
             description: material.description || '',
             url: material.url || material.materialUrl,
-            typeId,
+            learningMaterialType, // Use string type directly
           });
           setLoading(false);
           return;
@@ -53,21 +45,14 @@ export default function EditMaterials({ onSuccess, open, onClose, initialData = 
         const res = await getMaterials({ page: 1, pageSize: 1000 });
         const materials = Array.isArray(res.items) ? res.items : [];
         const material = materials.find(m => Number(m.id) === Number(id));
-        
+
         if (material) {
-          let typeId;
-          if (material.typeId) typeId = Number(material.typeId);
-          else {
-            const name = material.learningMaterialType || material.learningMaterialTypeName || material.typeName || '';
-            const s = String(name).toLowerCase();
-            if (s.includes('video')) typeId = 1;
-            else typeId = 2;
-          }
+          const learningMaterialType = material.learningMaterialType || material.learningMaterialTypeName || material.typeName || '';
           form.setFieldsValue({
             title: material.name,
             description: material.description || '',
             url: material.url || material.materialUrl,
-            typeId,
+            learningMaterialType, // Use string type directly
           });
         } else {
           message.error(t('instructor.materials.messages.materialNotFound'));
@@ -94,7 +79,7 @@ export default function EditMaterials({ onSuccess, open, onClose, initialData = 
         name: values.title,
         description: values.description,
         materialUrl: values.url,
-        learningMaterialType: values.typeId === 1 ? 'Document' : 'Video',
+        learningMaterialType: values.learningMaterialType, // Use string type directly
         sectionId: sectionId || undefined,
         classId: classId || undefined,
       };
@@ -169,15 +154,15 @@ export default function EditMaterials({ onSuccess, open, onClose, initialData = 
 
         <Form.Item
           label={t('instructor.materials.form.type')}
-          name="typeId"
+          name="learningMaterialType"
           rules={[{ required: true, message: t('instructor.materials.form.typeRequired') }]}
         >
           <Radio.Group>
-            <Radio value={1}>
+            <Radio value="Document">
               <BookOutlined className="mr-2" />
               {t('instructor.materials.document')}
             </Radio>
-            <Radio value={2}>
+            <Radio value="Video">
               <VideoCameraOutlined className="mr-2" />
               {t('instructor.materials.video')}
             </Radio>

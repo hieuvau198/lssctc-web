@@ -2,14 +2,13 @@ import apiClient from '../../libs/axios';
 
 //#region Mapping Functions
 
-
 const mapMaterialFromApi = (item) => ({
   id: item.id,
   activityId: item.activityId, // This might be null for library materials
   learningMaterialId: item.learningMaterialId,
   name: item.name,
   description: item.description,
-  type: item.learningMaterialType,
+  learningMaterialType: item.learningMaterialType, // Updated to use string type
   url: item.materialUrl,
 });
 
@@ -19,11 +18,9 @@ const mapMaterialFromApi = (item) => ({
 
 export const getMaterials = async ({ page = 1, pageSize = 1000 } = {}) => {
   try {
-    // API returns direct array, not paginated response
     const response = await apiClient.get(`/Materials`);
     const rawItems = Array.isArray(response.data) ? response.data : [];
-    
-    // Manual pagination on client side
+
     const startIdx = (page - 1) * pageSize;
     const paginatedItems = rawItems.slice(startIdx, startIdx + pageSize);
     const items = paginatedItems.map(mapMaterialFromApi);
@@ -34,7 +31,6 @@ export const getMaterials = async ({ page = 1, pageSize = 1000 } = {}) => {
       page: Number(page),
       pageSize: Number(pageSize),
       totalPages: Math.ceil(rawItems.length / pageSize),
-      raw: rawItems,
     };
   } catch (error) {
     console.error('Error fetching materials:', error.response || error);

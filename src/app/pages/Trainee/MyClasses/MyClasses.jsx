@@ -1,4 +1,4 @@
-import { Card, Empty, Progress, Segmented, Skeleton, Tag } from 'antd';
+import { Card, Empty, Progress, Segmented, Skeleton, Spin, Tag } from 'antd';
 import { BookOpen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -54,6 +54,11 @@ export default function MyClasses() {
           _statusMapped: c.status,
           color: 'from-cyan-500 to-blue-600',
           completedAt: c.endDate,
+          classCode: c.classCode, // Assuming the API provides this field
+          description: c.description, // Assuming the API provides this field
+          startDate: c.startDate, // Assuming the API provides this field
+          endDate: c.endDate, // Assuming the API provides this field
+          durationHours: c.durationHours, // Assuming the API provides this field
         }));
 
         setPrograms(mapped);
@@ -86,12 +91,8 @@ export default function MyClasses() {
         </div>
 
         {loading && (
-          <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Card key={i} className="rounded-xl shadow-sm">
-                <Skeleton active paragraph={{ rows: 2 }} />
-              </Card>
-            ))}
+          <div className="min-h-screen flex items-center justify-center">
+            <Spin tip={t('common.loading')}/>
           </div>
         )}
 
@@ -102,48 +103,75 @@ export default function MyClasses() {
         )}
 
         {!loading && programs.length > 0 && (
-          <div className="space-y-6 min-h-screen">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {programs.map((p) => (
-              <div className="my-4" key={p.id}>
+              <div key={p.id}>
                 <Link to={`/my-classes/${p.id}`}>
-                  <Card className="group rounded-2xl shadow-xl border hover:shadow-lg transition-all duration-300 overflow-hidden relative cursor-pointer">
-                    <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r opacity-80 from-transparent via-slate-200 to-transparent" />
-                    <div className="flex">
-                      <div className="flex-1 p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start gap-3 flex-1">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <div className="text-xs text-slate-500 mb-0.5">
-                                  {p.provider}
-                                </div>
-                                {p._statusMapped && (() => {
-                                  const s = getClassStatus(p._statusMapped);
-                                  return (
-                                    <Tag color={s.color} className="text-[10px] uppercase tracking-wide font-semibold m-0">
-                                      {s.label}
-                                    </Tag>
-                                  );
-                                })()}
-                              </div>
-                              <h3 className="text-lg font-semibold text-slate-900 leading-snug m-0 line-clamp-2 group-hover:text-slate-700 transition">
-                                {p.name}
-                              </h3>
-                              <div className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-600">
-                                <BookOpen className="w-4 h-4" />
-                                <span>{p.progress}% {t('trainee.myLearning.complete')}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="ml-4">
-                            {p.progress === 100 && (
-                              <Tag color="green" className="m-0">
-                                {t('trainee.completed')}
-                              </Tag>
-                            )}
+                  <Card
+                    className="group rounded-xl shadow-md border hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative cursor-pointer bg-white h-full"
+                    bodyStyle={{ padding: '0' }}
+                  >
+                    {/* Top gradient bar */}
+                    <div className="h-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600" />
+                    
+                    {/* Card body */}
+                    <div className="p-4 space-y-3">
+                      {/* Header section */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-base font-bold text-slate-900 leading-tight line-clamp-2 group-hover:text-cyan-600 transition-colors">
+                            {p.name}
+                          </span>
+                          <div className="text-xs text-slate-500 font-medium uppercase tracking-wide mb-1">
+                            {p.classCode}
                           </div>
                         </div>
+                        {p._statusMapped && (() => {
+                          const s = getClassStatus(p._statusMapped);
+                          return (
+                            <Tag color={s.color} className="text-xs font-semibold mt-8 shrink-0">
+                              {s.label}
+                            </Tag>
+                          );
+                        })()}
                       </div>
+
+                      {/* Info section */}
+                      <div className="space-y-2 text-xs text-slate-600">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-700">{t('trainee.startDate')}:</span>
+                          <span>{new Date(p.startDate).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-700">{t('trainee.endDate')}:</span>
+                          <span>{new Date(p.endDate).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-700">{t('trainee.duration')}:</span>
+                          <span>{p.durationHours} {t('common.hours')}</span>
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      {/* <div className="pt-2 border-t border-slate-100">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
+                            <BookOpen className="w-3.5 h-3.5 text-cyan-500" />
+                            <span>{t('trainee.progress')}</span>
+                          </div>
+                          <span className="text-xs font-bold text-cyan-600">{p.progress}%</span>
+                        </div>
+                        <Progress
+                          percent={p.progress}
+                          showInfo={false}
+                          strokeColor={{
+                            '0%': '#06b6d4',
+                            '100%': '#3b82f6',
+                          }}
+                          trailColor="#e2e8f0"
+                          strokeWidth={6}
+                        />
+                      </div> */}
                     </div>
                   </Card>
                 </Link>
