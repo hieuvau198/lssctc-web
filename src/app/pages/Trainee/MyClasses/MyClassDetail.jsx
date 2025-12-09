@@ -14,6 +14,7 @@ import InstructorInfo from './partials/InstructorInfo';
 import Sections from './partials/Sections';
 import TraineeClassSchedule from './partials/TraineeClassSchedule';
 import TraineeAttendance from './partials/TraineeAttendance';
+import FinalExamTab from './partials/FinalExamTab';
 import { getLearningClassByIdAndTraineeId } from '../../../apis/Trainee/TraineeClassApi';
 
 export default function MyClassDetail() {
@@ -121,6 +122,13 @@ export default function MyClassDetail() {
       label: t('attendance.attendance'),
       children: (
         <TraineeAttendance classId={id} />
+      ),
+    },
+    {
+      key: 'finalExam',
+      label: t('trainee.finalExam.tabLabel'),
+      children: (
+        <FinalExamTab classId={id} />
       ),
     },
   ];
