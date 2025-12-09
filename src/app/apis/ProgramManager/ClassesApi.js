@@ -173,6 +173,19 @@ export async function fetchClassInstructor(classId) {
 }
 
 /**
+ * Get available instructors between two dates
+ * GET /api/Classes/available-instructors?startDate=yyyy-mm-dd&endDate=yyyy-mm-dd
+ * Accepts optional classId to exclude the current class assignment
+ * @param {{startDate:string,endDate:string,classId?:string|number}} params
+ */
+export async function fetchAvailableInstructors({ startDate, endDate, classId } = {}) {
+	if (!startDate || !endDate) throw new Error('startDate and endDate are required');
+	const qs = buildQuery({ startDate, endDate, classId });
+	const { data } = await apiClient.get(`${CLASSES_BASE}/available-instructors${qs}`);
+	return data;
+}
+
+/**
  * Assign an Instructor to a Class (by class id)
  * POST /api/Classes/{classId}/instructor
  * @param {number} classId

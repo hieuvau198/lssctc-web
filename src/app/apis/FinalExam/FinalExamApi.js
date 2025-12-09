@@ -7,7 +7,7 @@ import apiClient from '../../libs/axios';
  * @returns {Promise<Object>}
  */
 export async function createFinalExam(payload) {
-  const response = await apiClient.post('/api/finalExams', payload);
+  const response = await apiClient.post('/finalExams', payload);
   return response.data;
 }
 
@@ -18,7 +18,7 @@ export async function createFinalExam(payload) {
  * @returns {Promise<Object>}
  */
 export async function getFinalExamById(id) {
-  const response = await apiClient.get(`/api/finalExams/${id}`);
+  const response = await apiClient.get(`/finalExams/${id}`);
   return response.data;
 }
 
@@ -30,7 +30,7 @@ export async function getFinalExamById(id) {
  * @returns {Promise<Object>}
  */
 export async function updateFinalExam(id, payload) {
-  const response = await apiClient.put(`/api/finalExams/${id}`, payload);
+  const response = await apiClient.put(`/finalExams/${id}`, payload);
   return response.data;
 }
 
@@ -41,7 +41,7 @@ export async function updateFinalExam(id, payload) {
  * @returns {Promise<void>}
  */
 export async function deleteFinalExam(id) {
-  const response = await apiClient.delete(`/api/finalExams/${id}`);
+  const response = await apiClient.delete(`/finalExams/${id}`);
   return response.data;
 }
 
@@ -52,7 +52,7 @@ export async function deleteFinalExam(id) {
  * @returns {Promise<Array>}
  */
 export async function getFinalExamsByClass(classId) {
-  const response = await apiClient.get(`/api/finalExams/class/${classId}`);
+  const response = await apiClient.get(`/finalExams/class/${classId}`);
   return response.data;
 }
 
@@ -63,7 +63,7 @@ export async function getFinalExamsByClass(classId) {
  * @returns {Promise<{code: string}>}
  */
 export async function generateExamCode(id) {
-  const response = await apiClient.post(`/api/finalExams/${id}/generate-code`);
+  const response = await apiClient.post(`/finalExams/${id}/generate-code`);
   return response.data;
 }
 
@@ -74,7 +74,7 @@ export async function generateExamCode(id) {
  * @returns {Promise<Object>}
  */
 export async function finishFinalExamForClass(classId) {
-  const response = await apiClient.post(`/api/finalExams/class/${classId}/finish`);
+  const response = await apiClient.post(`/finalExams/class/${classId}/finish`);
   return response.data;
 }
 
@@ -84,7 +84,7 @@ export async function finishFinalExamForClass(classId) {
  * @returns {Promise<Array>}
  */
 export async function getMyFinalExamHistory() {
-  const response = await apiClient.get('/api/finalExams/my-history');
+  const response = await apiClient.get('/finalExams/my-history');
   return response.data;
 }
 
@@ -95,7 +95,7 @@ export async function getMyFinalExamHistory() {
  * @returns {Promise<Object>}
  */
 export async function getMyExamInClass(classId) {
-  const response = await apiClient.get(`/api/finalExams/class/${classId}/my-exam`);
+  const response = await apiClient.get(`/finalExams/class/${classId}/my-exam`);
   return response.data;
 }
 
