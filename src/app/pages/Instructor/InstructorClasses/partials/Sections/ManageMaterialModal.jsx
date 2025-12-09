@@ -82,7 +82,7 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
 
   const renderContent = () => {
     if (loading) {
-      return <div className="text-center p-8"><Spin size="large" /></div>;
+      return <div className="text-center p-6"><Spin size="large" /></div>;
     }
 
     if (assignedMaterial) {

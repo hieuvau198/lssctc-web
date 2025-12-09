@@ -41,7 +41,7 @@ export default function QuizDetails() {
 
     if (loading) {
         return (
-            <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="max-w-7xl mx-auto px-4 py-2">
                 <Card>
                     <Skeleton active paragraph={{ rows: 8 }} />
                 </Card>
@@ -51,7 +51,7 @@ export default function QuizDetails() {
 
     if (error) {
         return (
-            <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="max-w-7xl mx-auto px-4 py-2">
                 <Alert
                     type="error"
                     message={t('common.error')}
@@ -82,7 +82,7 @@ export default function QuizDetails() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-2">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">

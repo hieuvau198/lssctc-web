@@ -65,14 +65,14 @@ export default function InstructorDashboard() {
   }, [instructorId]);
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+    <div className="p-4 space-y-6 min-h-screen">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
+      <div className="flex items-center gap-x-3">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
           <LayoutDashboard className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('instructor.dashboard.title')}</h1>
+          <span className="text-2xl font-bold text-gray-900">{t('instructor.dashboard.title')}</span>
           <p className="text-sm text-gray-500">{t('instructor.dashboard.subtitle')}</p>
         </div>
       </div>

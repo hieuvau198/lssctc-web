@@ -9,7 +9,7 @@ import apiClient from '../../libs/axios';
  */
 export const getInstructorSummary = async (instructorId) => {
   try {
-    const response = await apiClient.get(`/instructor/dashboard/${instructorId}/summary`);
+    const response = await apiClient.get(`/instructor/dashboard/summary`);
     return response.data?.data || null;
   } catch (error) {
     console.error('Error fetching instructor summary:', error);
@@ -25,7 +25,7 @@ export const getInstructorSummary = async (instructorId) => {
  */
 export const getTopClassesByTrainees = async (instructorId, top = 5) => {
   try {
-    const response = await apiClient.get(`/instructor/dashboard/${instructorId}/classes/top-by-trainees`, {
+    const response = await apiClient.get(`/instructor/dashboard/classes/top-by-trainees`, {
       params: { top },
     });
     return response.data?.data || [];
@@ -42,7 +42,7 @@ export const getTopClassesByTrainees = async (instructorId, top = 5) => {
  */
 export const getClassStatusDistribution = async (instructorId) => {
   try {
-    const response = await apiClient.get(`/instructor/dashboard/${instructorId}/classes/status-distribution`);
+    const response = await apiClient.get(`/instructor/dashboard/classes/status-distribution`);
     return response.data?.data || [];
   } catch (error) {
     console.error('Error fetching class status distribution:', error);
@@ -59,7 +59,7 @@ export const getClassStatusDistribution = async (instructorId) => {
 export const getYearlyCompletionTrends = async (instructorId, year) => {
   try {
     const params = year ? { year } : {};
-    const response = await apiClient.get(`/instructor/dashboard/${instructorId}/completions/trends/yearly`, {
+    const response = await apiClient.get(`/instructor/dashboard/completions/trends/yearly`, {
       params,
     });
     return response.data?.data || [];
@@ -76,7 +76,7 @@ export const getYearlyCompletionTrends = async (instructorId, year) => {
  */
 export const getClassGradeDistribution = async (instructorId) => {
   try {
-    const response = await apiClient.get(`/instructor/dashboard/${instructorId}/classes/grade-distribution`);
+    const response = await apiClient.get(`/instructor/dashboard/classes/grade-distribution`);
     return response.data?.data || [];
   } catch (error) {
     console.error('Error fetching class grade distribution:', error);

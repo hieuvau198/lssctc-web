@@ -14,8 +14,13 @@ export default function InstructorFinalExam() {
 
   if (!classId) {
     return (
-      <div className="py-8">
-        <Empty description={t('instructor.finalExam.noClass')} />
+      <div className="max-w-7xl mx-auto px-4 py-2">
+        <div className="bg-white rounded-xl shadow-lg p-12">
+          <Empty 
+            description={t('instructor.finalExam.noClass')}
+            image={<div className="text-8xl mb-4">🏆</div>}
+          />
+        </div>
       </div>
     );
   }
@@ -24,7 +29,7 @@ export default function InstructorFinalExam() {
     {
       key: 'te',
       label: (
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 px-2">
           <FileTextOutlined />
           {t('instructor.finalExam.teTab')}
         </span>
@@ -34,7 +39,7 @@ export default function InstructorFinalExam() {
     {
       key: 'se',
       label: (
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 px-2">
           <BookOutlined />
           {t('instructor.finalExam.seTab')}
         </span>
@@ -44,7 +49,7 @@ export default function InstructorFinalExam() {
     {
       key: 'pe',
       label: (
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 px-2">
           <TrophyOutlined />
           {t('instructor.finalExam.peTab')}
         </span>
@@ -54,25 +59,31 @@ export default function InstructorFinalExam() {
   ];
 
   return (
-    <div className="py-4">
-      <Card
-        title={
-          <div className="flex flex-1 items-center gap-2">
-            <TrophyOutlined className="text-blue-500" />
-            <span className="text-xl font-semibold">{t('instructor.finalExam.title')}</span>
+    <div className="max-w-7xl mx-auto px-4 py-2">
+      {/* Modern Header with Gradient */}
+      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-4 mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-white/10 text-white backdrop-blur-sm rounded-xl flex items-center justify-center">
+            <TrophyOutlined className="text-white text-2xl" />
           </div>
-        }
-        className="shadow-sm"
-      >
+          <div>
+            <span className="text-2xl font-bold text-white">{t('instructor.finalExam.title')}</span>
+            <p className="text-yellow-100 text-sm mt-1">{t('instructor.finalExam.subtitle')}</p>
+          </div>
+        </div>
+      </div>
 
+      {/* Tabs Card */}
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
           items={tabItems}
           type="card"
           size="large"
+          className="modern-tabs"
         />
-      </Card>
+      </div>
     </div>
   );
 }

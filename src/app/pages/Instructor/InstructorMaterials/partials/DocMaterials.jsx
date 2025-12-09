@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { deleteMaterial } from '../../../../apis/Instructor/InstructorMaterialsApi';
 import DrawerView from './DrawerView';
 
-export default function DocMaterials({ materials = [], viewMode = 'table', onDelete }) {
+export default function DocMaterials({ materials = [], viewMode = 'table', onDelete, onEdit }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -42,9 +42,9 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
 
   if (!materials || materials.length === 0) {
     return (
-      <Card title={t('instructor.materials.docs')}>
+      <div className="mb-4">
         <Empty description={t('instructor.materials.noDocuments')} />
-      </Card>
+      </div>
     );
   }
 
@@ -75,7 +75,10 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
             <Button
               type="default"
               icon={<EditOutlined />}
-              onClick={() => navigate(`/instructor/materials/edit/${record.id}`)}
+              onClick={() => {
+                if (typeof onEdit === 'function') return onEdit(record);
+                return navigate(`/instructor/materials/edit/${record.id}`);
+              }}
             />
           </Tooltip>
           <Tooltip title={t('instructor.materials.tooltip.deleteMaterial')}>
@@ -108,7 +111,7 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
                     <Button type="primary" shape="circle" icon={<FilePdfOutlined />} onClick={() => { setSelectedMaterial(m); setDrawerVisible(true); }} />
                   </Tooltip>
                   <Tooltip title={t('instructor.materials.tooltip.editMaterial')}>
-                    <Button shape="circle" icon={<EditOutlined />} onClick={() => navigate(`/instructor/materials/edit/${m.id}`)} />
+                    <Button shape="circle" icon={<EditOutlined />} onClick={() => { if (typeof onEdit === 'function') return onEdit(m); return navigate(`/instructor/materials/edit/${m.id}`); }} />
                   </Tooltip>
                   <Tooltip title={t('instructor.materials.tooltip.deleteMaterial')}>
                     <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleDelete(m)} loading={deleting} />
@@ -124,13 +127,14 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
   }
 
   return (
-    <Card title={t('instructor.materials.documents')} className="mb-4">
-      <div style={{ height: 370 }} className="overflow-auto">
+    <div className="mb-2">
+      <div className="overflow-auto min-h-[350px]">
         <Table
           columns={columns}
           dataSource={materials}
           rowKey="id"
           pagination={false}
+          scroll={{ y: 350}}
           size="middle"
         />
       </div>
@@ -146,7 +150,7 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
         />
       </div>
       <DrawerView visible={drawerVisible} onClose={() => setDrawerVisible(false)} material={selectedMaterial} />
-    </Card>
+    </div>
   );
 }
 
@@ -154,4 +158,5 @@ DocMaterials.propTypes = {
   materials: PropTypes.array,
   viewMode: PropTypes.oneOf(['table', 'card']),
   onDelete: PropTypes.func,
+  onEdit: PropTypes.func,
 };

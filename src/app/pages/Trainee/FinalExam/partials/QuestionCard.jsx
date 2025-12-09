@@ -10,7 +10,7 @@ export default function QuestionCard({ question, value, onChange, onPrevious, on
       <div className="mb-8">
         <div className="flex items-start gap-4 mb-6">
           <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold text-lg shadow-lg flex-shrink-0">{question.index}</span>
-          <span className="text-xl font-semibold text-slate-800 flex-1 leading-relaxed">{question.questionText}</span>
+          <span className="text-xl font-semibold text-slate-800 flex-1 leading-relaxed">{question.questionText || question.name}</span>
         </div>
 
         {timeWarning && (
@@ -19,15 +19,15 @@ export default function QuestionCard({ question, value, onChange, onPrevious, on
 
         <Radio.Group value={value} onChange={(e) => onChange(question.id, e.target.value)} className="w-full">
           <Space direction="vertical" className="w-full" size="large">
-            {question.options.map((option) => (
-              <Radio 
-                key={option.id} 
-                value={option.id} 
+            {question.options.map((option, idx) => (
+              <Radio
+                key={option.id}
+                value={option.id}
                 className="w-full p-5 shadow-sm hover:shadow-md"
                 size="large"
               >
-                <span className="font-bold text-blue-600 mr-3 text-base">{option.id.toUpperCase()}.</span>
-                <span className="text-slate-700">{option.text}</span>
+                <span className="font-bold text-blue-600 mr-3 text-base">{String.fromCharCode(65 + idx)}.</span>
+                <span className="text-slate-700">{option.text || option.name}</span>
               </Radio>
             ))}
           </Space>
@@ -36,10 +36,10 @@ export default function QuestionCard({ question, value, onChange, onPrevious, on
 
       <div className="flex items-center justify-between pt-6 border-t-2 border-blue-100">
         <div className="flex items-center gap-3">
-          <Button 
-            size="large" 
-            icon={<LeftOutlined />} 
-            onClick={onPrevious} 
+          <Button
+            size="large"
+            icon={<LeftOutlined />}
+            onClick={onPrevious}
             disabled={isFirst}
             className="font-semibold shadow-sm hover:shadow-md"
           >
@@ -52,20 +52,20 @@ export default function QuestionCard({ question, value, onChange, onPrevious, on
 
         <div>
           {isLast ? (
-            <Button 
-              type="primary" 
-              size="large" 
-              icon={<CheckOutlined />} 
+            <Button
+              type="primary"
+              size="large"
+              icon={<CheckOutlined />}
               onClick={onSubmitClick}
               className="font-semibold shadow-lg shadow-blue-200 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-0"
             >
               Nộp bài
             </Button>
           ) : (
-            <Button 
-              type="primary" 
-              size="large" 
-              icon={<RightOutlined />} 
+            <Button
+              type="primary"
+              size="large"
+              icon={<RightOutlined />}
               onClick={onNext}
               className="font-semibold shadow-lg shadow-blue-200"
             >
