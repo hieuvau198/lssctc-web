@@ -1,5 +1,6 @@
 // src\app\pages\SimManager\Practices\PracticeDetail\PracticeStep\PracticeSteps.jsx
 import React, { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import {
   getPracticeStepsByPracticeId,
   createPracticeStep,
@@ -10,6 +11,7 @@ import CreateUpdateStep from "./CreateUpdateStep";
 import PracticeStepDetail from "./PracticeStepDetail/PracticeStepDetail";
 
 export default function PracticeSteps({ practiceId }) {
+  const { t } = useTranslation();
   const [steps, setSteps] = useState([]);
   const [stepsLoading, setStepsLoading] = useState(true);
   const [stepsError, setStepsError] = useState(null);
@@ -23,7 +25,7 @@ export default function PracticeSteps({ practiceId }) {
     setStepsLoading(true);
     getPracticeStepsByPracticeId(practiceId)
       .then(setSteps)
-      .catch(() => setStepsError("Could not fetch practice steps"))
+      .catch(() => setStepsError(t('simManager.practiceSteps.couldNotFetch')))
       .finally(() => setStepsLoading(false));
   };
 
@@ -56,7 +58,7 @@ export default function PracticeSteps({ practiceId }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-base font-semibold">Practice Steps</h3>
+        <h3 className="text-base font-semibold">{t('simManager.practiceSteps.title')}</h3>
         <button
           className="bg-green-600 text-white px-3 py-1 text-sm"
           onClick={() => {
@@ -64,7 +66,7 @@ export default function PracticeSteps({ practiceId }) {
             setShowStepForm(true);
           }}
         >
-          Add Step
+          {t('simManager.practiceSteps.addStep')}
         </button>
       </div>
 
@@ -82,11 +84,11 @@ export default function PracticeSteps({ practiceId }) {
       )}
 
       {stepsLoading ? (
-        <div>Loading steps...</div>
+        <div>{t('simManager.practiceSteps.loadingSteps')}</div>
       ) : stepsError ? (
         <div className="text-red-500">{stepsError}</div>
       ) : steps.length === 0 ? (
-        <div>No steps found for this practice.</div>
+        <div>{t('simManager.practiceSteps.noSteps')}</div>
       ) : (
         <ol className="list-decimal pl-6 space-y-2">
           {steps.map((step) => (

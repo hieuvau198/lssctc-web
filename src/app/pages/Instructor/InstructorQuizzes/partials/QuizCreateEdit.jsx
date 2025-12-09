@@ -16,12 +16,14 @@ import {
 } from 'antd';
 import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { createQuizWithQuestions, updateQuizWithQuestions, getQuizDetail } from '../../../../apis/Instructor/InstructorQuiz';
 
 export default function QuizCreateEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { modal } = App.useApp();
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(id ? true : false);
   const [submitting, setSubmitting] = useState(false);
@@ -75,7 +77,7 @@ export default function QuizCreateEdit() {
       }
     } catch (e) {
       console.error('Error loading quiz:', e);
-      setError(e?.message || 'Failed to load quiz');
+      setError(e?.message || t('instructor.quizzes.messages.loadQuizFailed'));
     } finally {
       setLoading(false);
     }
@@ -86,7 +88,7 @@ export default function QuizCreateEdit() {
       title,
       icon: <ExclamationCircleOutlined />,
       content: errorMessage,
-      okText: 'Close',
+      okText: t('common.close'),
       centered: true,
     });
   };
@@ -109,7 +111,7 @@ export default function QuizCreateEdit() {
     const scoreStr = score.toString();
     const decimalPart = scoreStr.split('.')[1];
     if (decimalPart && decimalPart.length > 2) {
-      return `Score has too many decimal places (${score}). Max 2 decimal places allowed.`;
+      return t('instructor.quizzes.validation.scoreTooManyDecimals', { score });
     }
 
     return null;
@@ -121,20 +123,20 @@ export default function QuizCreateEdit() {
       
       // Validate questions
       if (!questions || questions.length === 0) {
-        showErrorModal('Validation Error', 'Please add at least one question');
+        showErrorModal(t('instructor.quizzes.modal.validationError'), t('instructor.quizzes.validation.addAtLeastOneQuestion'));
         return;
       }
 
       // Validate each question has options
       for (let q of questions) {
         if (!q.name.trim()) {
-          showErrorModal('Validation Error', 'Please fill in all question texts');
+          showErrorModal(t('instructor.quizzes.modal.validationError'), t('instructor.quizzes.validation.fillAllQuestionTexts'));
           return;
         }
 
         // Validate question score is valid
         if (!q.questionScore || q.questionScore <= 0) {
-          showErrorModal('Validation Error', `Question "${q.name}" must have a valid score greater than 0`);
+          showErrorModal(t('instructor.quizzes.modal.validationError'), t('instructor.quizzes.validation.questionMustHaveScore', { name: q.name }));
           return;
         }
 
@@ -142,30 +144,30 @@ export default function QuizCreateEdit() {
         const scoreStr = q.questionScore.toString();
         const decimalPart = scoreStr.split('.')[1];
         if (decimalPart && decimalPart.length > 2) {
-          showErrorModal('Validation Error', `Question "${q.name}" score cannot have more than 2 decimal places. You entered: ${q.questionScore}`);
+          showErrorModal(t('instructor.quizzes.modal.validationError'), t('instructor.quizzes.validation.questionScoreMaxDecimals', { name: q.name, score: q.questionScore }));
           return;
         }
 
         if (!q.options || q.options.length === 0) {
-          showErrorModal('Validation Error', `Question "${q.name}" must have at least one option`);
+          showErrorModal(t('instructor.quizzes.modal.validationError'), t('instructor.quizzes.validation.questionMustHaveOption', { name: q.name }));
           return;
         }
 
         // For single choice questions, validate only 1 correct answer
         const correctAnswers = q.options.filter(opt => opt.isCorrect).length;
         if (correctAnswers === 0) {
-          showErrorModal('Validation Error', `Question "${q.name}" must have at least one correct answer`);
+          showErrorModal(t('instructor.quizzes.modal.validationError'), t('instructor.quizzes.validation.questionMustHaveCorrectAnswer', { name: q.name }));
           return;
         }
         if (correctAnswers > 1) {
-          showErrorModal('Validation Error', `Question "${q.name}" can only have one correct answer (single choice)`);
+          showErrorModal(t('instructor.quizzes.modal.validationError'), t('instructor.quizzes.validation.questionOnlyOneCorrectAnswer', { name: q.name }));
           return;
         }
 
         // Validate all options have text
         for (let opt of q.options) {
           if (!opt.name.trim()) {
-            showErrorModal('Validation Error', `Question "${q.name}" has empty option text`);
+            showErrorModal(t('instructor.quizzes.modal.validationError'), t('instructor.quizzes.validation.questionHasEmptyOption', { name: q.name }));
             return;
           }
         }
@@ -177,8 +179,8 @@ export default function QuizCreateEdit() {
       const totalScore = questions.reduce((sum, q) => sum + (q.questionScore || 0), 0);
       if (Math.abs(totalScore - 10) > 0.01) { // Allow small floating point errors
         showErrorModal(
-          'Validation Error',
-          `Total quiz score must equal 10 points. Current total: ${totalScore.toFixed(2)} points`
+          t('instructor.quizzes.modal.validationError'),
+          t('instructor.quizzes.validation.totalScoreMustEqual10', { total: totalScore.toFixed(2) })
         );
         return;
       }
@@ -213,9 +215,9 @@ export default function QuizCreateEdit() {
       // Handle success response
       if (response?.status === 200) {
         modal.success({
-          title: 'Success',
-          content: response?.message || (isEditMode ? 'Quiz updated successfully' : 'Quiz created successfully'),
-          okText: 'OK',
+          title: t('common.success'),
+          content: response?.message || (isEditMode ? t('instructor.quizzes.messages.updateQuizSuccess') : t('instructor.quizzes.messages.createQuizSuccess')),
+          okText: t('common.ok'),
           centered: true,
           onOk: () => {
             navigate('/instructor/quizzes');
@@ -223,9 +225,9 @@ export default function QuizCreateEdit() {
         });
       } else {
         modal.success({
-          title: 'Success',
-          content: isEditMode ? 'Quiz updated successfully' : 'Quiz created successfully',
-          okText: 'OK',
+          title: t('common.success'),
+          content: isEditMode ? t('instructor.quizzes.messages.updateQuizSuccess') : t('instructor.quizzes.messages.createQuizSuccess'),
+          okText: t('common.ok'),
           centered: true,
           onOk: () => {
             navigate('/instructor/quizzes');
@@ -235,8 +237,8 @@ export default function QuizCreateEdit() {
     } catch (e) {
       console.error('Error saving quiz:', e);
       
-      let errorMsg = 'Failed to save quiz';
-      let errorTitle = 'Error Creating Quiz';
+      let errorMsg = t('instructor.quizzes.messages.saveQuizFailed');
+      let errorTitle = t('instructor.quizzes.modal.errorCreating');
       
       // Handle server error responses
       if (e?.response?.data) {
@@ -291,7 +293,7 @@ export default function QuizCreateEdit() {
 
   const removeQuestion = (qIdx) => {
     if (questions.length === 1) {
-      message.warning('You must have at least one question');
+      message.warning(t('instructor.quizzes.validation.mustHaveAtLeastOneQuestion'));
       return;
     }
     setQuestions(questions.filter((_, idx) => idx !== qIdx));
@@ -328,7 +330,7 @@ export default function QuizCreateEdit() {
   const removeOption = (qIdx, oIdx) => {
     const newQuestions = [...questions];
     if (newQuestions[qIdx].options.length === 1) {
-      message.warning('Each question must have at least one option');
+      message.warning(t('instructor.quizzes.validation.mustHaveAtLeastOneOption'));
       return;
     }
     newQuestions[qIdx].options = newQuestions[qIdx].options.filter((_, idx) => idx !== oIdx);
@@ -385,9 +387,9 @@ export default function QuizCreateEdit() {
           onClick={() => navigate('/instructor/quizzes')}
           className="mb-4"
         >
-          Back to Quizzes
+          {t('instructor.quizzes.backToQuizzes')}
         </Button>
-        <Alert type="error" message="Error" description={error} />
+        <Alert type="error" message={t('common.error')} description={error} />
       </div>
     );
   }
@@ -400,13 +402,13 @@ export default function QuizCreateEdit() {
         onClick={() => navigate('/instructor/quizzes')}
         className="mb-4"
       >
-        Back to Quizzes
+        {t('instructor.quizzes.backToQuizzes')}
       </Button>
 
       {error && (
         <Alert 
           type="error" 
-          message="Error" 
+          message={t('common.error')} 
           description={error}
           closable
           onClose={() => setError(null)}
@@ -414,7 +416,7 @@ export default function QuizCreateEdit() {
         />
       )}
 
-      <Card title={isEditMode ? 'Edit Quiz' : 'Create New Quiz'}>
+      <Card title={isEditMode ? t('instructor.quizzes.editQuiz') : t('instructor.quizzes.createNewQuiz')}>
         <Form
           form={form}
           layout="vertical"
@@ -426,72 +428,72 @@ export default function QuizCreateEdit() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Form.Item
-              label="Quiz Name"
+              label={t('instructor.quizzes.form.quizName')}
               name="name"
-              rules={[{ required: true, message: 'Please enter quiz name' }]}
+              rules={[{ required: true, message: t('instructor.quizzes.form.quizNameRequired') }]}
             >
-              <Input placeholder="e.g., Basic Safety Knowledge" />
+              <Input placeholder={t('instructor.quizzes.form.quizNamePlaceholder')} />
             </Form.Item>
 
             <Form.Item
-              label="Total Score"
+              label={t('instructor.quizzes.scoreSummary.totalScore')}
             >
               <Input 
                 value="10" 
                 disabled 
-                placeholder="Fixed at 10 points"
+                placeholder={t('instructor.quizzes.fixedAt10Points')}
               />
             </Form.Item>
 
             <Form.Item
-              label="Pass Score Criteria"
+              label={t('instructor.quizzes.form.passScore')}
               name="passScoreCriteria"
-              rules={[{ required: true, message: 'Please enter pass score' }]}
+              rules={[{ required: true, message: t('instructor.quizzes.validation.passScoreRequired') }]}
             >
               <InputNumber min={1} max={100} />
             </Form.Item>
 
             <Form.Item
-              label="Time Limit (minutes)"
+              label={t('instructor.quizzes.form.timeLimit')}
               name="timelimitMinute"
-              rules={[{ required: true, message: 'Please enter time limit' }]}
+              rules={[{ required: true, message: t('instructor.quizzes.validation.timeLimitRequired') }]}
             >
               <InputNumber min={1} max={180} />
             </Form.Item>
           </div>
 
           <Form.Item
-            label="Description"
+            label={t('instructor.quizzes.form.description')}
             name="description"
           >
             <Input.TextArea 
               rows={3}
-              placeholder="Describe the purpose of this quiz"
+              placeholder={t('instructor.quizzes.form.descriptionPlaceholder')}
             />
           </Form.Item>
 
-          <Divider>Questions</Divider>
+          <Divider>{t('instructor.quizzes.questions.title')}</Divider>
 
           <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <p className="text-xs text-gray-600 font-semibold">Total Questions</p>
+                <p className="text-xs text-gray-600 font-semibold">{t('instructor.quizzes.totalQuestions')}</p>
                 <p className="text-2xl font-bold text-blue-600">{questions.length}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold">Total Quiz Score</p>
+                <p className="text-xs text-gray-600 font-semibold">{t('instructor.quizzes.totalQuizScore')}</p>
                 <p className="text-2xl font-bold text-green-600">
                   {questions.reduce((sum, q) => sum + (q.questionScore || 0), 0).toFixed(2)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold">Per Question Avg</p>
+                <p className="text-xs text-gray-600 font-semibold">{t('instructor.quizzes.scoreSummary.perQuestionAvg')}</p>
                 <p className="text-2xl font-bold text-purple-600">
                   {questions.length > 0 ? (questions.reduce((sum, q) => sum + (q.questionScore || 0), 0) / questions.length).toFixed(2) : '0'}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold">Remaining Score</p>
+                <p className="text-xs text-gray-600 font-semibold">{t('instructor.quizzes.scoreSummary.remaining')}</p>
                 <p className="text-2xl font-bold" style={{
                   color: Math.abs(questions.reduce((sum, q) => sum + (q.questionScore || 0), 0) - 10) < 0.01 ? '#22c55e' : '#ef4444'
                 }}>
@@ -500,7 +502,7 @@ export default function QuizCreateEdit() {
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-3">
-              ℹ️ Total quiz score must equal exactly 10 points to create quiz
+              ℹ️ {t('instructor.quizzes.scoreSummary.mustEqual10')}
             </p>
           </div>
 
@@ -508,7 +510,7 @@ export default function QuizCreateEdit() {
             {questions.map((question, qIdx) => (
               <Card
                 key={qIdx}
-                title={`Question ${qIdx + 1}`}
+                title={`${t('instructor.quizzes.questions.question')} ${qIdx + 1}`}
                 extra={
                   <Button
                     type="text"
@@ -517,7 +519,7 @@ export default function QuizCreateEdit() {
                     icon={<DeleteOutlined />}
                     onClick={() => removeQuestion(qIdx)}
                   >
-                    Remove
+                    {t('common.remove')}
                   </Button>
                 }
                 className="bg-gray-50"
@@ -525,15 +527,15 @@ export default function QuizCreateEdit() {
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-1">Question Text</label>
+                      <label className="block text-sm font-medium mb-1">{t('instructor.quizzes.questions.questionText')}</label>
                       <Input
                         value={question.name}
                         onChange={(e) => updateQuestion(qIdx, 'name', e.target.value)}
-                        placeholder="Enter question text"
+                        placeholder={t('instructor.quizzes.questions.enterQuestion')}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">Question Score</label>
+                      <label className="block text-sm font-medium mb-1">{t('instructor.quizzes.questions.questionScore')}</label>
                       <InputNumber
                         className="w-full"
                         value={question.questionScore}
@@ -550,12 +552,12 @@ export default function QuizCreateEdit() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">Description</label>
+                    <label className="block text-sm font-medium mb-1">{t('instructor.quizzes.questions.description')}</label>
                     <Input.TextArea
                       rows={2}
                       value={question.description}
                       onChange={(e) => updateQuestion(qIdx, 'description', e.target.value)}
-                      placeholder="Optional question description"
+                      placeholder={t('instructor.quizzes.questions.descriptionPlaceholder')}
                     />
                   </div>
 
@@ -563,14 +565,14 @@ export default function QuizCreateEdit() {
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label className="block text-sm font-medium">Answer Options</label>
+                      <label className="block text-sm font-medium">{t('instructor.quizzes.answerOptions')}</label>
                       <Button
                         type="dashed"
                         size="small"
                         icon={<PlusOutlined />}
                         onClick={() => addOption(qIdx)}
                       >
-                        Add Option
+                        {t('instructor.quizzes.options.addOption')}
                       </Button>
                     </div>
 
@@ -583,7 +585,7 @@ export default function QuizCreateEdit() {
                             <Input
                               value={option.name}
                               onChange={(e) => updateOption(qIdx, oIdx, 'name', e.target.value)}
-                              placeholder={`Option ${oIdx + 1}`}
+                              placeholder={`${t('instructor.quizzes.options.option')} ${oIdx + 1}`}
                             />
                           </div>
 
@@ -593,7 +595,7 @@ export default function QuizCreateEdit() {
                                 checked={option.isCorrect}
                                 onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
                               >
-                                Mark as Correct Answer
+                                {t('instructor.quizzes.options.markAsCorrect')}
                               </Checkbox>
                               <Button
                                 type="text"
@@ -607,7 +609,7 @@ export default function QuizCreateEdit() {
                               backgroundColor: option.isCorrect ? '#d4edda' : '#f8f9fa',
                               color: option.isCorrect ? '#155724' : '#6c757d'
                             }}>
-                              Score: {optionScore.toFixed(2)}
+                              {t('instructor.quizzes.questions.score')}: {optionScore.toFixed(2)}
                             </div>
                           </div>
 
@@ -615,7 +617,7 @@ export default function QuizCreateEdit() {
                             rows={2}
                             value={option.explanation}
                             onChange={(e) => updateOption(qIdx, oIdx, 'explanation', e.target.value)}
-                            placeholder="Explanation for this answer (optional)"
+                            placeholder={t('instructor.quizzes.options.explanationPlaceholder')}
                           />
                         </div>
                         );
@@ -634,7 +636,7 @@ export default function QuizCreateEdit() {
             onClick={addQuestion}
             className="mt-4 h-10"
           >
-            Add Question
+            {t('instructor.quizzes.questions.addQuestion')}
           </Button>
 
           <Divider />
@@ -645,10 +647,10 @@ export default function QuizCreateEdit() {
               loading={submitting}
               htmlType="submit"
             >
-              {isEditMode ? 'Update Quiz' : 'Create Quiz'}
+              {isEditMode ? t('instructor.quizzes.updateQuiz') : t('instructor.quizzes.createQuiz')}
             </Button>
             <Button onClick={() => navigate('/instructor/quizzes')}>
-              Cancel
+              {t('common.cancel')}
             </Button>
           </Space>
         </Form>

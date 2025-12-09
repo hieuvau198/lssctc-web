@@ -1,6 +1,7 @@
 // src\app\pages\SimManager\Dashboard\Dashboard.jsx
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import StatsOverview from './partials/StatsOverview';
 import LiveUsersChart from './partials/LiveUsersChart';
 import ActiveSimulationsTable from './partials/ActiveSimulationsTable';
@@ -10,6 +11,7 @@ import { Typography } from 'antd';
 const { Title } = Typography;
 
 export default function SimDashboard() {
+  const { t } = useTranslation();
   const [liveUsers, setLiveUsers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeRows, setActiveRows] = useState([]);
@@ -69,8 +71,8 @@ export default function SimDashboard() {
   return (
     <div className="max-w-[1380px] mx-auto px-4 py-6 space-y-6">
       <div className="bg-white border rounded-xl p-6">
-        <Title level={3} className="!mb-0">Simulator Manager Dashboard</Title>
-        <div className="text-slate-600">Monitor simulations and real-time activity</div>
+        <Title level={3} className="!mb-0">{t('simManager.dashboard.title')}</Title>
+        <div className="text-slate-600">{t('simManager.dashboard.subtitle')}</div>
       </div>
 
       <StatsOverview
@@ -82,7 +84,7 @@ export default function SimDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
-          <LiveUsersChart data={liveUsers} categories={categories} />
+          <LiveUsersChart data={liveUsers} categories={categories} title={t('simManager.dashboard.liveUsers')} />
         </div>
         <div>
           <QuickActions

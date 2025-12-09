@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Chart from 'react-apexcharts';
 import { Skeleton } from 'antd';
 import { getPopularCourses } from '../../../../../apis/Admin/AdminDashboard';
 
 export default function EnrollmentTrend() {
+  const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,7 +24,7 @@ export default function EnrollmentTrend() {
     fetchData();
   }, []);
 
-  const series = [{ name: 'Total Enrollments', data: data.map(c => c.totalEnrollments) }];
+  const series = [{ name: t('admin.dashboard.charts.totalEnrollments'), data: data.map(c => c.totalEnrollments) }];
   const options = {
     chart: { id: 'popular-courses', toolbar: { show: false } },
     plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%' } },
@@ -39,12 +41,12 @@ export default function EnrollmentTrend() {
     colors: ['#2563eb'],
     dataLabels: { enabled: false },
     grid: { borderColor: '#eee' },
-    tooltip: { theme: 'light', y: { formatter: (val) => val + ' enrollments' } }
+    tooltip: { theme: 'light', y: { formatter: (val) => val + ' ' + t('admin.dashboard.charts.enrollments') } }
   };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col">
-      <h2 className="text-sm font-medium mb-2 text-gray-700">Most Popular Courses</h2>
+      <h2 className="text-sm font-medium mb-2 text-gray-700">{t('admin.dashboard.charts.popularCourses')}</h2>
       {loading ? (
         <Skeleton active paragraph={{ rows: 4 }} />
       ) : (

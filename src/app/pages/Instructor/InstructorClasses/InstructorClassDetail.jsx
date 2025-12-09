@@ -1,118 +1,61 @@
-import { Alert, Breadcrumb, Skeleton, Tabs } from "antd";
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { getInstructorClassById } from "../../../apis/Instructor/InstructorApi";
+import { Tabs } from "antd";
+import React, { useMemo } from "react";
+import { Link, Outlet, useLocation, useParams, Navigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import BackButton from "../../../components/BackButton/BackButton";
-import ClassMembers from "./partials/ClassMembers";
-import ClassOverview from "./partials/ClassOverview";
-import ClassSections from "./partials/ClassSections";
 
 export default function InstructorClassDetail() {
+  const { t } = useTranslation();
   const { classId } = useParams();
-  const [classDetail, setClassDetail] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const location = useLocation();
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    (async () => {
-      try {
-        const res = await getInstructorClassById(classId);
-        if (cancelled) return;
-        setClassDetail(res);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err?.message || "Failed to load class details");
-      } finally {
-        if (cancelled) return;
-        setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [classId]);
+  // Derive active tab from URL pathname
+  const activeTab = useMemo(() => {
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const lastSegment = pathSegments[pathSegments.length - 1];
+    if (['overview', 'sections', 'members', 'schedule', 'final-exam'].includes(lastSegment)) {
+      return lastSegment;
+    }
+    return 'overview';
+  }, [location.pathname]);
 
-  // MOVED LOADING AND ERROR CHECKS UP
-  // This ensures classDetail is available before tabItems is defined.
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        <Skeleton active paragraph={{ rows: 1 }} className="mb-4" />
-        <Skeleton active paragraph={{ rows: 6 }} />
-      </div>
-    );
+  // Redirect from /classes/:classId to /classes/:classId/overview
+  if (location.pathname === `/instructor/classes/${classId}`) {
+    return <Navigate to={`/instructor/classes/${classId}/overview`} replace />;
   }
 
-  if (error) {
-    return (
-      <div className="max-w-md mx-auto mt-10">
-        <Alert message="Error" description={error} type="error" showIcon />
-      </div>
-    );
-  }
-
-  if (!classDetail) {
-    return (
-      <div className="max-w-md mx-auto mt-10">
-        <Alert
-          message="Not Found"
-          description="This class could not be found."
-          type="warning"
-          showIcon
-        />
-      </div>
-    );
-  }
-
-  // Define tabItems ONLY when data is guaranteed to be available.
   const tabItems = [
     {
       key: "overview",
-      label: "Overview",
-      children: <ClassOverview classData={classDetail} />,
+      label: <Link to={`/instructor/classes/${classId}/overview`}>{t('instructor.classes.overviewTitle')}</Link>,
     },
     {
       key: "sections",
-      label: "Sections",
-      // classDetail is now guaranteed to be non-null
-      // We still use optional chaining just in case programCourseId is null
-      children: <ClassSections courseId={classDetail?.courseId} classId={classId}/>,
+      label: <Link to={`/instructor/classes/${classId}/sections`}>{t('instructor.classes.sectionsTitle')}</Link>,
     },
     {
       key: "members",
-      label: "Members",
-      children: <ClassMembers classId={classId} />,
+      label: <Link to={`/instructor/classes/${classId}/members`}>{t('instructor.classes.membersTitle')}</Link>,
+    },
+    {
+      key: "schedule",
+      label: <Link to={`/instructor/classes/${classId}/schedule`}>{t('attendance.classSchedule')}</Link>,
+    },
+    {
+      key: "final-exam",
+      label: <Link to={`/instructor/classes/${classId}/final-exam`}>{t('instructor.finalExam.tabTitle')}</Link>,
     },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      <div className="flex justify-start items-center mb-4">
-        <BackButton />
-        {/* <Breadcrumb
-          className="text-lg"
-          items={[
-            {
-              title: <Link to="/instructor/classes">My Classes</Link>,
-            },
-            {
-              title: classDetail.courseName || "Class Detail",
-            },
-          ]}
-        /> */}
-      </div>
-
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <Tabs
-          activeKey={activeTab}
-          onChange={setActiveTab}
-          items={tabItems}
-          type="line"
-        />
-      </div>
+    <div className="max-w-7xl mx-auto px-4 py-2">
+      <BackButton />
+      <Tabs
+        activeKey={activeTab}
+        items={tabItems}
+        type="line"
+      />
+      <Outlet />
     </div>
   );
 }

@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Button, Modal, App, Empty, Spin, Table, Tag, Tooltip, Pagination } from 'antd';
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getAllTasks, addTaskToPractice } from '../../../../apis/SimulationManager/SimulationManagerTaskApi';
 import { getAuthToken } from '../../../../libs/cookies';
 
 const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
+    const { t } = useTranslation();
     const { message } = App.useApp();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [allTasks, setAllTasks] = useState([]);
@@ -26,17 +28,17 @@ const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
 
             // Filter out tasks that are already assigned to this practice
             const assignedSet = new Set(assignedTaskIds);
-            const availableTasks = allTasksList.filter(t => !assignedSet.has(t.id));
+            const availableTasks = allTasksList.filter(task => !assignedSet.has(task.id));
 
             setAllTasks(availableTasks);
         } catch (err) {
             console.error('Error fetching all tasks:', err);
-            message.error('Failed to load available tasks');
+            message.error(t('simManager.assignTaskModal.loadFailed'));
             setAllTasks([]);
         } finally {
             setLoading(false);
         }
-    }, [token, assignedTaskIds, message]);
+    }, [token, assignedTaskIds, message, t]);
 
     // Open modal and fetch tasks
     const handleOpen = () => {
@@ -55,7 +57,7 @@ const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
     // Assign selected tasks
     const handleAssign = async () => {
         if (selectedTaskIds.length === 0) {
-            message.warning('Please select at least one task to assign');
+            message.warning(t('simManager.assignTaskModal.selectAtLeastOne'));
             return;
         }
 
@@ -65,13 +67,13 @@ const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
             for (const taskId of selectedTaskIds) {
                 await addTaskToPractice(practiceId, taskId, token);
             }
-            message.success(`Successfully assigned ${selectedTaskIds.length} task(s) to practice`);
+            message.success(t('simManager.assignTaskModal.assignSuccess', { count: selectedTaskIds.length }));
             setIsModalVisible(false);
             setSelectedTaskIds([]);
             onAssigned?.(); // Callback to reload parent task list
         } catch (e) {
             console.error('Error assigning tasks:', e);
-            let errorMsg = 'Failed to assign tasks';
+            let errorMsg = t('simManager.assignTaskModal.assignFailed');
             if (e.response?.data?.error?.details?.exceptionMessage) {
                 errorMsg = e.response.data.error.details.exceptionMessage;
             } else if (e.response?.data?.error?.message) {
@@ -90,21 +92,21 @@ const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
     // Table columns
     const columns = [
         {
-            title: 'Task Name',
+            title: t('simManager.assignTaskModal.taskName'),
             dataIndex: 'taskName',
             key: 'taskName',
             width: 220,
             ellipsis: true,
         },
         {
-            title: 'Task Code',
+            title: t('simManager.assignTaskModal.taskCode'),
             dataIndex: 'taskCode',
             key: 'taskCode',
             width: 150,
             render: (code) => code ? <Tag color="blue">{code}</Tag> : '-',
         },
         {
-            title: 'Description',
+            title: t('simManager.assignTaskModal.description'),
             dataIndex: 'taskDescription',
             key: 'taskDescription',
             ellipsis: true,
@@ -127,18 +129,18 @@ const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
                 icon={<Plus size={16} />}
                 onClick={handleOpen}
             >
-                Assign Task
+                {t('simManager.assignTaskModal.assignTask')}
             </Button>
 
             <Modal
-                title="Assign Tasks to Practice"
+                title={t('simManager.assignTaskModal.title')}
                 open={isModalVisible}
                 onCancel={handleClose}
                 width={850}
                 centered
                 footer={[
                     <Button key="cancel" onClick={handleClose}>
-                        Cancel
+                        {t('simManager.assignTaskModal.cancel')}
                     </Button>,
                     <Button
                         key="assign"
@@ -148,7 +150,7 @@ const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
                         disabled={selectedTaskIds.length === 0}
                         onClick={handleAssign}
                     >
-                        Assign Selected ({selectedTaskIds.length})
+                        {t('simManager.assignTaskModal.assignSelected', { count: selectedTaskIds.length })}
                     </Button>,
                 ]}
             >
@@ -157,7 +159,7 @@ const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
                         <Spin size="large" />
                     </div>
                 ) : allTasks.length === 0 ? (
-                    <Empty description="No available tasks to assign. All tasks are already assigned to this practice." />
+                    <Empty description={t('simManager.assignTaskModal.noTasksAvailable')} />
                 ) : (
                     <div className="flex flex-col h-[500px]">
                         {/* Table with fixed height, scrollable */}
@@ -179,7 +181,7 @@ const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
                                 pageSize={pageSize}
                                 total={allTasks.length}
                                 onChange={setCurrentPage}
-                                showTotal={(total) => `Total ${total} tasks`}
+                                showTotal={(total) => t('simManager.assignTaskModal.totalTasks', { total })}
                             />
                         </div>
                     </div>

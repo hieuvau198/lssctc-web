@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function Register() {
+  const { t } = useTranslation();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,24 +18,24 @@ export default function Register() {
     setErrors(prev => {
       const mismatch = !!confirmPassword && confirmPassword !== password;
       const had = !!prev.confirmPassword;
-      if (mismatch && !had) return { ...prev, confirmPassword: 'Passwords do not match' };
+      if (mismatch && !had) return { ...prev, confirmPassword: t('auth.passwordsDoNotMatch') };
       if (!mismatch && had) {
         const { confirmPassword: _omit, ...rest } = prev;
         return rest;
       }
       return prev; // no change
     });
-  }, [password, confirmPassword]);
+  }, [password, confirmPassword, t]);
 
   const validate = () => {
     const next = {};
-    if (!fullName.trim()) next.fullName = 'Full name is required';
-    if (!email.trim()) next.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Invalid email format';
-    if (!password) next.password = 'Password is required';
-    else if (password.length < 6) next.password = 'Minimum 6 characters';
-    if (!confirmPassword) next.confirmPassword = 'Confirm your password';
-    else if (confirmPassword !== password) next.confirmPassword = 'Passwords do not match';
+    if (!fullName.trim()) next.fullName = t('auth.fullNameRequired');
+    if (!email.trim()) next.email = t('auth.emailRequired');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = t('auth.invalidEmailFormat');
+    if (!password) next.password = t('auth.passwordRequired');
+    else if (password.length < 6) next.password = t('auth.passwordMinLength');
+    if (!confirmPassword) next.confirmPassword = t('auth.confirmPassword');
+    else if (confirmPassword !== password) next.confirmPassword = t('auth.passwordsDoNotMatch');
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -51,7 +53,7 @@ export default function Register() {
       setPassword('');
       setConfirmPassword('');
     } catch (err) {
-      setSubmitError(err.message || 'Registration failed');
+      setSubmitError(err.message || t('auth.registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -60,13 +62,13 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-blue-50 px-4 py-10">
       <div className="w-full max-w-md bg-white/90 backdrop-blur border border-blue-100 shadow-sm rounded-lg p-8 relative">
-        <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">Create account</h1>
-        <p className="text-gray-500 text-sm mb-6 text-center">Join the LSSCTC training platform</p>
+        <h1 className="text-2xl font-semibold text-blue-700 mb-2 text-center">{t('auth.createAccount')}</h1>
+        <p className="text-gray-500 text-sm mb-6 text-center">{t('auth.joinPlatform')}</p>
         {submitError && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded px-3 py-2">{submitError}</div>}
-        {success && <div className="mb-4 text-sm text-green-700 bg-green-50 border border-green-100 rounded px-3 py-2">Registration successful. You can now sign in.</div>}
+        {success && <div className="mb-4 text-sm text-green-700 bg-green-50 border border-green-100 rounded px-3 py-2">{t('auth.registrationSuccess')}</div>}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="fullName">Full name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="fullName">{t('auth.fullName')}</label>
             <input
               id="fullName"
               type="text"
@@ -81,7 +83,7 @@ export default function Register() {
             {errors.fullName && <p id="fullName-error" className="mt-1 text-xs text-red-600">{errors.fullName}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">{t('common.email')}</label>
             <input
               id="email"
               type="email"
@@ -97,7 +99,7 @@ export default function Register() {
             {errors.email && <p id="email-error" className="mt-1 text-xs text-red-600">{errors.email}</p>}
           </div>
       <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">{t('auth.password')}</label>
             <div className="relative">
               <input
                 id="password"
@@ -127,7 +129,7 @@ export default function Register() {
             {errors.password && <p id="password-error" className="mt-1 text-xs text-red-600">{errors.password}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="confirmPassword">Confirm password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="confirmPassword">{t('auth.confirmPassword')}</label>
             <div className="relative">
               <input
                 id="confirmPassword"
@@ -165,13 +167,13 @@ export default function Register() {
               loading ? 'opacity-70 cursor-not-allowed' : ''
             ].join(' ')}
           >
-            {loading ? 'Creating account…' : 'Sign up'}
+            {loading ? t('auth.creatingAccount') : t('auth.signUp')}
           </button>
         </form>
         <div className="mt-6 text-center text-sm text-gray-600">
-          Already have an account? <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium">Sign in</a>
+          {t('auth.alreadyHaveAccount')} <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium">{t('auth.signInHere')}</a>
         </div>
-        <p className="mt-8 text-center text-xs text-gray-400">By continuing you agree to our <a href="/terms" className="underline hover:text-blue-600">Terms</a> & <a href="/privacy" className="underline hover:text-blue-600">Privacy Policy</a>.</p>
+        <p className="mt-8 text-center text-xs text-gray-400">{t('auth.termsPrivacyAgreement')} <a href="/terms" className="underline hover:text-blue-600">{t('auth.termsOfService')}</a> {t('auth.and')} <a href="/privacy" className="underline hover:text-blue-600">{t('auth.privacyPolicy')}</a>.</p>
       </div>
     </div>
   );

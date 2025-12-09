@@ -1,10 +1,12 @@
 import { Avatar, Card, Divider, Empty, Skeleton } from "antd";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fetchClassInstructor } from "../../../../apis/ProgramManager/ClassesApi";
 import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import AddInstructor from "./AddInstructor";
 
 const InstructorCard = ({ classItem }) => {
+  const { t } = useTranslation();
   const [instructor, setInstructor] = useState(null);
   const [instructorLoading, setInstructorLoading] = useState(false);
   const [instructorError, setInstructorError] = useState(null);
@@ -48,7 +50,7 @@ const InstructorCard = ({ classItem }) => {
 
   return (
     <div>
-      <Divider orientation="left">Instructor</Divider>
+      <Divider orientation="left">{t('admin.classes.detail.instructor')}</Divider>
       <div className="ml-3 mb-4">
         {!instructor && !instructorLoading && (
           <AddInstructor classItem={classItem} onAssigned={handleAssigned} />
@@ -79,13 +81,13 @@ const InstructorCard = ({ classItem }) => {
 
               <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-slate-600">
                 <div>
-                  <span className="font-medium">Code:</span> {instructor.instructorCode || '-'}
+                  <span className="font-medium">{t('admin.classes.detail.instructorCode')}:</span> {instructor.instructorCode || '-'}
                 </div>
                 <div>
-                  <span className="font-medium">Phone:</span> {instructor.phoneNumber || instructor.phone || '-'}
+                  <span className="font-medium">{t('common.phone')}:</span> {instructor.phoneNumber || instructor.phone || '-'}
                 </div>
                 <div>
-                  <span className="font-medium">Hire Date:</span>{' '}
+                  <span className="font-medium">{t('admin.classes.detail.hireDate')}:</span>{' '}
                   <DayTimeFormat value={instructor.hireDate} />
                 </div>
               </div>
@@ -93,7 +95,7 @@ const InstructorCard = ({ classItem }) => {
           </div>
         </Card>
       ) : (
-        <Empty description="No instructor assigned" />
+        <Empty description={t('admin.classes.detail.noInstructor')} />
       )}
     </div>
   );

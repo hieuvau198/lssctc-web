@@ -1,6 +1,8 @@
 import React from 'react';
 import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+import getClassStatus from '../../../../utils/classStatus';
 
 const ClassTable = ({
   classes = [],
@@ -10,19 +12,12 @@ const ClassTable = ({
   onPageChange = () => {},
   onView = () => {},
 }) => {
-  const getStatusColor = (status) => {
-    const map = {
-      'NotStarted': 'default',
-      'InProgress': 'blue',
-      'Completed': 'green',
-      'Cancelled': 'red',
-    };
-    return map[status] || 'default';
-  };
+  const { t } = useTranslation();
+  
 
   const tableColumns = [
     {
-      title: '#',
+      title: t('instructor.classes.table.index'),
       key: 'index',
       width: 64,
       align: 'center',
@@ -30,14 +25,14 @@ const ClassTable = ({
       fixed: 'left',
     },
     {
-      title: 'Class Code',
+      title: t('instructor.classes.table.classCode'),
       dataIndex: 'classCode',
       key: 'classCode',
       width: 80,
       fixed: 'left',
     },
     {
-      title: 'Name',
+      title: t('instructor.classes.table.name'),
       dataIndex: 'name',
       key: 'name',
       width: 260,
@@ -46,26 +41,26 @@ const ClassTable = ({
           className="font-medium text-blue-600 cursor-pointer hover:underline"
           onClick={() => onView(record)}
         >
-          {name || record.className || 'N/A'}
+          {name || record.className || t('common.na')}
         </div>
       ),
     },
     {
-      title: 'Start Date',
+      title: t('instructor.classes.table.startDate'),
       dataIndex: 'startDate',
       key: 'startDate',
       width: 120,
       render: (date) => date ? new Date(date).toLocaleDateString() : '-',
     },
     {
-      title: 'End Date',
+      title: t('instructor.classes.table.endDate'),
       dataIndex: 'endDate',
       key: 'endDate',
       width: 120,
       render: (date) => date ? new Date(date).toLocaleDateString() : '-',
     },
     {
-      title: 'Trainees',
+      title: t('instructor.classes.table.trainees'),
       dataIndex: 'traineeCount',
       key: 'traineeCount',
       width: 100,
@@ -73,26 +68,29 @@ const ClassTable = ({
       render: (count) => <span>{count ?? 0}</span>,
     },
     {
-      title: 'Status',
+      title: t('instructor.classes.table.status'),
       dataIndex: 'status',
       key: 'status',
       width: 120,
       align: 'center',
-      render: (status) => (
-        <Tag color={getStatusColor(status)}>
-          {status || 'N/A'}
-        </Tag>
-      ),
+      render: (status) => {
+        const s = getClassStatus(status);
+        return (
+          <Tag color={s.color}>
+            {s.label || t('common.na')}
+          </Tag>
+        );
+      },
     },
     {
-      title: 'Actions',
+      title: t('instructor.classes.table.actions'),
       key: 'actions',
       width: 120,
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
         <Space size="small">
-          <Tooltip title="View Details">
+          <Tooltip title={t('instructor.classes.table.viewDetails')}>
             <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(record)} />
           </Tooltip>
         </Space>
@@ -101,8 +99,8 @@ const ClassTable = ({
   ];
 
   return (
-    <div className="rounded-lg shadow overflow-hidden">
-      <div className="overflow-hidden min-h-[500px]">
+    <div className="rounded-lg shadow overflow-hidden ">
+      <div className="overflow-hidden min-h-[450px] border border-gray-200">
         <Table
           columns={tableColumns}
           dataSource={classes}
@@ -121,7 +119,7 @@ const ClassTable = ({
           onChange={onPageChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} classes`}
+          showTotal={(t, r) => `${r[0]}-${r[1]} / ${t}`}
         />
       </div>
     </div>

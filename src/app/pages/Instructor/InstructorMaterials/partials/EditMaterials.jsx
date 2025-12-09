@@ -1,7 +1,8 @@
 import { ArrowLeftOutlined, BookOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Radio, Space, message, App } from 'antd';
+import { Button, Card, Form, Input, Radio, Space, App, Drawer } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { updateMaterial, getMaterials } from '../../../../apis/Instructor/InstructorMaterialsApi';
 
 function useQuery() {
@@ -9,10 +10,12 @@ function useQuery() {
   return useMemo(() => new URLSearchParams(search), [search]);
 }
 
-export default function EditMaterials({ onSuccess }) {
+export default function EditMaterials({ onSuccess, open, onClose, initialData = null, materialId = null }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { modal } = App.useApp();
-  const { id } = useParams();
+  const { id: paramId } = useParams();
+  const id = materialId || paramId;
   const query = useQuery();
   const sectionId = query.get('sectionId') || '';
   const classId = query.get('classId') || '';
@@ -25,14 +28,41 @@ export default function EditMaterials({ onSuccess }) {
     const loadMaterial = async () => {
       try {
         setLoading(true);
-        // Lấy nhiều materials để đảm bảo có material cần edit
+        if (initialData) {
+          const material = initialData;
+          let typeId;
+          if (material.typeId) {
+            typeId = Number(material.typeId);
+          } else {
+            const name = material.learningMaterialType || material.learningMaterialTypeName || material.typeName || '';
+            const s = String(name).toLowerCase();
+            if (s.includes('video')) typeId = 1; // video = 1
+            else typeId = 2; // document = 2
+          }
+          form.setFieldsValue({
+            title: material.name,
+            description: material.description || '',
+            url: material.url || material.materialUrl,
+            typeId,
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Fallback: fetch materials list to find the material when no initialData provided
         const res = await getMaterials({ page: 1, pageSize: 1000 });
         const materials = Array.isArray(res.items) ? res.items : [];
         const material = materials.find(m => Number(m.id) === Number(id));
         
         if (material) {
-          console.log('Found material:', material);
-          const typeId = material.learningMaterialType === 'Document' ? 1 : 2;
+          let typeId;
+          if (material.typeId) typeId = Number(material.typeId);
+          else {
+            const name = material.learningMaterialType || material.learningMaterialTypeName || material.typeName || '';
+            const s = String(name).toLowerCase();
+            if (s.includes('video')) typeId = 1;
+            else typeId = 2;
+          }
           form.setFieldsValue({
             title: material.name,
             description: material.description || '',
@@ -40,14 +70,13 @@ export default function EditMaterials({ onSuccess }) {
             typeId,
           });
         } else {
-          console.log('Material not found. Materials:', materials);
-          message.error('Material not found');
-          navigate('/instructor/materials');
+          message.error(t('instructor.materials.messages.materialNotFound'));
+          if (!open) navigate('/instructor/materials');
         }
       } catch (e) {
         console.error('Load material error', e);
-        message.error('Failed to load material');
-        navigate('/instructor/materials');
+        message.error(t('instructor.materials.messages.loadMaterialFailed'));
+        if (!open) navigate('/instructor/materials');
       } finally {
         setLoading(false);
       }
@@ -56,7 +85,7 @@ export default function EditMaterials({ onSuccess }) {
     if (id) {
       loadMaterial();
     }
-  }, [id, form, navigate]);
+  }, [id, form, navigate, initialData, open]);
 
   const onFinish = async (values) => {
     try {
@@ -73,11 +102,12 @@ export default function EditMaterials({ onSuccess }) {
       await updateMaterial(id, payload);
       
       modal.success({
-        title: 'Success',
-        content: 'Material updated successfully',
-        okText: 'OK',
+        title: t('instructor.materials.modal.success'),
+        content: t('instructor.materials.messages.updateSuccess'),
+        okText: t('instructor.materials.modal.ok'),
         centered: true,
         onOk: () => {
+          if (typeof onSuccess === 'function') return onSuccess();
           // Always navigate back and let parent component refresh
           navigate('/instructor/materials', { replace: true });
         }
@@ -85,7 +115,7 @@ export default function EditMaterials({ onSuccess }) {
     } catch (e) {
       console.error('Update material error', e);
       
-      let errorMsg = e?.message || 'Failed to update material';
+      let errorMsg = e?.message || t('instructor.materials.messages.updateFailed');
       // Handle API error responses
       if (e?.response?.data) {
         const data = e.response.data;
@@ -107,9 +137,9 @@ export default function EditMaterials({ onSuccess }) {
       }
       
       modal.error({
-        title: 'Error Updating Material',
+        title: t('instructor.materials.messages.updateError'),
         content: errorMsg,
-        okText: 'Close',
+        okText: t('instructor.materials.modal.close'),
         centered: true,
       });
     } finally {
@@ -117,7 +147,88 @@ export default function EditMaterials({ onSuccess }) {
     }
   };
 
-  const onCancel = () => navigate(-1);
+  const onCancel = () => {
+    if (typeof onClose === 'function') return onClose();
+    return navigate(-1);
+  };
+
+  const content = (
+    <Card>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+      >
+        <Form.Item
+          label={t('instructor.materials.form.title')}
+          name="title"
+          rules={[{ required: true, message: t('instructor.materials.form.titleRequired') }]}
+        >
+          <Input placeholder={t('instructor.materials.form.titlePlaceholderEdit')} />
+        </Form.Item>
+
+        <Form.Item
+          label={t('instructor.materials.form.type')}
+          name="typeId"
+          rules={[{ required: true, message: t('instructor.materials.form.typeRequired') }]}
+        >
+          <Radio.Group>
+            <Radio value={1}>
+              <BookOutlined className="mr-2" />
+              {t('instructor.materials.document')}
+            </Radio>
+            <Radio value={2}>
+              <VideoCameraOutlined className="mr-2" />
+              {t('instructor.materials.video')}
+            </Radio>
+          </Radio.Group>
+        </Form.Item>
+
+        <Form.Item
+          label={t('instructor.materials.form.url')}
+          name="url"
+          rules={[
+            { required: true, message: t('instructor.materials.form.urlRequired') },
+            { type: 'url', message: t('instructor.materials.form.urlInvalid') },
+          ]}
+        >
+          <Input placeholder={t('instructor.materials.form.urlPlaceholderEdit')} />
+        </Form.Item>
+
+        <Form.Item
+          label={t('instructor.materials.form.description')}
+          name="description"
+        >
+          <Input.TextArea
+            rows={4}
+            placeholder={t('instructor.materials.form.descriptionPlaceholderEdit')}
+          />
+        </Form.Item>
+
+        <Space>
+          <Button type="primary" htmlType="submit" loading={submitting}>
+            {t('instructor.materials.buttons.update')}
+          </Button>
+          <Button onClick={onCancel}>{t('instructor.materials.buttons.cancel')}</Button>
+        </Space>
+      </Form>
+    </Card>
+  );
+
+  if (typeof open !== 'undefined') {
+    return (
+      <Drawer
+        title={t('instructor.materials.editMaterial')}
+        placement="right"
+        width={720}
+        onClose={onCancel}
+        open={open}
+        destroyOnClose
+      >
+        {loading ? <Card loading /> : content}
+      </Drawer>
+    );
+  }
 
   if (loading) {
     return (
@@ -136,69 +247,9 @@ export default function EditMaterials({ onSuccess }) {
           onClick={onCancel}
           className="p-0"
         />
-        <span className="text-2xl">Edit Material</span>
+        <span className="text-2xl">{t('instructor.materials.editMaterial')}</span>
       </div>
-
-      <Card>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-        >
-          <Form.Item
-            label="Title"
-            name="title"
-            rules={[{ required: true, message: 'Please enter title' }]}
-          >
-            <Input placeholder="Enter material title" />
-          </Form.Item>
-
-          <Form.Item
-            label="Type"
-            name="typeId"
-            rules={[{ required: true, message: 'Please select type' }]}
-          >
-            <Radio.Group>
-              <Radio value={1}>
-                <BookOutlined className="mr-2" />
-                Document
-              </Radio>
-              <Radio value={2}>
-                <VideoCameraOutlined className="mr-2" />
-                Video
-              </Radio>
-            </Radio.Group>
-          </Form.Item>
-
-          <Form.Item
-            label="URL"
-            name="url"
-            rules={[
-              { required: true, message: 'Please enter URL' },
-              { type: 'url', message: 'Please enter valid URL' },
-            ]}
-          >
-            <Input placeholder="Enter material URL" />
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            name="description"
-          >
-            <Input.TextArea
-              rows={4}
-              placeholder="Enter material description (optional)"
-            />
-          </Form.Item>
-
-          <Space>
-            <Button type="primary" htmlType="submit" loading={submitting}>
-              Update
-            </Button>
-            <Button onClick={onCancel}>Cancel</Button>
-          </Space>
-        </Form>
-      </Card>
+      {content}
     </div>
   );
 }

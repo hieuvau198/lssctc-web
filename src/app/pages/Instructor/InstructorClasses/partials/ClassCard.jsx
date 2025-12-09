@@ -1,8 +1,10 @@
 import { Card, Tag, Tooltip } from "antd";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { getProgramName } from "../../../../mocks/instructorClasses";
 
 const ClassCard = ({ classItem, onView }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const formatDate = (dateString) => {
@@ -15,7 +17,7 @@ const ClassCard = ({ classItem, onView }) => {
 
   const isActiveStatus = (status) => String(status) === '1' || Number(status) === 1;
   const getStatusColor = (status) => (isActiveStatus(status) ? 'green' : 'red');
-  const getStatusText = (status) => (isActiveStatus(status) ? 'Active' : 'Inactive');
+  const getStatusText = (status) => (isActiveStatus(status) ? t('instructor.classes.status.active') : t('instructor.classes.status.inactive'));
 
   const handleViewDetail = () => {
     const id = classItem?.id ?? classItem?.classId;
@@ -68,18 +70,18 @@ const ClassCard = ({ classItem, onView }) => {
         <div className="flex-1 flex flex-col justify-end">
           <div className="pt-4 border-t text-sm text-slate-700 space-y-3">
             <div className="flex">
-              <span className="font-medium w-20 flex-shrink-0">Program:</span> 
+              <span className="font-medium w-20 flex-shrink-0">{t('instructor.classes.card.program')}:</span> 
               <Tooltip title={getProgramName(classItem.programCourseId)}>
                 <span className="flex-1 truncate">{getProgramName(classItem.programCourseId)}</span>
               </Tooltip>
             </div>
             <div className="flex">
-              <span className="font-medium w-20 flex-shrink-0">Duration:</span> 
+              <span className="font-medium w-20 flex-shrink-0">{t('instructor.classes.card.duration')}:</span> 
               <span className="flex-1 line-clamp-2 text-xs leading-4">{formatDate(classItem.startDate)} - {formatDate(classItem.endDate)}</span>
             </div>
             <div className="flex">
-              <span className="font-medium w-20 flex-shrink-0">Capacity:</span> 
-              <span className="flex-1">{classItem.capacity} students</span>
+              <span className="font-medium w-20 flex-shrink-0">{t('instructor.classes.card.capacity')}:</span> 
+              <span className="flex-1">{classItem.capacity} {t('instructor.classes.card.students')}</span>
             </div>
           </div>
         </div>

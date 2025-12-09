@@ -1,5 +1,6 @@
 import { Alert, Skeleton, Tag, Empty } from 'antd';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'react-router';
 import { fetchCourseDetail } from '../../../../apis/ProgramManager/CourseApi';
 import PageNav from '../../../../components/PageNav/PageNav';
@@ -8,6 +9,7 @@ import { Wallet } from 'lucide-react';
 import ClassesSection from './ClassesSection';
 
 export default function CourseDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,11 +39,11 @@ export default function CourseDetail() {
   const fromProgram = location?.state?.fromProgram;
   const breadcrumbItems = fromProgram
     ? [
-        { title: 'Programs', href: '/program' },
-        { title: fromProgram.name || 'Program', href: `/program/${fromProgram.id}` },
-        { title: data?.name || 'Course' },
+        { title: t('trainee.programs.title'), href: '/program' },
+        { title: fromProgram.name || t('trainee.programs.title'), href: `/program/${fromProgram.id}` },
+        { title: data?.name || t('trainee.courses.title') },
       ]
-    : [ { title: 'Courses', href: '/course' }, { title: data?.name || 'Course' } ];
+    : [ { title: t('trainee.courses.title'), href: '/course' }, { title: data?.name || t('trainee.courses.title') } ];
 
   if (loading) {
     return (
@@ -71,7 +73,7 @@ export default function CourseDetail() {
         </div>
         <div className="bg-white">
           <div className="max-w-7xl mx-auto px-4 py-10">
-            <h3 className="text-2xl font-semibold mb-6">Available Classes</h3>
+            <h3 className="text-2xl font-semibold mb-6">{t('trainee.courseDetail.availableClasses')}</h3>
             <ClassesSection courseId={id} />
           </div>
         </div>
@@ -88,7 +90,7 @@ export default function CourseDetail() {
   }
 
   if (!data) {
-    return <Empty description="Course not found." className="mt-16" />;
+    return <Empty description={t('trainee.courseDetail.notFound')} className="mt-16" />;
   }
 
   return (
@@ -99,7 +101,7 @@ export default function CourseDetail() {
           <PageNav
             className="mb-4"
             items={breadcrumbItems}
-            rootLabel="Home"
+            rootLabel={t('common.home')}
             rootHref="/"
             hideIds
           />
@@ -112,7 +114,7 @@ export default function CourseDetail() {
               <div className="text-lg text-slate-600 mb-6 max-w-2xl">
                 <div className="overflow-y-scroll" style={{ minHeight: '7rem', maxHeight: '7rem' }}>
                   <p className="whitespace-pre-line text-sm">
-                    {data.description || 'No description provided.'}
+                    {data.description || t('trainee.courseDetail.noDescription')}
                   </p>
                 </div>
               </div>
@@ -120,7 +122,7 @@ export default function CourseDetail() {
                 {data.durationHours != null && (
                   <span className="flex items-center">
                     <ClockCircleOutlined className="mr-2 text-slate-500" />
-                    {data.durationHours} hours
+                    {data.durationHours} {t('trainee.courseDetail.hours')}
                   </span>
                 )}
                 {data.levelName && (
@@ -142,7 +144,7 @@ export default function CourseDetail() {
               {data.courseCodeName && (
                 <div className="mb-8 bg-white/60 backdrop-blur-sm rounded-md p-4 border border-slate-200 max-w-2xl">
                   <h4 className="font-semibold flex items-center mb-2 text-base text-slate-800">
-                    <InfoCircleOutlined className="mr-2 text-blue-500" /> Course Code
+                    <InfoCircleOutlined className="mr-2 text-blue-500" /> {t('trainee.courseDetail.courseCode')}
                   </h4>
                   <p className="text-slate-700 text-sm font-mono">{data.courseCodeName}</p>
                 </div>
@@ -161,7 +163,7 @@ export default function CourseDetail() {
                     />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-                      <span className="text-slate-500 text-sm">No image available</span>
+                      <span className="text-slate-500 text-sm">{t('trainee.programDetail.noImage')}</span>
                     </div>
                   )}
                 </div>
@@ -174,7 +176,7 @@ export default function CourseDetail() {
       {/* Classes Section */}
       <div className="bg-white min-h-screen">
         <div className="max-w-7xl mx-auto px-4 py-10">
-          <h2 className="text-2xl font-semibold mb-6">Available Classes</h2>
+          <h2 className="text-2xl font-semibold mb-6">{t('trainee.courseDetail.availableClasses')}</h2>
           <ClassesSection courseId={id} />
         </div>
       </div>

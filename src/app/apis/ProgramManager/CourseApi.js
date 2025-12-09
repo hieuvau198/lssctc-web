@@ -2,25 +2,38 @@ import apiClient from '../../libs/axios';
 
 const BASE_URL = `${import.meta.env.VITE_API_Program_Service_URL}/Courses`;
 
-export async function fetchCourses({ pageNumber = 1, pageSize = 10, searchTerm, categoryId, levelId, isActive } = {}) {
+export async function fetchCourses(params = {}) {
+  const searchParams = new URLSearchParams();
+  if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber);
+  if (params.pageSize) searchParams.append("pageSize", params.pageSize);
+  if (params.searchTerm) searchParams.append("searchTerm", params.searchTerm);
+  if (params.sortBy) searchParams.append("sortBy", params.sortBy);
+  if (params.sortDirection) searchParams.append("sortDirection", params.sortDirection);
+
+  const response = await apiClient.get(`${BASE_URL}/paged?${searchParams}`);
+  return { items: response.data.items, totalCount: response.data.totalCount };
+}
+
+export async function fetchCoursesPaged({ pageNumber = 1, pageSize = 10, searchTerm } = {}) {
   try {
     const searchParams = new URLSearchParams();
-    if (pageNumber) searchParams.append('PageNumber', pageNumber);
-    if (pageSize) searchParams.append('PageSize', pageSize);
+    searchParams.append('PageNumber', pageNumber);
+    searchParams.append('PageSize', pageSize);
     if (searchTerm) searchParams.append('SearchTerm', searchTerm);
-    if (categoryId !== undefined && categoryId !== null) searchParams.append('CategoryId', categoryId);
-    if (levelId !== undefined && levelId !== null) searchParams.append('LevelId', levelId);
-    if (isActive !== undefined && isActive !== null) searchParams.append('IsActive', isActive);
 
-    const url = `${BASE_URL}`;
+    const url = `${BASE_URL}/paged?${searchParams.toString()}`;
     const resp = await apiClient.get(url);
     const data = resp.data;
 
     // normalize to { items, totalCount }
-    if (Array.isArray(data)) return { items: data, totalCount: data.length };
-    return data;
+    return {
+      items: data.items || [],
+      totalCount: data.totalCount || 0,
+      pageNumber: data.pageNumber || pageNumber,
+      pageSize: data.pageSize || pageSize,
+    };
   } catch (err) {
-    console.error('Error fetching courses:', err);
+    console.error('Error fetching courses paged:', err);
     throw err;
   }
 }
@@ -54,7 +67,12 @@ export async function addCourse(course) {
     const resp = await apiClient.post(BASE_URL, course);
     return resp.data;
   } catch (err) {
-    const msg = err?.response?.data || err.message;
+    let msg = err.message || 'Error adding course';
+    if (err.response && err.response.data) {
+      msg = typeof err.response.data === 'object'
+        ? JSON.stringify(err.response.data)
+        : err.response.data;
+    }
     console.error('Error adding course:', msg);
     throw new Error(msg);
   }

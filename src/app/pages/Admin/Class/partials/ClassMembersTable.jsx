@@ -1,6 +1,7 @@
 import { App, Avatar, Button, Divider, Empty, Pagination, Popconfirm, Skeleton, Space, Table, Tag, Tooltip } from "antd";
 import { Check, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { approveEnrollment, fetchClassTrainees, rejectEnrollment } from "../../../../apis/ProgramManager/ClassesApi";
 import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import { getClassStatus } from "../../../../utils/classStatus";
@@ -8,6 +9,7 @@ import { getEnrollmentStatus } from "../../../../utils/enrollmentStatus";
 import AddTraineeModal from "./AddTraineeModal";
 
 const ClassMembersTable = ({ classItem }) => {
+    const { t } = useTranslation();
     const { message } = App.useApp();
     const [trainees, setTrainees] = useState([]);
     const [traineesLoading, setTraineesLoading] = useState(false);
@@ -53,7 +55,7 @@ const ClassMembersTable = ({ classItem }) => {
     const columns = [
         { title: '#', dataIndex: 'idx', width: 60, align: 'center' },
         {
-            title: 'Avatar',
+            title: t('common.avatar'),
             dataIndex: 'avatar',
             width: 80,
             align: 'center',
@@ -63,17 +65,17 @@ const ClassMembersTable = ({ classItem }) => {
                 </Avatar>
             ),
         },
-        { title: 'Full name', dataIndex: 'fullName' },
-        { title: 'Email', dataIndex: 'email' },
-        { title: 'Phone', dataIndex: 'phoneNumber', width: 150 },
+        { title: t('common.fullName'), dataIndex: 'fullName' },
+        { title: t('common.email'), dataIndex: 'email' },
+        { title: t('common.phone'), dataIndex: 'phoneNumber', width: 150 },
         {
-            title: 'Enroll Date',
+            title: t('admin.classes.columns.enrollDate'),
             dataIndex: 'enrollDate',
             width: 150,
             render: (d) => <DayTimeFormat value={d} />,
         },
         {
-            title: 'Status',
+            title: t('common.status'),
             dataIndex: 'status',
             render: (s) => {
                 const st = getEnrollmentStatus(s);
@@ -82,7 +84,7 @@ const ClassMembersTable = ({ classItem }) => {
             width: 110,
         },
         {
-            title: 'Action',
+            title: t('common.action'),
             dataIndex: 'action',
             width: 100,
             align: 'center',
@@ -98,14 +100,14 @@ const ClassMembersTable = ({ classItem }) => {
                 return (
                     <Space size="small">
                         <Popconfirm
-                            title="Approve enrollment"
-                            description="Are you sure you want to approve this trainee?"
+                            title={t('admin.classes.popconfirm.approveEnrollment')}
+                            description={t('admin.classes.popconfirm.approveEnrollmentDesc')}
                             onConfirm={() => handleApprove(record.enrollmentId)}
-                            okText="Yes"
-                            cancelText="No"
+                            okText={t('common.yes')}
+                            cancelText={t('common.no')}
                             disabled={isLoading}
                         >
-                            <Tooltip title={'Approve'}>
+                            <Tooltip title={t('admin.classes.buttons.approve')}>
                                 <Button
                                     type="primary"
                                     size="small"
@@ -117,15 +119,15 @@ const ClassMembersTable = ({ classItem }) => {
                             </Tooltip>
                         </Popconfirm>
                         <Popconfirm
-                            title="Reject enrollment"
-                            description="Are you sure you want to reject this trainee?"
+                            title={t('admin.classes.popconfirm.rejectEnrollment')}
+                            description={t('admin.classes.popconfirm.rejectEnrollmentDesc')}
                             onConfirm={() => handleReject(record.enrollmentId)}
-                            okText="Yes"
-                            cancelText="No"
+                            okText={t('common.yes')}
+                            cancelText={t('common.no')}
                             okButtonProps={{ danger: true }}
                             disabled={isLoading}
                         >
-                            <Tooltip title={'Reject'}>
+                            <Tooltip title={t('admin.classes.buttons.reject')}>
                                 <Button
                                     danger
                                     size="small"
@@ -164,11 +166,11 @@ const ClassMembersTable = ({ classItem }) => {
         setActionLoading((prev) => ({ ...prev, [enrollmentId]: 'approve' }));
         try {
             await approveEnrollment(enrollmentId);
-            message.success('Enrollment approved successfully');
+            message.success(t('admin.classes.messages.approveSuccess'));
             handleTraineeAdded(); // reload list
         } catch (err) {
             console.error('Failed to approve enrollment:', err);
-            message.error(err?.response?.data?.message || 'Failed to approve enrollment');
+            message.error(err?.response?.data?.message || t('admin.classes.messages.approveFailed'));
         } finally {
             setActionLoading((prev) => ({ ...prev, [enrollmentId]: null }));
         }
@@ -179,11 +181,11 @@ const ClassMembersTable = ({ classItem }) => {
         setActionLoading((prev) => ({ ...prev, [enrollmentId]: 'reject' }));
         try {
             await rejectEnrollment(enrollmentId);
-            message.success('Enrollment rejected successfully');
+            message.success(t('admin.classes.messages.rejectSuccess'));
             handleTraineeAdded(); // reload list
         } catch (err) {
             console.error('Failed to reject enrollment:', err);
-            message.error(err?.response?.data?.message || 'Failed to reject enrollment');
+            message.error(err?.response?.data?.message || t('admin.classes.messages.rejectFailed'));
         } finally {
             setActionLoading((prev) => ({ ...prev, [enrollmentId]: null }));
         }
@@ -193,7 +195,7 @@ const ClassMembersTable = ({ classItem }) => {
 
     return (
         <div>
-            <Divider orientation="left">Members ({totalCount})</Divider>
+            <Divider orientation="left">{t('admin.classes.detail.members')} ({totalCount})</Divider>
             {/* Add Trainee button - only show when class is Draft or Open */}
             {(() => {
                 const s = getClassStatus(classItem.status);
@@ -214,7 +216,7 @@ const ClassMembersTable = ({ classItem }) => {
             {traineesLoading ? (
                 <Skeleton active paragraph={{ rows: 3 }} />
             ) : members.length === 0 ? (
-                <Empty description="No members" />
+                <Empty description={t('admin.classes.detail.noMembers')} />
             ) : (
                 <div>
                     {(() => {
@@ -251,7 +253,7 @@ const ClassMembersTable = ({ classItem }) => {
                                         onChange={(p, s) => { setPage(p); setPageSize(s); }}
                                         showSizeChanger
                                         pageSizeOptions={["10", "20", "35", "50"]}
-                                        showTotal={(t, range) => `${range[0]}-${range[1]} of ${t} trainees`}
+                                        showTotal={(total, range) => t('admin.classes.pagination.trainees', { start: range[0], end: range[1], total })}
                                     />
                                 </div>
                             </>

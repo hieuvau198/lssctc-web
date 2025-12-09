@@ -3,10 +3,13 @@ import {
   Alert,
   Skeleton,
   Empty,
-  App
+  App,
+  Button
 } from "antd";
+import { Calendar } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from 'react-i18next';
 import { getInstructorClasses } from "../../../apis/Instructor/InstructorApi";
 import ClassTable from "./partials/ClassTable";
 import useAuthStore from "../../../store/authStore";
@@ -14,6 +17,7 @@ import { getAuthToken } from "../../../libs/cookies";
 import { decodeToken } from "../../../libs/jwtDecode";
 
 export default function InstructorClasses() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +43,7 @@ export default function InstructorClasses() {
       null;
 
     if (!resolvedInstructorId) {
-      setError("Instructor ID not available. Please log in again.");
+      setError(t('instructor.classes.instructorIdNotAvailable'));
       setLoading(false);
     } else {
       setInstructorId(resolvedInstructorId);
@@ -75,7 +79,7 @@ export default function InstructorClasses() {
       setError(null);
     } catch (err) {
       console.error('Failed to load classes', err);
-      message.error('Load classes thất bại');
+      message.error(t('instructor.classes.loadFailed'));
       setClasses([]);
       setTotal(0);
     } finally {
@@ -90,11 +94,11 @@ export default function InstructorClasses() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <Skeleton.Button style={{ width: 200, height: 32 }} active />
+      <div className="max-w-7xl mx-auto px-4 py-2">
+        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 mb-6">
+          <Skeleton.Button style={{ width: 300, height: 40 }} active className="bg-white/20" />
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white rounded-xl shadow-lg p-6">
           <Skeleton active paragraph={{ rows: 8 }} />
         </div>
       </div>
@@ -103,34 +107,56 @@ export default function InstructorClasses() {
 
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <Alert message="Error" description={error} type="error" showIcon />
+      <div className="max-w-7xl mx-auto px-4 py-2">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <Alert message="Error" description={error} type="error" showIcon />
+        </div>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-2">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">My Classes</span>
+      {/* Modern Header with Gradient */}
+      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-4 mb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <span className="text-2xl font-bold text-white">{t('instructor.classes.title')}</span>
+              <p className="text-blue-100 text-sm mt-1">
+                {t('instructor.classes.table.pagination', { start: (pageNumber - 1) * pageSize + 1, end: Math.min(pageNumber * pageSize, total), total })}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Content */}
       {(!classes || classes.length === 0) ? (
-        <Empty description="Không có class" className="mt-16" />
+        <div className="bg-white rounded-xl shadow-lg p-12">
+          <Empty 
+            description={
+              <div>
+                <p className="text-gray-600 text-lg font-medium mb-2">{t('instructor.classes.noClasses')}</p>
+                <p className="text-gray-400 text-sm">{t('instructor.classes.noClassesDesc')}</p>
+              </div>
+            }
+            image={<div className="text-8xl mb-4">📚</div>}
+          />
+        </div>
       ) : (
-        <div className="bg-white rounded-lg shadow">
-          <div className="overflow-hidden">
-            <ClassTable
-              classes={classes}
-              pageNumber={pageNumber}
-              pageSize={pageSize}
-              total={total}
-              onPageChange={(p, ps) => { setPageNumber(p); setPageSize(ps); load(p, ps); }}
-              onView={handleViewClass}
-            />
-          </div>
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+          <ClassTable
+            classes={classes}
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            total={total}
+            onPageChange={(p, ps) => { setPageNumber(p); setPageSize(ps); load(p, ps); }}
+            onView={handleViewClass}
+          />
         </div>
       )}
     </div>

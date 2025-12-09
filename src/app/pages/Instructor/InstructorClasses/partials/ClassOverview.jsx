@@ -1,7 +1,10 @@
 import { Card, Descriptions, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { getProgramName } from '../../../../mocks/instructorClasses';
 
 const ClassOverview = ({ classData }) => {
+  const { t } = useTranslation();
+  
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -25,7 +28,7 @@ const ClassOverview = ({ classData }) => {
     const end = new Date(endDate);
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return `${diffDays} days`;
+    return `${diffDays} ${t('instructor.classes.overview.days')}`;
   };
 
   return (
@@ -45,32 +48,32 @@ const ClassOverview = ({ classData }) => {
           labelStyle={{ fontSize: 14, fontWeight: 600, paddingRight: 16, minWidth: 140 }}
           contentStyle={{ fontSize: 14 }}
         >
-          <Descriptions.Item label="Class Code" span={1}>
+          <Descriptions.Item label={t('instructor.classes.overview.classCode')} span={1}>
             <span className="font-mono font-medium text-sm">{classData.classCode}</span>
           </Descriptions.Item>
-          <Descriptions.Item label="Capacity" span={1}>
-            <div className="text-sm">{classData.capacity} students</div>
+          <Descriptions.Item label={t('instructor.classes.overview.capacity')} span={1}>
+            <div className="text-sm">{classData.capacity} {t('instructor.classes.overview.students')}</div>
           </Descriptions.Item>
-          <Descriptions.Item label="Start Date" span={1}>
+          <Descriptions.Item label={t('instructor.classes.overview.startDate')} span={1}>
             <div className="text-sm">{formatDate(classData.startDate)}</div>
           </Descriptions.Item>
-          <Descriptions.Item label="End Date" span={1}>
+          <Descriptions.Item label={t('instructor.classes.overview.endDate')} span={1}>
             <div className="text-sm">{formatDate(classData.endDate)}</div>
           </Descriptions.Item>
-          <Descriptions.Item label="Duration" span={1}>
+          <Descriptions.Item label={t('instructor.classes.overview.duration')} span={1}>
             <div className="text-sm">{calculateDuration(classData.startDate, classData.endDate)}</div>
           </Descriptions.Item>
-          <Descriptions.Item label="Status" span={1}>
+          <Descriptions.Item label={t('instructor.classes.overview.status')} span={1}>
             <Tag color={getStatusColor(classData.status)} style={{ fontSize: 12, padding: '2px 8px' }}>
               {classData.status}
             </Tag>
           </Descriptions.Item>
-          <Descriptions.Item label="Description" span={2}>
+          <Descriptions.Item label={t('instructor.classes.overview.description')} span={2}>
             <div
               className="overflow-y-auto pr-2 text-gray-700 leading-relaxed"
               style={{ scrollbarWidth: 'thin', scrollbarColor: '#cbd5e1 #f1f5f9', maxHeight: '40vh' }}
             >
-              {classData.description || 'No description available'}
+              {classData.description || t('instructor.classes.overview.noDescription')}
             </div>
           </Descriptions.Item>
         </Descriptions>

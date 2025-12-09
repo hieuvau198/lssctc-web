@@ -1,6 +1,7 @@
 import { Card, Empty, Progress, Segmented, Skeleton, Tag } from 'antd';
 import { BookOpen } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { getLearningClassesByTraineeId } from '../../../apis/Trainee/TraineeClassApi';
 import PageNav from '../../../components/PageNav/PageNav';
@@ -11,6 +12,7 @@ import { getClassStatus } from '../../../utils/classStatus';
 
 
 export default function MyClasses() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState('in-progress'); // 'in-progress' | 'completed'
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -71,11 +73,11 @@ export default function MyClasses() {
       <PageNav nameMap={{ 'my-program': 'My Program' }} />
       <div className="mt-2 space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 mb-4">My Learning</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 mb-4">{t('trainee.myLearning.title')}</h1>
           <Segmented
             options={[
-              { label: 'In Progress', value: 'in-progress' },
-              { label: 'Completed', value: 'completed' },
+              { label: t('trainee.myLearning.inProgressTab'), value: 'in-progress' },
+              { label: t('trainee.myLearning.completedTab'), value: 'completed' },
             ]}
             value={tab}
             onChange={setTab}
@@ -95,7 +97,7 @@ export default function MyClasses() {
 
         {!loading && programs.length === 0 && (
           <div className="min-h-screen flex items-center justify-center">
-            <Empty description="No classes found" className="py-16" />
+            <Empty description={t('trainee.myLearning.noClasses')} className="py-16" />
           </div>
         )}
 
@@ -129,14 +131,14 @@ export default function MyClasses() {
                               </h3>
                               <div className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-600">
                                 <BookOpen className="w-4 h-4" />
-                                <span>{p.progress}% complete</span>
+                                <span>{p.progress}% {t('trainee.myLearning.complete')}</span>
                               </div>
                             </div>
                           </div>
                           <div className="ml-4">
                             {p.progress === 100 && (
                               <Tag color="green" className="m-0">
-                                Completed
+                                {t('trainee.completed')}
                               </Tag>
                             )}
                           </div>

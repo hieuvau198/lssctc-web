@@ -1,10 +1,12 @@
 import { App, Button, Select } from 'antd';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { addCourseToProgram, fetchCourses } from '../../../../apis/ProgramManager/ProgramManagerCourseApi';
 import { fetchCoursesByProgram } from '../../../../apis/ProgramManager/CourseApi';
 
 const AssignCourse = ({ program, onAssigned }) => {
+    const { t } = useTranslation();
     const {message} = App.useApp();
     const [loading, setLoading] = useState(false);
     const [courses, setCourses] = useState([]);
@@ -39,7 +41,7 @@ const AssignCourse = ({ program, onAssigned }) => {
                 if (!avail || avail.length === 0) {
                     // no available courses: inform user and close editing mode
                     setAvailable([]);
-                    message.info('All courses are already assigned to this program');
+                    message.info(t('admin.programs.assignCourse.allAssigned'));
                     setEditing(false);
                     return;
                 }
@@ -53,12 +55,12 @@ const AssignCourse = ({ program, onAssigned }) => {
     }, [program, editing, message]);
 
     const handleAssign = async () => {
-        if (!selected) return setError('Please choose a course to assign');
+        if (!selected) return setError(t('admin.programs.assignCourse.selectWarning'));
         setLoading(true);
         setError(null);
         try {
             await addCourseToProgram(program.id, selected);
-            message.success('Course assigned to program');
+            message.success(t('admin.programs.assignCourse.assignSuccessSingle'));
             setSelected(null);
             setEditing(false);
             onAssigned?.();
@@ -78,7 +80,7 @@ const AssignCourse = ({ program, onAssigned }) => {
             {!editing ? (
                 <div className="flex justify-end mb-4">
                     <Button type="primary" icon={<Plus size={20} />} onClick={() => { setEditing(true); setError(null); }} size="middle">
-                        Assign Course
+                        {t('admin.programs.assignCourse.button')}
                     </Button>
                 </div>
             ) : (
@@ -86,7 +88,7 @@ const AssignCourse = ({ program, onAssigned }) => {
                     <div className="w-[350px]">
                         <Select
                             showSearch
-                            placeholder="Select a course"
+                            placeholder={t('admin.programs.assignCourse.selectPlaceholder')}
                             optionFilterProp="children"
                             loading={loadingCourses}
                             allowClear
@@ -97,7 +99,7 @@ const AssignCourse = ({ program, onAssigned }) => {
                         >
                             {available.length === 0 && !loadingCourses ? (
                                 <Select.Option disabled value="">
-                                    No available courses
+                                    {t('admin.programs.assignCourse.noAvailableShort')}
                                 </Select.Option>
                             ) : (
                                 available.map((c) => (
@@ -111,10 +113,10 @@ const AssignCourse = ({ program, onAssigned }) => {
 
                     <div className="flex gap-2">
                         <Button type="primary" onClick={handleAssign} loading={loading} size="middle">
-                            Save
+                            {t('common.save')}
                         </Button>
                         <Button onClick={() => { setEditing(false); setSelected(null); setError(null); }} size="middle">
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                     </div>
                 </div>

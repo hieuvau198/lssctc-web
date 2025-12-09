@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Skeleton, Empty, App, Form, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   getBrandModels,
   createBrandModel,
@@ -13,6 +14,7 @@ import BrandModelTable from './partials/BrandModelTable';
 import BrandModelDrawerForm from './partials/BrandModelDrawerForm';
 
 export default function BrandModel() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -35,13 +37,13 @@ export default function BrandModel() {
       setTotal(data.total || 0);
     } catch (e) {
       console.error('Failed to load brand models', e);
-      message.error('Failed to load brand models');
+      message.error(t('simManager.brandModel.failedToLoad'));
       setBrandModels([]);
       setTotal(0);
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, pageSize, message]);
+  }, [pageNumber, pageSize, message, t]);
 
   useEffect(() => {
     loadBrandModels();
@@ -65,7 +67,7 @@ export default function BrandModel() {
       form.setFieldsValue(data);
     } catch (e) {
       console.error('Failed to load brand model details', e);
-      message.error('Failed to load brand model details');
+      message.error(t('simManager.brandModel.failedToLoadDetails'));
     } finally {
       setDrawerLoading(false);
     }
@@ -81,7 +83,7 @@ export default function BrandModel() {
       form.setFieldsValue(data);
     } catch (e) {
       console.error('Failed to load brand model details', e);
-      message.error('Failed to load brand model details');
+      message.error(t('simManager.brandModel.failedToLoadDetails'));
     } finally {
       setDrawerLoading(false);
     }
@@ -89,19 +91,19 @@ export default function BrandModel() {
 
   const handleDelete = (record) => {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: `Are you sure you want to delete brand model "${record.name}"? This action cannot be undone.`,
-      okText: 'Delete',
+      title: t('simManager.brandModel.confirmDelete'),
+      content: t('simManager.brandModel.deleteContent', { name: record.name }),
+      okText: t('simManager.brandModel.delete'),
       okType: 'danger',
       onOk: async () => {
         setDeleting(record.id);
         try {
           await deleteBrandModel(record.id);
-          message.success('Brand model deleted successfully');
+          message.success(t('simManager.brandModel.deleteSuccess'));
           await loadBrandModels(pageNumber, pageSize);
         } catch (e) {
           console.error('Failed to delete brand model', e);
-          let errorMsg = 'Failed to delete brand model';
+          let errorMsg = t('simManager.brandModel.failedToDelete');
           if (e.response?.data?.error?.details?.exceptionMessage) {
             errorMsg = e.response.data.error.details.exceptionMessage;
           } else if (e.response?.data?.error?.message) {
@@ -132,10 +134,10 @@ export default function BrandModel() {
 
       if (drawerMode === 'create') {
         await createBrandModel(values);
-        message.success('Brand model created successfully');
+        message.success(t('simManager.brandModel.createSuccess'));
       } else if (drawerMode === 'edit') {
         await updateBrandModel(currentBrand.id, values);
-        message.success('Brand model updated successfully');
+        message.success(t('simManager.brandModel.updateSuccess'));
       }
 
       await loadBrandModels(pageNumber, pageSize);
@@ -146,7 +148,7 @@ export default function BrandModel() {
         return;
       }
       console.error('Failed to save brand model', e);
-      let errorMsg = 'Failed to save brand model';
+      let errorMsg = t('simManager.brandModel.failedToSave');
       if (e.response?.data?.error?.details?.exceptionMessage) {
         errorMsg = e.response.data.error.details.exceptionMessage;
       } else if (e.response?.data?.error?.message) {
@@ -179,20 +181,20 @@ export default function BrandModel() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Brand Models</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('simManager.brandModel.title')}</h1>
         </div>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={handleCreate}
         >
-          Create Brand Model
+          {t('simManager.brandModel.createBrandModel')}
         </Button>
       </div>
 
       {/* Content */}
       {brandModels.length === 0 ? (
-        <Empty description="No brand models found" />
+        <Empty description={t('simManager.brandModel.noBrandModelsFound')} />
       ) : (
         <BrandModelTable
           data={brandModels}

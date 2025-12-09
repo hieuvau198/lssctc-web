@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { fetchProgramDetail, fetchCoursesByProgram } from "../../../../apis/Trainee/TraineeProgramApi";
 import { Skeleton, Alert, Tag, Empty, Button } from "antd";
 import { InfoCircleOutlined, ClockCircleOutlined, BookOutlined, UserOutlined } from "@ant-design/icons";
@@ -7,6 +8,7 @@ import { useNavigate, useParams } from "react-router";
 import PageNav from "../../../../components/PageNav/PageNav";
 
 const ProgramDetail = ({ id: idProp, onBack }) => {
+  const { t } = useTranslation();
   const { id: idParam } = useParams();
   const navigate = useNavigate();
   const id = idProp ?? idParam;
@@ -71,7 +73,7 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
         </div>
         <div className="bg-white">
           <div className="max-w-7xl mx-auto px-4 py-10">
-            <h3 className="text-2xl font-semibold mb-6">Curriculum</h3>
+            <h3 className="text-2xl font-semibold mb-6">{t('trainee.programDetail.curriculum')}</h3>
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="rounded-md p-4">
@@ -91,7 +93,7 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
       </div>
     );
   if (!program)
-    return <Empty description="Program not found." className="mt-16" />;
+    return <Empty description={t('trainee.programDetail.notFound')} className="mt-16" />;
 
   return (
     <div className="w-full">
@@ -101,7 +103,7 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
           <PageNav
             className="mb-4"
             items={[
-              { title: 'Programs', href: '/program' },
+              { title: t('trainee.programs.title'), href: '/program' },
               { title: program.name },
             ]}
             rootLabel="Home"
@@ -119,13 +121,13 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-slate-700 mb-6">
                 {/* <span className="flex items-center"><ClockCircleOutlined className="mr-2 text-slate-500" />{program.durationHours} hours</span> */}
-                <span className="flex items-center"><BookOutlined className="mr-2 text-slate-500" />{program.totalCourses} courses</span>
-                <Tag color={program.isActive ? 'green' : 'default'} className="m-0">{program.isActive ? 'Active' : 'Inactive'}</Tag>
+                <span className="flex items-center"><BookOutlined className="mr-2 text-slate-500" />{program.totalCourses} {t('trainee.programDetail.courses')}</span>
+                <Tag color={program.isActive ? 'green' : 'default'} className="m-0">{program.isActive ? t('common.active') : t('common.inactive')}</Tag>
               </div>
               {program.prerequisites && program.prerequisites.length > 0 && (
                 <div className="mb-8 bg-white/60 backdrop-blur-sm rounded-md p-4 border border-slate-200 max-w-2xl">
                   <h4 className="font-semibold flex items-center mb-2 text-base text-slate-800">
-                    <InfoCircleOutlined className="mr-2 text-blue-500" /> Prerequisites
+                    <InfoCircleOutlined className="mr-2 text-blue-500" /> {t('trainee.programDetail.prerequisites')}
                   </h4>
                   <ul className="list-disc ml-6 space-y-1 text-slate-700 text-sm">
                     {program.prerequisites.map((pre, idx) => (
@@ -147,7 +149,7 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
                       loading="lazy"
                     />
                   ) : (
-                    <span className="text-slate-500 text-sm">No image available</span>
+                    <span className="text-slate-500 text-sm">{t('trainee.programDetail.noImage')}</span>
                   )}
                 </div>
               </div>
@@ -158,7 +160,7 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
       {/* Curriculum */}
       <div className="bg-white min-h-screen">
         <div className="max-w-7xl mx-auto px-4 py-10">
-          <h2 className="text-2xl font-semibold mb-6">Courses</h2>
+          <h2 className="text-2xl font-semibold mb-6">{t('trainee.courses.title')}</h2>
           {courses && courses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {courses.map((c) => (
@@ -184,7 +186,7 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
               ))}
             </div>
           ) : (
-            <Empty description="No courses in this program." />
+            <Empty description={t('trainee.programDetail.noCourses')} />
           )}
         </div>
       </div>

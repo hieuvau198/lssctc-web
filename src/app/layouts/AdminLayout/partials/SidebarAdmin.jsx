@@ -1,23 +1,26 @@
-import { Tooltip, App, Avatar, Dropdown, Menu, Space, Typography } from 'antd';
+import { Tooltip, App, Avatar, Dropdown, Menu, Space, Typography, Switch } from 'antd';
 import { NavLink, useNavigate } from 'react-router';
 import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, PanelLeft, LogOut, MoreVertical } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
 import useAuthStore from '../../../store/authStore';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
 import { sAvatarUrl, setAvatarUrl, clearAvatarUrl } from '../../../store/userAvatar';
 
-const ITEMS = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { to: '/admin/users/trainees', label: 'Users', icon: <Users className="w-5 h-5" /> },
-  { to: '/admin/programs', label: 'Programs', icon: <Layers className="w-5 h-5" /> },
-  { to: '/admin/courses', label: 'Courses', icon: <BookOpen className="w-5 h-5" /> },
-  { to: '/admin/class', label: 'Class', icon: <Calendar className="w-5 h-5" /> },
+const getItems = (t) => [
+  { to: '/admin/dashboard', label: t('sidebar.dashboard'), icon: <LayoutDashboard className="w-5 h-5" /> },
+  { to: '/admin/users/trainees', label: t('sidebar.users'), icon: <Users className="w-5 h-5" /> },
+  { to: '/admin/programs', label: t('sidebar.programs'), icon: <Layers className="w-5 h-5" /> },
+  { to: '/admin/courses', label: t('sidebar.courses'), icon: <BookOpen className="w-5 h-5" /> },
+  { to: '/admin/class', label: t('sidebar.class'), icon: <Calendar className="w-5 h-5" /> },
 ];
 
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
   const { message } = App.useApp();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const ITEMS = getItems(t);
 
   return (
     <>
@@ -45,13 +48,13 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
             <div className="flex items-center justify-center bg-blue-600 text-white font-bold rounded size-8 shrink-0 text-lg">
               A
             </div>
-            {!collapsed && <span className="font-semibold text-sm tracking-wide">Admin Panel</span>}
+            {!collapsed && <span className="font-semibold text-sm tracking-wide">{t('sidebar.adminPanel')}</span>}
           </div>
           {/* Desktop collapse button */}
           <button
             onClick={onToggle}
             className="hidden md:inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100"
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={collapsed ? t('sidebar.expandSidebar') : t('sidebar.collapseSidebar')}
           >
             {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
@@ -59,7 +62,7 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
           <button
             onClick={onMobileToggle}
             className="md:hidden inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100"
-            aria-label="Close navigation"
+            aria-label={t('sidebar.closeNavigation')}
           >
             <PanelLeftClose className="w-4 h-4" />
           </button>
@@ -110,18 +113,47 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
               const avatarContent = avatarUrl ? null : (fullName ? fullName.split(' ').filter(Boolean).map(n => n[0]).slice(0,2).join('') : 'U');
 
               const menu = (
-                  <Menu onClick={async ({ key }) => {
-                  if (key === 'logout') {
-                    try { await logout(); } catch (e) { message.error('Logout failed.'); }
-                    clearAvatarUrl();
-                    try { window.location.assign('/'); } catch { navigate('/'); }
-                  } else if (key === 'profile') {
-                    navigate('/admin/profile');
-                  }
-                }}>
-                  <Menu.Item key="profile">Profile</Menu.Item>
-                  <Menu.Item key="logout" danger>Logout</Menu.Item>
-                </Menu>
+                  <Menu
+                    onClick={async ({ key }) => {
+                      if (key === 'logout') {
+                        try { await logout(); } catch (e) { message.error(t('common.logoutFailed')); }
+                        clearAvatarUrl();
+                        try { window.location.assign('/'); } catch { navigate('/'); }
+                      } else if (key === 'profile') {
+                        navigate('/admin/profile');
+                      }
+                    }}
+                    items={[
+                      {
+                        key: 'profile',
+                        label: t('common.profile')
+                      },
+                      {
+                        key: 'language',
+                        label: (
+                          <div 
+                            className="flex items-center justify-between gap-3"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span>{t('common.language')}</span>
+                            <Switch
+                              checked={i18n.language === 'vi'}
+                              onChange={(checked) => i18n.changeLanguage(checked ? 'vi' : 'en')}
+                              checkedChildren="Vi"
+                              unCheckedChildren="En"
+                              size="small"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          </div>
+                        )
+                      },
+                      {
+                        key: 'logout',
+                        label: t('common.logout'),
+                        danger: true
+                      }
+                    ]}
+                  />
               );
 
               return collapsed ? (

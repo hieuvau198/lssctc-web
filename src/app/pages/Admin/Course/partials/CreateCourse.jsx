@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, InputNumber, Select, Button, Image } from "antd";
+import { useTranslation } from 'react-i18next';
+import { Modal, Form, Input, InputNumber, Select, Button, Image, message } from "antd";
 import { fetchCourseCategories, fetchCourseLevels } from "../../../../apis/ProgramManager/CourseApi";
 
 const { Option } = Select;
@@ -13,6 +14,7 @@ const CreateCourse = ({
   levels = [],
   embedded = false,
 }) => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [imagePreview, setImagePreview] = useState("");
   const [localCategories, setLocalCategories] = useState(categories || []);
@@ -66,13 +68,18 @@ const CreateCourse = ({
     };
   }, []);
 
+  const handleFinish = (values) => {
+    onCreate(values);
+  };
+
+  const handleFinishFailed = (errorInfo) => {
+    // Show a specific error message for clarity
+    const errorMessages = errorInfo.errorFields.map(field => field.errors[0]).join(". ");
+    message.error(`${t('common.reqField') || t('admin.courses.form.validationFailed')}: ${errorMessages}`);
+  };
+
   const handleOk = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        onCreate(values);
-      })
-      .catch(() => { });
+    form.submit();
   };
 
   const formContent = (
@@ -81,86 +88,155 @@ const CreateCourse = ({
       layout="vertical"
       initialValues={{
         name: "",
+        courseCode: "",
         description: "",
         categoryId: undefined,
         levelId: undefined,
         price: undefined,
         imageUrl: "",
         durationHours: undefined,
-        courseCodeName: "",
       }}
       disabled={confirmLoading}
-      className={embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6" : undefined}
+      onFinish={handleFinish}
+      onFinishFailed={handleFinishFailed}
+      scrollToFirstError
     >
-      {embedded && (
-        <div className="md:col-span-2 grid grid-cols-4 md:grid-cols-2 gap-6">
-          <Form.Item label="Name" name="name" rules={[{ required: true, message: "Please enter course name" }]} className={embedded ? "md:col-span-2" : undefined}>
-            <Input
-              maxLength={120}
-              showCount
-              placeholder="Enter course name"
-            />
-          </Form.Item>
-        </div>
-      )}
-      {!embedded && (
-        <Form.Item label="Name" name="name" rules={[{ required: true, message: "Please enter course name" }]} className={embedded ? "md:col-span-2" : undefined}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+        <Form.Item
+          label={t('admin.courses.form.name')}
+          name="name"
+          validateTrigger={['onBlur', 'onChange']}
+          rules={[
+            { required: true, message: t('admin.courses.form.nameRequired') },
+            { min: 3, message: t('admin.courses.form.nameMin') },
+            { max: 200, message: t('admin.courses.form.nameMax') }
+          ]}
+        >
           <Input
-            maxLength={120}
             showCount
-            placeholder="Enter course name"
+            placeholder={t('admin.courses.form.namePlaceholder')}
           />
         </Form.Item>
-      )}
-      <Form.Item label="Category" name="categoryId" rules={[{ required: true, message: "Please select category" }]}>
-        <Select
-          placeholder="Select category"
-          showSearch
-          allowClear
-          loading={catsLoading}
-          notFoundContent="No categories"
-          optionFilterProp="children"
-          filterOption={(input, option) => (option?.children || '').toLowerCase().includes(input.toLowerCase())}
+
+        <Form.Item
+          label={t('admin.courses.form.courseCode')}
+          name="courseCode"
+          validateTrigger={['onBlur', 'onChange']}
+          rules={[
+            { required: true, message: t('admin.courses.form.courseCodeRequired') },
+            { max: 50, message: t('admin.courses.form.courseCodeMax') }
+          ]}
         >
-          {localCategories.map((cat) => (
-            <Option key={cat.value} value={cat.value}>{cat.label}</Option>
-          ))}
-        </Select>
-      </Form.Item>
-      <Form.Item label="Level" name="levelId" rules={[{ required: true, message: "Please select level" }]}>
-        <Select
-          placeholder="Select level"
-          showSearch
-          allowClear
-          loading={lvlsLoading}
-          notFoundContent="No levels"
-          optionFilterProp="children"
-          filterOption={(input, option) => (option?.children || '').toLowerCase().includes(input.toLowerCase())}
+          <Input
+            showCount
+            placeholder={t('admin.courses.form.courseCodePlaceholder')}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label={t('common.category')}
+          name="categoryId"
+          validateTrigger={['onBlur', 'onChange']}
+          rules={[
+            { required: true, message: t('admin.courses.form.categoryRequired') },
+            {
+              validator: (_, value) => {
+                if (!value || value > 0) return Promise.resolve();
+                return Promise.reject(new Error(t('admin.courses.form.categoryIdInvalid'))); // "Category ID must be a positive number."
+              }
+            }
+          ]}
         >
-          {localLevels.map((lvl) => (
-            <Option key={lvl.value} value={lvl.value}>{lvl.label}</Option>
-          ))}
-        </Select>
-      </Form.Item>
-      <Form.Item label="Price" name="price" rules={[{ required: true, message: "Please enter price" }]}>
-        <InputNumber min={1} max={10000} style={{ width: "100%" }} />
-      </Form.Item>
-      <Form.Item label="Duration (hours)" name="durationHours" rules={[{ required: true, message: "Please enter duration" }]}>
-        <InputNumber min={1} style={{ width: "100%" }} />
-      </Form.Item>
-      <Form.Item label="Image URL" name="imageUrl" rules={[{ required: true, message: "Please enter image URL" }]}>
+          <Select
+            placeholder={t('admin.courses.form.categoryPlaceholder')}
+            showSearch
+            allowClear
+            loading={catsLoading}
+            notFoundContent={t('admin.courses.form.noCategories')}
+            optionFilterProp="children"
+            filterOption={(input, option) => (option?.children || '').toLowerCase().includes(input.toLowerCase())}
+          >
+            {localCategories.map((cat) => (
+              <Option key={cat.value} value={cat.value}>{cat.label}</Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label={t('common.level')}
+          name="levelId"
+          validateTrigger={['onBlur', 'onChange']}
+          rules={[
+            { required: true, message: t('admin.courses.form.levelRequired') },
+            {
+              validator: (_, value) => {
+                if (!value || value > 0) return Promise.resolve();
+                return Promise.reject(new Error(t('admin.courses.form.levelIdInvalid'))); // "Level ID must be a positive number."
+              }
+            }
+          ]}
+        >
+          <Select
+            placeholder={t('admin.courses.form.levelPlaceholder')}
+            showSearch
+            allowClear
+            loading={lvlsLoading}
+            notFoundContent={t('admin.courses.form.noLevels')}
+            optionFilterProp="children"
+            filterOption={(input, option) => (option?.children || '').toLowerCase().includes(input.toLowerCase())}
+          >
+            {localLevels.map((lvl) => (
+              <Option key={lvl.value} value={lvl.value}>{lvl.label}</Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label={t('common.price')}
+          name="price"
+          validateTrigger={['onBlur', 'onChange']}
+          rules={[
+            { type: 'number', min: 0, max: 10000000, message: t('admin.courses.form.priceRange') }
+          ]}
+        >
+          <InputNumber
+            step={0.01}
+            style={{ width: "100%" }}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label={t('admin.courses.form.durationHours')}
+          name="durationHours"
+          validateTrigger={['onBlur', 'onChange']}
+          rules={[
+            { required: true, message: t('admin.courses.form.durationRequired') },
+            { type: 'integer', min: 1, max: 500, message: t('admin.courses.form.durationRange') }
+          ]}
+        >
+          <InputNumber style={{ width: "100%" }} />
+        </Form.Item>
+      </div>
+
+      <Form.Item
+        label={t('admin.courses.form.imageUrl')}
+        name="imageUrl"
+        validateTrigger={['onBlur', 'onChange']}
+        rules={[
+          { type: 'url', message: t('admin.courses.form.urlInvalid') }
+        ]}
+      >
         <Input
-          maxLength={300}
           placeholder="https://example.com/image.jpg"
           onChange={(e) => {
             const val = e.target.value;
-            // update form value and preview state
             form.setFieldsValue({ imageUrl: val });
             setImagePreview(val);
           }}
         />
       </Form.Item>
-      <Form.Item label="Preview">
+
+      <Form.Item label={t('admin.courses.form.preview')}>
         <div className="w-36 h-36 flex items-center justify-center border rounded-md overflow-hidden bg-gray-50">
           {imagePreview ? (
             <Image
@@ -170,23 +246,31 @@ const CreateCourse = ({
               fallback="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='96' viewBox='0 0 128 96'%3E%3Crect width='128' height='96' fill='%23f3f4f6'/%3E%3Ctext x='50%' y='50%' fill='%239ca3af' font-size='12' font-family='Arial' dominant-baseline='middle' text-anchor='middle'%3ENo preview%3C/text%3E%3C/svg%3E"
             />
           ) : (
-            <div className="text-sm text-gray-500 px-2 text-center">Preview</div>
+            <div className="text-sm text-gray-500 px-2 text-center">{t('admin.courses.form.preview')}</div>
           )}
         </div>
       </Form.Item>
-      {/* img review */}
-      <Form.Item label="Description" name="description" rules={[{ required: true, message: "Please enter description" }]} className={embedded ? "md:col-span-2" : undefined}>
+
+      <Form.Item
+        label={t('common.description')}
+        name="description"
+        validateTrigger={['onBlur', 'onChange']}
+        rules={[
+          { required: true, message: t('admin.courses.form.descriptionRequired') },
+          { max: 500, message: t('admin.courses.form.descriptionMax') }
+        ]}
+      >
         <Input.TextArea
           rows={3}
-          maxLength={500}
           showCount
-          placeholder="Enter course description"
+          placeholder={t('admin.courses.form.descriptionPlaceholder')}
         />
       </Form.Item>
+
       {embedded && (
-        <div className="md:col-span-2 mt-4 flex justify-end gap-3">
-          <Button onClick={onCancel}>Cancel</Button>
-          <Button type="primary" loading={confirmLoading} onClick={handleOk}>Add Course</Button>
+        <div className="flex justify-end gap-3 mt-4">
+          <Button onClick={onCancel}>{t('common.cancel')}</Button>
+          <Button type="primary" loading={confirmLoading} htmlType="submit">{t('admin.courses.addCourse')}</Button>
         </div>
       )}
     </Form>
@@ -196,15 +280,15 @@ const CreateCourse = ({
 
   return (
     <Modal
-      title="Add New Course"
+      title={t('admin.courses.addNewCourse')}
       open={open}
       onCancel={onCancel}
       onOk={handleOk}
       confirmLoading={confirmLoading}
       destroyOnClose
       footer={[
-        <Button key="back" onClick={onCancel}>Cancel</Button>,
-        <Button key="submit" type="primary" loading={confirmLoading} onClick={handleOk}>Add Course</Button>,
+        <Button key="back" onClick={onCancel}>{t('common.cancel')}</Button>,
+        <Button key="submit" type="primary" loading={confirmLoading} onClick={handleOk}>{t('admin.courses.addCourse')}</Button>,
       ]}
     >
       {formContent}

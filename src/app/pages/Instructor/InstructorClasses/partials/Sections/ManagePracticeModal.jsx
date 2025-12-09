@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Alert, Select, Spin, Empty, Typography, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { getPractices } from '../../../../../apis/Instructor/InstructorPractice';
 import { 
   getPracticesByActivityId, 
@@ -13,6 +14,7 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 
 const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [assignedPractice, setAssignedPractice] = useState(null);
@@ -30,10 +32,10 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
       const assigned = await getPracticesByActivityId(activity.id);
       setAssignedPractice(assigned[0] || null); 
 
-      const library = await getPractices({ page: 1, pageSize: 1000 });
+      const library = await getPractices({ page: 1, pageSize: 10 });
       setPracticeLibrary(library.items || []);
     } catch (err) {
-      setError(err.message || 'Failed to load data');
+      setError(err.message || t('instructor.classes.managePracticeModal.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -62,7 +64,7 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
       await assignPracticeToActivity(activity.id, selectedPracticeId);
       onUpdate(); 
     } catch (err) {
-      setError(err.message || 'Failed to assign practice');
+      setError(err.message || t('instructor.classes.managePracticeModal.assignFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -77,7 +79,7 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
       await removePracticeFromActivity(activity.id, assignedPractice.id);
       onUpdate(); // Trigger refresh
     } catch (err) {
-      setError(err.message || 'Failed to remove practice');
+      setError(err.message || t('instructor.classes.managePracticeModal.removeFailed'));
     } finally {
       setIsRemoving(false);
     }
@@ -86,13 +88,13 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
 
   const renderContent = () => {
     if (loading) {
-      return <div className="text-center p-8"><Spin size="large" /></div>;
+      return <div className="text-center p-6"><Spin size="large" /></div>;
     }
 
     if (assignedPractice) {
       return (
         <div>
-          <Title level={5}>Assigned Practice</Title>
+          <Title level={5}>{t('instructor.classes.managePracticeModal.assignedPractice')}</Title>
           <div className="p-4 border rounded-md bg-gray-50">
             {/* --- MODIFIED FOR LAYOUT --- */}
             <div className="flex justify-between items-start">
@@ -102,7 +104,7 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
                 <Text type="secondary">{assignedPractice.practiceDescription}</Text>
                 <br />
                 <Tag color="purple" className="mt-2">
-                  {assignedPractice.estimatedDurationMinutes} min • {assignedPractice.difficultyLevel}
+                  {assignedPractice.estimatedDurationMinutes} {t('instructor.classes.managePracticeModal.min')} • {assignedPractice.difficultyLevel}
                 </Tag>
               </div>
               <Button
@@ -111,7 +113,7 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
                 loading={isRemoving}
                 onClick={handleRemove}
               >
-                Remove
+                {t('instructor.classes.managePracticeModal.remove')}
               </Button>
             </div>
           </div>
@@ -122,14 +124,14 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
     // No practice assigned, show assignment UI
     return (
       <div>
-        <Title level={5}>Assign Practice</Title>
+        <Title level={5}>{t('instructor.classes.managePracticeModal.assignPractice')}</Title>
         <Text type="secondary" className="block mb-2">
-          Select a practice from the library to assign to this activity.
+          {t('instructor.classes.managePracticeModal.assignPracticeDesc')}
         </Text>
         <div className="flex space-x-2">
           <Select
             showSearch
-            placeholder="Search and select a practice"
+            placeholder={t('instructor.classes.managePracticeModal.searchPlaceholder')}
             style={{ width: '100%' }}
             onChange={(value) => setSelectedPracticeId(value)}
             filterOption={(input, option) =>
@@ -148,7 +150,7 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
             onClick={handleAssign}
             disabled={!selectedPracticeId}
           >
-            Assign
+            {t('instructor.classes.managePracticeModal.assign')}
           </Button>
         </div>
       </div>
@@ -157,16 +159,16 @@ const ManagePracticeModal = ({ activity, isVisible, onClose, onUpdate }) => {
 
   return (
     <Modal
-      title={`Manage Practice for: ${activity?.title || ''}`}
+      title={t('instructor.classes.managePracticeModal.title', { title: activity?.title || '' })}
       visible={isVisible}
       onCancel={onClose}
       footer={[
         <Button key="close" onClick={onClose}>
-          Close
+          {t('instructor.classes.managePracticeModal.close')}
         </Button>,
       ]}
     >
-      {error && <Alert message="Error" description={error} type="error" showIcon closable className="mb-4" />}
+      {error && <Alert message={t('common.error')} description={error} type="error" showIcon closable className="mb-4" />}
       {renderContent()}
     </Modal>
   );

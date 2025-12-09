@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const BrandModelTable = ({
   data = [],
@@ -11,6 +12,8 @@ const BrandModelTable = ({
   onDelete = () => {},
   pagination = {},
 }) => {
+  const { t } = useTranslation();
+
   const tableColumns = [
     {
       title: '#',
@@ -25,7 +28,7 @@ const BrandModelTable = ({
       ),
     },
     {
-      title: 'Name',
+      title: t('simManager.brandModel.columns.name'),
       dataIndex: 'name',
       key: 'name',
       width: 300,
@@ -39,39 +42,39 @@ const BrandModelTable = ({
       ),
     },
     {
-      title: 'Description',
+      title: t('simManager.brandModel.columns.description'),
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
       render: (desc) => <span className="text-gray-600">{desc || 'N/A'}</span>,
     },
     {
-      title: 'Status',
+      title: t('simManager.brandModel.columns.status'),
       dataIndex: 'isActive',
       key: 'isActive',
       width: 120,
       align: 'center',
       render: (isActive) => (
         <Tag color={isActive ? 'green' : 'red'}>
-          {isActive ? 'Active' : 'Inactive'}
+          {isActive ? t('simManager.brandModel.status.active') : t('simManager.brandModel.status.inactive')}
         </Tag>
       ),
     },
     {
-      title: 'Actions',
+      title: t('simManager.brandModel.columns.actions'),
       key: 'actions',
       width: 120,
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
         <Space size="small">
-          <Tooltip title="View Details">
+          <Tooltip title={t('simManager.brandModel.viewDetails')}>
             <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(record)} />
           </Tooltip>
-          <Tooltip title="Edit">
+          <Tooltip title={t('simManager.brandModel.edit')}>
             <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(record)} />
           </Tooltip>
-          <Tooltip title="Delete">
+          <Tooltip title={t('simManager.brandModel.delete')}>
             <Button 
               type="text" 
               size="small" 
@@ -108,7 +111,7 @@ const BrandModelTable = ({
           onChange={pagination.onChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} brand models`}
+          showTotal={(total, range) => t('simManager.brandModel.pagination', { start: range[0], end: range[1], total })}
         />
       </div>
     </div>

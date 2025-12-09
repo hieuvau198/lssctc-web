@@ -1,7 +1,8 @@
 import { ArrowLeftOutlined, BookOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Radio, Space, message, App, Modal } from 'antd';
+import { Button, Card, Form, Input, Radio, Space, App, Modal, Drawer } from 'antd';
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { createMaterial } from '../../../../apis/Instructor/InstructorMaterialsApi';
 
 function useQuery() {
@@ -9,12 +10,13 @@ function useQuery() {
   return useMemo(() => new URLSearchParams(search), [search]);
 }
 
-export default function AddMaterials({ onSuccess }) {
+export default function AddMaterials({ onSuccess, open, onClose, initialSectionId = '', initialClassId = '' }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { modal } = App.useApp();
   const query = useQuery();
-  const sectionId = query.get('sectionId') || '';
-  const classId = query.get('classId') || '';
+  const sectionId = initialSectionId || query.get('sectionId') || '';
+  const classId = initialClassId || query.get('classId') || '';
 
   const [form] = Form.useForm();
 
@@ -32,11 +34,12 @@ export default function AddMaterials({ onSuccess }) {
       await createMaterial(payload);
       
       modal.success({
-        title: 'Success',
-        content: 'Material created successfully',
-        okText: 'OK',
+        title: t('instructor.materials.modal.success'),
+        content: t('instructor.materials.messages.createSuccess'),
+        okText: t('instructor.materials.modal.ok'),
         centered: true,
         onOk: () => {
+          if (typeof onSuccess === 'function') return onSuccess();
           // Always navigate back and let parent component refresh
           navigate('/instructor/materials', { replace: true });
         }
@@ -44,7 +47,7 @@ export default function AddMaterials({ onSuccess }) {
     } catch (e) {
       console.error('Create material error', e);
       
-      let errorMsg = e?.message || 'Failed to create material';
+      let errorMsg = e?.message || t('instructor.materials.messages.createFailed');
       // Handle API error responses
       if (e?.response?.data) {
         const data = e.response.data;
@@ -66,64 +69,85 @@ export default function AddMaterials({ onSuccess }) {
       }
       
       modal.error({
-        title: 'Error Creating Material',
+        title: t('instructor.materials.messages.createError'),
         content: errorMsg,
-        okText: 'Close',
+        okText: t('instructor.materials.modal.close'),
         centered: true,
       });
     }
   };
 
-  const onCancel = () => navigate(-1);
+  const onCancel = () => {
+    if (typeof onClose === 'function') return onClose();
+    return navigate(-1);
+  };
+
+  const content = (
+    <Card>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ typeId: 1 }}
+        onFinish={onFinish}
+      >
+        <Form.Item label={t('instructor.materials.form.title')} name="title" rules={[{ required: true, message: t('instructor.materials.form.titleRequired') }]}>
+          <Input placeholder={t('instructor.materials.form.titlePlaceholder')} />
+        </Form.Item>
+
+        <Form.Item label={t('instructor.materials.form.type')} name="typeId">
+          <Radio.Group>
+            <Space direction="horizontal">
+              <Radio value={1}><BookOutlined /> {t('instructor.materials.document')}</Radio>
+              <Radio value={2}><VideoCameraOutlined /> {t('instructor.materials.video')}</Radio>
+            </Space>
+          </Radio.Group>
+        </Form.Item>
+
+        <Form.Item label={t('instructor.materials.form.url')} name="url" rules={[{ required: true, message: t('instructor.materials.form.urlRequired') }]}>
+          <Input placeholder={t('instructor.materials.form.urlPlaceholder')} />
+        </Form.Item>
+
+        <Form.Item label={t('instructor.materials.form.description')} name="description">
+          <Input.TextArea rows={4} placeholder={t('instructor.materials.form.descriptionPlaceholder')} />
+        </Form.Item>
+
+        <input type="hidden" value={sectionId} readOnly />
+        <input type="hidden" value={classId} readOnly />
+
+        <Form.Item>
+          <Space>
+            <Button onClick={onCancel}>{t('instructor.materials.buttons.cancel')}</Button>
+            <Button type="primary" htmlType="submit">{t('instructor.materials.buttons.create')}</Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Card>
+  );
+
+  if (typeof open !== 'undefined') {
+    return (
+      <Drawer
+        title={t('instructor.materials.addMaterial')}
+        placement="right"
+        width={720}
+        onClose={onCancel}
+        open={open}
+        destroyOnClose
+      >
+        {content}
+      </Drawer>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-4">
       <div className="flex items-center gap-3 mb-4">
         <Button icon={<ArrowLeftOutlined />} onClick={onCancel}>
-          Back
+          {t('instructor.materials.buttons.back')}
         </Button>
-        <h1 className="text-2xl font-semibold m-0">Add Material</h1>
+        <h1 className="text-2xl font-semibold m-0">{t('instructor.materials.addMaterial')}</h1>
       </div>
-
-      <Card>
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={{ typeId: 1 }}
-          onFinish={onFinish}
-        >
-          <Form.Item label="Title" name="title" rules={[{ required: true, message: 'Please enter title' }]}>
-            <Input placeholder="Material title" />
-          </Form.Item>
-
-          <Form.Item label="Type" name="typeId">
-            <Radio.Group>
-              <Space direction="horizontal">
-                <Radio value={1}><BookOutlined /> Document</Radio>
-                <Radio value={2}><VideoCameraOutlined /> Video</Radio>
-              </Space>
-            </Radio.Group>
-          </Form.Item>
-
-          <Form.Item label="URL" name="url" rules={[{ required: true, message: 'Please enter URL' }]}>
-            <Input placeholder="https://..." />
-          </Form.Item>
-
-          <Form.Item label="Description" name="description">
-            <Input.TextArea rows={4} placeholder="Optional description" />
-          </Form.Item>
-
-          <input type="hidden" value={sectionId} readOnly />
-          <input type="hidden" value={classId} readOnly />
-
-          <Form.Item>
-            <Space>
-              <Button onClick={onCancel}>Cancel</Button>
-              <Button type="primary" htmlType="submit">Create</Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Card>
+      {content}
     </div>
   );
 }

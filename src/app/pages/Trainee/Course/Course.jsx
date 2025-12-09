@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Empty, Pagination, Skeleton, Input } from 'antd';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import CourseCard from '../../../components/CourseCard/CourseCard';
 import PageNav from '../../../components/PageNav/PageNav';
 import { fetchCourses } from '../../../apis/ProgramManager/CourseApi';
 
 export default function Course() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,13 +59,13 @@ export default function Course() {
   return (
     <div className=" bg-white">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <PageNav nameMap={{ course: 'Courses' }} />
+        <PageNav nameMap={{ course: t('trainee.courses.title') }} />
         <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <span className="text-2xl mb-4">Courses</span>
+            <span className="text-2xl mb-4">{t('trainee.courses.title')}</span>
             <div>
               <Input.Search
-                placeholder="Search courses"
+                placeholder={t('trainee.courses.searchPlaceholder')}
                 allowClear
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
@@ -76,7 +78,7 @@ export default function Course() {
         </div>
         {error && (
           <div className="mb-6">
-            <Alert type="error" showIcon message="Error fetching courses" description={error} />
+            <Alert type="error" showIcon message={t('trainee.courses.loadFailed')} description={error} />
           </div>
         )}
 
@@ -96,7 +98,7 @@ export default function Course() {
           </div>
         ) : data.length === 0 ? (
           <div>
-            <Empty description="No active courses found" className="mt-16  min-h-[350px]" />
+            <Empty description={t('trainee.courses.noCourses')} className="mt-16  min-h-[350px]" />
           </div>
         ) : (
           <>

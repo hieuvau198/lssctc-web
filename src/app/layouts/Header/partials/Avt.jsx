@@ -1,5 +1,6 @@
 import { App, Dropdown } from 'antd';
 import { NavLink, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
 import useAuthStore from '../../../store/authStore';
 import { sAvatarUrl, clearAvatarUrl } from '../../../store/userAvatar';
@@ -11,6 +12,7 @@ import { sAvatarUrl, clearAvatarUrl } from '../../../store/userAvatar';
 export default function Avt({ onLogout }) {
   const { message } = App.useApp();
   const nav = useNavigate();
+  const { t } = useTranslation();
   
   const authState = useAuthStore();
   const persistedAvatar = sAvatarUrl.use();
@@ -27,12 +29,13 @@ export default function Avt({ onLogout }) {
   };
 
   const items = [
-    { key: 'profile', label: <NavLink to="/profile" target="_top">Profile</NavLink> },
-    { key: 'my-classes', label: <NavLink to="/my-classes" target="_top">My Classes</NavLink> },
-    { key: 'my-enrollments', label: <NavLink to="/my-enrollments" target="_top">My Enrollments</NavLink> },
-    { key: 'certificate', label: <NavLink to="/certificate" target="_top">Accomplishments</NavLink> },
+    { key: 'profile', label: <NavLink to="/profile" target="_top">{t('common.profile')}</NavLink> },
+    { key: 'schedule', label: <NavLink to="/schedule" target="_top">{t('header.schedule')}</NavLink> },
+    { key: 'my-classes', label: <NavLink to="/my-classes" target="_top">{t('header.myClasses')}</NavLink> },
+    { key: 'my-enrollments', label: <NavLink to="/my-enrollments" target="_top">{t('header.myEnrollments')}</NavLink> },
+    { key: 'certificate', label: <NavLink to="/certificate" target="_top">{t('header.accomplishments')}</NavLink> },
     { type: 'divider' },
-    { key: 'logout', label: <span className="text-red-600">Logout</span> },
+    { key: 'logout', label: <span className="text-red-600">{t('common.logout')}</span> },
   ];
 
   const handleClick = ({ key }) => {
@@ -63,7 +66,7 @@ export default function Avt({ onLogout }) {
     <Dropdown
       trigger={["click"]}
       menu={{ items, onClick: handleClick }}
-      placement="bottomRight"
+      placement="bottom"
     >
       <button
         type="button"

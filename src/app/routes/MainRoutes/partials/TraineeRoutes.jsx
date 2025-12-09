@@ -9,13 +9,14 @@ import Course from '../../../pages/Trainee/Course/Course'
 import CourseDetail from '../../../pages/Trainee/Course/partials/CourseDetail'
 import MyClassDetail from '../../../pages/Trainee/MyClasses/MyClassDetail'
 import MyClasses from '../../../pages/Trainee/MyClasses/MyClasses'
-import Profile from '../../../pages/Trainee/Profile/Profile'
+import MyEnrollments from '../../../pages/Trainee/MyEnrollments/MyEnrollments'
 import EditProfile from '../../../pages/Trainee/Profile/EditProfile'
+import Profile from '../../../pages/Trainee/Profile/Profile'
 import Program from '../../../pages/Trainee/Program/Program'
 import ProgramDetail from '../../../pages/Trainee/Program/partials/ProgramDetail'
+import TraineeSchedule from '../../../pages/Trainee/Schedule/TraineeSchedule'
 import SimulationPlatform from '../../../pages/Trainee/SimulationPlatform/SimulationPlatform'
 import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
-import MyEnrollments from '../../../pages/Trainee/MyEnrollments/MyEnrollments'
 
 export default function TraineeRoutes() {
   return (
@@ -84,6 +85,14 @@ export default function TraineeRoutes() {
           element={
             <PrivateRoute allowedroles={["Trainee"]} redirectUrl="/auth/login">
               <MyEnrollments />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="schedule"
+          element={
+            <PrivateRoute allowedroles={["Trainee"]} redirectUrl="/auth/login">
+              <TraineeSchedule />
             </PrivateRoute>
           }
         />

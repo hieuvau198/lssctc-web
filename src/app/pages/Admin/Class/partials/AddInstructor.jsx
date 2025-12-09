@@ -1,11 +1,13 @@
 import { App, Button, Select } from 'antd';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getInstructors } from '../../../../apis/Admin/AdminUser';
-import { addInstructorToClass } from '../../../../apis/ProgramManager/ClassesApi';
+import { addInstructorToClass, fetchAvailableInstructors } from '../../../../apis/ProgramManager/ClassesApi';
 
 // Component: Add/assign an instructor to a class (similar style to AssignCourse)
 export default function AddInstructor({ classItem, onAssigned }) {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,39 +23,52 @@ export default function AddInstructor({ classItem, onAssigned }) {
     let active = true;
     setLoadingInstructors(true);
     // setError(null);
-    getInstructors({ page: 1, pageSize: 500 })
-      .then((data) => {
+    // Prefer available-instructors endpoint using class start/end dates
+    (async () => {
+      try {
+        const start = classItem.startDate ? new Date(classItem.startDate).toISOString().slice(0, 10) : null;
+        const end = classItem.endDate ? new Date(classItem.endDate).toISOString().slice(0, 10) : null;
+        let data;
+        if (start && end) {
+          data = await fetchAvailableInstructors({ startDate: start, endDate: end, classId: classItem.id });
+        } else {
+          // fallback to fetching all instructors
+          data = await getInstructors({ page: 1, pageSize: 500 });
+        }
+
         if (!active) return;
-        setInstructors(Array.isArray(data?.items) ? data.items : []);
-      })
-      .catch((err) => {
+        // API may return paged object or plain array
+        const items = Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : []);
+        setInstructors(items);
+      } catch (err) {
         if (!active) return;
         console.error('Failed to fetch instructors:', err);
-        // setError(err?.message || 'Failed to load instructors');
-        message.error('Failed to load instructors');
-      })
-      .finally(() => active && setLoadingInstructors(false));
+        message.error(t('admin.classes.messages.loadInstructorsFailed'));
+      } finally {
+        active && setLoadingInstructors(false);
+      }
+    })();
     return () => { active = false; };
   }, [editing, classItem?.id, message]);
 
   const handleSave = async () => {
     if (!selected) {
       // setError('Please select an instructor');
-      message.warning('Please select an instructor');
+      message.warning(t('admin.classes.messages.selectInstructor'));
       return;
     }
     setLoading(true);
     // setError(null);
     try {
       await addInstructorToClass(classItem.id, { instructorId: selected });
-      message.success('Instructor assigned to class');
+      message.success(t('admin.classes.messages.assignInstructorSuccess'));
       setSelected(null);
       setEditing(false);
       onAssigned?.();
     } catch (err) {
       console.error('Failed to assign instructor:', err);
       const apiData = err?.response?.data;
-      const msg = (apiData && (apiData.message || apiData.error || String(apiData))) || err?.message || 'Failed to assign instructor';
+      const msg = (apiData && (apiData.message || apiData.error || String(apiData))) || err?.message || t('admin.classes.messages.assignInstructorFailed');
       message.error(msg);
     } finally {
       setLoading(false);
@@ -78,7 +93,7 @@ export default function AddInstructor({ classItem, onAssigned }) {
             onClick={() => { setEditing(true); setError(null); }}
             size="middle"
           >
-            Assign Instructor
+            {t('admin.classes.buttons.assignInstructor')}
           </Button>
         </div>
       ) : (
@@ -86,39 +101,64 @@ export default function AddInstructor({ classItem, onAssigned }) {
           <div className="w-[350px]">
             <Select
               showSearch
-              placeholder="Select an instructor"
-              optionFilterProp="children"
+              placeholder={t('admin.classes.placeholders.selectInstructor')}
+              optionFilterProp="label"
               loading={loadingInstructors}
               allowClear
+              size="large"
               onChange={(val) => setSelected(val)}
-              filterOption={(input, option) =>
-                (option?.children || '').toLowerCase().includes(input.toLowerCase())
-              }
+              filterOption={(input, option) => {
+                const search = (option?.props?.['data-search'] || '').toString().toLowerCase();
+                return search.includes(input.toLowerCase());
+              }}
               value={selected}
               style={{ width: '100%' }}
             >
               {instructors.length === 0 && !loadingInstructors ? (
                 <Select.Option disabled value="">
-                  No instructors available
+                  {t('admin.classes.messages.noInstructorsAvailable')}
                 </Select.Option>
               ) : (
-                instructors.map((i) => (
-                  <Select.Option key={i.id} value={i.id}>
-                    {i.fullName || i.name || i.email}
-                  </Select.Option>
-                ))
+                instructors.map((i) => {
+                  const avatar = i.avatarUrl || i.avatar || i.imageUrl || '';
+                  const deriveNameFromEmail = (email) => {
+                    if (!email) return '';
+                    const local = email.split('@')[0] || email;
+                    return local
+                      .replace(/[._\-]+/g, ' ')
+                      .split(' ')
+                      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+                      .join(' ');
+                  };
+                  const fullName = i.fullname || i.fullName || i.name || deriveNameFromEmail(i.email) || '';
+                  const code = i.instructorCode || i.code || i.id || '';
+                  const search = `${fullName} ${code} ${i.email || ''} ${i.phoneNumber || i.phone || ''}`;
+                  return (
+                    <Select.Option key={i.id} value={i.id} data-search={search} label={fullName}>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={avatar}
+                          alt={fullName}
+                          className="w-8 h-8 rounded-full object-cover"
+                          onError={(e) => { e.currentTarget.src = '/favicon.ico'; }}
+                        />
+                        <div className="truncate">
+                          <div className="font-medium text-sm text-slate-800 truncate">{fullName}</div>
+                          <div className="text-xs text-slate-500">{code}</div>
+                        </div>
+                      </div>
+                    </Select.Option>
+                  );
+                })
               )}
             </Select>
-            {error && (
-              <div className="text-xs text-red-600 mt-1">{error}</div>
-            )}
           </div>
           <div className="flex gap-2">
-            <Button type="primary" onClick={handleSave} loading={loading} size="middle">
-              Save
+            <Button type="primary" onClick={handleSave} loading={loading} size="large">
+              {t('common.save')}
             </Button>
-            <Button onClick={handleCancel} size="middle" disabled={loadingInstructors}>
-              Cancel
+            <Button onClick={handleCancel} size="large" disabled={loadingInstructors}>
+              {t('common.cancel')}
             </Button>
           </div>
         </div>

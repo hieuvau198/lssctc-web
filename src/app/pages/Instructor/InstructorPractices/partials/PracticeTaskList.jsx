@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Card, message, Empty, Spin } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { getTasksByPracticeId } from '../../../../apis/Instructor/InstructorPractice';
 import TaskCard from '../../../../components/TaskCard/TaskCard';
 
 // --- Main PracticeTaskList Component ---
 export default function PracticeTaskList({ practiceId, token }) {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,11 +19,11 @@ export default function PracticeTaskList({ practiceId, token }) {
       setTasks(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error fetching tasks:', err);
-      message.error('Failed to load tasks');
+      message.error(t('instructor.practices.manageTasks.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [practiceId, token]);
+  }, [practiceId, token, t]);
 
   useEffect(() => {
     fetchTasks();
@@ -30,7 +32,7 @@ export default function PracticeTaskList({ practiceId, token }) {
   // --- Render ---
   if (loading) {
     return (
-      <Card title={`Practice Tasks`} className="shadow">
+      <Card title={t('instructor.practices.practiceTasks')} className="shadow">
         <div className="flex justify-center py-8">
           <Spin size="large" />
         </div>
@@ -40,11 +42,11 @@ export default function PracticeTaskList({ practiceId, token }) {
 
   return (
     <Card
-      title={`Practice Tasks (${tasks.length})`}
+      title={t('instructor.practices.practiceTasksWithCount', { count: tasks.length })}
       className="shadow"
     >
       {tasks.length === 0 ? (
-        <Empty description="No tasks assigned" />
+        <Empty description={t('instructor.practices.tasks.noTasksAssigned')} />
       ) : (
         <div className="max-h-[600px] overflow-y-auto pr-2">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min">

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, Select, InputNumber, Button, Alert } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { createActivity, assignActivityToSection } from '../../../../../apis/Instructor/InstructorSectionApi';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 const AddActivityModal = ({ sectionId, isVisible, onClose, onActivityAdded }) => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -31,7 +33,7 @@ const AddActivityModal = ({ sectionId, isVisible, onClose, onActivityAdded }) =>
       onActivityAdded();
       form.resetFields();
     } catch (err) {
-      setError(err.message || 'Failed to add activity. Please try again.');
+      setError(err.message || t('instructor.classes.addActivityModal.addFailed'));
     } finally {
       setLoading(false);
     }
@@ -45,15 +47,15 @@ const AddActivityModal = ({ sectionId, isVisible, onClose, onActivityAdded }) =>
 
   return (
     <Modal
-      title="Add New Activity"
+      title={t('instructor.classes.addActivityModal.title')}
       visible={isVisible}
       onCancel={handleCancel}
       footer={[
         <Button key="back" onClick={handleCancel}>
-          Cancel
+          {t('instructor.classes.addActivityModal.cancel')}
         </Button>,
         <Button key="submit" type="primary" loading={loading} onClick={() => form.submit()}>
-          Add Activity
+          {t('instructor.classes.addActivityModal.addActivity')}
         </Button>,
       ]}
     >
@@ -66,36 +68,36 @@ const AddActivityModal = ({ sectionId, isVisible, onClose, onActivityAdded }) =>
           duration: 10,
         }}
       >
-        {error && <Alert message="Error" description={error} type="error" showIcon closable className="mb-4" />}
+        {error && <Alert message={t('common.error')} description={error} type="error" showIcon closable className="mb-4" />}
         <Form.Item
           name="title"
-          label="Activity Title"
-          rules={[{ required: true, message: 'Please enter a title' }]}
+          label={t('instructor.classes.addActivityModal.activityTitle')}
+          rules={[{ required: true, message: t('instructor.classes.addActivityModal.activityTitleRequired') }]}
         >
-          <Input placeholder="e.g., Introduction to Safety" />
+          <Input placeholder={t('instructor.classes.addActivityModal.activityTitlePlaceholder')} />
         </Form.Item>
         <Form.Item
           name="description"
-          label="Description"
-          rules={[{ required: true, message: 'Please enter a description' }]}
+          label={t('instructor.classes.addActivityModal.description')}
+          rules={[{ required: true, message: t('instructor.classes.addActivityModal.descriptionRequired') }]}
         >
-          <TextArea rows={3} placeholder="Describe the activity" />
+          <TextArea rows={3} placeholder={t('instructor.classes.addActivityModal.descriptionPlaceholder')} />
         </Form.Item>
         <Form.Item
           name="type"
-          label="Activity Type"
-          rules={[{ required: true, message: 'Please select a type' }]}
+          label={t('instructor.classes.addActivityModal.activityType')}
+          rules={[{ required: true, message: t('instructor.classes.addActivityModal.activityTypeRequired') }]}
         >
           <Select>
-            <Option value="Material">Material</Option>
-            <Option value="Quiz">Quiz</Option>
-            <Option value="Practice">Practice</Option>
+            <Option value="Material">{t('instructor.classes.addActivityModal.typeMaterial')}</Option>
+            <Option value="Quiz">{t('instructor.classes.addActivityModal.typeQuiz')}</Option>
+            <Option value="Practice">{t('instructor.classes.addActivityModal.typePractice')}</Option>
           </Select>
         </Form.Item>
         <Form.Item
           name="duration"
-          label="Estimated Duration (minutes)"
-          rules={[{ required: true, message: 'Please enter a duration' }]}
+          label={t('instructor.classes.addActivityModal.duration')}
+          rules={[{ required: true, message: t('instructor.classes.addActivityModal.durationRequired') }]}
         >
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>

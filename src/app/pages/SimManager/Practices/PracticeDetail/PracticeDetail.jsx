@@ -1,6 +1,7 @@
 // src\app\pages\SimManager\Practices\PracticeDetail\PracticeDetail.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   getPracticeById,
   updatePractice,
@@ -11,6 +12,7 @@ import { updateTask, createTask, deleteTaskFromPractice, getAllTasks, addTaskToP
 import { ArrowLeft, Save, Trash2, Clock, Zap, AlertCircle, CheckCircle, BookOpen, ListTodo, X, Edit, Plus } from "lucide-react";
 
 export default function PracticeDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -53,11 +55,11 @@ export default function PracticeDetail() {
         setLoading(false);
       })
       .catch(() => {
-        setError("Could not fetch practice");
+        setError(t('simManager.practiceDetail.couldNotFetch'));
         setModalType("error");
         setLoading(false);
       });
-  }, [id]);
+  }, [id, t]);
 
   // Fetch tasks
   useEffect(() => {
@@ -78,52 +80,52 @@ export default function PracticeDetail() {
   const handleUpdate = () => {
     // Validation
     if (!form.practiceName?.trim()) {
-      setError("Practice name is required");
+      setError(t('simManager.practiceDetail.practiceNameRequired'));
       setModalType("error");
       return;
     }
     if (form.practiceName.length > 200) {
-      setError("Practice name must be less than 200 characters");
+      setError(t('simManager.practiceDetail.practiceNameMaxLength'));
       setModalType("error");
       return;
     }
     if (form.practiceDescription && form.practiceDescription.length > 1000) {
-      setError("Practice description must be less than 1000 characters");
+      setError(t('simManager.practiceDetail.practiceDescMaxLength'));
       setModalType("error");
       return;
     }
     if (!form.practiceCode?.trim()) {
-      setError("Practice code is required");
+      setError(t('simManager.practiceDetail.practiceCodeRequired'));
       setModalType("error");
       return;
     }
     if (form.practiceCode.length > 50) {
-      setError("Practice code must be less than 50 characters");
+      setError(t('simManager.practiceDetail.practiceCodeMaxLength'));
       setModalType("error");
       return;
     }
     if (!form.difficultyLevel) {
-      setError("Difficulty level is required");
+      setError(t('simManager.practiceDetail.difficultyRequired'));
       setModalType("error");
       return;
     }
     if (!form.estimatedDurationMinutes || form.estimatedDurationMinutes < 1) {
-      setError("Duration must be greater than 0 minutes");
+      setError(t('simManager.practiceDetail.durationMin'));
       setModalType("error");
       return;
     }
     if (form.estimatedDurationMinutes > 600) {
-      setError("Duration must be less than 600 minutes");
+      setError(t('simManager.practiceDetail.durationMax'));
       setModalType("error");
       return;
     }
     if (!form.maxAttempts || form.maxAttempts < 1) {
-      setError("Max attempts must be at least 1");
+      setError(t('simManager.practiceDetail.maxAttemptsMin'));
       setModalType("error");
       return;
     }
     if (form.maxAttempts > 10) {
-      setError("Max attempts cannot exceed 10");
+      setError(t('simManager.practiceDetail.maxAttemptsMax'));
       setModalType("error");
       return;
     }
@@ -143,13 +145,13 @@ export default function PracticeDetail() {
 
     updatePractice(id, payload)
       .then(() => {
-        setSuccessMessage("Practice updated successfully!");
+        setSuccessMessage(t('simManager.practiceDetail.updateSuccess'));
         setModalType("success");
         setError(null);
         setUpdating(false);
       })
       .catch((err) => {
-        let errorMsg = "Update failed. Please try again.";
+        let errorMsg = t('simManager.practiceDetail.updateFailed');
         
         // Handle new API error format: { success: false, error: { code, message, details } }
         if (err.response?.data?.error) {
@@ -193,7 +195,7 @@ export default function PracticeDetail() {
     setDeleting(true);
     deletePractice(id)
       .then(() => {
-        setSuccessMessage("Practice deleted successfully!");
+        setSuccessMessage(t('simManager.practiceDetail.deleteSuccess'));
         setModalType("success");
         setShowDeleteConfirm(false);
         // Navigate back to practices list after 1.5 seconds
@@ -202,7 +204,7 @@ export default function PracticeDetail() {
         }, 1500);
       })
       .catch((err) => {
-        let errorMsg = "Delete failed. Please try again.";
+        let errorMsg = t('simManager.practiceDetail.deleteFailed');
         if (err.response?.data?.message) {
           errorMsg = err.response.data.message;
         } else if (err.message) {
@@ -230,12 +232,12 @@ export default function PracticeDetail() {
   const handleTaskUpdate = () => {
     // Validation
     if (!taskForm.taskName?.trim()) {
-      setError("Task name is required");
+      setError(t('simManager.practiceDetail.taskNameRequired'));
       setModalType("error");
       return;
     }
     if (!taskForm.taskCode?.trim()) {
-      setError("Task code is required");
+      setError(t('simManager.practiceDetail.taskCodeRequired'));
       setModalType("error");
       return;
     }
@@ -254,11 +256,11 @@ export default function PracticeDetail() {
       .then(() => {
         // Update task in the list
         setTasks((prevTasks) =>
-          prevTasks.map((t) =>
-            t.id === editingTask.id ? { ...t, ...payload } : t
+          prevTasks.map((task) =>
+            task.id === editingTask.id ? { ...task, ...payload } : task
           )
         );
-        setSuccessMessage("Task updated successfully!");
+        setSuccessMessage(t('simManager.practiceDetail.taskUpdateSuccess'));
         setModalType("success");
         setShowTaskEditModal(false);
         setEditingTask(null);
@@ -266,7 +268,7 @@ export default function PracticeDetail() {
         setUpdatingTask(false);
       })
       .catch((err) => {
-        let errorMsg = "Update failed. Please try again.";
+        let errorMsg = t('simManager.practiceDetail.taskUpdateFailed');
         
         // Handle new API error format: { success: false, error: { code, message, details } }
         if (err.response?.data?.error) {
@@ -319,12 +321,12 @@ export default function PracticeDetail() {
   const handleTaskCreate = () => {
     // Validation
     if (!taskForm.taskName?.trim()) {
-      setError("Task name is required");
+      setError(t('simManager.practiceDetail.taskNameRequired'));
       setModalType("error");
       return;
     }
     if (!taskForm.taskCode?.trim()) {
-      setError("Task code is required");
+      setError(t('simManager.practiceDetail.taskCodeRequired'));
       setModalType("error");
       return;
     }
@@ -343,14 +345,14 @@ export default function PracticeDetail() {
       .then((newTask) => {
         // Add new task to the list
         setTasks((prevTasks) => [...prevTasks, newTask]);
-        setSuccessMessage("Task created successfully!");
+        setSuccessMessage(t('simManager.practiceDetail.taskCreateSuccess'));
         setModalType("success");
         setShowTaskCreateModal(false);
         setTaskForm({});
         setCreatingTask(false);
       })
       .catch((err) => {
-        let errorMsg = "Create failed. Please try again.";
+        let errorMsg = t('simManager.practiceDetail.taskCreateFailed');
         
         // Handle new API error format: { success: false, error: { code, message, details } }
         if (err.response?.data?.error) {
@@ -399,14 +401,14 @@ export default function PracticeDetail() {
       .then(() => {
         // Remove task from the list
         setTasks((prevTasks) =>
-          prevTasks.filter((t) => t.id !== deletingTaskId)
+          prevTasks.filter((taskItem) => taskItem.id !== deletingTaskId)
         );
-        setSuccessMessage("Task removed successfully!");
+        setSuccessMessage(t('simManager.practiceDetail.taskDeleteSuccess'));
         setModalType("success");
         setShowDeleteTaskConfirm(false);
       })
       .catch((err) => {
-        let errorMsg = "Delete failed. Please try again.";
+        let errorMsg = t('simManager.practiceDetail.taskDeleteFailed');
         
         // Handle new API error format
         if (err.response?.data?.error) {
@@ -471,17 +473,17 @@ export default function PracticeDetail() {
   // Add selected task to practice
   const handleAddSelectedTask = () => {
     if (!selectedSystemTaskId) {
-      setError("Please select a task first");
+      setError(t('simManager.practiceDetail.selectTask'));
       setModalType("error");
       return;
     }
 
-    const selectedTask = systemTasks.find(t => t.id === selectedSystemTaskId);
+    const selectedTask = systemTasks.find(taskItem => taskItem.id === selectedSystemTaskId);
     if (!selectedTask) return;
 
     // Check if task already exists in practice
-    if (tasks.some(t => t.id === selectedSystemTaskId)) {
-      setError("This task is already added to the practice");
+    if (tasks.some(taskItem => taskItem.id === selectedSystemTaskId)) {
+      setError(t('simManager.practiceDetail.taskAddedFailed'));
       setModalType("error");
       return;
     }
@@ -491,13 +493,13 @@ export default function PracticeDetail() {
       .then(() => {
         // Add task to practice list
         setTasks((prevTasks) => [...prevTasks, selectedTask]);
-        setSuccessMessage("Task added to practice successfully!");
+        setSuccessMessage(t('simManager.practiceDetail.taskAddedSuccess'));
         setModalType("success");
         setShowChooseTaskModal(false);
         setSelectedSystemTaskId(null);
       })
       .catch((err) => {
-        let errorMsg = "Failed to add task. Please try again.";
+        let errorMsg = t('simManager.practiceDetail.taskAddedFailed');
         
         // Handle new API error format
         if (err.response?.data?.error) {
@@ -542,15 +544,15 @@ export default function PracticeDetail() {
       .then(() => {
         // Remove task from system tasks list
         setSystemTasks((prevTasks) =>
-          prevTasks.filter((t) => t.id !== deletingSystemTaskId)
+          prevTasks.filter((taskItem) => taskItem.id !== deletingSystemTaskId)
         );
-        setSuccessMessage("Task deleted successfully!");
+        setSuccessMessage(t('simManager.practiceDetail.taskDeleteSuccess'));
         setModalType("success");
         setShowDeleteSystemTaskConfirm(false);
         setDeletingSystemTaskId(null);
       })
       .catch((err) => {
-        let errorMsg = "Failed to delete task. Please try again.";
+        let errorMsg = t('simManager.practiceDetail.taskDeleteFailed');
         
         // Handle new API error format
         if (err.response?.data?.error) {
@@ -594,7 +596,7 @@ export default function PracticeDetail() {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading practice details...</p>
+          <p className="text-gray-600">{t('simManager.practiceDetail.loadingTasks')}</p>
         </div>
       </div>
     );
@@ -606,8 +608,8 @@ export default function PracticeDetail() {
         <div className="flex items-center gap-3">
           <AlertCircle className="h-5 w-5" />
           <div>
-            <p className="font-semibold">Error</p>
-            <p>{error || "Practice not found"}</p>
+            <p className="font-semibold">{t('simManager.practiceDetail.error')}</p>
+            <p>{error || t('simManager.practiceDetail.couldNotFetch')}</p>
           </div>
         </div>
       </div>
@@ -642,7 +644,7 @@ export default function PracticeDetail() {
           <h3 className={`text-lg font-bold text-center mb-2 ${
             isSuccess ? 'text-green-800' : 'text-red-800'
           }`}>
-            {isSuccess ? 'Success!' : 'Error!'}
+            {isSuccess ? t('simManager.practiceDetail.success') : t('simManager.practiceDetail.error')}
           </h3>
           <p className="text-gray-700 text-center text-sm mb-6">
             {message}
@@ -659,7 +661,7 @@ export default function PracticeDetail() {
                   }}
                   className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                 >
-                  Back to Practices
+                  {t('simManager.practiceDetail.backToPractices')}
                 </button>
               </>
             ) : (
@@ -671,7 +673,7 @@ export default function PracticeDetail() {
                   }}
                   className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
                 >
-                  OK
+                  {t('simManager.practiceDetail.ok')}
                 </button>
               </>
             )}
@@ -690,7 +692,7 @@ export default function PracticeDetail() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 font-medium shadow-sm"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          {t('simManager.practiceDetail.back')}
         </button>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{form.practiceName}</h1>
@@ -708,14 +710,14 @@ export default function PracticeDetail() {
               <div className="p-2 bg-blue-100 rounded-lg">
                 <BookOpen className="h-5 w-5 text-blue-600" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">Basic Information</h2>
+              <h2 className="text-xl font-semibold text-gray-900">{t('simManager.practiceDetail.basicInfo')}</h2>
             </div>
 
             <div className="space-y-4">
               {/* Practice Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Practice Name
+                  {t('simManager.practiceDetail.practiceNameLabel')}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -723,17 +725,17 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, practiceName: e.target.value }))
                   }
-                  placeholder="Enter practice name"
+                  placeholder={t('simManager.practiceDetail.enterPracticeName')}
                 />
                 <div className="mt-1 text-xs text-gray-500">
-                  {form.practiceName?.length || 0} / 200 characters
+                  {form.practiceName?.length || 0} / 200 {t('simManager.practiceDetail.characters')}
                 </div>
               </div>
 
               {/* Practice Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Practice Code
+                  {t('simManager.practiceDetail.practiceCodeLabel')}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -741,17 +743,17 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, practiceCode: e.target.value }))
                   }
-                  placeholder="Enter practice code"
+                  placeholder={t('simManager.practiceDetail.enterPracticeCode')}
                 />
                 <div className="mt-1 text-xs text-gray-500">
-                  {form.practiceCode?.length || 0} / 50 characters
+                  {form.practiceCode?.length || 0} / 50 {t('simManager.practiceDetail.characters')}
                 </div>
               </div>
 
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
+                  {t('simManager.practiceDetail.descriptionLabel')}
                 </label>
                 <textarea
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
@@ -760,10 +762,10 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, practiceDescription: e.target.value }))
                   }
-                  placeholder="Enter practice description"
+                  placeholder={t('simManager.practiceDetail.enterDescription')}
                 />
                 <div className="mt-1 text-xs text-gray-500">
-                  {form.practiceDescription?.length || 0} / 1000 characters
+                  {form.practiceDescription?.length || 0} / 1000 {t('simManager.practiceDetail.characters')}
                 </div>
               </div>
 
@@ -771,7 +773,7 @@ export default function PracticeDetail() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Estimated Duration (minutes)
+                    {t('simManager.practiceDetail.estimatedDuration')}
                   </label>
                   <div className="relative">
                     <Clock className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
@@ -789,12 +791,12 @@ export default function PracticeDetail() {
                     />
                   </div>
                   <div className="mt-1 text-xs text-gray-500">
-                    1 - 600 minutes
+                    {t('simManager.practiceDetail.minutes')}
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Difficulty Level
+                    {t('simManager.practiceDetail.difficultyLevel')}
                   </label>
                   <select
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -803,10 +805,10 @@ export default function PracticeDetail() {
                       setForm((f) => ({ ...f, difficultyLevel: e.target.value }))
                     }
                   >
-                    <option value="">Select difficulty...</option>
-                    <option value="Entry">Entry</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
+                    <option value="">{t('simManager.practiceDetail.selectDifficulty')}</option>
+                    <option value="Entry">{t('simManager.practiceDetail.entry')}</option>
+                    <option value="Intermediate">{t('simManager.practiceDetail.intermediate')}</option>
+                    <option value="Advanced">{t('simManager.practiceDetail.advanced')}</option>
                   </select>
                 </div>
               </div>
@@ -815,7 +817,7 @@ export default function PracticeDetail() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Attempts
+                    {t('simManager.practiceDetail.maxAttemptsLabel')}
                   </label>
                   <div className="relative">
                     <Zap className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
@@ -833,12 +835,12 @@ export default function PracticeDetail() {
                     />
                   </div>
                   <div className="mt-1 text-xs text-gray-500">
-                    1 - 10 attempts
+                    {t('simManager.practiceDetail.attempts')}
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status
+                    {t('simManager.practiceDetail.statusLabel')}
                   </label>
                   <select
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -847,8 +849,8 @@ export default function PracticeDetail() {
                       setForm((f) => ({ ...f, isActive: e.target.value === "true" }))
                     }
                   >
-                    <option value="true">Active</option>
-                    <option value="false">Inactive</option>
+                    <option value="true">{t('simManager.practiceDetail.active')}</option>
+                    <option value="false">{t('simManager.practiceDetail.inactive')}</option>
                   </select>
                 </div>
               </div>
@@ -862,7 +864,7 @@ export default function PracticeDetail() {
                 disabled={updating}
               >
                 <Save className="h-4 w-4" />
-                {updating ? "Saving..." : "Save Changes"}
+                {updating ? t('simManager.practiceDetail.saving') : t('simManager.practiceDetail.save')}
               </button>
               <button
                 className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-300 rounded-lg hover:bg-red-100 hover:border-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
@@ -870,7 +872,7 @@ export default function PracticeDetail() {
                 disabled={deleting}
               >
                 <Trash2 className="h-4 w-4" />
-                {deleting ? "Deleting..." : "Delete"}
+                {deleting ? t('simManager.practiceDetail.deleting') : t('simManager.practiceDetail.delete')}
               </button>
             </div>
           </div>
@@ -879,7 +881,7 @@ export default function PracticeDetail() {
         {/* Right Column - Info Card */}
         <div className="col-span-1">
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200 p-6 sticky top-6">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Summary</h3>
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">{t('simManager.practiceDetail.summary')}</h3>
             
             <div className="space-y-4">
               {/* Duration */}
@@ -888,7 +890,7 @@ export default function PracticeDetail() {
                   <Clock className="h-5 w-5 text-blue-700" />
                 </div>
                 <div>
-                  <p className="text-xs text-blue-600 font-medium">Duration</p>
+                  <p className="text-xs text-blue-600 font-medium">{t('simManager.practiceDetail.durationSummary')}</p>
                   <p className="text-lg font-bold text-blue-900">{form.estimatedDurationMinutes} min</p>
                 </div>
               </div>
@@ -907,8 +909,8 @@ export default function PracticeDetail() {
                   }`} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 font-medium">Difficulty</p>
-                  <p className="text-lg font-bold text-gray-900">{form.difficultyLevel || 'N/A'}</p>
+                  <p className="text-xs text-gray-600 font-medium">{t('simManager.practiceDetail.difficultySummary')}</p>
+                  <p className="text-lg font-bold text-gray-900">{form.difficultyLevel || t('simManager.practiceDetail.na')}</p>
                 </div>
               </div>
 
@@ -918,7 +920,7 @@ export default function PracticeDetail() {
                   <AlertCircle className="h-5 w-5 text-purple-700" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 font-medium">Max Attempts</p>
+                  <p className="text-xs text-gray-600 font-medium">{t('simManager.practiceDetail.maxAttemptsSummary')}</p>
                   <p className="text-lg font-bold text-gray-900">{form.maxAttempts}</p>
                 </div>
               </div>
@@ -929,8 +931,8 @@ export default function PracticeDetail() {
                   <CheckCircle className={`h-5 w-5 ${form.isActive ? 'text-green-700' : 'text-gray-700'}`} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 font-medium">Status</p>
-                  <p className="text-lg font-bold text-gray-900">{form.isActive ? 'Active' : 'Inactive'}</p>
+                  <p className="text-xs text-gray-600 font-medium">{t('simManager.practiceDetail.statusSummary')}</p>
+                  <p className="text-lg font-bold text-gray-900">{form.isActive ? t('simManager.practiceDetail.active') : t('simManager.practiceDetail.inactive')}</p>
                 </div>
               </div>
             </div>
@@ -944,23 +946,23 @@ export default function PracticeDetail() {
           <div className="p-2 bg-purple-100 rounded-lg">
             <ListTodo className="h-5 w-5 text-purple-600" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900">Practice Tasks</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('simManager.practiceDetail.practiceTasks')}</h2>
           <span className="ml-auto text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-            {tasks.length} tasks
+            {t('simManager.practiceDetail.tasksCount', { count: tasks.length })}
           </span>
           <button
             onClick={handleOpenTaskCreate}
             className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 active:scale-95 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
           >
             <Plus className="h-4 w-4" />
-            Add New Task
+            {t('simManager.practiceDetail.addNewTask')}
           </button>
           <button
             onClick={handleOpenChooseTaskModal}
             className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 active:scale-95 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
           >
             <Plus className="h-4 w-4" />
-            Choose Task From System
+            {t('simManager.practiceDetail.chooseTaskFromSystem')}
           </button>
         </div>
 
@@ -968,13 +970,13 @@ export default function PracticeDetail() {
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
-              <p className="text-gray-600 text-sm">Loading tasks...</p>
+              <p className="text-gray-600 text-sm">{t('simManager.practiceDetail.loadingTasksText')}</p>
             </div>
           </div>
         ) : tasks.length === 0 ? (
           <div className="py-8 text-center bg-gray-50 rounded-lg">
             <ListTodo className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-600">No tasks found for this practice</p>
+            <p className="text-gray-600">{t('simManager.practiceDetail.noTasks')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -1004,7 +1006,7 @@ export default function PracticeDetail() {
 
                     {task.expectedResult && (
                       <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-800">
-                        <p className="font-medium">Expected Result:</p>
+                        <p className="font-medium">{t('simManager.practiceDetail.expectedResult')}:</p>
                         <p>{task.expectedResult}</p>
                       </div>
                     )}
@@ -1017,7 +1019,7 @@ export default function PracticeDetail() {
                       className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-100 hover:border-blue-400 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
                     >
                       <Edit className="h-4 w-4" />
-                      <span className="text-xs font-medium">Edit</span>
+                      <span className="text-xs font-medium">{t('simManager.practiceDetail.editTask')}</span>
                     </button>
                     <button
                       onClick={() => {
@@ -1027,7 +1029,7 @@ export default function PracticeDetail() {
                       className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 border border-red-300 rounded-lg hover:bg-red-100 hover:border-red-400 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
                     >
                       <Trash2 className="h-4 w-4" />
-                      <span className="text-xs font-medium">Delete</span>
+                      <span className="text-xs font-medium">{t('simManager.practiceDetail.delete')}</span>
                     </button>
                   </div>
                 </div>
@@ -1046,9 +1048,9 @@ export default function PracticeDetail() {
                 <AlertCircle className="h-6 w-6 text-red-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Practice</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('simManager.practiceDetail.deletePractice')}</h3>
                 <p className="text-gray-600 text-sm mb-6">
-                  Are you sure you want to delete this practice? This action cannot be undone.
+                  {t('simManager.practiceDetail.deletePracticeDesc')}
                 </p>
                 <div className="flex gap-3">
                   <button
@@ -1056,14 +1058,14 @@ export default function PracticeDetail() {
                     disabled={deleting}
                     className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
                   >
-                    Cancel
+                    {t('simManager.practiceDetail.cancel')}
                   </button>
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
                     className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                   >
-                    {deleting ? "Deleting..." : "Delete"}
+                    {deleting ? t('simManager.practiceDetail.deleting') : t('simManager.practiceDetail.delete')}
                   </button>
                 </div>
               </div>
@@ -1081,9 +1083,9 @@ export default function PracticeDetail() {
                 <AlertCircle className="h-6 w-6 text-red-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Task</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('simManager.practiceDetail.deleteTask')}</h3>
                 <p className="text-gray-600 text-sm mb-6">
-                  Are you sure you want to delete this task? This action cannot be undone.
+                  {t('simManager.practiceDetail.deleteTaskDesc')}
                 </p>
                 <div className="flex gap-3">
                   <button
@@ -1093,13 +1095,13 @@ export default function PracticeDetail() {
                     }}
                     className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
                   >
-                    Cancel
+                    {t('simManager.practiceDetail.cancel')}
                   </button>
                   <button
                     onClick={handleDeleteTask}
                     className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
                   >
-                    Delete
+                    {t('simManager.practiceDetail.delete')}
                   </button>
                 </div>
               </div>
@@ -1117,13 +1119,13 @@ export default function PracticeDetail() {
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Success</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('simManager.practiceDetail.success')}</h3>
                 <p className="text-gray-600 text-sm mb-4">{successMessage}</p>
                 <button
                   onClick={() => setModalType(null)}
                   className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
                 >
-                  OK
+                  {t('simManager.practiceDetail.ok')}
                 </button>
               </div>
             </div>
@@ -1140,13 +1142,13 @@ export default function PracticeDetail() {
                 <AlertCircle className="h-6 w-6 text-red-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Error</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('simManager.practiceDetail.error')}</h3>
                 <p className="text-gray-600 text-sm mb-4">{error}</p>
                 <button
                   onClick={() => setModalType(null)}
                   className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
                 >
-                  OK
+                  {t('simManager.practiceDetail.ok')}
                 </button>
               </div>
             </div>
@@ -1163,7 +1165,7 @@ export default function PracticeDetail() {
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <Edit className="h-5 w-5 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Edit Task</h3>
+                <h3 className="text-xl font-semibold text-gray-900">{t('simManager.practiceDetail.editTask')}</h3>
               </div>
               <button
                 onClick={() => {
@@ -1181,7 +1183,7 @@ export default function PracticeDetail() {
               {/* Task Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Task Name
+                  {t('simManager.practiceDetail.taskName')}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -1189,14 +1191,14 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setTaskForm((f) => ({ ...f, taskName: e.target.value }))
                   }
-                  placeholder="Enter task name"
+                  placeholder={t('simManager.practiceDetail.enterTaskName')}
                 />
               </div>
 
               {/* Task Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Task Code
+                  {t('simManager.practiceDetail.taskCode')}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -1204,14 +1206,14 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setTaskForm((f) => ({ ...f, taskCode: e.target.value }))
                   }
-                  placeholder="Enter task code"
+                  placeholder={t('simManager.practiceDetail.enterTaskCode')}
                 />
               </div>
 
               {/* Task Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
+                  {t('simManager.practiceDetail.taskDescription')}
                 </label>
                 <textarea
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
@@ -1220,14 +1222,14 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setTaskForm((f) => ({ ...f, taskDescription: e.target.value }))
                   }
-                  placeholder="Enter task description"
+                  placeholder={t('simManager.practiceDetail.enterTaskDescription')}
                 />
               </div>
 
               {/* Expected Result */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Expected Result
+                  {t('simManager.practiceDetail.expectedResult')}
                 </label>
                 <textarea
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
@@ -1236,7 +1238,7 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setTaskForm((f) => ({ ...f, expectedResult: e.target.value }))
                   }
-                  placeholder="Enter expected result"
+                  placeholder={t('simManager.practiceDetail.enterExpectedResult')}
                 />
               </div>
             </div>
@@ -1252,7 +1254,7 @@ export default function PracticeDetail() {
                 disabled={updatingTask}
                 className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
               >
-                Cancel
+                {t('simManager.practiceDetail.cancel')}
               </button>
               <button
                 onClick={handleTaskUpdate}
@@ -1260,7 +1262,7 @@ export default function PracticeDetail() {
                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
               >
                 <Save className="h-4 w-4" />
-                {updatingTask ? "Saving..." : "Save"}
+                {updatingTask ? t('simManager.practiceDetail.updating') : t('simManager.practiceDetail.save')}
               </button>
             </div>
           </div>
@@ -1276,7 +1278,7 @@ export default function PracticeDetail() {
                 <div className="p-2 bg-purple-100 rounded-lg">
                   <Plus className="h-5 w-5 text-purple-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Create New Task</h3>
+                <h3 className="text-xl font-semibold text-gray-900">{t('simManager.practiceDetail.createNewTask')}</h3>
               </div>
               <button
                 onClick={() => {
@@ -1293,7 +1295,7 @@ export default function PracticeDetail() {
               {/* Task Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Task Name
+                  {t('simManager.practiceDetail.taskName')}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
@@ -1301,14 +1303,14 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setTaskForm((f) => ({ ...f, taskName: e.target.value }))
                   }
-                  placeholder="Enter task name"
+                  placeholder={t('simManager.practiceDetail.enterTaskName')}
                 />
               </div>
 
               {/* Task Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Task Code
+                  {t('simManager.practiceDetail.taskCode')}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
@@ -1316,14 +1318,14 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setTaskForm((f) => ({ ...f, taskCode: e.target.value }))
                   }
-                  placeholder="Enter task code"
+                  placeholder={t('simManager.practiceDetail.enterTaskCode')}
                 />
               </div>
 
               {/* Task Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
+                  {t('simManager.practiceDetail.taskDescription')}
                 </label>
                 <textarea
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
@@ -1332,14 +1334,14 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setTaskForm((f) => ({ ...f, taskDescription: e.target.value }))
                   }
-                  placeholder="Enter task description"
+                  placeholder={t('simManager.practiceDetail.enterTaskDescription')}
                 />
               </div>
 
               {/* Expected Result */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Expected Result
+                  {t('simManager.practiceDetail.expectedResult')}
                 </label>
                 <textarea
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
@@ -1348,7 +1350,7 @@ export default function PracticeDetail() {
                   onChange={(e) =>
                     setTaskForm((f) => ({ ...f, expectedResult: e.target.value }))
                   }
-                  placeholder="Enter expected result"
+                  placeholder={t('simManager.practiceDetail.enterExpectedResult')}
                 />
               </div>
             </div>
@@ -1363,7 +1365,7 @@ export default function PracticeDetail() {
                 disabled={creatingTask}
                 className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
               >
-                Cancel
+                {t('simManager.practiceDetail.cancel')}
               </button>
               <button
                 onClick={handleTaskCreate}
@@ -1371,7 +1373,7 @@ export default function PracticeDetail() {
                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
               >
                 <Plus className="h-4 w-4" />
-                {creatingTask ? "Creating..." : "Create Task"}
+                {creatingTask ? t('simManager.practiceDetail.creating') : t('simManager.practiceDetail.create')}
               </button>
             </div>
           </div>
@@ -1387,7 +1389,7 @@ export default function PracticeDetail() {
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <Plus className="h-5 w-5 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Choose Task From System</h3>
+                <h3 className="text-xl font-semibold text-gray-900">{t('simManager.practiceDetail.chooseTaskFromSystem')}</h3>
               </div>
               <button
                 onClick={() => {
@@ -1404,7 +1406,7 @@ export default function PracticeDetail() {
               <div className="flex items-center justify-center py-8">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                  <p className="text-gray-600 text-sm">Loading tasks...</p>
+                  <p className="text-gray-600 text-sm">{t('simManager.practiceDetail.loadingTasksText')}</p>
                 </div>
               </div>
             ) : (
@@ -1412,11 +1414,11 @@ export default function PracticeDetail() {
                 <div className="space-y-2 max-h-96 overflow-y-auto mb-6">
                   {systemTasks.length === 0 ? (
                     <div className="text-center py-6 text-gray-500">
-                      No tasks available in the system
+                      {t('simManager.practiceDetail.noTasksAvailable')}
                     </div>
                   ) : (
                     systemTasks.map((task) => {
-                      const isAlreadyAdded = tasks.some(t => t.id === task.id);
+                      const isAlreadyAdded = tasks.some(taskItem => taskItem.id === task.id);
                       const isSelected = selectedSystemTaskId === task.id;
                       
                       return (
@@ -1446,7 +1448,7 @@ export default function PracticeDetail() {
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
                               {isAlreadyAdded && (
-                                <span className="text-xs font-medium text-gray-500">Added</span>
+                                <span className="text-xs font-medium text-gray-500">{t('simManager.practiceDetail.addTask')}</span>
                               )}
                               <button
                                 onClick={(e) => {
@@ -1455,7 +1457,7 @@ export default function PracticeDetail() {
                                   setShowDeleteSystemTaskConfirm(true);
                                 }}
                                 className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
-                                title="Delete task"
+                                title={t('simManager.practiceDetail.delete')}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -1475,17 +1477,17 @@ export default function PracticeDetail() {
                       disabled={systemTasksPage === 1}
                       className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
-                      Previous
+                      {t('simManager.practiceDetail.previous')}
                     </button>
                     <span className="text-sm text-gray-600">
-                      Page {systemTasksPage} of {systemTasksTotalPages}
+                      {t('simManager.practiceDetail.pageOf', { page: systemTasksPage, total: systemTasksTotalPages })}
                     </span>
                     <button
                       onClick={() => fetchSystemTasks(systemTasksPage + 1)}
                       disabled={systemTasksPage === systemTasksTotalPages}
                       className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
-                      Next
+                      {t('simManager.practiceDetail.next')}
                     </button>
                   </div>
                 )}
@@ -1499,7 +1501,7 @@ export default function PracticeDetail() {
                     }}
                     className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
                   >
-                    Cancel
+                    {t('simManager.practiceDetail.cancel')}
                   </button>
                   <button
                     onClick={handleAddSelectedTask}
@@ -1507,7 +1509,7 @@ export default function PracticeDetail() {
                     className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
                   >
                     <Plus className="h-4 w-4" />
-                    Select Task
+                    {t('simManager.practiceDetail.selectTask')}
                   </button>
                 </div>
               </>
@@ -1524,10 +1526,10 @@ export default function PracticeDetail() {
               <div className="p-2 bg-red-100 rounded-lg">
                 <AlertCircle className="h-5 w-5 text-red-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Delete Task</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('simManager.practiceDetail.confirmDeleteSystemTaskTitle')}</h3>
             </div>
             <p className="text-gray-600 text-sm mb-6">
-              Are you sure you want to delete this task from the system? This action cannot be undone.
+              {t('simManager.practiceDetail.confirmDeleteSystemTaskDesc')}
             </p>
             <div className="flex gap-3">
               <button
@@ -1537,14 +1539,14 @@ export default function PracticeDetail() {
                 }}
                 className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 font-semibold"
               >
-                Cancel
+                {t('simManager.practiceDetail.cancel')}
               </button>
               <button
                 onClick={handleDeleteSystemTask}
                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 active:scale-95 transition-all duration-200 font-semibold"
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t('simManager.practiceDetail.delete')}
               </button>
             </div>
           </div>

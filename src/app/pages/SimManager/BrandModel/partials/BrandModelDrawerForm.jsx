@@ -1,5 +1,6 @@
 import React from 'react';
 import { Drawer, Form, Input, Button, Space, Switch } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const BrandModelDrawerForm = ({
   visible = false,
@@ -10,8 +11,13 @@ const BrandModelDrawerForm = ({
   onSubmit = () => {},
   onSwitchToEdit = () => {},
 }) => {
+  const { t } = useTranslation();
   const isViewMode = mode === 'view';
-  const title = mode === 'create' ? 'Create Brand Model' : mode === 'edit' ? 'Edit Brand Model' : 'Brand Model Details';
+  const title = mode === 'create' 
+    ? t('simManager.brandModel.drawer.createTitle') 
+    : mode === 'edit' 
+    ? t('simManager.brandModel.drawer.editTitle') 
+    : t('simManager.brandModel.drawer.viewTitle');
 
   return (
     <Drawer
@@ -24,16 +30,16 @@ const BrandModelDrawerForm = ({
         <div className="flex justify-end gap-2">
           {isViewMode ? (
             <>
-              <Button onClick={onClose}>Close</Button>
+              <Button onClick={onClose}>{t('simManager.brandModel.drawer.close')}</Button>
               <Button type="primary" onClick={onSwitchToEdit}>
-                Edit
+                {t('simManager.brandModel.edit')}
               </Button>
             </>
           ) : (
             <>
-              <Button onClick={onClose}>Cancel</Button>
+              <Button onClick={onClose}>{t('simManager.brandModel.drawer.cancel')}</Button>
               <Button type="primary" onClick={onSubmit} loading={loading}>
-                {mode === 'create' ? 'Create' : 'Update'}
+                {mode === 'create' ? t('simManager.brandModel.drawer.create') : t('simManager.brandModel.drawer.update')}
               </Button>
             </>
           )}
@@ -43,33 +49,36 @@ const BrandModelDrawerForm = ({
       <Form form={form} layout="vertical" disabled={isViewMode}>
         <Form.Item
           name="name"
-          label="Brand Model Name"
+          label={t('simManager.brandModel.form.name')}
           rules={[
-            { required: true, message: 'Please input brand model name' },
-            { max: 100, message: 'Name cannot exceed 100 characters' },
+            { required: true, message: t('simManager.brandModel.form.nameRequired') },
+            { max: 100, message: t('simManager.brandModel.form.nameMax') },
           ]}
         >
-          <Input placeholder="Enter brand model name" />
+          <Input placeholder={t('simManager.brandModel.form.namePlaceholder')} />
         </Form.Item>
 
         <Form.Item
           name="description"
-          label="Description"
-          rules={[{ max: 500, message: 'Description cannot exceed 500 characters' }]}
+          label={t('simManager.brandModel.form.description')}
+          rules={[{ max: 500, message: t('simManager.brandModel.form.descriptionMax') }]}
         >
           <Input.TextArea
             rows={4}
-            placeholder="Enter description"
+            placeholder={t('simManager.brandModel.form.descriptionPlaceholder')}
           />
         </Form.Item>
 
         <Form.Item
           name="isActive"
-          label="Active Status"
+          label={t('simManager.brandModel.form.activeStatus')}
           valuePropName="checked"
           initialValue={true}
         >
-          <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+          <Switch 
+            checkedChildren={t('simManager.brandModel.form.active')} 
+            unCheckedChildren={t('simManager.brandModel.form.inactive')} 
+          />
         </Form.Item>
       </Form>
     </Drawer>

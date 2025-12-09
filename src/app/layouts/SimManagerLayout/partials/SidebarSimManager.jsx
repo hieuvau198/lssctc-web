@@ -1,29 +1,31 @@
-import { App, Avatar, Dropdown, Menu, Tooltip } from 'antd';
+import { App, Avatar, Dropdown, Menu, Tooltip, Switch } from 'antd';
 import { FlaskConical, LayoutDashboard, MoreVertical, PanelLeft, PanelLeftClose, Settings, Sliders, Truck } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
 import useAuthStore from '../../../store/authStore';
 import { clearAvatarUrl, sAvatarUrl, setAvatarUrl } from '../../../store/userAvatar';
 
-const ITEMS = [
-  { to: '/simulationManager/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { to: '/simulationManager/practices', label: 'Practices', icon: <FlaskConical className="w-5 h-5" /> },
-  { to: '/simulationManager/tasks', label: 'Tasks Setting', icon: <Sliders className="w-5 h-5" /> },
-  { to: '/simulationManager/brand-models', label: 'Brand Model', icon: <Truck className="w-5 h-5" /> },
-  // { to: '/simulationManager/settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
+const getItems = (t) => [
+  { to: '/simulationManager/dashboard', label: t('sidebar.dashboard'), icon: <LayoutDashboard className="w-5 h-5" /> },
+  { to: '/simulationManager/practices', label: t('sidebar.practices'), icon: <FlaskConical className="w-5 h-5" /> },
+  { to: '/simulationManager/tasks', label: t('sidebar.tasks'), icon: <Sliders className="w-5 h-5" /> },
+  { to: '/simulationManager/brand-models', label: t('sidebar.brandModel'), icon: <Truck className="w-5 h-5" /> },
 ];
 
 export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
   const { message } = App.useApp();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const ITEMS = getItems(t);
 
   const handleLogout = async () => {
     try {
       await logout();
     } catch (e) {
-      message.error('Logout failed.');
+      message.error(t('common.logoutFailed'));
       console.error('Logout failed:', e);
     } finally {
       try { window.location.assign('/'); } catch { navigate('/'); }
@@ -50,19 +52,19 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
             <div className="flex items-center justify-center bg-blue-600 text-white font-bold rounded size-8 shrink-0 text-lg">
               S
             </div>
-            {!collapsed && <span className="font-semibold text-sm tracking-wide">Simulator Manager</span>}
+            {!collapsed && <span className="font-semibold text-sm tracking-wide">{t('sidebar.simManagerPanel')}</span>}
           </div>
           <button
             onClick={onToggle}
             className="hidden md:inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100"
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={collapsed ? t('sidebar.expandSidebar') : t('sidebar.collapseSidebar')}
           >
             {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
           <button
             onClick={onMobileToggle}
             className="md:hidden inline-flex w-8 h-8 items-center justify-center rounded hover:bg-gray-100"
-            aria-label="Close navigation"
+            aria-label={t('sidebar.closeNavigation')}
           >
             <PanelLeftClose className="w-4 h-4" />
           </button>
@@ -108,21 +110,50 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
               const fullName = store.fullName || store.name || claims.fullName || claims.full_name || claims.name || claims.sub || 'User';
               const role = store.role || claims.role || '';
               const avatarUrl = store.avatarUrl || store.avatar || claims.avatarUrl || claims.picture || claims.avatar || '';
-              const avatarContent = avatarUrl ? null : (fullName ? fullName.split(' ').filter(Boolean).map(n => n[0]).slice(0,2).join('') : 'U');
+              const avatarContent = avatarUrl ? null : (fullName ? fullName.split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('') : 'U');
 
               const menu = (
-                <Menu onClick={async ({ key }) => {
-                  if (key === 'logout') {
-                    try { await logout(); } catch (e) { message.error('Logout failed.'); }
-                    clearAvatarUrl();
-                    try { window.location.assign('/'); } catch { navigate('/'); }
-                  } else if (key === 'profile') {
-                    navigate('/simmanager/profile');
-                  }
-                }}>
-                  <Menu.Item key="profile">Profile</Menu.Item>
-                    <Menu.Item key="logout" danger>Logout</Menu.Item>
-                </Menu>
+                <Menu
+                  onClick={async ({ key }) => {
+                    if (key === 'logout') {
+                      try { await logout(); } catch (e) { message.error(t('common.logoutFailed')); }
+                      clearAvatarUrl();
+                      try { window.location.assign('/'); } catch { navigate('/'); }
+                    } else if (key === 'profile') {
+                      navigate('/simmanager/profile');
+                    }
+                  }}
+                  items={[
+                    {
+                      key: 'profile',
+                      label: t('common.profile')
+                    },
+                    {
+                      key: 'language',
+                      label: (
+                        <div
+                          className="flex items-center justify-between gap-3"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span>{t('common.language')}</span>
+                          <Switch
+                            checked={i18n.language === 'vi'}
+                            onChange={(checked) => i18n.changeLanguage(checked ? 'vi' : 'en')}
+                            checkedChildren="Vi"
+                            unCheckedChildren="En"
+                            size="small"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      )
+                    },
+                    {
+                      key: 'logout',
+                      label: t('common.logout'),
+                      danger: true
+                    }
+                  ]}
+                />
               );
 
               return collapsed ? (

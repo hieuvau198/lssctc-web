@@ -12,9 +12,11 @@ import {
   App,
 } from 'antd';
 import { Plus, Trash2, X, Save } from 'lucide-react';
-import { createQuizWithQuestions } from '../../../../apis/Instructor/InstructorQuiz';
+import { useTranslation } from 'react-i18next';
+import { createQuizWithQuestions, updateQuizWithQuestions } from '../../../../apis/Instructor/InstructorQuiz';
 
-const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
+const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialData = null, quizId = null }) => {
+  const { t } = useTranslation();
   const { message, modal } = App.useApp();
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
@@ -30,23 +32,60 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
     },
   ]);
 
-  // Reset form when drawer opens
+  // Initialize form when drawer opens
   useEffect(() => {
     if (open) {
-      form.resetFields();
-      setQuestions([
-        {
-          id: 1,
-          name: '',
-          description: '',
-          isMultipleAnswers: false,
-          questionScore: 10,
-          options: [{ id: 1, name: '', isCorrect: true, explanation: '' }],
-        },
-      ]);
       setScoreErrors({});
+      if (mode === 'edit' && initialData) {
+        // Populate form and questions from initialData
+        form.setFieldsValue({
+          name: initialData.name,
+          description: initialData.description,
+          passScoreCriteria: initialData.passScoreCriteria,
+          timelimitMinute: initialData.timelimitMinute,
+        });
+
+        // Map questions from API format to internal format
+        const mappedQuestions = (initialData.questions || []).map((q, qIdx) => ({
+          id: q.id || qIdx + 1,
+          name: q.name || '',
+          description: q.description || '',
+          isMultipleAnswers: q.isMultipleAnswers || false,
+          questionScore: q.questionScore || 0,
+          options: (q.options || []).map((o, oIdx) => ({
+            id: o.id || oIdx + 1,
+            name: o.name || '',
+            isCorrect: !!o.isCorrect,
+            explanation: o.explanation || '',
+          })),
+        }));
+
+        // If no questions present, ensure at least one
+        setQuestions(mappedQuestions.length ? mappedQuestions : [
+          {
+            id: 1,
+            name: '',
+            description: '',
+            isMultipleAnswers: false,
+            questionScore: 10,
+            options: [{ id: 1, name: '', isCorrect: true, explanation: '' }],
+          }
+        ]);
+      } else {
+        form.resetFields();
+        setQuestions([
+          {
+            id: 1,
+            name: '',
+            description: '',
+            isMultipleAnswers: false,
+            questionScore: 10,
+            options: [{ id: 1, name: '', isCorrect: true, explanation: '' }],
+          },
+        ]);
+      }
     }
-  }, [open, form]);
+  }, [open, form, initialData, mode]);
 
   // Calculate total score
   const totalScore = questions.reduce((sum, q) => sum + (q.questionScore || 0), 0);
@@ -59,7 +98,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
     const scoreStr = score.toString();
     const decimalPart = scoreStr.split('.')[1];
     if (decimalPart && decimalPart.length > 2) {
-      return `Max 2 decimal places allowed.`;
+      return t('instructor.quizzes.scoreSummary.maxDecimalPlaces');
     }
     return null;
   };
@@ -76,7 +115,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
     modal.error({
       title,
       content: errorMessage,
-      okText: 'Close',
+      okText: t('instructor.quizzes.modal.close'),
       centered: true,
     });
   };
@@ -100,7 +139,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
   // Remove question
   const removeQuestion = (qIdx) => {
     if (questions.length === 1) {
-      message.warning('At least one question is required');
+      message.warning(t('instructor.quizzes.questions.atLeastOneQuestion'));
       return;
     }
     const newQuestions = questions.filter((_, idx) => idx !== qIdx);
@@ -142,7 +181,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
   const removeOption = (qIdx, oIdx) => {
     const newQuestions = [...questions];
     if (newQuestions[qIdx].options.length === 1) {
-      message.warning('Each question must have at least one option');
+      message.warning(t('instructor.quizzes.options.atLeastOneOption'));
       return;
     }
     newQuestions[qIdx].options = newQuestions[qIdx].options.filter((_, idx) => idx !== oIdx);
@@ -166,23 +205,23 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
     setQuestions(newQuestions);
   };
 
-  // Handle form submit - Call API POST /api/Quizzes/with-questions
+  // Handle form submit - Call API POST /api/Quizzes/with-questions or PUT /Quizzes/{id}/with-questions for edit
   const onFinish = async (values) => {
     try {
       // Validate questions
       if (!questions || questions.length === 0) {
-        showErrorModal('Validation Error', 'Please add at least one question');
+        showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.atLeastOneQuestion'));
         return;
       }
 
       for (let q of questions) {
         if (!q.name.trim()) {
-          showErrorModal('Validation Error', 'Please enter the question text');
+          showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.enterQuestionText'));
           return;
         }
 
         if (!q.questionScore || q.questionScore <= 0) {
-          showErrorModal('Validation Error', `Question "${q.name}" must have a score greater than 0`);
+          showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.scoreGreaterThanZero', { name: q.name }));
           return;
         }
 
@@ -190,30 +229,30 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
         const scoreStr = q.questionScore.toString();
         const decimalPart = scoreStr.split('.')[1];
         if (decimalPart && decimalPart.length > 2) {
-          showErrorModal('Validation Error', `Question "${q.name}" must not have more than 2 decimal places`);
+          showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.maxDecimalPlaces', { name: q.name }));
           return;
         }
 
         if (!q.options || q.options.length === 0) {
-          showErrorModal('Validation Error', `Question "${q.name}" must have at least one option`);
+          showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.atLeastOneOption', { name: q.name }));
           return;
         }
 
         // Validate correct answers
         const correctAnswers = q.options.filter((opt) => opt.isCorrect).length;
         if (correctAnswers === 0) {
-          showErrorModal('Validation Error', `Question "${q.name}" must have at least one correct option`);
+          showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.atLeastOneCorrect', { name: q.name }));
           return;
         }
         if (correctAnswers > 1) {
-          showErrorModal('Validation Error', `Question "${q.name}" may only have one correct option`);
+          showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.onlyOneCorrect', { name: q.name }));
           return;
         }
 
         // Validate option texts
         for (let opt of q.options) {
           if (!opt.name.trim()) {
-            showErrorModal('Validation Error', `Question "${q.name}" has an empty option`);
+            showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.emptyOption', { name: q.name }));
             return;
           }
         }
@@ -222,8 +261,8 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
       // Validate total score
       if (!isScoreValid) {
         showErrorModal(
-          'Validation Error',
-          `Total quiz score must equal 10. Current: ${totalScore.toFixed(2)}`
+          t('instructor.quizzes.validation.title'),
+          t('instructor.quizzes.validation.totalScoreMustEqual10', { score: totalScore.toFixed(2) })
         );
         return;
       }
@@ -251,13 +290,14 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
         })),
       };
 
-      // Call API
-      const response = await createQuizWithQuestions(payload);
-
-      if (response?.status === 200 || response?.data) {
-        message.success(response?.message || 'Quiz created successfully');
+      // Call API depending on mode
+      let response;
+      if (mode === 'edit' && quizId) {
+        response = await updateQuizWithQuestions(quizId, payload);
+        message.success(response?.message || t('instructor.quizzes.messages.updateQuizSuccess'));
       } else {
-        message.success('Quiz created successfully');
+        response = await createQuizWithQuestions(payload);
+        message.success(response?.message || t('instructor.quizzes.messages.createSuccess'));
       }
 
       onSuccess?.();
@@ -265,7 +305,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
     } catch (e) {
       console.error('Error creating quiz:', e);
 
-      let errorMsg = 'Unable to create quiz';
+      let errorMsg = t('instructor.quizzes.messages.createFailed');
 
       if (e?.response?.data) {
         const data = e.response.data;
@@ -288,7 +328,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
         errorMsg = e.message;
       }
 
-      showErrorModal('Create Quiz Error', errorMsg);
+      showErrorModal(t('instructor.quizzes.modal.errorCreating'), errorMsg);
     } finally {
       setSubmitting(false);
     }
@@ -296,7 +336,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
 
   return (
     <Drawer
-      title="Create Quiz"
+      title={t('instructor.quizzes.drawer.createTitle')}
       placement="right"
       width={720}
       open={open}
@@ -306,7 +346,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
       extra={
         <Space>
           <Button onClick={onClose} icon={<X className="w-4 h-4" />}>
-            Cancel
+            {t('instructor.quizzes.drawer.cancel')}
           </Button>
           <Button
             type="primary"
@@ -314,7 +354,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
             onClick={() => form.submit()}
             icon={<Save className="w-4 h-4" />}
           >
-            Create Quiz
+            {t('instructor.quizzes.drawer.create')}
           </Button>
         </Space>
       }
@@ -331,82 +371,122 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
         {/* Quiz Information */}
         <div className="grid grid-cols-2 gap-4">
           <Form.Item
-            label="Quiz Name"
+            label={t('instructor.quizzes.form.quizName')}
             name="name"
-            rules={[{ required: true, message: 'Please enter quiz name' }]}
+            rules={[{ required: true, message: t('instructor.quizzes.form.quizNameRequired') }]}
             className="col-span-2"
           >
-            <Input placeholder="e.g. Basic Safety Knowledge" />
+            <Input placeholder={t('instructor.quizzes.form.quizNamePlaceholder')} />
           </Form.Item>
 
           <Form.Item
-            label="Pass Score (pts)"
+            label={t('instructor.quizzes.form.passScore')}
             name="passScoreCriteria"
-            rules={[{ required: true, message: 'Required' }]}
+            rules={[{ required: true, message: t('common.required') }]}
           >
             <InputNumber min={1} max={10} className="w-full" />
           </Form.Item>
 
           <Form.Item
-            label="Time (min)"
+            label={t('instructor.quizzes.form.timeLimit')}
             name="timelimitMinute"
-            rules={[{ required: true, message: 'Required' }]}
+            rules={[{ required: true, message: t('common.required') }]}
           >
             <InputNumber min={1} max={180} className="w-full" />
           </Form.Item>
 
-          <Form.Item label="Description" name="description" className="col-span-2">
-            <Input.TextArea rows={2} placeholder="Optional description" />
+          <Form.Item label={t('instructor.quizzes.form.description')} name="description" className="col-span-2">
+            <Input.TextArea rows={2} placeholder={t('instructor.quizzes.form.descriptionPlaceholder')} />
           </Form.Item>
         </div>
 
-        <Divider>Questions</Divider>
+        <Divider>{t('instructor.quizzes.questions.title')}</Divider>
 
-        {/* Score Summary */}
-        <div className="mb-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="grid grid-cols-4 gap-x-2 text-center">
-            <div>
-              <p className="text-xs text-gray-600">Questions</p>
-              <p className="text-lg font-bold text-blue-600">{questions.length}</p>
+        {/* Score Summary - Modern Progress Design */}
+        <div className="mb-4 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-5 shadow-md">
+          {/* Progress Bar */}
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-semibold text-gray-700">
+                {t('instructor.quizzes.scoreSummary.totalQuizScore')}
+              </span>
+              <span className={`text-lg font-bold ${isScoreValid ? 'text-green-600' : 'text-red-600'}`}>
+                {totalScore.toFixed(2)} / 10
+              </span>
             </div>
-            <div>
-              <p className="text-xs text-gray-600">Total Score</p>
-              <p className="text-lg font-bold text-green-600">{totalScore.toFixed(2)}</p>
+            <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className={`absolute h-full rounded-full transition-all duration-300 ${
+                  isScoreValid 
+                    ? 'bg-gradient-to-r from-green-400 to-green-600' 
+                    : totalScore > 10 
+                      ? 'bg-gradient-to-r from-red-400 to-red-600'
+                      : 'bg-gradient-to-r from-blue-400 to-blue-600'
+                }`}
+                style={{ width: `${Math.min((totalScore / 10) * 100, 100)}%` }}
+              />
             </div>
-            <div>
-              <p className="text-xs text-gray-600">Avg / Q</p>
-              <p className="text-lg font-bold text-purple-600">
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-4 gap-3 text-center">
+            <div className="bg-white rounded-lg p-3 shadow-sm border border-blue-100">
+              <p className="text-xs text-gray-600 mb-1">📝 {t('instructor.quizzes.scoreSummary.questions')}</p>
+              <p className="text-xl font-bold text-blue-600">{questions.length}</p>
+            </div>
+            <div className="bg-white rounded-lg p-3 shadow-sm border border-green-100">
+              <p className="text-xs text-gray-600 mb-1">⭐ {t('instructor.quizzes.scoreSummary.totalScore')}</p>
+              <p className="text-xl font-bold text-green-600">{totalScore.toFixed(2)}</p>
+            </div>
+            <div className="bg-white rounded-lg p-3 shadow-sm border border-purple-100">
+              <p className="text-xs text-gray-600 mb-1">📊 {t('instructor.quizzes.scoreSummary.perQuestionAvg')}</p>
+              <p className="text-xl font-bold text-purple-600">
                 {questions.length > 0 ? (totalScore / questions.length).toFixed(2) : '0'}
               </p>
             </div>
-            <div>
-              <p className="text-xs text-gray-600">Còn lại</p>
+            <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
+              <p className="text-xs text-gray-600 mb-1">🎯 {t('instructor.quizzes.scoreSummary.remainingScore')}</p>
               <p
-                className="text-lg font-bold"
+                className="text-xl font-bold"
                 style={{ color: isScoreValid ? '#22c55e' : '#ef4444' }}
               >
                 {remainingScore.toFixed(2)}
               </p>
             </div>
           </div>
-          <p className="text-xs text-gray-500 text-center">
-            Total score must equal 10
-          </p>
+
+          {/* Status Message */}
+          <div className={`mt-4 p-3 rounded-lg text-center text-sm font-medium ${
+            isScoreValid 
+              ? 'bg-green-100 text-green-800 border border-green-200' 
+              : 'bg-red-100 text-red-800 border border-red-200'
+          }`}>
+            {isScoreValid ? (
+              <span>✅ {t('instructor.quizzes.scoreSummary.mustEqual10')}</span>
+            ) : (
+              <span>⚠️ {t('instructor.quizzes.scoreSummary.mustEqual10Info')}</span>
+            )}
+          </div>
         </div>
 
-        {/* Questions List */}
-        <div className="space-y-3">
+        {/* Questions List - Modern Card Design */}
+        <div className="space-y-4">
           {questions.map((question, qIdx) => (
             <Card
               key={question.id}
               size="small"
               title={
-                <span className="text-sm font-medium">
-                  Q{qIdx + 1}
-                  <span className="text-gray-400 font-normal ml-2">
-                    ({question.questionScore || 0} pts)
+                <div className="flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs font-bold">
+                    {qIdx + 1}
                   </span>
-                </span>
+                  <span className="text-sm font-semibold text-gray-800">
+                    {t('instructor.quizzes.questions.question')} {qIdx + 1}
+                  </span>
+                  <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold ml-auto">
+                    {question.questionScore || 0} {t('instructor.quizzes.questions.pts')}
+                  </span>
+                </div>
               }
               extra={
                 <Button
@@ -415,24 +495,25 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
                   size="small"
                   icon={<Trash2 className="w-4 h-4" />}
                   onClick={() => removeQuestion(qIdx)}
+                  className="hover:bg-red-50"
                 />
               }
-              className="bg-gray-50"
+              className="shadow-md hover:shadow-lg transition-shadow border-l-4 border-blue-400"
             >
               <div className="space-y-3">
                 {/* Question text and score */}
                 <div className="grid grid-cols-3 gap-2">
                   <div className="col-span-2">
-                    <label className="block text-xs font-medium mb-1">Question *</label>
+                    <label className="block text-xs font-medium mb-1">{t('instructor.quizzes.questions.questionText')} *</label>
                     <Input
                       value={question.name}
                       onChange={(e) => updateQuestion(qIdx, 'name', e.target.value)}
-                      placeholder="Enter question"
+                      placeholder={t('instructor.quizzes.questions.enterQuestion')}
                       size="small"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium mb-1">Score *</label>
+                    <label className="block text-xs font-medium mb-1">{t('instructor.quizzes.questions.score')} *</label>
                     <InputNumber
                       className="w-full"
                       value={question.questionScore}
@@ -451,12 +532,12 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
 
                 {/* Description */}
                 <div>
-                  <label className="block text-xs font-medium mb-1">Description</label>
+                  <label className="block text-xs font-medium mb-1">{t('instructor.quizzes.questions.description')}</label>
                   <Input.TextArea
                     rows={1}
                     value={question.description}
                     onChange={(e) => updateQuestion(qIdx, 'description', e.target.value)}
-                    placeholder="Description (optional)"
+                    placeholder={t('instructor.quizzes.questions.descriptionPlaceholder')}
                     size="small"
                   />
                 </div>
@@ -464,30 +545,39 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
                 {/* Options */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-xs font-medium">Options</label>
+                    <label className="text-xs font-medium">{t('instructor.quizzes.options.title')}</label>
                     <Button
                       type="dashed"
                       size="small"
                       icon={<Plus className="w-3 h-3" />}
                       onClick={() => addOption(qIdx)}
                     >
-                      Add
+                      {t('common.add')}
                     </Button>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {question.options.map((option, oIdx) => {
                       const optionScore = getOptionScore(qIdx, option.isCorrect);
                       return (
                         <div
                           key={option.id}
-                          className="p-2 bg-white border border-gray-200 rounded"
+                          className={`p-3 rounded-lg border-2 transition-all ${
+                            option.isCorrect 
+                              ? 'bg-green-50 border-green-300 shadow-sm' 
+                              : 'bg-white border-gray-200 hover:border-gray-300'
+                          }`}
                         >
-                          <div className="flex gap-2 items-center mb-1">
+                          <div className="flex gap-2 items-center mb-2">
+                            <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                              option.isCorrect ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700'
+                            }`}>
+                              {String.fromCharCode(65 + oIdx)}
+                            </span>
                             <Input
                               value={option.name}
                               onChange={(e) => updateOption(qIdx, oIdx, 'name', e.target.value)}
-                              placeholder={`Option ${oIdx + 1}`}
+                              placeholder={`${t('instructor.quizzes.options.option')} ${oIdx + 1}`}
                               size="small"
                               className="flex-1"
                             />
@@ -495,34 +585,36 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
                               type="text"
                               danger
                               size="small"
-                              icon={<Trash2 className="w-3 h-3" />}
+                              icon={<Trash2 className="w-4 h-4" />}
                               onClick={() => removeOption(qIdx, oIdx)}
+                              className="hover:bg-red-50"
                             />
                           </div>
-                          <div className="flex justify-between items-center">
+                          <div className="flex justify-between items-center mb-2">
                             <Checkbox
                               checked={option.isCorrect}
                               onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
+                              className="font-medium"
                             >
-                              <span className="text-xs">Correct answer</span>
+                              <span className="text-xs">{option.isCorrect ? '✓ ' : ''}{t('instructor.quizzes.options.correctAnswer')}</span>
                             </Checkbox>
                             <span
-                              className="text-xs px-2 py-0.5 rounded"
+                              className="text-xs px-3 py-1 rounded-full font-semibold shadow-sm"
                               style={{
-                                backgroundColor: option.isCorrect ? '#d4edda' : '#f8f9fa',
+                                backgroundColor: option.isCorrect ? '#d4edda' : '#e9ecef',
                                 color: option.isCorrect ? '#155724' : '#6c757d',
                               }}
                             >
-                              {optionScore.toFixed(1)} pts
+                              {optionScore.toFixed(1)} {t('instructor.quizzes.questions.pts')}
                             </span>
                           </div>
                           <Input.TextArea
                             rows={1}
                             value={option.explanation}
                             onChange={(e) => updateOption(qIdx, oIdx, 'explanation', e.target.value)}
-                            placeholder="Explanation (optional)"
+                            placeholder={t('instructor.quizzes.options.explanationPlaceholder')}
                             size="small"
-                            className="mt-1"
+                            className="mt-2"
                           />
                         </div>
                       );
@@ -542,7 +634,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess }) => {
           onClick={addQuestion}
           className="mt-4"
         >
-          Add question
+          {t('instructor.quizzes.questions.addQuestion')}
         </Button>
       </Form>
     </Drawer>

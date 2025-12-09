@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Card, Descriptions, Tag, Skeleton, Alert, Button, App } from 'antd';
 import { ArrowLeft, Pencil } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getQuizById } from '../../../../apis/Instructor/InstructorQuiz';
 import QuestionList from './QuestionList';
 
@@ -9,6 +10,7 @@ export default function QuizDetails() {
     const { id } = useParams();
     const { message } = App.useApp();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [quiz, setQuiz] = useState(null);
@@ -16,7 +18,7 @@ export default function QuizDetails() {
     useEffect(() => {
         const loadQuiz = async () => {
             if (!id) {
-                setError('Quiz ID is required');
+                setError(t('instructor.quizzes.messages.quizIdRequired'));
                 setLoading(false);
                 return;
             }
@@ -27,7 +29,7 @@ export default function QuizDetails() {
                 const data = await getQuizById(id);
                 setQuiz(data);
             } catch (e) {
-                setError(e?.message || 'Failed to load quiz details');
+                setError(e?.message || t('instructor.quizzes.messages.loadQuizFailed'));
                 setQuiz(null);
             } finally {
                 setLoading(false);
@@ -35,11 +37,11 @@ export default function QuizDetails() {
         };
 
         loadQuiz();
-    }, [id]);
+    }, [id, t]);
 
     if (loading) {
         return (
-            <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="max-w-7xl mx-auto px-4 py-2">
                 <Card>
                     <Skeleton active paragraph={{ rows: 8 }} />
                 </Card>
@@ -49,14 +51,14 @@ export default function QuizDetails() {
 
     if (error) {
         return (
-            <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="max-w-7xl mx-auto px-4 py-2">
                 <Alert
                     type="error"
-                    message="Error"
+                    message={t('common.error')}
                     description={error}
                     action={
                         <Button size="small" onClick={() => navigate('/instructor/quizzes')}>
-                            Back to List
+                            {t('instructor.quizzes.backToList')}
                         </Button>
                     }
                 />
@@ -69,8 +71,8 @@ export default function QuizDetails() {
             <div className="max-w-5xl mx-auto px-4 py-4">
                 <Alert
                     type="warning"
-                    message="Quiz Not Found"
-                    description="The quiz you are looking for does not exist."
+                    message={t('instructor.quizzes.quizNotFound')}
+                    description={t('instructor.quizzes.quizNotFoundDescription')}
                     action={
                         <Button size="small" onClick={() => navigate('/instructor/quizzes')} />
                     }
@@ -80,7 +82,7 @@ export default function QuizDetails() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-2">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -98,38 +100,38 @@ export default function QuizDetails() {
                     icon={<EditOutlined />}
                     onClick={() => navigate(`/instructor/quizzes/${id}/edit`)}
                 >
-                    Edit Quiz
+                    {t('instructor.quizzes.editQuiz')}
                 </Button>
             </div>
 
             {/* Quiz Information Card */}
             <div className="mb-4 shadow-xl rounded-2xl">
-                <Card title="Quiz Information" className="mb-4">
+                <Card title={t('instructor.quizzes.quizInformation')} className="mb-4">
                     <Descriptions column={{ xs: 1, sm: 1, md: 2 }} bordered labelStyle={{ fontWeight: 'bold' }}>
-                        <Descriptions.Item label="Quiz Name" span={2}>
+                        <Descriptions.Item label={t('instructor.quizzes.form.quizName')} span={2}>
                             <span>{quiz.name}</span>
                         </Descriptions.Item>
 
-                        <Descriptions.Item label="Total Score">
+                        <Descriptions.Item label={t('instructor.quizzes.scoreSummary.totalScore')}>
                             <Tag color="blue" className="text-base px-3 py-1">
-                                {quiz.totalScore} points
+                                {quiz.totalScore} {t('instructor.quizzes.points')}
                             </Tag>
                         </Descriptions.Item>
 
-                        <Descriptions.Item label="Pass Criteria" span={2}>
+                        <Descriptions.Item label={t('instructor.quizzes.passCriteria')} span={2}>
                             <Tag color="green" className="text-base px-3 py-1">
-                                {quiz.passScoreCriteria} points
+                                {quiz.passScoreCriteria} {t('instructor.quizzes.points')}
                             </Tag>
                         </Descriptions.Item>
 
-                        <Descriptions.Item label="Time Limit">
+                        <Descriptions.Item label={t('instructor.quizzes.timeLimit')}>
                             <Tag color="orange" className="text-base px-3 py-1">
-                                {quiz.timelimitMinute} minutes
+                                {quiz.timelimitMinute} {t('instructor.quizzes.minutes')}
                             </Tag>
                         </Descriptions.Item>
 
 
-                        <Descriptions.Item label="Description" span={2}>
+                        <Descriptions.Item label={t('instructor.quizzes.form.description')} span={2}>
                             <div className="text-gray-700 whitespace-pre-wrap">{quiz.description}</div>
                         </Descriptions.Item>
 

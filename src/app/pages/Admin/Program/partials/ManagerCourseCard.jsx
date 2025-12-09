@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { fetchCourseDetail } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
 import { fetchClassesByProgramCourse } from "../../../../apis/ProgramManager/ClassApi";
 import { Card, Spin, Tag, Alert, Button } from "antd";
@@ -7,6 +8,7 @@ import PMClassCard from "../../../Admin/Class/partials/PMClassCard";
 import AddClassForm from "../../../Admin/Class/partials/AddClassForm";
 
 const ManagerCourseCard = ({ courseId, order, programCourseId }) => {
+  const { t } = useTranslation();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -78,14 +80,14 @@ const ManagerCourseCard = ({ courseId, order, programCourseId }) => {
             size="small"
             icon={showClasses ? <UpOutlined /> : <DownOutlined />}
             onClick={() => setShowClasses((v) => !v)}
-            title={showClasses ? "Hide classes" : "Show classes"}
+            title={showClasses ? t('admin.courses.hideClasses') : t('admin.courses.showClasses')}
           />
           <Button
             type="text"
             size="small"
             icon={<PlusOutlined />}
             onClick={() => setAddOpen(true)}
-            title="Add class"
+            title={t('admin.classes.addClass')}
           />
         </div>
       }
@@ -106,7 +108,7 @@ const ManagerCourseCard = ({ courseId, order, programCourseId }) => {
             <Tag color="blue" size="small">{course.categoryName}</Tag>
             <Tag color="purple" size="small">{course.levelName}</Tag>
             <Tag color={course.isActive ? "green" : "red"} size="small">
-              {course.isActive ? "Active" : "Inactive"}
+              {course.isActive ? t('common.active') : t('common.inactive')}
             </Tag>
           </div>
           
@@ -117,9 +119,9 @@ const ManagerCourseCard = ({ courseId, order, programCourseId }) => {
           )}
           
           <div className="flex flex-wrap gap-4 text-xs text-gray-500">
-            <span><span className="font-medium">Duration:</span> {course.durationHours}h</span>
-            <span><span className="font-medium">Price:</span> ${course.price}</span>
-            <span><span className="font-medium">Code:</span> {course.courseCodeName}</span>
+            <span><span className="font-medium">{t('common.duration')}:</span> {course.durationHours}h</span>
+            <span><span className="font-medium">{t('common.price')}:</span> ${course.price}</span>
+            <span><span className="font-medium">{t('admin.courses.code')}:</span> {course.courseCodeName}</span>
           </div>
         </div>
       </div>
@@ -127,7 +129,7 @@ const ManagerCourseCard = ({ courseId, order, programCourseId }) => {
       {showClasses && (
         <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-medium text-sm text-gray-700">Classes ({classes.length})</h4>
+            <h4 className="font-medium text-sm text-gray-700">{t('admin.classes.title')} ({classes.length})</h4>
           </div>
           {loadingClasses ? (
             <div className="flex justify-center py-4">
@@ -135,7 +137,7 @@ const ManagerCourseCard = ({ courseId, order, programCourseId }) => {
             </div>
           ) : classes.length === 0 ? (
             <div className="text-center py-4 text-gray-500 text-sm">
-              No classes for this course.
+              {t('admin.classes.noClassesForCourse')}
             </div>
           ) : (
             <div className="space-y-2 max-h-64 overflow-y-auto">

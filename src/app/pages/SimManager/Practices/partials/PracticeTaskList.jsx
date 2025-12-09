@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Card, Button, Modal, Form, Input, App, Empty, Spin } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { 
   getTasksByPracticeId
 } from '../../../../apis/SimulationManager/SimulationManagerPracticeApi';
@@ -12,7 +13,7 @@ import { getAuthToken } from '../../../../libs/cookies';
 import AssignTaskModal from './AssignTaskModal';
 
 // --- Update Task Form Component ---
-const UpdateTaskForm = ({ initialValues, onUpdate, onCancel, visible, loading }) => {
+const UpdateTaskForm = ({ initialValues, onUpdate, onCancel, visible, loading, t }) => {
   const [form] = Form.useForm();
   
   useEffect(() => {
@@ -25,15 +26,15 @@ const UpdateTaskForm = ({ initialValues, onUpdate, onCancel, visible, loading })
 
   return (
     <Modal
-      title={`Update Task: ${initialValues?.taskName || ''}`}
+      title={t('simManager.practiceTaskList.updateTaskTitle', { name: initialValues?.taskName || '' })}
       open={visible}
       onCancel={onCancel}
       footer={[
         <Button key="back" onClick={onCancel}>
-          Cancel
+          {t('common.cancel')}
         </Button>,
         <Button key="submit" type="primary" loading={loading} onClick={() => form.submit()}>
-          Update Task
+          {t('simManager.practiceTaskList.updateTask')}
         </Button>,
       ]}
     >
@@ -45,30 +46,30 @@ const UpdateTaskForm = ({ initialValues, onUpdate, onCancel, visible, loading })
       >
         <Form.Item
           name="taskName"
-          label="Task Name"
-          rules={[{ required: true, message: 'Task name is required.' }]}
+          label={t('simManager.practiceTaskList.taskName')}
+          rules={[{ required: true, message: t('simManager.practiceTaskList.taskNameRequired') }]}
         >
-          <Input placeholder="Task Name" maxLength={200} />
+          <Input placeholder={t('simManager.practiceTaskList.taskNamePlaceholder')} maxLength={200} />
         </Form.Item>
         <Form.Item
           name="taskCode"
-          label="Task Code"
+          label={t('simManager.practiceTaskList.taskCode')}
         >
-          <Input placeholder="Task Code" maxLength={50} />
+          <Input placeholder={t('simManager.practiceTaskList.taskCodePlaceholder')} maxLength={50} />
         </Form.Item>
         <Form.Item
           name="taskDescription"
-          label="Task Description"
-          rules={[{ required: true, message: 'Task description is required.' }]}
+          label={t('simManager.practiceTaskList.taskDescription')}
+          rules={[{ required: true, message: t('simManager.practiceTaskList.taskDescriptionRequired') }]}
         >
-          <Input.TextArea rows={3} placeholder="Task Description" maxLength={1000} />
+          <Input.TextArea rows={3} placeholder={t('simManager.practiceTaskList.taskDescriptionPlaceholder')} maxLength={1000} />
         </Form.Item>
         <Form.Item
           name="expectedResult"
-          label="Expected Result"
-          rules={[{ required: true, message: 'Expected result is required.' }]}
+          label={t('simManager.practiceTaskList.expectedResult')}
+          rules={[{ required: true, message: t('simManager.practiceTaskList.expectedResultRequired') }]}
         >
-          <Input.TextArea rows={3} placeholder="Expected Result" maxLength={1000} />
+          <Input.TextArea rows={3} placeholder={t('simManager.practiceTaskList.expectedResultPlaceholder')} maxLength={1000} />
         </Form.Item>
       </Form>
     </Modal>
@@ -77,6 +78,7 @@ const UpdateTaskForm = ({ initialValues, onUpdate, onCancel, visible, loading })
 
 // --- Main Component ---
 export default function PracticeTaskList({ practiceId }) {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -93,11 +95,11 @@ export default function PracticeTaskList({ practiceId }) {
       setTasks(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error fetching tasks:', err);
-      message.error('Failed to load tasks');
+      message.error(t('simManager.practiceTaskList.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [practiceId, token, message]);
+  }, [practiceId, token, message, t]);
 
   useEffect(() => {
     fetchTasks();
@@ -116,15 +118,15 @@ export default function PracticeTaskList({ practiceId }) {
     try {
       const updatedTaskResult = await updateTask(currentTaskToUpdate.id, values, token);
       
-      message.success('Task updated successfully');
+      message.success(t('simManager.practiceTaskList.updateSuccess'));
       setIsTaskUpdateModalVisible(false);
-      setTasks(tasks.map(t => 
-        t.id === currentTaskToUpdate.id ? { ...t, ...updatedTaskResult } : t
+      setTasks(tasks.map(task => 
+        task.id === currentTaskToUpdate.id ? { ...task, ...updatedTaskResult } : task
       ));
       setCurrentTaskToUpdate(null);
     } catch (e) {
       console.error('Error updating task:', e);
-      let errorMsg = 'Failed to update task';
+      let errorMsg = t('simManager.practiceTaskList.updateFailed');
       if (e.response?.data?.error?.details?.exceptionMessage) {
         errorMsg = e.response.data.error.details.exceptionMessage;
       } else if (e.response?.data?.error?.message) {
@@ -142,18 +144,18 @@ export default function PracticeTaskList({ practiceId }) {
 
   const handleRemoveTask = async (taskId) => {
     Modal.confirm({
-      title: 'Confirm Removal',
-      content: 'Are you sure you want to remove this task from the practice? This action only unlinks it from this practice.',
-      okText: 'Yes, Remove',
+      title: t('simManager.practiceTaskList.confirmRemoval'),
+      content: t('simManager.practiceTaskList.removeConfirmContent'),
+      okText: t('simManager.practiceTaskList.yesRemove'),
       okType: 'danger',
       onOk: async () => {
         try {
           await deleteTaskFromPractice(practiceId, taskId, token);
-          message.success('Task removed from practice successfully');
+          message.success(t('simManager.practiceTaskList.removeSuccess'));
           await fetchTasks();
         } catch (e) {
           console.error('Error removing task:', e);
-          let errorMsg = 'Failed to remove task from practice';
+          let errorMsg = t('simManager.practiceTaskList.removeFailed');
           if (e.response?.data?.error?.details?.exceptionMessage) {
             errorMsg = e.response.data.error.details.exceptionMessage;
           } else if (e.response?.data?.error?.message) {
@@ -172,7 +174,7 @@ export default function PracticeTaskList({ practiceId }) {
   // --- Render ---
   if (loading) {
     return (
-      <Card title="Practice Tasks" className="shadow">
+      <Card title={t('simManager.practiceTaskList.title')} className="shadow">
         <div className="flex justify-center py-8">
           <Spin size="large" />
         </div>
@@ -192,6 +194,7 @@ export default function PracticeTaskList({ practiceId }) {
           }}
           onUpdate={handleUpdateTask}
           loading={updateLoading}
+          t={t}
           initialValues={{
             taskName: currentTaskToUpdate.taskName,
             taskCode: currentTaskToUpdate.taskCode,
@@ -203,18 +206,18 @@ export default function PracticeTaskList({ practiceId }) {
 
       {/* Tasks Card */}
       <Card 
-        title={`Practice Tasks (${tasks.length})`}
+        title={t('simManager.practiceTaskList.titleWithCount', { count: tasks.length })}
         className="shadow"
         extra={
           <AssignTaskModal 
             practiceId={practiceId} 
-            assignedTaskIds={tasks.map(t => t.id)} 
+            assignedTaskIds={tasks.map(task => task.id)} 
             onAssigned={fetchTasks} 
           />
         }
       >
         {tasks.length === 0 ? (
-          <Empty description="No tasks assigned" />
+          <Empty description={t('simManager.practiceTaskList.noTasksAssigned')} />
         ) : (
           <div className="max-h-[500px] overflow-y-auto pr-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min">
