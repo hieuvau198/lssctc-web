@@ -29,7 +29,7 @@ const mapMaterialFromActivity = (item) => ({
   learningMaterialId: item.learningMaterialId,
   name: item.name,
   description: item.description,
-  learningMaterialType: item.learningMaterialType, // "Document" hoặc "Video"
+  learningMaterialType: item.learningMaterialType, // Updated to use string type
   materialUrl: item.materialUrl,
 });
 
