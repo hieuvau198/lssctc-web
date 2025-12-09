@@ -19,7 +19,7 @@ export async function getMyPartialDetail(partialId) {
  * @returns {Promise<Object>}
  */
 export async function startTheoryExam(partialId, payload) {
-  const response = await apiClient.post(`/FinalExams/partial/${partialId}/start-te`, payload);
+  const response = await apiClient.post(`/FinalExams/partial/${partialId}/start-te`, payload, { skipAuthRedirect: true });
   return response.data;
 }
 
@@ -31,7 +31,7 @@ export async function startTheoryExam(partialId, payload) {
  * @returns {Promise<Object>}
  */
 export async function startSimulationExam(partialId, payload) {
-  const response = await apiClient.post(`/FinalExams/partial/${partialId}/start-se`, payload);
+  const response = await apiClient.post(`/FinalExams/partial/${partialId}/start-se`, payload, { skipAuthRedirect: true });
   return response.data;
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Radio, Space, Alert, Button } from 'antd';
+import { Card, Radio, Checkbox, Space, Alert, Button } from 'antd';
 import { LeftOutlined, RightOutlined, CheckOutlined } from '@ant-design/icons';
 
 export default function QuestionCard({ question, value, onChange, onPrevious, onNext, isFirst, isLast, onSubmitClick, timeWarning, onSaveAnswers, saveLoading = false }) {
@@ -17,21 +17,42 @@ export default function QuestionCard({ question, value, onChange, onPrevious, on
           <Alert message="Còn dưới 5 phút!" type="warning" showIcon className="mb-6 border-l-4 border-orange-400" />
         )}
 
-        <Radio.Group value={value} onChange={(e) => onChange(question.id, e.target.value)} className="w-full">
-          <Space direction="vertical" className="w-full" size="large">
-            {question.options.map((option, idx) => (
-              <Radio
-                key={option.id}
-                value={option.id}
-                className="w-full p-5 shadow-sm hover:shadow-md"
-                size="large"
-              >
-                <span className="font-bold text-blue-600 mr-3 text-base">{String.fromCharCode(65 + idx)}.</span>
-                <span className="text-slate-700">{option.text || option.name}</span>
-              </Radio>
-            ))}
-          </Space>
-        </Radio.Group>
+        {question.isMultipleAnswers ? (
+          <Checkbox.Group
+            value={value || []}
+            onChange={(checkedValues) => onChange(question.id, checkedValues)}
+            className="w-full"
+          >
+            <Space direction="vertical" className="w-full" size="large">
+              {question.options.map((option, idx) => (
+                <Checkbox
+                  key={option.id}
+                  value={option.id}
+                  className="w-full p-5 shadow-sm hover:shadow-md rounded-lg border border-slate-100"
+                >
+                  <span className="font-bold text-blue-600 mr-3 text-base">{String.fromCharCode(65 + idx)}.</span>
+                  <span className="text-slate-700">{option.text || option.name}</span>
+                </Checkbox>
+              ))}
+            </Space>
+          </Checkbox.Group>
+        ) : (
+          <Radio.Group value={value} onChange={(e) => onChange(question.id, e.target.value)} className="w-full">
+            <Space direction="vertical" className="w-full" size="large">
+              {question.options.map((option, idx) => (
+                <Radio
+                  key={option.id}
+                  value={option.id}
+                  className="w-full p-5 shadow-sm hover:shadow-md rounded-lg border border-slate-100"
+                  size="large"
+                >
+                  <span className="font-bold text-blue-600 mr-3 text-base">{String.fromCharCode(65 + idx)}.</span>
+                  <span className="text-slate-700">{option.text || option.name}</span>
+                </Radio>
+              ))}
+            </Space>
+          </Radio.Group>
+        )}
       </div>
 
       <div className="flex items-center justify-between pt-6 border-t-2 border-blue-100">

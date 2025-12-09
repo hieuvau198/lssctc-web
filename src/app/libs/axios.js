@@ -34,10 +34,10 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error?.response?.status;
-    if (status === 401) {
+    if (status === 401 && !error.config?.skipAuthRedirect) {
       try {
         removeAuthToken();
-      } catch (err) {}
+      } catch (err) { }
       if (typeof window !== 'undefined') {
         // ensure full reload to clear state
         window.location.replace('/auth/login');
