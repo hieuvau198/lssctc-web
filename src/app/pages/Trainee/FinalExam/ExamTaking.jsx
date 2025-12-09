@@ -32,6 +32,26 @@ export default function ExamTaking() {
     })();
     const [examData, setExamData] = useState(persisted);
 
+    const [questions, setQuestions] = useState(() => {
+        if (location.state?.sessionData?.questions) {
+            return location.state.sessionData.questions;
+        }
+        const key = id ? `finalExam_${id}_questions` : null;
+        if (key) {
+            try {
+                const stored = sessionStorage.getItem(key);
+                if (stored) return JSON.parse(stored);
+            } catch (e) { }
+        }
+        return mockExamQuestions;
+    });
+
+    useEffect(() => {
+        if (id && questions && questions.length > 0) {
+            sessionStorage.setItem(`finalExam_${id}_questions`, JSON.stringify(questions));
+        }
+    }, [questions, id]);
+
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState({});
     const answersRef = useRef(answers);
@@ -97,7 +117,7 @@ export default function ExamTaking() {
 
     const clearAnswersStorage = () => {
         if (!answersKey) return;
-        try { localStorage.removeItem(answersKey); } catch (e) {}
+        try { localStorage.removeItem(answersKey); } catch (e) { }
     };
 
     // Redirect if no exam data
@@ -110,7 +130,7 @@ export default function ExamTaking() {
         try {
             const key = id ? `finalExam_${id}_data` : null;
             if (key) sessionStorage.setItem(key, JSON.stringify(examData));
-        } catch (e) {}
+        } catch (e) { }
     }, [examData, navigate, id]);
 
     // Restore answers from localStorage when examData is ready
@@ -170,10 +190,10 @@ export default function ExamTaking() {
         } catch (e) {
             console.error('Failed to init exam timer', e);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [examData, id]);
 
-    const currentQuestion = mockExamQuestions[currentQuestionIndex];
+    const currentQuestion = questions[currentQuestionIndex];
 
     const handleAnswerChange = (questionId, answerId) => {
         setAnswers((prev) => {
@@ -206,7 +226,7 @@ export default function ExamTaking() {
     };
 
     const handleNext = () => {
-        if (currentQuestionIndex < mockExamQuestions.length - 1) {
+        if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex((prev) => prev + 1);
         }
     };
@@ -238,7 +258,7 @@ export default function ExamTaking() {
                 sessionStorage.removeItem(`finalExam_${id}_data`);
                 clearAnswersStorage();
             }
-        } catch (e) {}
+        } catch (e) { }
         // navigate to result with zero score and a flag
         navigate(`/final-exam/${id}/result`, {
             state: {
@@ -246,7 +266,7 @@ export default function ExamTaking() {
                 answers,
                 score: 0,
                 correctCount: 0,
-                totalQuestions: mockExamQuestions.length,
+                totalQuestions: questions.length,
                 cancelledDueToLeave: true,
             },
         });
@@ -255,13 +275,13 @@ export default function ExamTaking() {
     const handleFinalSubmit = () => {
         // Calculate score
         let correctCount = 0;
-        mockExamQuestions.forEach((q) => {
+        questions.forEach((q) => {
             if (answers[q.id] === q.correctAnswer) {
                 correctCount++;
             }
         });
 
-        const score = Math.round((correctCount / mockExamQuestions.length) * 100);
+        const score = Math.round((correctCount / questions.length) * 100);
 
         try {
             if (id) {
@@ -269,7 +289,7 @@ export default function ExamTaking() {
                 sessionStorage.removeItem(`finalExam_${id}_data`);
                 clearAnswersStorage();
             }
-        } catch (e) {}
+        } catch (e) { }
         // Navigate to result page
         navigate(`/final-exam/${id}/result`, {
             state: {
@@ -277,7 +297,7 @@ export default function ExamTaking() {
                 answers,
                 score,
                 correctCount,
-                totalQuestions: mockExamQuestions.length,
+                totalQuestions: questions.length,
             },
         });
     };
@@ -288,7 +308,7 @@ export default function ExamTaking() {
     const overlayBtnRef = useRef(null);
     useEffect(() => {
         if (overlay.visible && overlayBtnRef.current) {
-            try { overlayBtnRef.current.focus(); } catch (e) {}
+            try { overlayBtnRef.current.focus(); } catch (e) { }
         }
     }, [overlay.visible]);
 
@@ -321,7 +341,7 @@ export default function ExamTaking() {
                 console.warn('[Exam] return after away:', { awayDuration, violation: currentViolation });
                 if (!modalOpenRef.current) {
                     modalOpenRef.current = true;
-                    try { window.focus(); } catch (e) {}
+                    try { window.focus(); } catch (e) { }
                     Modal.confirm({
                         title: t('exam.leaveWarningTitle', 'Cảnh báo'),
                         content: msg,
@@ -345,7 +365,7 @@ export default function ExamTaking() {
                 console.error('[Exam] final violation, will cancel on confirm', { awayDuration, violation: currentViolation });
                 if (!modalOpenRef.current) {
                     modalOpenRef.current = true;
-                    try { window.focus(); } catch (e) {}
+                    try { window.focus(); } catch (e) { }
                     Modal.confirm({
                         title: t('exam.leaveWarningFinalTitle', 'Bài thi bị hủy'),
                         content: msg,
@@ -420,7 +440,7 @@ export default function ExamTaking() {
                 setOverlay({ visible: true, type: 'warning', msg: firstMsg });
                 if (!modalOpenRef.current) {
                     modalOpenRef.current = true;
-                    try { window.focus(); } catch (e) {}
+                    try { window.focus(); } catch (e) { }
                     Modal.confirm({
                         title: t('exam.leaveWarningTitle', 'Cảnh báo'),
                         content: firstMsg,
@@ -438,7 +458,7 @@ export default function ExamTaking() {
                 setOverlay({ visible: true, type: 'final', msg: finalMsg });
                 if (!modalOpenRef.current) {
                     modalOpenRef.current = true;
-                    try { window.focus(); } catch (e) {}
+                    try { window.focus(); } catch (e) { }
                     Modal.confirm({
                         title: t('exam.leaveWarningFinalTitle', 'Bài thi bị hủy'),
                         content: finalMsg,
@@ -459,20 +479,20 @@ export default function ExamTaking() {
         const onKeyDown = (e) => {
             // PrintScreen key (Windows) often has key === 'PrintScreen' or keyCode 44
             if (e.key === 'PrintScreen' || e.keyCode === 44) {
-                try { e.preventDefault(); e.stopPropagation(); } catch (err) {}
+                try { e.preventDefault(); e.stopPropagation(); } catch (err) { }
                 handleScreenshotAttempt('PrintScreen');
                 return;
             }
             // Windows Snip (Win+Shift+S) - try to detect and block
             // On Windows the Windows key is exposed as metaKey in many browsers
             if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key && e.key.toLowerCase() === 's')) {
-                try { e.preventDefault(); e.stopPropagation(); } catch (err) {}
+                try { e.preventDefault(); e.stopPropagation(); } catch (err) { }
                 handleScreenshotAttempt('win-shift-s');
                 return;
             }
             // macOS screenshot shortcuts: Cmd/Ctrl + Shift + 3/4
             if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === '3' || e.key === '4')) {
-                try { e.preventDefault(); e.stopPropagation(); } catch (err) {}
+                try { e.preventDefault(); e.stopPropagation(); } catch (err) { }
                 handleScreenshotAttempt('mac-shortcut');
                 return;
             }
@@ -509,8 +529,8 @@ export default function ExamTaking() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
             {overlay.visible && (
                 <div className="fixed inset-0 z-[200100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className={`w-full max-w-2xl mx-4 bg-white rounded-xl shadow-2xl p-8 border border-blue-100`}> 
-                        <h3 className="text-xl font-bold mb-4 text-slate-800">{overlay.type === 'final' ? t('exam.leaveWarningFinalTitle','Bài thi bị hủy') : t('exam.leaveWarningTitle','Cảnh báo')}</h3>
+                    <div className={`w-full max-w-2xl mx-4 bg-white rounded-xl shadow-2xl p-8 border border-blue-100`}>
+                        <h3 className="text-xl font-bold mb-4 text-slate-800">{overlay.type === 'final' ? t('exam.leaveWarningFinalTitle', 'Bài thi bị hủy') : t('exam.leaveWarningTitle', 'Cảnh báo')}</h3>
                         <div className="mb-6 text-slate-600 leading-relaxed">{overlay.msg}</div>
                         <div className="flex justify-end">
                             <button
@@ -523,13 +543,13 @@ export default function ExamTaking() {
                                     }
                                 }}
                             >
-                                {t('common.ok','OK')}
+                                {t('common.ok', 'OK')}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
-            <HeaderTimer name={examData.name} current={currentQuestionIndex + 1} total={mockExamQuestions.length} answeredCount={answeredCount} timeRemaining={timeRemaining} />
+            <HeaderTimer name={examData.name} current={currentQuestionIndex + 1} total={questions.length} answeredCount={answeredCount} timeRemaining={timeRemaining} />
 
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -541,7 +561,7 @@ export default function ExamTaking() {
                             onPrevious={handlePrevious}
                             onNext={handleNext}
                             isFirst={currentQuestionIndex === 0}
-                            isLast={currentQuestionIndex === mockExamQuestions.length - 1}
+                            isLast={currentQuestionIndex === questions.length - 1}
                             onSubmitClick={handleSubmitClick}
                             onSaveAnswers={handleManualSave}
                             saveLoading={saveLoading}
@@ -550,12 +570,12 @@ export default function ExamTaking() {
                     </div>
 
                     <div className="lg:col-span-1">
-                        <QuestionSidebar questions={mockExamQuestions} currentIndex={currentQuestionIndex} answers={answers} onSelect={handleQuestionSelect} />
+                        <QuestionSidebar questions={questions} currentIndex={currentQuestionIndex} answers={answers} onSelect={handleQuestionSelect} />
                     </div>
                 </div>
             </div>
 
-            <SubmitModal open={showSubmitModal} onOk={() => { setShowSubmitModal(false); handleFinalSubmit(); }} onCancel={() => setShowSubmitModal(false)} total={mockExamQuestions.length} answeredCount={answeredCount} />
+            <SubmitModal open={showSubmitModal} onOk={() => { setShowSubmitModal(false); handleFinalSubmit(); }} onCancel={() => setShowSubmitModal(false)} total={questions.length} answeredCount={answeredCount} />
         </div>
     );
 }
