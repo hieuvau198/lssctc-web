@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { PlusOutlined, EditOutlined, ReloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import InstructorFEApi from '../../../../apis/Instructor/InstructorFEApi';
-import InstructorQuizApi from '../../../../apis/Instructor/InstructorQuiz'; // Assuming this exists
+import InstructorQuizApi from '../../../../apis/Instructor/InstructorQuiz';
 
 export default function TEExam({ classId }) {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
-  const [configs, setConfigs] = useState([]); // List of Configs (usually 1 for TE)
+  const [configs, setConfigs] = useState([]); 
   
   // Modal States
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -42,8 +42,8 @@ export default function TEExam({ classId }) {
   // Load Quizzes for Dropdown
   const fetchQuizzes = async () => {
     try {
-      const res = await InstructorQuizApi.getAllQuizzes(); // Adjust based on actual Quiz API
-      setQuizzes(res.data?.result || res.data || []);
+      const res = await InstructorQuizApi.getQuizzes({ pageSize: 100 }); 
+      setQuizzes(res.items || []);
     } catch (error) {
       console.error(error);
     }
@@ -176,23 +176,29 @@ export default function TEExam({ classId }) {
     { 
       title: 'Exam Code', 
       dataIndex: 'examCode',
-      render: (code, record) => (
-        <div className="flex items-center gap-2">
-           <span className="font-mono font-bold text-blue-600">{code || 'Not generated'}</span>
-           {!code && (
-             <Button size="small" icon={<ReloadOutlined />} onClick={() => onGenerateCode(record.id)}>
-               Gen
-             </Button>
-           )}
-        </div>
-      )
+      render: (code, record) => {
+        const partial = record.partials?.find(p => p.type === 'Theory');
+        // Only show code logic if TE exists for student
+        if (!partial) return '-'; 
+        
+        return (
+          <div className="flex items-center gap-2">
+             <span className="font-mono font-bold text-blue-600">{record.examCode || 'Not generated'}</span>
+             {!record.examCode && (
+               <Button size="small" icon={<ReloadOutlined />} onClick={() => onGenerateCode(record.id)}>
+                 Gen
+               </Button>
+             )}
+          </div>
+        );
+      }
     },
     { 
       title: 'Score', 
       key: 'score',
       render: (_, record) => {
         const partial = record.partials?.find(p => p.type === 'Theory');
-        return partial?.marks !== null ? partial.marks : '-';
+        return partial?.marks !== null && partial?.marks !== undefined ? partial.marks : '-';
       }
     },
     {
@@ -236,7 +242,7 @@ export default function TEExam({ classId }) {
         <Form form={form} layout="vertical">
            <Form.Item name="quizId" label="Select Quiz" rules={[{ required: true }]}>
              <Select 
-                options={quizzes.map(q => ({ label: q.title, value: q.id }))} 
+                options={quizzes.map(q => ({ label: q.name, value: q.id }))} 
                 placeholder="Choose a quiz"
              />
            </Form.Item>
