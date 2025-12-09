@@ -1,240 +1,271 @@
-import { Card, Table, Button, Tag, Space, Modal, Form, Input, InputNumber, App } from 'antd';
-import { useState, useEffect } from 'react';
+import { Table, Button, Tag, Space, Modal, Form, InputNumber, App, DatePicker, Select } from 'antd';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { useFinalExams } from '../../../../hooks/instructor/useFinalExams';
+import { PlusOutlined, EditOutlined, ReloadOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import InstructorFEApi from '../../../../apis/Instructor/InstructorFEApi';
+import InstructorQuizApi from '../../../../apis/Instructor/InstructorQuiz'; // Assuming this exists
 
 export default function TEExam({ classId }) {
   const { t } = useTranslation();
   const { message } = App.useApp();
-  const { exams, loading, createExam, updateExam, deleteExam, loadExams } = useFinalExams(classId);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingRecord, setEditingRecord] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [configs, setConfigs] = useState([]); // List of Configs (usually 1 for TE)
+  
+  // Modal States
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedConfig, setSelectedConfig] = useState(null);
+  const [studentExams, setStudentExams] = useState([]);
+  
+  // Data for Selects
+  const [quizzes, setQuizzes] = useState([]);
+
   const [form] = Form.useForm();
 
-  // Filter only TE (Theory Exam) type exams
-  const teExams = exams.filter(exam => exam.type === 'TE' || exam.name?.includes('Theory'));
+  // Load Class Config (The "Exams" list)
+  const fetchConfig = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await InstructorFEApi.getClassConfig(classId);
+      // Filter for Theory type
+      const teConfigs = response.data?.partialConfigs?.filter(c => c.type === 'Theory') || [];
+      setConfigs(teConfigs);
+    } catch (error) {
+      console.error(error);
+      message.error('Failed to load exam configurations');
+    } finally {
+      setLoading(false);
+    }
+  }, [classId, message]);
 
+  // Load Quizzes for Dropdown
+  const fetchQuizzes = async () => {
+    try {
+      const res = await InstructorQuizApi.getAllQuizzes(); // Adjust based on actual Quiz API
+      setQuizzes(res.data?.result || res.data || []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (classId) {
+      fetchConfig();
+      fetchQuizzes();
+    }
+  }, [classId, fetchConfig]);
+
+  // Handle View (Load Student List with Codes)
+  const handleView = async (config) => {
+    setSelectedConfig(config);
+    setViewModalOpen(true);
+    setLoading(true);
+    try {
+      const res = await InstructorFEApi.getByClass(classId);
+      setStudentExams(res.data || []);
+    } catch (error) {
+      message.error('Failed to load student exams');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreate = () => {
+    setSelectedConfig(null);
+    form.resetFields();
+    setCreateModalOpen(true);
+  };
+
+  const handleEdit = (record) => {
+    setSelectedConfig(record);
+    form.setFieldsValue({
+      ...record,
+      quizId: record.quizId,
+      timeRange: [
+        record.startTime ? dayjs(record.startTime) : null,
+        record.endTime ? dayjs(record.endTime) : null
+      ]
+    });
+    setCreateModalOpen(true);
+  };
+
+  const onGenerateCode = async (examId) => {
+    try {
+      const res = await InstructorFEApi.generateCode(examId);
+      message.success('Code generated: ' + res.data.examCode);
+      // Refresh student list
+      const updatedRes = await InstructorFEApi.getByClass(classId);
+      setStudentExams(updatedRes.data || []);
+    } catch (err) {
+      message.error('Failed to generate code');
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      const payload = {
+        classId: parseInt(classId),
+        type: 'Theory',
+        examWeight: values.examWeight,
+        duration: values.duration,
+        quizId: values.quizId,
+        startTime: values.timeRange?.[0]?.toISOString(),
+        endTime: values.timeRange?.[1]?.toISOString(),
+      };
+
+      if (selectedConfig) {
+         // Update Config
+         await InstructorFEApi.updateClassPartialConfig(payload);
+         message.success(t('instructor.finalExam.updateSuccess'));
+      } else {
+         // Create New
+         await InstructorFEApi.createClassPartial(payload);
+         message.success(t('instructor.finalExam.createSuccess'));
+      }
+      
+      setCreateModalOpen(false);
+      fetchConfig();
+    } catch (err) {
+      message.error(err.response?.data?.message || 'Operation failed');
+    }
+  };
+
+  // Main Table Columns (Config)
   const columns = [
     {
       title: t('instructor.finalExam.examName'),
-      dataIndex: 'name',
       key: 'name',
-      width: 250,
-    },
-    {
-      title: t('instructor.finalExam.totalQuestions'),
-      dataIndex: 'totalQuestions',
-      key: 'totalQuestions',
-      width: 150,
-      align: 'center',
+      render: (_, record) => (
+        <a onClick={() => handleView(record)} className="font-medium text-blue-600 hover:underline">
+          {record.quizName || 'Theory Exam'}
+        </a>
+      ),
     },
     {
       title: t('instructor.finalExam.duration'),
       dataIndex: 'duration',
-      key: 'duration',
-      width: 100,
       align: 'center',
-      render: (val) => `${val} ${t('common.minutes')}`,
+      render: (val) => val ? `${val} min` : '-',
     },
     {
-      title: t('instructor.finalExam.passingScore'),
-      dataIndex: 'passingScore',
-      key: 'passingScore',
-      width: 150,
+      title: 'Weight (%)',
+      dataIndex: 'examWeight',
       align: 'center',
     },
     {
-      title: t('common.status'),
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      render: (status) => (
-        <Tag color={status === 'Active' ? 'green' : 'default'}>
-          {status === 'Active' ? t('common.active') : t('common.inactive')}
-        </Tag>
-      ),
+      title: 'Start Time',
+      dataIndex: 'startTime',
+      render: (val) => val ? dayjs(val).format('YYYY-MM-DD HH:mm') : '-',
     },
     {
       title: t('common.actions'),
       key: 'actions',
-      width: 180,
-      fixed: 'right',
+      width: 100,
       render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="link"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => handleView(record)}
-          >
-            {t('common.view')}
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
-            {t('common.edit')}
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record)}
-          >
-            {t('common.delete')}
-          </Button>
-        </Space>
+        <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
       ),
     },
   ];
 
-  const handleCreate = () => {
-    setEditingRecord(null);
-    form.resetFields();
-    setModalOpen(true);
-  };
-
-  const handleEdit = (record) => {
-    setEditingRecord(record);
-    form.setFieldsValue(record);
-    setModalOpen(true);
-  };
-
-  const handleView = (record) => {
-    message.info(t('instructor.finalExam.viewExam'));
-  };
-
-  const handleDelete = (record) => {
-    Modal.confirm({
-      title: t('instructor.finalExam.deleteConfirm'),
-      content: t('instructor.finalExam.deleteConfirmDesc'),
-      okText: t('common.confirm'),
-      cancelText: t('common.cancel'),
-      okButtonProps: { danger: true },
-      onOk: async () => {
-        try {
-          await deleteExam(record.id);
-          message.success(t('instructor.finalExam.deleteSuccess'));
-        } catch (err) {
-          message.error(err.message || 'Failed to delete exam');
-        }
-      },
-    });
-  };
-
-  const handleModalOk = async () => {
-    try {
-      const values = await form.validateFields();
-      setSubmitting(true);
-
-      // Prepare payload with required fields
-      const payload = {
-        ...values,
-        type: 'TE', // Theory Exam type
-        classId: classId,
-        status: values.status || 'Active',
-      };
-
-      if (editingRecord) {
-        // Update existing exam
-        await updateExam(editingRecord.id, payload);
-        message.success(t('instructor.finalExam.updateSuccess'));
-      } else {
-        // Create new exam
-        await createExam(payload);
-        message.success(t('instructor.finalExam.createSuccess'));
+  // Student Detail Table Columns
+  const studentColumns = [
+    { title: 'Trainee', dataIndex: 'traineeName' },
+    { title: 'Trainee Code', dataIndex: 'traineeCode' },
+    { 
+      title: 'Exam Code', 
+      dataIndex: 'examCode',
+      render: (code, record) => (
+        <div className="flex items-center gap-2">
+           <span className="font-mono font-bold text-blue-600">{code || 'Not generated'}</span>
+           {!code && (
+             <Button size="small" icon={<ReloadOutlined />} onClick={() => onGenerateCode(record.id)}>
+               Gen
+             </Button>
+           )}
+        </div>
+      )
+    },
+    { 
+      title: 'Score', 
+      key: 'score',
+      render: (_, record) => {
+        const partial = record.partials?.find(p => p.type === 'Theory');
+        return partial?.marks !== null ? partial.marks : '-';
       }
-      
-      setModalOpen(false);
-      form.resetFields();
-    } catch (err) {
-      console.error('Failed to save exam:', err);
-      message.error(err.message || 'Failed to save exam');
-    } finally {
-      setSubmitting(false);
+    },
+    {
+      title: 'Status',
+      key: 'status',
+      render: (_, record) => {
+         const partial = record.partials?.find(p => p.type === 'Theory');
+         return <Tag>{partial?.status || 'Pending'}</Tag>;
+      }
     }
-  };
+  ];
 
   return (
     <div className="py-4">
       <div className="mb-4 flex justify-between items-center">
         <div>
-          <span className="text-lg font-semibold text-slate-800">
-            {t('instructor.finalExam.teTitle')}
-          </span>
-          <p className="text-sm text-slate-500">{t('instructor.finalExam.teDescription')}</p>
+          <span className="text-lg font-semibold text-slate-800">{t('instructor.finalExam.teTitle')}</span>
         </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-          {t('instructor.finalExam.createExam')}
-        </Button>
+        {configs.length === 0 && (
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
+            {t('instructor.finalExam.createExam')}
+            </Button>
+        )}
       </div>
 
       <Table
         columns={columns}
-        dataSource={teExams}
-        rowKey="id"
+        dataSource={configs}
+        rowKey={(r) => r.type}
         loading={loading}
         pagination={false}
-        locale={{ emptyText: t('instructor.finalExam.noExams') }}
-        scroll={{ y: 400 }}
       />
 
+      {/* Create/Edit Modal */}
       <Modal
-        title={
-          editingRecord
-            ? t('instructor.finalExam.editExam')
-            : t('instructor.finalExam.createExam')
-        }
-        open={modalOpen}
-        onOk={handleModalOk}
-        onCancel={() => {
-          setModalOpen(false);
-          form.resetFields();
-          setEditingRecord(null);
-        }}
-        confirmLoading={submitting}
-        width={600}
-        okText={t('common.save')}
-        cancelText={t('common.cancel')}
+        title={selectedConfig ? "Update Configuration" : "Create Theory Exam"}
+        open={createModalOpen}
+        onOk={handleSave}
+        onCancel={() => setCreateModalOpen(false)}
       >
-        <Form form={form} layout="vertical" className="mt-4">
-          <Form.Item
-            name="name"
-            label={t('instructor.finalExam.examName')}
-            rules={[{ required: true, message: t('instructor.finalExam.examNameRequired') }]}
-          >
-            <Input placeholder={t('instructor.finalExam.examNamePlaceholder')} />
-          </Form.Item>
-
-          <Form.Item
-            name="totalQuestions"
-            label={t('instructor.finalExam.totalQuestions')}
-            rules={[{ required: true, message: t('instructor.finalExam.totalQuestionsRequired') }]}
-          >
-            <InputNumber min={1} max={100} className="w-full" />
-          </Form.Item>
-
-          <Form.Item
-            name="duration"
-            label={`${t('instructor.finalExam.duration')} (${t('common.minutes')})`}
-            rules={[{ required: true, message: t('instructor.finalExam.durationRequired') }]}
-          >
-            <InputNumber min={1} max={180} className="w-full" />
-          </Form.Item>
-
-          <Form.Item
-            name="passingScore"
-            label={t('instructor.finalExam.passingScore')}
-            rules={[{ required: true, message: t('instructor.finalExam.passingScoreRequired') }]}
-          >
-            <InputNumber min={0} max={10} step={0.5} className="w-full" />
-          </Form.Item>
+        <Form form={form} layout="vertical">
+           <Form.Item name="quizId" label="Select Quiz" rules={[{ required: true }]}>
+             <Select 
+                options={quizzes.map(q => ({ label: q.title, value: q.id }))} 
+                placeholder="Choose a quiz"
+             />
+           </Form.Item>
+           <Form.Item name="duration" label="Duration (minutes)" rules={[{ required: true }]}>
+             <InputNumber min={1} className="w-full" />
+           </Form.Item>
+           <Form.Item name="examWeight" label="Weight (%)" rules={[{ required: true }]}>
+             <InputNumber min={0} max={100} className="w-full" />
+           </Form.Item>
+           <Form.Item name="timeRange" label="Time Range">
+             <DatePicker.RangePicker showTime className="w-full" />
+           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* View Details Modal */}
+      <Modal
+        title="Student Exam Codes & Status"
+        open={viewModalOpen}
+        onCancel={() => setViewModalOpen(false)}
+        footer={null}
+        width={800}
+      >
+        <Table 
+            dataSource={studentExams} 
+            columns={studentColumns} 
+            rowKey="id"
+            loading={loading}
+        />
       </Modal>
     </div>
   );
