@@ -120,9 +120,12 @@ export default function TraineeTable() {
           current={page}
           pageSize={pageSize}
           total={traineeData?.totalCount || 0}
-          onChange={(p, s) => {
-            setPage(p);
-            setPageSize(s);
+          onChange={(p, ps) => {
+            if (ps !== pageSize) {
+              setPageSize(ps);
+            } else {
+              setPage(p);
+            }
           }}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
@@ -166,7 +169,6 @@ export default function TraineeTable() {
               <Descriptions.Item label={t('admin.users.table.phone')}>{viewingUser.phoneNumber || '-'}</Descriptions.Item>
               <Descriptions.Item label="Role">{viewingUser.role}</Descriptions.Item>
               <Descriptions.Item label="Username">{viewingUser.username}</Descriptions.Item>
-              {/* Specific field for Trainees if needed later */}
             </Descriptions>
           </div>
         ) : (

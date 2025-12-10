@@ -148,9 +148,12 @@ export default function InstructorTable() {
           current={page}
           pageSize={pageSize}
           total={instructorData?.totalCount || 0}
-          onChange={(p, s) => {
-            setPage(p);
-            setPageSize(s);
+          onChange={(p, ps) => {
+            if (ps !== pageSize) {
+              setPageSize(ps);
+            } else {
+              setPage(p);
+            }
           }}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
