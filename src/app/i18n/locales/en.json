@@ -2494,6 +2494,16 @@
         "courseCode": "Course Code",
         "courseCodeRequired": "Please enter course code",
         "courseCodePlaceholder": "Enter course code",
+        "nameMin": "Course name must be at least 3 characters",
+        "nameMax": "Course name must be between 3 and 200 characters",
+        "courseCodeMax": "Course code must not exceed 50 characters",
+        "categoryIdInvalid": "Category ID must be a positive number",
+        "levelIdInvalid": "Level ID must be a positive number",
+        "priceRange": "Price must be between 0 and 10,000,000",
+        "durationRange": "Duration must be between 1 and 500 hours",
+        "urlInvalid": "Image URL must be a valid URL",
+        "descriptionMax": "Description must not exceed 500 characters",
+        "validationFailed": "Validation failed",
         "preview": "Preview"
       },
       "filters": {
