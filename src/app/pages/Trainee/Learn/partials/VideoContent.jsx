@@ -2,8 +2,9 @@
 
 import React, { useState, useRef } from "react";
 import { useTranslation } from 'react-i18next';
-import { Button, Progress, Tag } from "antd";
-import { Play, CheckCircle2, Video, Clock } from "lucide-react";
+import { Button, Progress, Tag, Alert } from "antd"; // Import Alert
+import { Play, CheckCircle2, Video, Clock, AlertCircle } from "lucide-react";
+import dayjs from 'dayjs';
 
 // Helper to extract YouTube video ID from various URL formats
 const getYouTubeVideoId = (url) => {
@@ -30,6 +31,7 @@ export default function VideoContent({
   completed: initialCompleted = false,
   videoUrl,
   onMarkAsComplete,
+  sessionStatus // [NEW] Nhận prop sessionStatus
 }) {
   const { t } = useTranslation();
   const [completed, setCompleted] = useState(initialCompleted);
@@ -38,6 +40,9 @@ export default function VideoContent({
 
   const youtubeVideoId = getYouTubeVideoId(videoUrl);
   const isYouTube = isYouTubeUrl(videoUrl);
+  
+  // [NEW] Logic kiểm tra session
+  const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
 
   const handleTimeUpdate = () => {
     const video = videoRef.current;
@@ -46,8 +51,8 @@ export default function VideoContent({
     const percent = (video.currentTime / video.duration) * 100;
     setProgress(percent);
 
-    // Mark as completed if watched 95%+
-    if (percent >= 95 && !completed) {
+    // [UPDATED] Chỉ mark complete nếu session mở
+    if (percent >= 95 && !completed && isSessionOpen) {
       setCompleted(true);
       console.log('🎉 User watched the video completely');
       if (onMarkAsComplete) onMarkAsComplete();
@@ -55,21 +60,49 @@ export default function VideoContent({
   };
 
   const handleVideoEnd = () => {
-    setCompleted(true);
-    setProgress(100);
-    console.log("✅ Video ended – user watched it all");
-    if (onMarkAsComplete) onMarkAsComplete();
+    // [UPDATED]
+    if(isSessionOpen) {
+        setCompleted(true);
+        setProgress(100);
+        console.log("✅ Video ended – user watched it all");
+        if (onMarkAsComplete) onMarkAsComplete();
+    }
   };
 
-  // For YouTube videos, provide manual mark complete button
   const handleManualMarkComplete = () => {
-    setCompleted(true);
-    setProgress(100);
-    if (onMarkAsComplete) onMarkAsComplete();
+    // [UPDATED]
+    if(isSessionOpen) {
+        setCompleted(true);
+        setProgress(100);
+        if (onMarkAsComplete) onMarkAsComplete();
+    }
   };
 
   return (
     <div className="space-y-4">
+      {/* [NEW] Session Warning Banner */}
+      {sessionStatus && !isSessionOpen && (
+        <Alert
+          message={
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold text-red-600">
+                {sessionStatus.message === "Not started yet" 
+                  ? t('trainee.learn.sessionNotStarted') 
+                  : t('trainee.learn.sessionExpired')}
+              </span>
+              <span className="text-xs text-gray-500">
+                {sessionStatus.startTime && `Start: ${dayjs(sessionStatus.startTime).format('DD/MM/YYYY HH:mm')}`}
+                {sessionStatus.endTime && ` - End: ${dayjs(sessionStatus.endTime).format('DD/MM/YYYY HH:mm')}`}
+              </span>
+            </div>
+          }
+          type="warning"
+          showIcon
+          icon={<AlertCircle className="w-5 h-5 text-red-500" />}
+          className="border-red-200 bg-red-50"
+        />
+      )}
+
       {/* Header */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50">

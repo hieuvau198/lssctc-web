@@ -11,7 +11,7 @@ import {
   markSectionMaterialAsCompleted,
   markSectionMaterialAsNotCompleted,
   getActivityRecordsByClassAndSection,
-  getMaterialsByActivityId,
+  getMaterialsByActivityRecordId, // [UPDATED] Import hàm API mới
   submitActivity, 
 } from "../../../apis/Trainee/TraineeLearningApi";
 import {
@@ -43,6 +43,10 @@ export default function LearnContent() {
 
   const [activityRecord, setActivityRecord] = useState(null);
   const [materialsList, setMaterialsList] = useState([]);
+  
+  // [UPDATED] State mới để lưu trạng thái Session
+  const [sessionStatus, setSessionStatus] = useState(null);
+
   const [sectionQuiz, setSectionQuiz] = useState(null);
   const [sectionPractice, setSectionPractice] = useState(null);
 
@@ -76,8 +80,9 @@ export default function LearnContent() {
       setLoading(true);
       setError(null);
       setMaterialsList([]);
+      setSessionStatus(null); // [UPDATED] Reset session status
       setSectionQuiz(null);
-      setSectionPractice(null); // <-- RESET PRACTICE STATE
+      setSectionPractice(null); 
       setActivityRecord(null);
 
       console.log("Fetching activity record for activityId:", activityId);
@@ -106,10 +111,18 @@ export default function LearnContent() {
       
       const activityType = matchedRecord.activityType; // "Material", "Quiz", "Practice"
 
-      // 2. Load content
+      // 2. Load content based on type
       if (activityType === 'Material') {
-        const materialResArray = await getMaterialsByActivityId(activityId);
-        setMaterialsList(materialResArray || []);
+        // [UPDATED] Sử dụng API mới nhận activityRecordId để lấy cả material và session status
+        try {
+            const { materials, sessionStatus } = await getMaterialsByActivityRecordId(matchedRecord.activityRecordId);
+            setMaterialsList(materials || []);
+            setSessionStatus(sessionStatus); // Lưu trạng thái session
+        } catch (matError) {
+            console.error("Error loading materials with session:", matError);
+            throw new Error("Failed to verify session status or load materials.");
+        }
+
       } else if (activityType === 'Quiz') {
         const quizData = await getQuizByActivityIdForTrainee(activityId);
         const combinedQuizData = {
@@ -125,17 +138,14 @@ export default function LearnContent() {
         };
         setSectionQuiz(combinedQuizData);
       } else if (activityType === 'Practice') {
-        // --- LOGIC MỚI ĐỂ LOAD PRACTICE DATA ---
         const practiceData = await getPracticeByActivityRecordId(matchedRecord.activityRecordId); 
         const combinedPracticeData = {
           ...practiceData,
-          // Ghi đè các trường từ activity record để đảm bảo đúng
           title: matchedRecord.activityName || practiceData.practiceName,
           isCompleted: matchedRecord.isCompleted,
           activityRecord: matchedRecord,
         };
         setSectionPractice(combinedPracticeData);
-        // --- KẾT THÚC LOGIC MỚI ---
       } else {
         throw new Error(`Unsupported content type: ${activityType}`);
       }
@@ -152,62 +162,60 @@ export default function LearnContent() {
   }, [fetchPartitionData]);
 
   const handleQuizSubmit = async (answers) => {
-    console.log('[LearnContent] handleQuizSubmit triggered.'); // <-- LOG
+    console.log('[LearnContent] handleQuizSubmit triggered.');
     if (!activityRecord || activityRecord.activityType !== 'Quiz') {
       console.error('[LearnContent] Missing activityRecord for quiz.');
       throw new Error('Activity record for this quiz is missing.');
     }
 
     const payload = {
-      activityRecordId: activityRecord.activityRecordId, // This is the 'Id' from ActivityRecordDto
+      activityRecordId: activityRecord.activityRecordId,
       answers: answers,
     };
 
-    console.log('[LearnContent] Calling submitQuizAttempt with payload:', payload); // <-- LOG
+    console.log('[LearnContent] Calling submitQuizAttempt with payload:', payload);
 
     try {
       const result = await submitQuizAttempt(payload);
-      console.log('[LearnContent] API call successful, result:', result); // <-- LOG
+      console.log('[LearnContent] API call successful, result:', result);
       
-      // Reload all data to show the result screen
       await fetchPartitionData();
-      // Trigger sidebar refresh to update tick marks
       refreshSidebar();
       return result;
     } catch (err) {
       console.error('[LearnContent] API call failed:', err);
       alert(`Failed to submit quiz: ${err.message || 'Unknown error'}`);
-      throw err; // Re-throw error
+      throw err;
     }
   };
 
   const handleMarkAsComplete = async () => {
     if (!activityRecord || activityRecord.activityType !== 'Material') return;
 
+    // [UPDATED] Kiểm tra logic session trước khi cho phép gọi API (Client-side validation)
+    if (sessionStatus && !sessionStatus.isOpen) {
+        alert(t('trainee.learn.sessionNotOpenAlert')); // Cần đảm bảo có key translation này hoặc dùng text cứng
+        return;
+    }
+
     try {
-      // The backend expects a Dto with ActivityRecordId
       const payload = {
         activityRecordId: activityRecord.activityRecordId
       };
 
       await submitActivity(payload);
       
-      // Refresh data to show green ticks/status
       await fetchPartitionData();
       refreshSidebar();
       
     } catch (err) {
       console.error("Error submitting activity:", err);
-      // specific error message from backend (e.g., "Already completed")
       const msg = err.response?.data?.message || "Failed to mark as complete.";
       alert(msg);
     }
   };
 
   const handleMarkAsNotComplete = async () => {
-    // NOTE: The current 'SubmitActivityAsync' endpoint only sets status to Completed.
-    // It does not support toggling back to Incomplete.
-    // If you need this feature, the backend requires a separate endpoint or update logic.
     alert("Unmarking is not supported at this time.");
   };
 
@@ -251,16 +259,11 @@ export default function LearnContent() {
         <div className="space-y-6">
           {materialsList.length > 0 ? (
             materialsList.map((material) => {
-              // Debug log to check actual API response
-              console.log('Material data:', material);
-              console.log('learningMaterialType:', material.learningMaterialType, 'type:', typeof material.learningMaterialType);
-
-              // Detect actual type from URL extension (workaround for incorrect backend data)
+              // Logic detect type giữ nguyên
               const url = (material.materialUrl || '').toLowerCase();
               const isDocumentByUrl = url.endsWith('.pdf') || url.endsWith('.doc') || url.endsWith('.docx') || url.endsWith('.txt');
               const isVideoByUrl = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.endsWith('.avi') || url.includes('youtube.com') || url.includes('vimeo.com');
 
-              // Use URL-based detection first, then fall back to API type
               const materialType = String(material.learningMaterialType || '').toLowerCase();
               const isDocument = isDocumentByUrl || (!isVideoByUrl && (materialType === 'document' || materialType === '0' || material.learningMaterialType === 0));
               const isVideo = isVideoByUrl || (!isDocumentByUrl && (materialType === 'video' || materialType === '1' || material.learningMaterialType === 1));
@@ -274,6 +277,7 @@ export default function LearnContent() {
                     documentUrl={material.materialUrl}
                     onMarkAsComplete={handleMarkAsComplete}
                     onMarkAsNotComplete={handleMarkAsNotComplete}
+                    sessionStatus={sessionStatus} // [UPDATED] Truyền session status xuống
                   />
                 );
               } else if (isVideo) {
@@ -285,6 +289,7 @@ export default function LearnContent() {
                     videoUrl={material.materialUrl}
                     onMarkAsComplete={handleMarkAsComplete}
                     onMarkAsNotComplete={handleMarkAsNotComplete}
+                    sessionStatus={sessionStatus} // [UPDATED] Truyền session status xuống
                   />
                 );
               }
@@ -308,35 +313,32 @@ export default function LearnContent() {
       );
 
     case 'Quiz':
-      // Cần một "partition" giả lập cho QuizContent
       const quizPartition = {
         sectionPartitionId: activityRecord.activityId,
       };
       return (
         sectionQuiz && (
           <QuizContent
-            sectionQuiz={sectionQuiz} // Dữ liệu quiz MỚI
+            sectionQuiz={sectionQuiz}
             partition={quizPartition}
             onReload={fetchPartitionData}
-            onSubmitAttempt={handleQuizSubmit} // <-- Truyền hàm nộp bài MỚI
+            onSubmitAttempt={handleQuizSubmit}
           />
         )
       );
     
     case "Practice":
-      // --- CẬP NHẬT RENDER CHO PRACTICE ---
       return (
         sectionPractice && (
           <PracticeContent 
-            title={sectionPractice.title} // Dùng title đã gộp
-            completed={sectionPractice.isCompleted} // Dùng isCompleted đã gộp
-            description={sectionPractice.practiceDescription} // Dùng mô tả từ practice
-            duration={`${sectionPractice.estimatedDurationMinutes || 0} min`} // Dùng duration từ practice
-            tasks={sectionPractice.tasks} // <-- THÊM DÒNG NÀY ĐỂ TRUYỀN TASKS
+            title={sectionPractice.title}
+            completed={sectionPractice.isCompleted}
+            description={sectionPractice.practiceDescription}
+            duration={`${sectionPractice.estimatedDurationMinutes || 0} min`}
+            tasks={sectionPractice.tasks}
           />
         )
       );
-      // --- KẾT THÚC CẬP NHẬT ---
 
     default:
       return (

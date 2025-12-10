@@ -1,19 +1,54 @@
 // src\app\pages\Trainee\Learn\partials\ReadingContent.jsx
 
 import { useTranslation } from 'react-i18next';
-import { Button, Tag, Progress } from "antd";
-import { CheckCircle2, FileText, Clock, BookOpen } from "lucide-react";
+import { Button, Tag, Progress, Alert } from "antd"; // Import Alert
+import { CheckCircle2, FileText, Clock, BookOpen, AlertCircle } from "lucide-react"; // Import icon AlertCircle
+import dayjs from 'dayjs'; // Import dayjs để format ngày tháng
 
 export default function ReadingContent({
   title,
   completed = false,
   documentUrl,
   onMarkAsComplete,
+  sessionStatus // [NEW] Nhận prop sessionStatus
 }) {
   const { t } = useTranslation();
+
+  // [NEW] Logic kiểm tra session
+  const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
+  
+  const handleMarkComplete = () => {
+    if (isSessionOpen && onMarkAsComplete) {
+      onMarkAsComplete();
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* [NEW] Session Warning Banner */}
+      {sessionStatus && !isSessionOpen && (
+        <Alert
+          message={
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold text-red-600">
+                {sessionStatus.message === "Not started yet" 
+                  ? t('trainee.learn.sessionNotStarted') 
+                  : t('trainee.learn.sessionExpired')}
+              </span>
+              <span className="text-xs text-gray-500">
+                {sessionStatus.startTime && `Start: ${dayjs(sessionStatus.startTime).format('DD/MM/YYYY HH:mm')}`}
+                {sessionStatus.endTime && ` - End: ${dayjs(sessionStatus.endTime).format('DD/MM/YYYY HH:mm')}`}
+              </span>
+            </div>
+          }
+          type="warning"
+          showIcon
+          icon={<AlertCircle className="w-5 h-5 text-red-500" />}
+          className="border-red-200 bg-red-50"
+        />
+      )}
+
+      {/* Header (Giữ nguyên, chỉ sửa logic hiển thị Tag nếu cần) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-teal-50">
           <div className="flex items-start justify-between gap-4">
@@ -63,7 +98,14 @@ export default function ReadingContent({
           </div>
 
           {!completed && (
-            <Button type="primary" size="large" onClick={onMarkAsComplete} className="shadow-sm">
+            // [NEW] Disable nút nếu session đóng
+            <Button 
+              type="primary" 
+              size="large" 
+              onClick={handleMarkComplete} 
+              disabled={!isSessionOpen} // Khóa nút
+              className="shadow-sm"
+            >
               {t('trainee.learn.markComplete')}
             </Button>
           )}

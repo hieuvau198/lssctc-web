@@ -788,7 +788,10 @@
       "practiceAgain": "Practice Again",
       "practiceSummary": "Practice Summary",
       "tasksCompleted": "Tasks Completed",
-      "averageScore": "Average Score"
+      "averageScore": "Average Score",
+      "sessionNotStarted": "Session has not started yet",
+      "sessionExpired": "Session has expired",
+      "sessionNotOpenAlert": "This activity session is not currently open. You cannot mark it as complete right now."
     },
     "classes": {
       "code": "Code",

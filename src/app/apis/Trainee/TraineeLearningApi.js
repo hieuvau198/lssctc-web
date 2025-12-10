@@ -127,6 +127,17 @@ export const getMaterialsByActivityId = async (activityId) => {
   return arr.map(mapMaterialFromActivity);
 };
 
+export const getMaterialsByActivityRecordId = async (activityRecordId) => {
+  if (activityRecordId == null) throw new Error('activityRecordId is required');
+  const response = await api.get(`/Materials/trainee/activity-record/${activityRecordId}`);
+  
+  // Response bao gồm { materials: [], sessionStatus: {} }
+  return {
+    materials: (response.data.materials || []).map(mapMaterialFromActivity),
+    sessionStatus: response.data.sessionStatus
+  };
+};
+
 export const markSectionMaterialAsCompleted = async (partitionId, traineeId) => {
   try {
     // 'partitionId' ở đây được hiểu là activityId
