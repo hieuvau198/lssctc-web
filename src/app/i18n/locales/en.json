@@ -2400,6 +2400,8 @@
       "searchPlaceholder": "Search programs...",
       "noPrograms": "No programs found",
       "noCoursesAssigned": "No courses assigned to this program",
+      "createSuccess": "Program created successfully",
+      "updateSuccess": "Program updated successfully",
       "deleteSuccess": "Program deleted successfully",
       "deleteError": "Failed to delete program",
       "deleteConfirmTitle": "Delete Program",

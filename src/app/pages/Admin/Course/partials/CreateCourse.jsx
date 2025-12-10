@@ -223,7 +223,8 @@ const CreateCourse = ({
         name="imageUrl"
         validateTrigger={['onBlur', 'onChange']}
         rules={[
-          { type: 'url', message: t('admin.courses.form.urlInvalid') }
+          { required: true, message: t('admin.courses.form.imageUrlRequired') },
+          { type: 'url', message: t('admin.courses.form.imageUrlInvalid') }
         ]}
       >
         <Input

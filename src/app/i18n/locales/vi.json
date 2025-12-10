@@ -2400,6 +2400,8 @@
       "totalCourses": "Tổng khóa học",
       "courses": "Khóa học",
       "noCoursesAssigned": "Chưa có khóa học nào được gán cho chương trình này",
+      "createSuccess": "Tạo chương trình thành công",
+      "updateSuccess": "Cập nhật chương trình thành công",
       "deleteSuccess": "Xóa chương trình thành công",
       "deleteError": "Không thể xóa chương trình",
       "deleteConfirmTitle": "Xóa chương trình",
