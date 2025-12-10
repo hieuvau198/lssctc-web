@@ -1,100 +1,130 @@
 // src/app/pages/Trainee/Learn/partials/QuizContent.jsx
 
 import React, { useState } from 'react';
-import { Button, Card, Divider, Alert, Tag } from 'antd'; // Import Alert, Tag
-import { Clock, HelpCircle, CheckCircle2, AlertCircle } from 'lucide-react'; // Import AlertCircle
 import { useTranslation } from 'react-i18next';
-import dayjs from 'dayjs'; // Import dayjs
+import QuizAttempt from './QuizAttempt/QuizAttempt';
+import { Button, Alert, Tag, Progress } from 'antd';
+import { ClipboardList, Clock, Target, HelpCircle, CheckCircle2, XCircle, Trophy, Play, RotateCcw, AlertCircle } from 'lucide-react';
+import dayjs from 'dayjs';
 
 // Child component for quiz start screen
-const QuizStartScreen = ({ quiz, onStart, t }) => (
-  <div className="space-y-6">
-    {/* Header Card */}
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-purple-50 to-violet-50">
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-200">
-            <ClipboardList className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Tag color="purple" className="text-xs font-medium">Quiz</Tag>
-            </div>
-            <h1 className="text-xl font-bold text-slate-900">{quiz.quizName}</h1>
-            {quiz.description && (
-              <p className="text-slate-600 mt-1">{quiz.description}</p>
-            )}
-          </div>
-        </div>
-      </div>
+const QuizStartScreen = ({ quiz, onStart, t, sessionStatus }) => {
+  // Logic kiểm tra session
+  const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
 
-      {/* Quiz Info Grid */}
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <div className="text-sm text-slate-500">{t('trainee.quizContent.timeLimit')}</div>
-                <div className="text-lg font-bold text-slate-900">{quiz.timelimitMinute} {t('trainee.quizContent.mins')}</div>
-              </div>
+  return (
+    <div className="space-y-6">
+      {/* Session Warning Banner */}
+      {sessionStatus && !isSessionOpen && (
+        <Alert
+          message={
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold text-red-600">
+                {sessionStatus.message === "Not started yet"
+                  ? t('trainee.learn.sessionNotStarted')
+                  : t('trainee.learn.sessionExpired')}
+              </span>
+              <span className="text-xs text-gray-500">
+                {sessionStatus.startTime && `Start: ${dayjs(sessionStatus.startTime).format('DD/MM/YYYY HH:mm')}`}
+                {sessionStatus.endTime && ` - End: ${dayjs(sessionStatus.endTime).format('DD/MM/YYYY HH:mm')}`}
+              </span>
             </div>
-          </div>
+          }
+          type="warning"
+          showIcon
+          icon={<AlertCircle className="w-5 h-5 text-red-500" />}
+          className="border-red-200 bg-red-50"
+        />
+      )}
 
-          <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-4 border border-purple-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <HelpCircle className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <div className="text-sm text-slate-500">{t('trainee.quizContent.questions')}</div>
-                <div className="text-lg font-bold text-slate-900">{quiz.questions?.length || 0}</div>
-              </div>
+      {/* Header Card */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-purple-50 to-violet-50">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-200">
+              <ClipboardList className="w-6 h-6 text-white" />
             </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Target className="w-5 h-5 text-green-600" />
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Tag color="purple" className="text-xs font-medium">Quiz</Tag>
               </div>
-              <div>
-                <div className="text-sm text-slate-500">{t('trainee.quizContent.passScore')}</div>
-                <div className="text-lg font-bold text-slate-900">{quiz.passScoreCriteria}/{quiz.totalScore}</div>
-              </div>
+              <h1 className="text-xl font-bold text-slate-900">{quiz.quizName}</h1>
+              {quiz.description && (
+                <p className="text-slate-600 mt-1">{quiz.description}</p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Instructions */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-          <h3 className="font-semibold text-amber-800 mb-2">{t('trainee.quizContent.instructions')}</h3>
-          <ul className="text-sm text-amber-700 space-y-1">
-            <li>• {t('trainee.quizContent.instruction1')}</li>
-            <li>• {t('trainee.quizContent.instruction2')}</li>
-            <li>• {t('trainee.quizContent.instruction3')}</li>
-            <li>• {t('trainee.quizContent.instruction4')}</li>
-          </ul>
-        </div>
+        {/* Quiz Info Grid */}
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-sm text-slate-500">{t('trainee.quizContent.timeLimit')}</div>
+                  <div className="text-lg font-bold text-slate-900">{quiz.timelimitMinute} {t('trainee.quizContent.mins')}</div>
+                </div>
+              </div>
+            </div>
 
-        {/* Start Button */}
-        <div className="text-center">
-          <Button 
-            type="primary" 
-            size="large" 
-            onClick={onStart}
-            icon={<Play className="w-4 h-4" />}
-            className="px-8 shadow-lg shadow-purple-200"
-          >
-            {t('trainee.quizContent.startQuiz')}
-          </Button>
+            <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-4 border border-purple-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                  <HelpCircle className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <div className="text-sm text-slate-500">{t('trainee.quizContent.questions')}</div>
+                  <div className="text-lg font-bold text-slate-900">{quiz.questions?.length || 0}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <div className="text-sm text-slate-500">{t('trainee.quizContent.passScore')}</div>
+                  <div className="text-lg font-bold text-slate-900">{quiz.passScoreCriteria}/{quiz.totalScore}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+            <h3 className="font-semibold text-amber-800 mb-2">{t('trainee.quizContent.instructions')}</h3>
+            <ul className="text-sm text-amber-700 space-y-1">
+              <li>• {t('trainee.quizContent.instruction1')}</li>
+              <li>• {t('trainee.quizContent.instruction2')}</li>
+              <li>• {t('trainee.quizContent.instruction3')}</li>
+              <li>• {t('trainee.quizContent.instruction4')}</li>
+            </ul>
+          </div>
+
+          {/* Start Button */}
+          <div className="text-center">
+            <Button
+              type="primary"
+              size="large"
+              onClick={onStart}
+              disabled={!isSessionOpen} // Khóa nút nếu hết hạn
+              icon={<Play className="w-4 h-4" />}
+              className="px-8 shadow-lg shadow-purple-200"
+            >
+              {t('trainee.quizContent.startQuiz')}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Child component for quiz result screen
 const QuizResultScreen = ({ quiz, onRestart, t }) => {
@@ -133,8 +163,8 @@ const QuizResultScreen = ({ quiz, onRestart, t }) => {
                 <div className="text-sm text-slate-500">/ {quiz.totalScore}</div>
               </div>
             </div>
-            <Progress 
-              percent={scorePercent} 
+            <Progress
+              percent={scorePercent}
               status={isPass ? 'success' : 'exception'}
               strokeColor={isPass ? { from: '#10b981', to: '#059669' } : { from: '#ef4444', to: '#dc2626' }}
               className="max-w-xs mx-auto"
@@ -172,9 +202,9 @@ const QuizResultScreen = ({ quiz, onRestart, t }) => {
 
           {/* Retake Button */}
           <div className="text-center">
-            <Button 
-              type="primary" 
-              size="large" 
+            <Button
+              type="primary"
+              size="large"
               onClick={onRestart}
               icon={<Play className="w-4 h-4" />}
               className="px-8 shadow-lg"
@@ -189,33 +219,22 @@ const QuizResultScreen = ({ quiz, onRestart, t }) => {
 };
 
 // Main component
-export default function QuizContent({ 
-  sectionQuiz, 
-  partition, 
-  onReload, 
-  onSubmitAttempt,
-  sessionStatus // [NEW] Nhận prop
-}) {
+export default function QuizContent({ sectionQuiz, partition, onReload, onSubmitAttempt, sessionStatus }) {
   const { t } = useTranslation();
-  const [isTaking, setIsTaking] = useState(false);
-
   // state: 'start', 'attempting', 'result'
   const [quizState, setQuizState] = useState(
     sectionQuiz.isCompleted ? 'result' : 'start'
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
 
   const handleStartQuiz = () => {
-    if (!isSessionOpen) return;
-    setIsTaking(true);
     setQuizState('attempting');
   };
 
   // This function is called by QuizAttempt
   const handleSubmit = async (answers) => {
-    console.log('[QuizContent] handleSubmit triggered. Forwarding to LearnContent...'); 
+    console.log('[QuizContent] handleSubmit triggered. Forwarding to LearnContent...');
     setIsSubmitting(true);
     try {
       // Call the submit function passed from LearnContent
@@ -223,7 +242,7 @@ export default function QuizContent({
       // On success, LearnContent will trigger 'onReload'
       // which will cause this component to show the 'result' state
       setQuizState('result');
-      console.log('[QuizContent] Submission successful.'); 
+      console.log('[QuizContent] Submission successful.');
     } catch (error) {
       console.error('Submission failed in QuizContent:', error);
     } finally {
@@ -251,22 +270,13 @@ export default function QuizContent({
     );
   }
 
-  if (isTaking) {
-    return (
-      <ExamTaking
-        quiz={sectionQuiz}
-        onSubmit={handleFinish}
-        onCancel={() => setIsTaking(false)}
-      />
-    );
-  }
-
   // Default is 'start'
   return (
     <QuizStartScreen
       quiz={sectionQuiz}
       onStart={handleStartQuiz}
       t={t}
+      sessionStatus={sessionStatus} // Truyền xuống
     />
   );
 }
