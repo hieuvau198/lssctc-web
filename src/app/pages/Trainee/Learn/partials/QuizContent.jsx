@@ -1,10 +1,10 @@
 // src/app/pages/Trainee/Learn/partials/QuizContent.jsx
 
 import React, { useState } from 'react';
+import { Button, Card, Divider, Alert, Tag } from 'antd'; // Import Alert, Tag
+import { Clock, HelpCircle, CheckCircle2, AlertCircle } from 'lucide-react'; // Import AlertCircle
 import { useTranslation } from 'react-i18next';
-import QuizAttempt from './QuizAttempt/QuizAttempt';
-import { Button, Alert, Tag, Progress } from 'antd';
-import { ClipboardList, Clock, Target, HelpCircle, CheckCircle2, XCircle, Trophy, Play, RotateCcw } from 'lucide-react';
+import dayjs from 'dayjs'; // Import dayjs
 
 // Child component for quiz start screen
 const QuizStartScreen = ({ quiz, onStart, t }) => (
@@ -189,16 +189,27 @@ const QuizResultScreen = ({ quiz, onRestart, t }) => {
 };
 
 // Main component
-export default function QuizContent({ sectionQuiz, partition, onReload, onSubmitAttempt }) {
+export default function QuizContent({ 
+  sectionQuiz, 
+  partition, 
+  onReload, 
+  onSubmitAttempt,
+  sessionStatus // [NEW] Nhận prop
+}) {
   const { t } = useTranslation();
+  const [isTaking, setIsTaking] = useState(false);
+
   // state: 'start', 'attempting', 'result'
   const [quizState, setQuizState] = useState(
     sectionQuiz.isCompleted ? 'result' : 'start'
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
 
   const handleStartQuiz = () => {
+    if (!isSessionOpen) return;
+    setIsTaking(true);
     setQuizState('attempting');
   };
 
@@ -236,6 +247,16 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
         quiz={sectionQuiz}
         onRestart={() => setQuizState('start')}
         t={t}
+      />
+    );
+  }
+
+  if (isTaking) {
+    return (
+      <ExamTaking
+        quiz={sectionQuiz}
+        onSubmit={handleFinish}
+        onCancel={() => setIsTaking(false)}
       />
     );
   }

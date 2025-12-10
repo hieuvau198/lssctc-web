@@ -90,6 +90,12 @@ export const getQuizByActivityIdForTrainee = async (activityId) => {
   return mapQuizForTrainee(response.data);
 };
 
+export const getQuizByActivityRecordId = async (activityRecordId) => {
+  if (!activityRecordId) throw new Error("ActivityRecordId is required");
+  const response = await api.get(`/Quizzes/trainee/activity-record/${activityRecordId}`);
+  return response.data; // Trả về { quiz: {...}, sessionStatus: {...} }
+};
+
 /**
  * Nộp bài làm quiz
  * POST /api/QuizAttempts/my-attempts/submit

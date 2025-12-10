@@ -16,6 +16,7 @@ import {
 } from "../../../apis/Trainee/TraineeLearningApi";
 import {
   getQuizByActivityIdForTrainee,
+  getQuizByActivityRecordId,
   submitQuizAttempt,
 } from '../../../apis/Trainee/TraineeQuizApi';
 import {
@@ -124,7 +125,13 @@ export default function LearnContent() {
         }
 
       } else if (activityType === 'Quiz') {
-        const quizData = await getQuizByActivityIdForTrainee(activityId);
+        // [OLD CODE] const quizData = await getQuizByActivityIdForTrainee(activityId);
+        
+        // [NEW CODE] Gọi API mới
+        const response = await getQuizByActivityRecordId(matchedRecord.activityRecordId);
+        const quizData = response.quiz;
+        const sessionStatus = response.sessionStatus;
+
         const combinedQuizData = {
           ...quizData,
           quizId: quizData.id,
@@ -136,7 +143,9 @@ export default function LearnContent() {
           sectionQuizId: activityId,
           learningRecordPartitionId: activityId,
         };
+        
         setSectionQuiz(combinedQuizData);
+        setSessionStatus(sessionStatus); // [NEW] Lưu trạng thái session cho Quiz
       } else if (activityType === 'Practice') {
         const practiceData = await getPracticeByActivityRecordId(matchedRecord.activityRecordId); 
         const combinedPracticeData = {
@@ -323,6 +332,7 @@ export default function LearnContent() {
             partition={quizPartition}
             onReload={fetchPartitionData}
             onSubmitAttempt={handleQuizSubmit}
+            sessionStatus={sessionStatus} // [NEW] Truyền prop này xuống
           />
         )
       );
