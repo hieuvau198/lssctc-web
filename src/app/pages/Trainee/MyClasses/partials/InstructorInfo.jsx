@@ -73,7 +73,7 @@ export default function InstructorInfo({ classId }) {
 		<div className="my-4">
 			<Card title={t('trainee.instructorInfo.title')} className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
 				<div className="space-y-4">
-					<div className="flex items-start gap-3">
+					<div className="flex items-center gap-3">
 						{avatarUrl ? (
 							<img src={avatarUrl} alt={name} className="w-12 h-12 rounded-full object-cover" />
 						) : (
@@ -82,9 +82,9 @@ export default function InstructorInfo({ classId }) {
 							</div>
 						)}
 
-						<div className="flex-1">
-							<h4 className="font-semibold text-slate-900 mb-1">{name}</h4>
-							{code && <div className="text-sm text-slate-600 mb-1">{t('trainee.instructorInfo.code')}: <span className="font-medium">{code}</span></div>}
+						<div className="flex">
+							<span className="font-semibold text-slate-900">{name}</span>
+							{/* {code && <div className="text-sm text-slate-600 mb-1">{t('trainee.instructorInfo.code')}: <span className="font-medium">{code}</span></div>} */}
 							{/* {hireDate && <div className="text-xs text-slate-500">Hired: {hireDate.toLocaleDateString()}</div>} */}
 						</div>
 					</div>
