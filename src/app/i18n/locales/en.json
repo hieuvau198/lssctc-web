@@ -11,6 +11,7 @@
     "search": "Search",
     "filter": "Filter",
     "reset": "Reset",
+    "retry": "Retry",
     "submit": "Submit",
     "confirm": "Confirm",
     "back": "Back",
@@ -186,7 +187,12 @@
     "status": "Status",
     "passed": "PASSED",
     "notPassed": "NOT PASSED",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "invalidId": "Invalid Exam ID",
+    "notFound": "Exam not found",
+    "fetchError": "Failed to load exam details",
+    "invalidCode": "Invalid exam code. Please check again.",
+    "startError": "Failed to start exam. Check your code."
   },
   "footer": {
     "description": "Training & Simulator platform for modern crane operation and logistics safety.",
@@ -1644,6 +1650,7 @@
     "invalidPhone": "Invalid phone number"
   },
   "error": {
+    "title": "An error occurred",
     "somethingWentWrong": "Something went wrong",
     "notFound": "Page not found",
     "unauthorized": "Unauthorized access",
@@ -2566,8 +2573,8 @@
         "enrollDate": "Enroll Date"
       },
       "pagination": {
-        "totalTrainees": "Total of {{total}} trainees"
-      ,  "trainees": "{{start}}-{{end}} of {{total}} trainees"
+        "totalTrainees": "Total of {{total}} trainees",
+        "trainees": "{{start}}-{{end}} of {{total}} trainees"
       },
       "filters": {
         "status": "Status",
@@ -2617,7 +2624,7 @@
         "selectProgram": "Select a program",
         "selectCourse": "Select a course",
         "description": "Enter class description",
-        "selectInstructor":"Please select an instructor"
+        "selectInstructor": "Please select an instructor"
       },
       "validation": {
         "classNameRequired": "Please enter class name",
