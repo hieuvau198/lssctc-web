@@ -27,16 +27,16 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
       <div className="space-y-3">
         <div className="flex justify-between items-center gap-2">
           <div className="flex items-center gap-2">
-            <Button type="default" icon={<ArrowLeft size={16} />} onClick={() => navigate('/admin/class')}/>
+            <Button type="default" icon={<ArrowLeft size={16} />} onClick={() => navigate('/admin/class')} />
             <span className="text-xl font-semibold">{classItem.name}</span>
             {(() => {
               const s = getClassStatus(classItem.status);
               return <Tag color={s.color}>{t(`common.classStatus.${s.key}`)}</Tag>;
             })()}
-            <EditClassStatus 
-              classId={classItem.id} 
-              status={classItem.status} 
-              onSuccess={onRefresh} 
+            <EditClassStatus
+              classId={classItem.id}
+              status={classItem.status}
+              onSuccess={onRefresh}
             />
           </div>
           <div>
@@ -59,12 +59,10 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             <span className="font-medium">{t('admin.classes.columns.classCode')}:</span> {classItem.classCode?.name || classItem.classCode || "-"}
           </div>
         </div>
-        {classItem.description && (
-          <div className="text-sm text-slate-600">
-            <span className="font-medium">{t('common.description')}:</span>{" "}
-            <span className="whitespace-pre-line">{classItem.description}</span>
-          </div>
-        )}
+        <div className="text-sm text-slate-600">
+          <span className="font-medium">{t('common.description')}:</span>{" "}
+          <span className="whitespace-pre-line">{classItem.description}</span>
+        </div>
       </div>
 
       {/* Instructor */}

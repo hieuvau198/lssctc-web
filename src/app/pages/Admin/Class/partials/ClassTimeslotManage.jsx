@@ -23,7 +23,7 @@ export default function ClassTimeslotManage({ classItem }) {
             setTimeslots(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Fetch timeslots error:', error);
-            message.error('Failed to load schedule');
+            message.error(t('class.timeslot.loadFailed'));
         } finally {
             setLoading(false);
         }
@@ -65,10 +65,10 @@ export default function ClassTimeslotManage({ classItem }) {
 
             if (editingSlot) {
                 await updateTimeslot(editingSlot.id, payload);
-                message.success('Timeslot updated successfully');
+                message.success(t('class.timeslot.updated'));
             } else {
                 await createTimeslot(payload);
-                message.success('Timeslot created successfully');
+                message.success(t('class.timeslot.created'));
             }
             setModalVisible(false);
             form.resetFields();
@@ -76,7 +76,7 @@ export default function ClassTimeslotManage({ classItem }) {
         } catch (error) {
             console.error('Save timeslot error:', error);
             const apiData = error?.response?.data;
-            const msg = (apiData && (apiData.message || apiData.error)) || error?.message || 'Failed to save timeslot';
+            const msg = (apiData && (apiData.message || apiData.error)) || error?.message || t('class.timeslot.saveFailed');
             message.error(msg);
         } finally {
             setSubmitting(false);
@@ -90,7 +90,7 @@ export default function ClassTimeslotManage({ classItem }) {
             key: 'name',
         },
         {
-            title: 'Start Time', // t('admin.classes.form.startTime') || 
+            title: t('class.timeslot.startTime'),
             dataIndex: 'startTime',
             key: 'startTime',
             // Format to show Date and Time HH:mm explicitly
@@ -98,14 +98,14 @@ export default function ClassTimeslotManage({ classItem }) {
             width: 160,
         },
         {
-            title: 'End Time', // t('admin.classes.form.endTime') || 
+            title: t('class.timeslot.endTime'),
             dataIndex: 'endTime',
             key: 'endTime',
             render: (val) => val ? dayjs(val).format('YYYY-MM-DD HH:mm') : '-',
             width: 160,
         },
         {
-            title: 'Location', // t('admin.classes.form.location') || 
+            title: t('class.timeslot.location'),
             key: 'location',
             render: (_, record) => (
                 <div>
@@ -120,13 +120,13 @@ export default function ClassTimeslotManage({ classItem }) {
             key: 'status',
             width: 100,
             render: (status) => (
-                <Tag>{status || 'Scheduled'}</Tag>
+                <Tag>{status || t('class.timeslot.scheduled')}</Tag>
             ),
         },
         {
             title: t('common.action') || 'Action',
             key: 'action',
-            width: 80,
+            width: 150,
             align: 'center',
             render: (_, record) => (
                 <Space>
@@ -144,13 +144,13 @@ export default function ClassTimeslotManage({ classItem }) {
     return (
         <div className="mt-8 space-y-4">
             <div className="flex justify-between items-center border-b pb-4">
-                <h3 className="text-lg font-semibold m-0">{'Class Schedule'}</h3>
+                <span className="text-lg font-semibold m-0">{t('class.timeslot.title')}</span>
                 <Button 
                     type="primary" 
                     icon={<Plus size={16} />} 
                     onClick={() => handleOpenModal(null)}
                 >
-                    {'Add Timeslot'}
+                    {t('class.timeslot.add')}
                 </Button>
             </div>
 
@@ -164,43 +164,43 @@ export default function ClassTimeslotManage({ classItem }) {
             />
 
             <Modal
-                title={editingSlot ? "Edit Timeslot" : "Add New Timeslot"}
+                title={editingSlot ? t('class.timeslot.edit') : t('class.timeslot.addNew')}
                 open={modalVisible}
                 onCancel={() => setModalVisible(false)}
                 onOk={() => form.submit()}
                 confirmLoading={submitting}
                 width={600}
-                destroyOnClose
+                // destroyOnClose
             >
                 <Form form={form} layout="vertical" onFinish={handleSave}>
                     <Form.Item
-                        label="Slot Name"
+                        label={t('class.timeslot.slotName')}
                         name="name"
-                        rules={[{ required: true, message: 'Please enter name' }]}
+                        rules={[{ required: true, message: t('class.timeslot.pleaseEnterName') }]}
                     >
-                        <Input placeholder="e.g. Session 1: Introduction" />
+                        <Input placeholder={t('class.timeslot.slotNamePlaceholder')} />
                     </Form.Item>
                     
                     <div className="grid grid-cols-2 gap-4">
                         <Form.Item
-                            label="Start Time"
+                            label={t('class.timeslot.startTime')}
                             name="startTime"
-                            rules={[{ required: true, message: 'Required' }]}
+                            rules={[{ required: true, message: t('class.timeslot.required') }]}
                         >
                             <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: '100%' }} />
                         </Form.Item>
                         <Form.Item
-                            label="End Time"
+                            label={t('class.timeslot.endTime')}
                             name="endTime"
                             dependencies={['startTime']}
                             rules={[
-                                { required: true, message: 'Required' },
+                                { required: true, message: t('class.timeslot.required') },
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
                                         if (!value || !getFieldValue('startTime') || value.isAfter(getFieldValue('startTime'))) {
                                             return Promise.resolve();
                                         }
-                                        return Promise.reject(new Error('End time must be after start time'));
+                                        return Promise.reject(new Error(t('class.timeslot.endAfterStart')));
                                     },
                                 }),
                             ]}
@@ -211,27 +211,27 @@ export default function ClassTimeslotManage({ classItem }) {
 
                     <div className="grid grid-cols-2 gap-4">
                         <Form.Item
-                            label="Building"
+                            label={t('class.timeslot.building')}
                             name="locationBuilding"
-                            rules={[{ required: true, message: 'Required' }]}
+                            rules={[{ required: true, message: t('class.timeslot.required') }]}
                         >
-                            <Input placeholder="e.g. Building A" />
+                            <Input placeholder={t('class.timeslot.buildingPlaceholder')} />
                         </Form.Item>
                         <Form.Item
-                            label="Room"
+                            label={t('class.timeslot.room')}
                             name="locationRoom"
-                            rules={[{ required: true, message: 'Required' }]}
+                            rules={[{ required: true, message: t('class.timeslot.required') }]}
                         >
-                            <Input placeholder="e.g. Room 101" />
+                            <Input placeholder={t('class.timeslot.roomPlaceholder')} />
                         </Form.Item>
                     </div>
 
                     <Form.Item
-                        label="Location Detail"
+                        label={t('class.timeslot.locationDetail')}
                         name="locationDetail"
-                        rules={[{ required: true, message: 'Required' }]}
+                        rules={[{ required: true, message: t('class.timeslot.required') }]}
                     >
-                        <Input.TextArea rows={2} placeholder="Detailed instructions..." />
+                        <Input.TextArea rows={2} placeholder={t('class.timeslot.locationDetailPlaceholder')} />
                     </Form.Item>
                 </Form>
             </Modal>

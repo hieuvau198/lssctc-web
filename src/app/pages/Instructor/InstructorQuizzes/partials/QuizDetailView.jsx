@@ -94,7 +94,7 @@ export default function QuizDetailView() {
 
   const questionItems = (quiz.questions || []).map((q, idx) => ({
     key: q.id,
-    label: `${t('instructor.quizzes.questions.question')}${idx + 1}: ${q.name}`,
+    label: `${t('instructor.quizzes.questions.question')} ${idx + 1}: ${q.name}`,
     extra: <Tag color="blue">{q.questionScore} {t('instructor.quizzes.questions.pts')}</Tag>,
     children: (
       <div className="space-y-3">

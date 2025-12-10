@@ -565,7 +565,7 @@ export default function QuizCreateEdit() {
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label className="block text-sm font-medium">{t('instructor.quizzes.answerOptions')}</label>
+                      <label className="block text-sm font-medium">{t('instructor.quizzes.answerOptions', { count: question.options.length })}</label>
                       <Button
                         type="dashed"
                         size="small"
