@@ -36,12 +36,12 @@ apiClient.interceptors.response.use(
     const status = error?.response?.status;
     if (status === 401 && !error.config?.skipAuthRedirect) {
       try {
-        removeAuthToken();
-      } catch (err) { }
-      if (typeof window !== 'undefined') {
-        // ensure full reload to clear state
-        window.location.replace('/auth/login');
-      }
+        // removeAuthToken();
+      } catch (err) {}
+      // if (typeof window !== 'undefined') {
+      //   // ensure full reload to clear state
+      //   window.location.replace('/auth/login');
+      // }
     }
     return Promise.reject(error);
   }
