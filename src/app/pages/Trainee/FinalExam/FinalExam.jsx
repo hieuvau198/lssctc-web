@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Input, Form, Alert, Descriptions, Tag, Spin, message } from 'antd';
+import { Card, Button, Input, Form, Alert, Descriptions, Tag, Spin, message, Result } from 'antd';
 import { ClockCircleOutlined, FileTextOutlined, LockOutlined, CalendarOutlined, CheckCircleOutlined, TrophyOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -116,18 +116,27 @@ export default function FinalExam() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center flex-col gap-4">
-        <Alert
-          message="Error"
-          description={error}
-          type="error"
-          showIcon
-          action={
-            <Button size="small" type="primary" onClick={fetchExamDetail}>
-              Retry
-            </Button>
-          }
-        />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30 p-4">
+        <Card className="max-w-md w-full shadow-2xl border-0 bg-white/80 backdrop-blur-lg rounded-2xl overflow-hidden">
+          <Result
+            status="error"
+            title={<span className="text-xl font-bold text-slate-800">{t('error.title', 'Có lỗi xảy ra')}</span>}
+            subTitle={<span className="text-slate-600 text-base">{error}</span>}
+            extra={[
+              <Button
+                type="primary"
+                key="retry"
+                onClick={() => {
+                  setError('');
+                  fetchExamDetail();
+                }}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0 h-10 px-8 rounded-lg shadow-lg shadow-blue-200 font-medium"
+              >
+                {t('common.retry', 'Thử lại')}
+              </Button>
+            ]}
+          />
+        </Card>
       </div>
     );
   }

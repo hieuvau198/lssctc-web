@@ -10,6 +10,7 @@
     "search": "Tìm kiếm",
     "filter": "Lọc",
     "reset": "Đặt lại",
+    "retry": "Thử lại",
     "submit": "Gửi",
     "confirm": "Xác nhận",
     "back": "Quay lại",
@@ -187,7 +188,12 @@
     "status": "Trạng thái",
     "passed": "ĐẠT",
     "notPassed": "CHƯA ĐẠT",
-    "tryAgain": "Thử lại"
+    "tryAgain": "Thử lại",
+    "invalidId": "ID bài thi không hợp lệ",
+    "notFound": "Không tìm thấy bài thi",
+    "fetchError": "Không thể tải thông tin bài thi",
+    "invalidCode": "Mã đề không hợp lệ. Vui lòng kiểm tra lại.",
+    "startError": "Không thể bắt đầu bài thi. Kiểm tra mã của bạn."
   },
   "footer": {
     "description": "Nền tảng đào tạo & mô phỏng cho vận hành cần cẩu hiện đại và an toàn logistics.",
@@ -1645,6 +1651,7 @@
     "invalidPhone": "Số điện thoại không hợp lệ"
   },
   "error": {
+    "title": "Có lỗi xảy ra",
     "somethingWentWrong": "Đã có lỗi xảy ra",
     "notFound": "Không tìm thấy trang",
     "unauthorized": "Truy cập không được phép",
@@ -2576,8 +2583,8 @@
         "enrollDate": "Ngày đăng ký"
       },
       "pagination": {
-        "totalTrainees": "Tổng {{total}} học viên"
-      ,  "trainees": "{{start}}-{{end}} của {{total}} học viên"
+        "totalTrainees": "Tổng {{total}} học viên",
+        "trainees": "{{start}}-{{end}} của {{total}} học viên"
       },
       "filters": {
         "status": "Trạng thái",
