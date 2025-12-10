@@ -198,9 +198,9 @@ export default function ExamTaking() {
 
     const currentQuestion = questions[currentQuestionIndex];
 
-    const handleAnswerChange = (questionId, answerId) => {
+    const handleAnswerChange = (questionId, answerValue) => {
         setAnswers((prev) => {
-            const next = { ...prev, [questionId]: answerId };
+            const next = { ...prev, [questionId]: answerValue };
             answersRef.current = next;
             return next;
         });
@@ -279,10 +279,13 @@ export default function ExamTaking() {
         if (isSubmitting) return;
         setIsSubmitting(true);
 
-        const answerList = Object.entries(answers).map(([qId, oId]) => ({
-            questionId: parseInt(qId),
-            optionId: oId // optionId is already the value in answers state
-        }));
+        const answerList = Object.entries(answers).map(([qId, val]) => {
+            const questionId = parseInt(qId);
+            if (Array.isArray(val)) {
+                return { questionId, optionIds: val };
+            }
+            return { questionId, optionId: val };
+        });
 
         // Create Vietnam time timestamp (UTC+7)
         const now = new Date();
@@ -323,7 +326,15 @@ export default function ExamTaking() {
             });
         } catch (error) {
             console.error('Submit error:', error);
-            const errorMsg = error.response?.data?.message || 'Không thể nộp bài. Vui lòng thử lại.';
+            let errorMsg = 'Không thể nộp bài. Vui lòng thử lại.';
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 404) errorMsg = 'Không tìm thấy bài thi (404).';
+                else if (status === 403) errorMsg = 'Bạn không có quyền nộp bài thi này (403).';
+                else if (status === 401) errorMsg = 'Phiên đăng nhập hết hạn (401).';
+                else if (status === 400) errorMsg = error.response.data?.message || 'Dữ liệu không hợp lệ (400).';
+                else if (status === 500) errorMsg = 'Lỗi máy chủ (500).';
+            }
             message.error(errorMsg);
             setIsSubmitting(false);
             // Keep modal open if it was open, or user can try again

@@ -8,23 +8,61 @@ export default function ExamResult() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
-    const { examData, score, correctCount, totalQuestions } = location.state || {};
+    const { examData, resultData, score: navScore, isPass: navIsPass } = location.state || {};
 
-    if (!examData) {
-        navigate('/');
-        return null;
+    // Prefer data from API result (resultData) if available, otherwise fallback to navigation params or defaults
+    // Note: API (FinalExamDto) usually has 'totalMarks' and 'isPass' fields.
+    // Note: API (FinalExamDto) usually has 'totalMarks' and 'isPass' fields.
+    // 'marks' in the UI usually refers to the score achieved.
+
+    // Determine the final score and pass status to display
+    let displayScore = 0;
+    let isPassed = false;
+
+    if (resultData) {
+        // 1. Try to get data from the root object first
+        displayScore = resultData.totalMarks || resultData.marks || resultData.score || 0;
+        isPassed = resultData.isPass === true || String(resultData.isPass).toLowerCase() === 'true';
+
+        // 2. Scenario: Root object might show 0/False if it's an aggregate of multiple parts, 
+        // but the user just finished ONE part (e.g. Theory) which IS passed/has marks.
+        // If root seems "empty" or "failed" (score 0 and not passed), look deeper into partials.
+        if (displayScore === 0 && !isPassed && resultData.partials && Array.isArray(resultData.partials)) {
+            // Find the most relevant partial: preferably one that is Submitted/Completed or has marks
+            // In the user's case, the Theory partial has marks: 10 and isPass: true, status: "Submitted"
+            const relevantPartial = resultData.partials.find(p =>
+                (p.status === 'Submitted' || p.status === 'Completed') || (p.marks && p.marks > 0)
+            );
+
+            if (relevantPartial) {
+                // Determine partial pass status
+                const partialPass = relevantPartial.isPass === true || String(relevantPartial.isPass).toLowerCase() === 'true';
+                const partialScore = relevantPartial.marks || 0;
+
+                // Use partial data if it looks like a valid result (either passed or has score)
+                // This fixes the issue where the user sees "Failed" despite passing the specific component
+                displayScore = partialScore;
+                isPassed = partialPass;
+            }
+        }
+    } else {
+        // Fallback to navigation state if no API result data
+        displayScore = navScore || 0;
+        isPassed = navIsPass === true || String(navIsPass).toLowerCase() === 'true';
     }
 
-    const passed = score >= examData.passingScore;
+    // Additional info
+    const examName = examData?.quizName || examData?.practiceName || examData?.name || t('exam.finalExam', 'Final Exam');
+    const examStatus = resultData?.status || examData?.status || (isPassed ? 'Passed' : 'Failed');
 
     return (
         <div className="min-h-screen bg-slate-50 py-8">
             <div className="max-w-3xl mx-auto px-4">
                 <Card className="shadow-sm">
                     <Result
-                        status={passed ? 'success' : 'error'}
+                        status={isPassed ? 'success' : 'error'}
                         icon={
-                            passed ? (
+                            isPassed ? (
                                 <CheckCircleOutlined className="text-green-500" />
                             ) : (
                                 <CloseCircleOutlined className="text-red-500" />
@@ -32,15 +70,15 @@ export default function ExamResult() {
                         }
                         title={
                             <span className="text-2xl font-bold">
-                                {passed
-                                    ? t('exam.congratulations', 'Congratulations!')
-                                    : t('exam.failed', 'Exam Not Passed')}
+                                {isPassed
+                                    ? t('exam.congratulations', 'Xin chúc mừng!')
+                                    : t('exam.failed', 'Chưa đạt')}
                             </span>
                         }
                         subTitle={
-                            passed
-                                ? t('exam.passedMessage', 'You have successfully passed the exam!')
-                                : t('exam.failedMessage', 'Unfortunately, you did not pass this time. Keep studying and try again!')
+                            isPassed
+                                ? t('exam.passedMessage', 'Bạn đã hoàn thành bài thi xuất sắc!')
+                                : t('exam.failedMessage', 'Rất tiếc, bạn chưa đạt lần này. Hãy tiếp tục học và thử lại!')
                         }
                     />
 
@@ -48,14 +86,14 @@ export default function ExamResult() {
                         <div className="text-center mb-2">
                             <Progress
                                 type="circle"
-                                percent={score}
-                                strokeColor={score >= examData.passingScore ? '#52c41a' : '#ff4d4f'}
+                                percent={displayScore === 0 ? 0 : 100} // Simplified visual: full circle if score > 0 or just show text
+                                strokeColor={isPassed ? '#52c41a' : '#ff4d4f'}
                                 width={150}
                                 format={() => (
                                     <div>
-                                        <div className="text-4xl font-bold">{score}</div>
+                                        <div className="text-4xl font-bold">{displayScore}</div>
                                         <div className="text-sm text-slate-500">
-                                            {t('exam.yourScore', 'Your Score')}
+                                            {t('exam.yourScore', 'Điểm của bạn')}
                                         </div>
                                     </div>
                                 )}
@@ -63,29 +101,19 @@ export default function ExamResult() {
                         </div>
 
                         <Descriptions bordered column={1}>
-                            <Descriptions.Item label={t('exam.examName', 'Exam Name')}>
-                                {examData.name}
+                            <Descriptions.Item label={t('exam.examName', 'Tên bài thi')}>
+                                {examName}
                             </Descriptions.Item>
-                            <Descriptions.Item label={t('exam.totalQuestions', 'Total Questions')}>
-                                {totalQuestions}
-                            </Descriptions.Item>
-                            <Descriptions.Item label={t('exam.correctAnswers', 'Correct Answers')}>
-                                <span className="text-green-600 font-semibold">{correctCount}</span>
-                            </Descriptions.Item>
-                            <Descriptions.Item label={t('exam.incorrectAnswers', 'Incorrect Answers')}>
-                                <span className="text-red-600 font-semibold">{totalQuestions - correctCount}</span>
-                            </Descriptions.Item>
-                            <Descriptions.Item label={t('exam.yourScore', 'Your Score')}>
-                                <Tag color={passed ? 'success' : 'error'} className="text-lg font-semibold px-3 py-1">
-                                    {score}%
+
+                            <Descriptions.Item label={t('exam.yourScore', 'Điểm của bạn')}>
+                                <Tag color={isPassed ? 'success' : 'error'} className="text-lg font-semibold px-3 py-1">
+                                    {displayScore}
                                 </Tag>
                             </Descriptions.Item>
-                            <Descriptions.Item label={t('exam.passingScore', 'Passing Score')}>
-                                <Tag color="blue">{examData.passingScore}%</Tag>
-                            </Descriptions.Item>
-                            <Descriptions.Item label={t('exam.status', 'Status')}>
-                                <Tag color={passed ? 'success' : 'error'} className="font-semibold">
-                                    {passed ? t('exam.passed', 'PASSED') : t('exam.notPassed', 'NOT PASSED')}
+
+                            <Descriptions.Item label={t('exam.status', 'Trạng thái')}>
+                                <Tag color={isPassed ? 'success' : 'error'} className="font-semibold uppercase">
+                                    {isPassed ? t('exam.passed', 'ĐẠT') : t('exam.notPassed', 'CHƯA ĐẠT')}
                                 </Tag>
                             </Descriptions.Item>
                         </Descriptions>
@@ -99,14 +127,14 @@ export default function ExamResult() {
                             target="_top"
                             icon={<HomeOutlined />}
                         >
-                            {t('common.home', 'Back to Home')}
+                            {t('common.home', 'Trang chủ')}
                         </Button>
-                        {!passed && (
+                        {!isPassed && examData?.id && (
                             <Button
                                 size="large"
-                                onClick={() => navigate(`/final-exam/${examData.id || 1}`)}
+                                onClick={() => navigate(`/final-exam/${examData.id}`)}
                             >
-                                {t('exam.tryAgain', 'Try Again')}
+                                {t('exam.tryAgain', 'Thử lại')}
                             </Button>
                         )}
                     </div>

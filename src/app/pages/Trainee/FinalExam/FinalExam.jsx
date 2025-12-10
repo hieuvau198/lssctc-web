@@ -75,7 +75,11 @@ export default function FinalExam() {
     } catch (err) {
       console.error(err);
       // The API should return an error if the code is invalid
-      setError(err.response?.data?.message || t('exam.startError', 'Failed to start exam. Check your code.'));
+      if (err.response?.status === 401) {
+        setError(t('exam.invalidCode', 'Mã đề không hợp lệ. Vui lòng kiểm tra lại.'));
+      } else {
+        setError(err.response?.data?.message || t('exam.startError', 'Failed to start exam. Check your code.'));
+      }
     } finally {
       setLoading(false);
     }
