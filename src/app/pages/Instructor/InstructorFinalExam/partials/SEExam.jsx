@@ -5,10 +5,12 @@ import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import InstructorFEApi from '../../../../apis/Instructor/InstructorFEApi';
 import InstructorPracticeApi from '../../../../apis/Instructor/InstructorPractice';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 export default function SEExam({ classId }) {
   const { t } = useTranslation();
   const { message } = App.useApp();
+  const navigate = useNavigate(); // Hook navigate
   const [loading, setLoading] = useState(false);
   const [configs, setConfigs] = useState([]);
   
@@ -160,6 +162,12 @@ export default function SEExam({ classId }) {
       <div className="mb-4 flex justify-between items-center">
         <div>
            <span className="text-lg font-bold">{t('instructor.finalExam.seTitle')}</span>
+           <Button 
+             type="default" 
+             onClick={() => navigate(`/instructor/classes/${classId}/final-exam/se-results`)}
+           >
+             View Detailed Class Results
+           </Button>
         </div>
         {configs.length === 0 && (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => { setSelectedConfig(null); form.resetFields(); setCreateModalOpen(true); }}>
