@@ -21,6 +21,9 @@ const InstructorFEApi = {
 
   // Submit Practical Exam Grade
   submitPe: (partialId, data) => apiClient.post(`/FinalExams/submit/pe/${partialId}`, data),
+
+  // [NEW] Get class simulation results details
+  getClassSimulationResults: (classId) => apiClient.get(`/FinalExams/class/${classId}/simulation-results`),
 };
 
 export default InstructorFEApi;

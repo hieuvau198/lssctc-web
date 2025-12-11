@@ -22,6 +22,7 @@ import NotFound from "../../../layouts/NotFound";
 import PrivateRoute from "../../PrivateRoutes/PrivateRoute";
 import InstructorDashboard from "../../../pages/Instructor/InstructorDashboard/InstructorDashboard";
 import PracticeDetail from "../../../pages/Instructor/InstructorPractices/partials/PracticeDetail";
+import ClassSimulationResults from "../../../pages/Instructor/InstructorFinalExam/ClassSimulationResults"; // [NEW IMPORT]
 
 export default function InstructorRoutes() {
   return (
@@ -44,6 +45,7 @@ export default function InstructorRoutes() {
           <Route path="schedule" element={<ClassDetailSchedule />} />
           <Route path="final-exam" element={<InstructorFinalExam />} />
         </Route>
+        <Route path="/classes/:classId/final-exam/se-results" element={<ClassSimulationResults />} />
         <Route path="/classes/:classId/attendance/:timeslotId" element={<SlotAttendance />} />
         <Route path="/sections" element={<InstructorSections />} />
         <Route path="/materials" element={<InstructorMaterials />} />
