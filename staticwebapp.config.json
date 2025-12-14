@@ -1,6 +1,15 @@
 {
   "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/static/*", "/assets/*", "/*.css", "/*.js", "/*.png", "/*.ico", "/*.json"]
+    "rewrite":  "/index.html",
+    "exclude": ["/assets/**", "/static/**", "**/*.{js,css,png,jpg,jpeg,gif,svg,ico,json,woff,woff2,ttf,eot}"]
+  },
+  "mimeTypes": {
+    ". js": "text/javascript",
+    ".mjs": "text/javascript",
+    ".json": "application/json",
+    ".css": "text/css"
+  },
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff"
   }
 }
