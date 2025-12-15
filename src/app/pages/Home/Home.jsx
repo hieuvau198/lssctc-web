@@ -14,8 +14,8 @@ export default function Home() {
       <CategoriesSection />
       <MainCoursesSection />
       <NewCoursesSection />
-      <ArticlesSection />
-      <InstructorsSection />
+      {/* <ArticlesSection /> */}
+      {/* <InstructorsSection /> */}
       <AboutCenterSection />
     </>
   );

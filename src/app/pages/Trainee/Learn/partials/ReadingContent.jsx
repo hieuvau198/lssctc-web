@@ -1,22 +1,21 @@
 // src\app\pages\Trainee\Learn\partials\ReadingContent.jsx
 
 import { useTranslation } from 'react-i18next';
-import { Button, Tag, Progress, Alert } from "antd"; // Import Alert
-import { CheckCircle2, FileText, Clock, BookOpen, AlertCircle } from "lucide-react"; // Import icon AlertCircle
-import dayjs from 'dayjs'; // Import dayjs để format ngày tháng
+import { Button, Tag, Progress } from "antd";
+import { CheckCircle2, FileText, BookOpen, AlertCircle } from "lucide-react";
+import dayjs from 'dayjs';
 
 export default function ReadingContent({
   title,
   completed = false,
   documentUrl,
   onMarkAsComplete,
-  sessionStatus // [NEW] Nhận prop sessionStatus
+  sessionStatus
 }) {
   const { t } = useTranslation();
 
-  // [NEW] Logic kiểm tra session
   const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
-  
+
   const handleMarkComplete = () => {
     if (isSessionOpen && onMarkAsComplete) {
       onMarkAsComplete();
@@ -24,54 +23,75 @@ export default function ReadingContent({
   };
 
   return (
-    <div className="space-y-6">
-      {/* [NEW] Session Warning Banner */}
+    <div className="space-y-3">
+      {/* Session Warning Banner */}
       {sessionStatus && !isSessionOpen && (
-        <Alert
-          message={
-            <div className="flex flex-col gap-1">
-              <span className="font-semibold text-red-600">
-                {sessionStatus.message === "Not started yet" 
-                  ? t('trainee.learn.sessionNotStarted') 
-                  : t('trainee.learn.sessionExpired')}
-              </span>
-              <span className="text-xs text-gray-500">
-                {sessionStatus.startTime && `Start: ${dayjs(sessionStatus.startTime).format('DD/MM/YYYY HH:mm')}`}
-                {sessionStatus.endTime && ` - End: ${dayjs(sessionStatus.endTime).format('DD/MM/YYYY HH:mm')}`}
-              </span>
-            </div>
-          }
-          type="warning"
-          showIcon
-          icon={<AlertCircle className="w-5 h-5 text-red-500" />}
-          className="border-red-200 bg-red-50"
-        />
+        <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl">
+          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+          <div>
+            <span className="font-semibold text-amber-700 block text-sm">
+              {sessionStatus.message === "Not started yet"
+                ? t('trainee.learn.sessionNotStarted')
+                : t('trainee.learn.sessionExpired')}
+            </span>
+            <span className="text-xs text-amber-600">
+              {sessionStatus.startTime && `Start: ${dayjs(sessionStatus.startTime).format('DD/MM/YYYY HH:mm')}`}
+              {sessionStatus.endTime && ` - End: ${dayjs(sessionStatus.endTime).format('DD/MM/YYYY HH:mm')}`}
+            </span>
+          </div>
+        </div>
       )}
 
-      {/* Header (Giữ nguyên, chỉ sửa logic hiển thị Tag nếu cần) */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-teal-50">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-200">
-                <FileText className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Tag color="cyan" className="text-xs font-medium">{t('trainee.learn.document')}</Tag>
-                  {completed && (
-                    <Tag color="success" className="text-xs font-medium">{t('trainee.learn.completed')}</Tag>
-                  )}
-                </div>
-                <h1 className="text-xl font-bold text-slate-900">{title}</h1>
-              </div>
+      {/* Main Card */}
+      <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-slate-200/60 shadow-lg shadow-slate-200/50 overflow-hidden">
+        <div className="h-1 bg-gradient-to-r from-cyan-400 to-blue-500" />
+
+        {/* Compact Header */}
+        <div className="px-4 py-3 border-b border-slate-100 bg-gradient-to-r from-cyan-50/50 to-blue-50/50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-cyan-200">
+              <FileText className="w-4 h-4 text-white" />
             </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <Tag color="cyan" className="text-xs font-medium m-0">{t('trainee.learn.document')}</Tag>
+                {completed && (
+                  <Tag color="success" className="text-xs font-medium m-0">{t('trainee.learn.completed')}</Tag>
+                )}
+              </div>
+              <h1 className="text-base font-semibold text-slate-900 leading-tight mt-0.5">{title}</h1>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3">
+            {completed ? (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">{t('trainee.learn.completed')}</span>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-1.5 text-slate-500">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span className="text-xs">{t('trainee.learn.readingInProgress')}</span>
+                </div>
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={handleMarkComplete}
+                  disabled={!isSessionOpen}
+                >
+                  {t('trainee.learn.markComplete')}
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Document Viewer */}
-        <div className="p-6">
-          <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm h-[70vh] bg-slate-100">
+        {/* Document Viewer - Larger */}
+        <div className="p-4">
+          <div className="rounded-lg overflow-hidden border border-slate-200 shadow-sm h-[75vh] bg-slate-100">
             <iframe
               src={`${documentUrl}#toolbar=1&navpanes=0&scrollbar=1`}
               title={title}
@@ -80,56 +100,24 @@ export default function ReadingContent({
             />
           </div>
         </div>
-
-        {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {completed ? (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full">
-                <CheckCircle2 className="w-4 h-4" />
-                <span className="text-sm font-medium">{t('trainee.learn.completed')}</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 text-slate-500">
-                <BookOpen className="w-4 h-4" />
-                <span className="text-sm">{t('trainee.learn.readingInProgress')}</span>
-              </div>
-            )}
-          </div>
-
-          {!completed && (
-            // [NEW] Disable nút nếu session đóng
-            <Button 
-              type="primary" 
-              size="large" 
-              onClick={handleMarkComplete} 
-              disabled={!isSessionOpen} // Khóa nút
-              className="shadow-sm"
-            >
-              {t('trainee.learn.markComplete')}
-            </Button>
-          )}
-        </div>
       </div>
 
-      {/* Progress Card */}
+      {/* Progress Card - Only when completed */}
       {completed && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-green-50 to-emerald-50">
-            <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
-              {t('trainee.learn.readingProgress')}
-            </h3>
-          </div>
-          <div className="p-6">
-            <Progress 
-              percent={100} 
-              status="success" 
-              strokeColor={{ from: '#10b981', to: '#059669' }}
-            />
-            <p className="text-sm text-slate-600 mt-3">
-              {t('trainee.learn.readingCompleted')}
-            </p>
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-slate-200/60 shadow-md overflow-hidden">
+          <div className="h-0.5 bg-gradient-to-r from-emerald-400 to-teal-500" />
+          <div className="px-4 py-3 flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <div className="flex-1">
+              <span className="text-sm font-medium text-slate-800">{t('trainee.learn.readingProgress')}</span>
+              <Progress
+                percent={100}
+                status="success"
+                strokeColor={{ from: '#10b981', to: '#059669' }}
+                size="small"
+                className="mt-1"
+              />
+            </div>
           </div>
         </div>
       )}

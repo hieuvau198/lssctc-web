@@ -1,28 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Skeleton, Alert, Tabs } from 'antd'; // <-- Import Tabs
-import { Download, Info, Laptop2, Settings, PlayCircle, ExternalLink } from 'lucide-react'; // <-- Import ExternalLink
+import { Button, Skeleton, Alert, Tabs } from 'antd';
+import { Download, Info, Laptop2, Settings, PlayCircle, ExternalLink, Monitor, Cpu, HardDrive, Gamepad2 } from 'lucide-react';
 import PageNav from '../../../components/PageNav/PageNav';
 import { useTranslation } from 'react-i18next';
 
-/**
- * SimulationPlatform page
- * - Provides a download entry for native 3D simulator application.
- * - Displays installation & usage instructions (placeholder content).
- * - Uses env var VITE_SIM_APP_DOWNLOAD_URL (no hard-coded URL).
- * - Includes lightweight skeleton states per project guideline.
- */
 export default function SimulationPlatform() {
   const { t } = useTranslation();
-  const downloadUrl = import.meta.env.VITE_SIM_APP_DOWNLOAD_URL; // e.g. https://cdn.example.com/sim/LSSCTC-Simulator-Setup.exe
+  const downloadUrl = import.meta.env.VITE_SIM_APP_DOWNLOAD_URL;
   const backupUrl = "https://drive.google.com/drive/folders/1HkizMPbZkJCS9J9CVFIezedCAEBniH4E?usp=drive_link";
   const [downloading, setDownloading] = useState(false);
   const [metaLoading, setMetaLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Simulate tiny metadata loading (future: fetch latest version / release notes)
   useEffect(() => {
-    const t = setTimeout(() => setMetaLoading(false), 400);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setMetaLoading(false), 400);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleDownload = useCallback(() => {
@@ -32,7 +24,6 @@ export default function SimulationPlatform() {
     }
     setError('');
     setDownloading(true);
-    // Create hidden link to trigger browser download
     const a = document.createElement('a');
     a.href = downloadUrl;
     a.rel = 'noopener';
@@ -40,17 +31,20 @@ export default function SimulationPlatform() {
     document.body.appendChild(a);
     a.click();
     a.remove();
-    // Fallback end of state (cannot detect native download completion reliably)
     setTimeout(() => setDownloading(false), 1500);
   }, [downloadUrl, t]);
 
-  // Tab definitions
   const tabItems = [
     {
       key: '1',
-      label: t('simulator.download.tabTitle'),
+      label: (
+        <span className="flex items-center gap-2">
+          <Download className="w-4 h-4" />
+          {t('simulator.download.tabTitle')}
+        </span>
+      ),
       children: (
-        <div className="flex flex-col md:flex-row md:items-center gap-5 pt-4">
+        <div className="flex flex-col md:flex-row md:items-center gap-6 pt-6">
           <div className="flex-1 min-w-0">
             {metaLoading ? (
               <div className="space-y-3">
@@ -59,14 +53,25 @@ export default function SimulationPlatform() {
               </div>
             ) : (
               <>
-                <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-                  <Laptop2 className="w-5 h-5 text-blue-600" /> {t('simulator.download.latestBuild')}
+                <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2 mb-2">
+                  <Laptop2 className="w-5 h-5 text-cyan-600" />
+                  {t('simulator.download.latestBuild')}
                 </h2>
-                <p className="text-sm text-slate-600 mt-1">{t('simulator.download.version')}: <span className="font-medium">v1.0.0</span> • {t('simulator.download.approxSize')}: 450MB • {t('simulator.download.platform')}: Windows 10/11 (64-bit)</p>
+                <div className="flex flex-wrap gap-3 text-sm">
+                  <span className="px-3 py-1 bg-cyan-50 text-cyan-700 rounded-full font-medium">
+                    v1.0.0
+                  </span>
+                  <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full">
+                    450MB
+                  </span>
+                  <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full">
+                    Windows 10/11 (64-bit)
+                  </span>
+                </div>
               </>
             )}
           </div>
-          <div className="flex-shrink-0 flex items-center gap-3">
+          <div className="flex-shrink-0">
             <Button
               type="primary"
               size="large"
@@ -74,6 +79,7 @@ export default function SimulationPlatform() {
               loading={downloading}
               disabled={metaLoading || !downloadUrl}
               onClick={handleDownload}
+              className="shadow-lg shadow-cyan-200/50"
             >
               {downloadUrl ? (downloading ? t('simulator.download.preparing') : t('simulator.download.downloadButton')) : t('simulator.download.unavailable')}
             </Button>
@@ -83,18 +89,23 @@ export default function SimulationPlatform() {
     },
     {
       key: '2',
-      label: t('simulator.backup.tabTitle'),
+      label: (
+        <span className="flex items-center gap-2">
+          <ExternalLink className="w-4 h-4" />
+          {t('simulator.backup.tabTitle')}
+        </span>
+      ),
       children: (
-        <div className="flex flex-col md:flex-row md:items-center gap-5 pt-4">
+        <div className="flex flex-col md:flex-row md:items-center gap-6 pt-6">
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-              <ExternalLink className="w-5 h-5 text-green-600" /> {t('simulator.backup.title')}
+            <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2 mb-2">
+              <ExternalLink className="w-5 h-5 text-emerald-600" />
+              {t('simulator.backup.title')}
             </h2>
-            <p className="text-sm text-slate-600 mt-1">{t('simulator.backup.description')}</p>
+            <p className="text-sm text-slate-600">{t('simulator.backup.description')}</p>
           </div>
-          <div className="flex-shrink-0 flex items-center gap-3">
+          <div className="flex-shrink-0">
             <Button
-              type="default"
               size="large"
               icon={<ExternalLink className="w-4 h-4" />}
               href={backupUrl}
@@ -109,67 +120,141 @@ export default function SimulationPlatform() {
     }
   ];
 
+  const systemRequirements = [
+    { icon: Monitor, label: 'OS', value: 'Windows 10/11 (64-bit)' },
+    { icon: Cpu, label: 'Processor', value: 'Intel i5 or AMD equivalent' },
+    { icon: HardDrive, label: 'Storage', value: '2GB available space' },
+    { icon: Gamepad2, label: 'GPU', value: 'DirectX 11 compatible' },
+  ];
+
   return (
-    <div className="bg-white ">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <PageNav nameMap={{ simulator: t('header.simulator') }} />
+
+        {/* Hero Header */}
         <header className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-2">{t('simulator.title')}</h1>
-          <p className="text-slate-600 max-w-2xl text-sm sm:text-base">{t('simulator.subtitle')}</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 rounded-full text-sm font-medium mb-4">
+            <Monitor className="w-4 h-4" />
+            {t('simulator.badge', '3D Simulation')}
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight mb-3">
+            {t('simulator.title')}
+          </h1>
+          <p className="text-slate-600 max-w-2xl text-base sm:text-lg">
+            {t('simulator.subtitle')}
+          </p>
         </header>
 
-        <div className="flex flex-col gap-6 mb-12">
-          <div className="rounded-xl border border-slate-200 p-6 bg-gradient-to-br from-slate-50 to-white">
-            {error && <Alert type="error" showIcon className="mb-4" message={error} />}
-            
-            {/* --- THAY THẾ BẰNG TABS --- */}
-            <Tabs defaultActiveKey="1" items={tabItems} />
-            {/* --- KẾT THÚC THAY THẾ --- */}
-            
-            {!downloadUrl && !metaLoading && (
-              <p className="mt-3 text-xs text-amber-600 flex items-center gap-1"><Info className="w-4 h-4" /> {t('simulator.download.envVarNotSet')} <code className="font-mono">VITE_SIM_APP_DOWNLOAD_URL</code> {t('simulator.download.notSet')}</p>
-            )}
+        {/* Download Card */}
+        <div className="mb-10">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-xl shadow-slate-200/50 overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-cyan-400 to-blue-500" />
+            <div className="p-6">
+              {error && <Alert type="error" showIcon className="mb-4" message={error} />}
+              <Tabs defaultActiveKey="1" items={tabItems} />
+
+              {!downloadUrl && !metaLoading && (
+                <p className="mt-4 text-xs text-amber-600 flex items-center gap-1 bg-amber-50 p-3 rounded-lg">
+                  <Info className="w-4 h-4" />
+                  {t('simulator.download.envVarNotSet')} <code className="font-mono bg-amber-100 px-1 rounded">VITE_SIM_APP_DOWNLOAD_URL</code> {t('simulator.download.notSet')}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
-        <section className="mb-12">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><Settings className="w-5 h-5 text-blue-600" /> {t('simulator.installation.title')}</h3>
-          {metaLoading ? (
-            <div className="space-y-4">
-              <Skeleton active paragraph={{ rows: 3 }} />
-              <Skeleton active paragraph={{ rows: 2 }} />
+        {/* System Requirements */}
+        <div className="mb-10">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <Cpu className="w-5 h-5 text-cyan-600" />
+            {t('simulator.requirements', 'System Requirements')}
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {systemRequirements.map((req, i) => (
+              <div key={i} className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-slate-200 hover:border-cyan-200 hover:shadow-lg transition-all duration-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                    <req.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500">{req.label}</div>
+                    <div className="text-sm font-medium text-slate-800">{req.value}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Installation Guide */}
+        <section className="mb-10">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-lg overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-cyan-50/50 to-blue-50/50">
+              <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                <Settings className="w-5 h-5 text-cyan-600" />
+                {t('simulator.installation.title')}
+              </h3>
             </div>
-          ) : (
-            <ol className="list-decimal pl-5 space-y-3 text-sm text-slate-700">
-              <li dangerouslySetInnerHTML={{ __html: t('simulator.installation.step1') }} />
-              <li dangerouslySetInnerHTML={{ __html: t('simulator.installation.step2') }} />
-              <li dangerouslySetInnerHTML={{ __html: t('simulator.installation.step3') }} />
-              <li dangerouslySetInnerHTML={{ __html: t('simulator.installation.step4') }} />
-              <li dangerouslySetInnerHTML={{ __html: t('simulator.installation.step5') }} />
-            </ol>
-          )}
+            <div className="p-6">
+              {metaLoading ? (
+                <Skeleton active paragraph={{ rows: 4 }} />
+              ) : (
+                <ol className="space-y-4">
+                  {[1, 2, 3, 4, 5].map((step) => (
+                    <li key={step} className="flex items-start gap-3">
+                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0 text-white text-sm font-bold">
+                        {step}
+                      </div>
+                      <p
+                        className="text-slate-700 pt-1 text-sm"
+                        dangerouslySetInnerHTML={{ __html: t(`simulator.installation.step${step}`) }}
+                      />
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          </div>
         </section>
 
-        <section className="mb-12">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><PlayCircle className="w-5 h-5 text-blue-600" /> {t('simulator.usage.title')}</h3>
-          {metaLoading ? (
-            <Skeleton active paragraph={{ rows: 4 }} />
-          ) : (
-            <div className="prose max-w-none text-sm leading-relaxed text-slate-700">
-              <p dangerouslySetInnerHTML={{ __html: t('simulator.usage.intro') }} />
-              <ul className="list-disc pl-5 space-y-1">
-                <li dangerouslySetInnerHTML={{ __html: t('simulator.usage.controlsMapping') }} />
-                <li dangerouslySetInnerHTML={{ __html: t('simulator.usage.telemetryPanel') }} />
-                <li dangerouslySetInnerHTML={{ __html: t('simulator.usage.assessmentMode') }} />
-                <li dangerouslySetInnerHTML={{ __html: t('simulator.usage.replay') }} />
-              </ul>
-              <p className="mt-4" dangerouslySetInnerHTML={{ __html: t('simulator.usage.advanced') }} />
+        {/* Usage Guide */}
+        <section className="mb-10">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-lg overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-cyan-50/50 to-blue-50/50">
+              <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                <PlayCircle className="w-5 h-5 text-cyan-600" />
+                {t('simulator.usage.title')}
+              </h3>
             </div>
-          )}
+            <div className="p-6">
+              {metaLoading ? (
+                <Skeleton active paragraph={{ rows: 4 }} />
+              ) : (
+                <div className="prose max-w-none text-sm leading-relaxed text-slate-700">
+                  <p dangerouslySetInnerHTML={{ __html: t('simulator.usage.intro') }} />
+                  <ul className="mt-4 space-y-2">
+                    {['controlsMapping', 'telemetryPanel', 'assessmentMode', 'replay'].map((key) => (
+                      <li key={key} className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-2 flex-shrink-0" />
+                        <span dangerouslySetInnerHTML={{ __html: t(`simulator.usage.${key}`) }} />
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 p-4 bg-cyan-50 rounded-xl border border-cyan-100" dangerouslySetInnerHTML={{ __html: t('simulator.usage.advanced') }} />
+                </div>
+              )}
+            </div>
+          </div>
         </section>
 
+        {/* Support Footer */}
         <footer className="pb-4">
-          <p className="text-xs text-slate-500">{t('simulator.support.text')} <a className="underline" href={`mailto:${t('simulator.support.email')}`}>{t('simulator.support.email')}</a> {t('simulator.support.withDetails')} (<code className="font-mono">logs/latest.txt</code>).</p>
+          <div className="bg-slate-100 rounded-xl p-4 text-center">
+            <p className="text-sm text-slate-600">
+              {t('simulator.support.text')} <a className="text-cyan-600 hover:underline font-medium" href={`mailto:${t('simulator.support.email')}`}>{t('simulator.support.email')}</a>
+            </p>
+          </div>
         </footer>
       </div>
     </div>
