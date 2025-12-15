@@ -612,7 +612,9 @@
       "active": "Active",
       "inactive": "Inactive",
       "noToken": "Authentication token not found. Please login again.",
-      "loadFailed": "Unable to load profile information"
+      "loadFailed": "Unable to load profile information",
+      "driverLicenseInfo": "Driver License Information",
+      "citizenCardInfo": "Citizen ID Information"
     },
     "editProfile": {
       "title": "Edit Profile",

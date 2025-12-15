@@ -664,7 +664,9 @@
       "active": "Hoạt động",
       "inactive": "Không hoạt động",
       "noToken": "Không tìm thấy token xác thực. Vui lòng đăng nhập lại.",
-      "loadFailed": "Không thể tải thông tin hồ sơ"
+      "loadFailed": "Không thể tải thông tin hồ sơ",
+      "driverLicenseInfo": "Thông tin bằng lái xe",
+      "citizenCardInfo": "Thông tin CCCD"
     },
     "editProfile": {
       "title": "Chỉnh sửa hồ sơ",

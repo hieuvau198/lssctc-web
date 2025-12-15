@@ -1,9 +1,10 @@
 // src\app\pages\Trainee\Profile\Profile.jsx
 import React, { useState, useEffect } from 'react';
-import { Spin, Alert } from 'antd';
+import { Spin, Alert, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { User, Mail, Phone, IdCard, GraduationCap, Car, Calendar, MapPin, Shield, Edit3 } from 'lucide-react';
+import { EditOutlined } from '@ant-design/icons';
+import { User, Mail, Phone, IdCard, GraduationCap, Car, Calendar, MapPin, Shield } from 'lucide-react';
 import PageNav from '../../../components/PageNav/PageNav';
 import useAuthStore from '../../../store/authStore';
 import { getAuthToken } from '../../../libs/cookies';
@@ -223,13 +224,15 @@ export default function Profile() {
                   </div>
 
                   {/* Edit Button */}
-                  <button
+                  <Button
+                    type="primary"
+                    size="large"
+                    icon={<EditOutlined />}
                     onClick={() => navigate('/profile/edit')}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105"
+                    className="!rounded-xl !font-semibold"
                   >
-                    <Edit3 className="w-4 h-4" />
-                    <span>{t('trainee.profile.editProfile')}</span>
-                  </button>
+                    {t('trainee.profile.editProfile')}
+                  </Button>
                 </div>
               </div>
             </div>
