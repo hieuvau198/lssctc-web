@@ -1012,7 +1012,8 @@
         "manageMaterial": "Quản lý Tài liệu",
         "manageQuiz": "Quản lý Bài kiểm tra",
         "managePractice": "Quản lý Thực hành",
-        "minutes": "phút"
+        "minutes": "phút",
+        "activityDetails": "Chi tiết Hoạt động"
       },
       "addActivityModal": {
         "title": "Thêm Hoạt động Mới",
