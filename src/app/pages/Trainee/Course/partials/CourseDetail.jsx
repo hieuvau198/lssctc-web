@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'react-router';
 import { fetchCourseDetail } from '../../../../apis/ProgramManager/CourseApi';
 import PageNav from '../../../../components/PageNav/PageNav';
-import { ClockCircleOutlined, InfoCircleOutlined, BookOutlined } from '@ant-design/icons';
-import { Wallet } from 'lucide-react';
+import { Clock, BookOpen, FolderOpen, Wallet, Info, GraduationCap } from 'lucide-react';
 import ClassesSection from './ClassesSection';
 
 export default function CourseDetail() {
@@ -20,7 +19,7 @@ export default function CourseDetail() {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    
+
     fetchCourseDetail(id)
       .then((courseRes) => {
         if (cancelled) return;
@@ -35,46 +34,32 @@ export default function CourseDetail() {
     return () => { cancelled = true; };
   }, [id]);
 
-  // If navigated from a Program page, location.state.fromProgram should be set.
   const fromProgram = location?.state?.fromProgram;
   const breadcrumbItems = fromProgram
     ? [
-        { title: t('trainee.programs.title'), href: '/program' },
-        { title: fromProgram.name || t('trainee.programs.title'), href: `/program/${fromProgram.id}` },
-        { title: data?.name || t('trainee.courses.title') },
-      ]
-    : [ { title: t('trainee.courses.title'), href: '/course' }, { title: data?.name || t('trainee.courses.title') } ];
+      { title: t('trainee.programs.title'), href: '/program' },
+      { title: fromProgram.name || t('trainee.programs.title'), href: `/program/${fromProgram.id}` },
+      { title: data?.name || t('trainee.courses.title') },
+    ]
+    : [{ title: t('trainee.courses.title'), href: '/course' }, { title: data?.name || t('trainee.courses.title') }];
 
   if (loading) {
     return (
-      <div className="w-full">
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 border-b border-slate-200">
+      <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
+        <div className="bg-gradient-to-br from-cyan-50/50 via-white to-blue-50/30 border-b border-slate-200/60">
           <div className="max-w-7xl mx-auto px-4 py-10">
             <div className="mb-4"><Skeleton.Button active size="small" style={{ width: 240 }} /></div>
             <div className="flex flex-col lg:flex-row gap-10 items-stretch">
               <div className="flex-1 min-w-0">
                 <Skeleton.Input active className="!w-3/4 !h-12 mb-6" />
                 <Skeleton active paragraph={{ rows: 4 }} className="max-w-2xl" />
-                <div className="flex gap-4 mt-6 flex-wrap">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton.Button key={i} active className="!w-24" />
-                  ))}
-                </div>
               </div>
               <div className="w-full lg:w-96 flex-shrink-0">
-                <div className="h-full flex flex-col">
-                  <div className="h-72 w-full rounded-xl overflow-hidden bg-slate-200">
-                    <Skeleton.Image active className="!w-full !h-full" />
-                  </div>
+                <div className="h-72 w-full rounded-2xl overflow-hidden bg-slate-200">
+                  <Skeleton.Image active className="!w-full !h-full" />
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div className="bg-white">
-          <div className="max-w-7xl mx-auto px-4 py-10">
-            <h3 className="text-2xl font-semibold mb-6">{t('trainee.courseDetail.availableClasses')}</h3>
-            <ClassesSection courseId={id} />
           </div>
         </div>
       </div>
@@ -94,10 +79,10 @@ export default function CourseDetail() {
   }
 
   return (
-    <div className="w-full">
-      {/* Two-column hero */}
-      <div className="bg-gradient-to-br from-slate-50 to-slate-100 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 py-10">
+    <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-cyan-50/50 via-white to-blue-50/30 border-b border-slate-200/60">
+        <div className="max-w-7xl mx-auto px-4 py-8">
           <PageNav
             className="mb-4"
             items={breadcrumbItems}
@@ -105,55 +90,68 @@ export default function CourseDetail() {
             rootHref="/"
             hideIds
           />
-          <div className="flex flex-col-reverse lg:flex-row gap-12 items-stretch">
+          <div className="flex flex-col-reverse lg:flex-row gap-10 items-stretch">
             {/* Left content */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold mb-5 leading-tight text-slate-900 max-w-3xl">
+              <h1 className="text-3xl font-bold mb-4 leading-tight text-slate-900 max-w-3xl">
                 {data.name}
               </h1>
-              <div className="text-lg text-slate-600 mb-6 max-w-2xl">
-                <div className="overflow-y-scroll" style={{ minHeight: '7rem', maxHeight: '7rem' }}>
-                  <p className="whitespace-pre-line text-sm">
-                    {data.description || t('trainee.courseDetail.noDescription')}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-6 text-sm text-slate-700 mb-6">
+
+              {/* Meta badges */}
+              <div className="flex flex-wrap gap-3 mb-6">
                 {data.durationHours != null && (
-                  <span className="flex items-center">
-                    <ClockCircleOutlined className="mr-2 text-slate-500" />
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200/60 text-sm text-slate-700">
+                    <Clock className="w-4 h-4 text-cyan-500" />
                     {data.durationHours} {t('trainee.courseDetail.hours')}
                   </span>
                 )}
                 {data.levelName && (
-                  <span className="flex items-center">
-                    <BookOutlined className="mr-2 text-slate-500" />
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200/60 text-sm text-slate-700">
+                    <BookOpen className="w-4 h-4 text-blue-500" />
                     {data.levelName}
                   </span>
                 )}
                 {data.categoryName && (
-                  <Tag color="blue" className="m-0">{data.categoryName}</Tag>
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-lg border border-cyan-200 text-sm text-cyan-700 font-medium">
+                    <FolderOpen className="w-4 h-4" />
+                    {data.categoryName}
+                  </span>
                 )}
                 {data.price != null && (
-                  <span className="flex items-center">
-                    <Wallet className="mr-2 text-slate-500 w-4 h-4" />
-                    <span>{Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.price)}</span>
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 text-sm text-emerald-700 font-medium">
+                    <Wallet className="w-4 h-4" />
+                    {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.price)}
                   </span>
                 )}
               </div>
+
+              {/* Description */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200/60 p-5 mb-6 max-w-2xl">
+                <div className="overflow-y-auto" style={{ maxHeight: '8rem' }}>
+                  <p className="whitespace-pre-line text-sm text-slate-600 leading-relaxed">
+                    {data.description || t('trainee.courseDetail.noDescription')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Course Code */}
               {data.courseCodeName && (
-                <div className="mb-8 bg-white/60 backdrop-blur-sm rounded-md p-4 border border-slate-200 max-w-2xl">
-                  <h4 className="font-semibold flex items-center mb-2 text-base text-slate-800">
-                    <InfoCircleOutlined className="mr-2 text-blue-500" /> {t('trainee.courseDetail.courseCode')}
+                <div className="bg-gradient-to-r from-cyan-50/80 to-blue-50/80 backdrop-blur-sm rounded-xl p-4 border border-cyan-200/60 max-w-md">
+                  <h4 className="font-semibold flex items-center gap-2 mb-2 text-sm text-cyan-800">
+                    <Info className="w-4 h-4 text-cyan-500" />
+                    {t('trainee.courseDetail.courseCode')}
                   </h4>
-                  <p className="text-slate-700 text-sm font-mono">{data.courseCodeName}</p>
+                  <p className="text-cyan-700 text-sm font-mono bg-white/60 px-3 py-1.5 rounded-lg inline-block">
+                    {data.courseCodeName}
+                  </p>
                 </div>
               )}
             </div>
+
             {/* Right image panel */}
             <div className="w-full lg:w-96 flex-shrink-0">
-              <div className="rounded-xl overflow-hidden border bg-white shadow-sm h-full flex flex-col">
-                <div className="h-80 w-full relative bg-slate-200 flex items-center justify-center">
+              <div className="rounded-2xl overflow-hidden border border-slate-200/60 bg-white/90 backdrop-blur-sm shadow-xl shadow-slate-200/50 h-full flex flex-col">
+                <div className="h-72 w-full relative bg-slate-100 flex items-center justify-center">
                   {data.imageUrl ? (
                     <img
                       src={data.imageUrl}
@@ -162,8 +160,8 @@ export default function CourseDetail() {
                       loading="lazy"
                     />
                   ) : (
-                    <div className="h-full w-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-                      <span className="text-slate-500 text-sm">{t('trainee.programDetail.noImage')}</span>
+                    <div className="h-full w-full bg-gradient-to-br from-cyan-100 to-blue-200 flex items-center justify-center">
+                      <GraduationCap className="w-16 h-16 text-cyan-400" />
                     </div>
                   )}
                 </div>
@@ -174,9 +172,14 @@ export default function CourseDetail() {
       </div>
 
       {/* Classes Section */}
-      <div className="bg-white min-h-screen">
+      <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 py-10">
-          <h2 className="text-2xl font-semibold mb-6">{t('trainee.courseDetail.availableClasses')}</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-200/50">
+              <BookOpen className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900">{t('trainee.courseDetail.availableClasses')}</h2>
+          </div>
           <ClassesSection courseId={id} />
         </div>
       </div>
