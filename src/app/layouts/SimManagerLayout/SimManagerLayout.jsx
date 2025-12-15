@@ -2,9 +2,14 @@
 
 import React, { useState, useCallback } from 'react';
 import { Outlet } from 'react-router';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import SidebarSimManager from './partials/SidebarSimManager';
 
+/**
+ * SimManagerLayout
+ * - Hosts a collapsible sidebar (expanded vs icon-only)
+ * - Responsive: mobile can toggle visibility; desktop toggles width
+ * - Modern glassmorphism design with gradient backgrounds
+ */
 export default function SimManagerLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -14,7 +19,14 @@ export default function SimManagerLayout() {
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-gradient-to-br from-slate-50 via-white to-violet-50/30">
+      {/* Decorative Background Blurs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden>
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-violet-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-20 w-72 h-72 bg-purple-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl" />
+      </div>
+
       <SidebarSimManager
         collapsed={collapsed}
         onToggle={toggleCollapsed}
@@ -23,7 +35,7 @@ export default function SimManagerLayout() {
         onMobileClose={closeMobile}
       />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative z-10">
         <main className="flex-1 p-4 md:p-6 overflow-x-hidden">
           <Outlet />
         </main>

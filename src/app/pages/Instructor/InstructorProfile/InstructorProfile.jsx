@@ -1,5 +1,5 @@
-import { ArrowLeft, User, Mail, Phone, Calendar, IdCard, CheckCircle, Award, Briefcase } from 'lucide-react';
-import { Avatar, Button, Card, Descriptions, Skeleton, Tag, Divider, Row, Col, Alert } from 'antd';
+import { User, Mail, Phone, Calendar, IdCard, Award, Briefcase, Shield, Edit } from 'lucide-react';
+import { Avatar, Button, Skeleton, Alert } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,8 @@ export default function InstructorProfile() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+  const [imgErr, setImgErr] = useState(false);
+
   const { nameid } = useAuthStore();
   const token = getAuthToken();
 
@@ -27,23 +28,23 @@ export default function InstructorProfile() {
 
       try {
         setLoading(true);
-        
+
         // Decode token to get user ID
         const { jwtDecode } = await import('jwt-decode');
         const decoded = jwtDecode(token);
         const userId = decoded.nameid || decoded.nameId || decoded.sub;
-        
+
         if (!userId) {
           throw new Error(t('instructor.profile.error.userIdNotFound'));
         }
-        
+
         console.log('=== Instructor Profile Fetch Debug ===');
         console.log('📡 Fetching profile for userId:', userId);
-        
+
         // Fetch instructor profile
         const fullProfile = await getInstructorProfileByUserId(userId, token);
         console.log('✅ Success:', fullProfile);
-        
+
         setProfileData(fullProfile);
         setError(null);
       } catch (err) {
@@ -57,11 +58,47 @@ export default function InstructorProfile() {
     fetchProfile();
   }, [token, t]);
 
+  // Map role number to string
+  const getRoleName = (roleNumber) => {
+    const roles = {
+      1: t('instructor.profile.roles.admin'),
+      2: t('instructor.profile.roles.instructor'),
+      3: t('instructor.profile.roles.simulationManager'),
+      4: t('instructor.profile.roles.trainee')
+    };
+    return roles[roleNumber] || t('instructor.profile.roles.unknown');
+  };
+
+  const fmtDate = (v) => {
+    if (!v) return '-';
+    const d = new Date(v);
+    return isNaN(d) ? '-' : d.toLocaleDateString('vi-VN');
+  };
+
+  // Info Item Component
+  const InfoItem = ({ icon: Icon, label, value, iconColor = "text-blue-500" }) => (
+    <div className="flex items-start gap-3">
+      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center shadow-sm flex-shrink-0`}>
+        <Icon className={`w-5 h-5 ${iconColor}`} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</div>
+        <div className="text-slate-700 font-semibold mt-0.5 truncate">{value || '-'}</div>
+      </div>
+    </div>
+  );
+
+  const fullName = profileData?.fullname || 'Instructor';
+  const initial = typeof fullName === 'string' && fullName.trim()
+    ? fullName.trim().charAt(0).toUpperCase()
+    : 'I';
+  const status = profileData?.isInstructorActive ? 'Active' : 'Inactive';
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 shadow-lg shadow-slate-200/50">
             <Skeleton avatar active paragraph={{ rows: 8 }} />
           </div>
         </div>
@@ -71,9 +108,9 @@ export default function InstructorProfile() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 shadow-lg shadow-slate-200/50">
             <Alert
               message={t('instructor.profile.error.errorLoadingProfile')}
               description={error}
@@ -91,270 +128,183 @@ export default function InstructorProfile() {
 
   if (!profileData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="text-center text-gray-500">{t('instructor.profile.instructorNotFound')}</div>
+      <div className="min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 shadow-lg shadow-slate-200/50">
+            <div className="text-center text-slate-500">{t('instructor.profile.instructorNotFound')}</div>
           </div>
         </div>
       </div>
     );
   }
 
-  // Map role number to string
-  const getRoleName = (roleNumber) => {
-    const roles = {
-      1: t('instructor.profile.roles.admin'),
-      2: t('instructor.profile.roles.instructor'),
-      3: t('instructor.profile.roles.simulationManager'),
-      4: t('instructor.profile.roles.trainee')
-    };
-    return roles[roleNumber] || t('instructor.profile.roles.unknown');
-  };
-
   return (
-    <>
-      <div className="max-w-7xl mx-auto px-4 py-2">
-        {/* Main Profile Card */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Header Section with Avatar */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
-            
-            <Row gutter={[32, 32]} align="middle">
-              <Col xs={24} md={8} className="text-center md:text-left">
-                <div className="relative inline-block">
-                  <Avatar 
-                    size={128} 
-                    src={profileData?.avatarUrl}
-                    className="ring-4 ring-white/30 shadow-2xl"
-                  >
-                    {profileData?.fullname?.charAt(0) || 'I'}
-                  </Avatar>
-                  {profileData?.isInstructorActive && (
-                    <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
-                      <CheckCircle className="w-5 h-5 text-white" />
-                    </div>
-                  )}
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="space-y-6">
+          {/* Hero Card */}
+          <div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50">
+            {/* Gradient Top Bar */}
+            <div className="h-2 bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500" />
+
+            <div className="p-6 sm:p-8">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                {/* Avatar with Ring */}
+                <div className="relative">
+                  <div className="w-28 h-28 rounded-full bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 p-1 shadow-lg shadow-blue-500/25">
+                    {profileData?.avatarUrl && !imgErr ? (
+                      <img
+                        src={profileData.avatarUrl}
+                        alt={fullName}
+                        className="w-full h-full rounded-full object-cover bg-white"
+                        onError={() => setImgErr(true)}
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white">{initial}</span>
+                      </div>
+                    )}
+                  </div>
+                  {/* Status Badge */}
+                  <div className={`absolute -bottom-1 -right-1 px-3 py-1 rounded-full text-xs font-semibold shadow-md ${status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                    }`}>
+                    {status}
+                  </div>
                 </div>
-              </Col>
-              <Col xs={24} md={16}>
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-bold mb-2">{profileData?.fullname || 'Unknown'}</h2>
-                  <div className="flex flex-wrap gap-3">
-                    <Tag color="gold" className="px-3 py-1 flex items-center">
-                      <IdCard className="mr-1 w-4 h-4" />
-                      {profileData?.instructorCode || t('common.na')}
-                    </Tag>
-                    <Tag color={profileData?.isInstructorActive ? 'green' : 'red'} className="px-3 py-1">
-                      {profileData?.isInstructorActive ? t('common.active') : t('common.inactive')}
-                    </Tag>
-                    <Tag color="blue" className="px-3 py-1">
+
+                {/* User Info */}
+                <div className="flex-1 text-center sm:text-left">
+                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
+                    {fullName}
+                  </h1>
+                  <p className="text-slate-500 mt-1">{profileData?.email || '-'}</p>
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
+                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
                       {getRoleName(profileData?.role)}
-                    </Tag>
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-sm font-medium">
+                      {profileData?.instructorCode || 'N/A'}
+                    </span>
                     {profileData?.experienceYears && (
-                      <Tag color="purple" className="px-3 py-1 flex items-center">
-                        <Award className="mr-1 w-4 h-4" />
-                        {t('instructor.profile.yearsExp', { years: profileData.experienceYears })}
-                      </Tag>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-4 mt-4 text-blue-100">
-                    {profileData?.hireDate && (
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>{t('instructor.profile.joined', { date: new Date(profileData.hireDate).toLocaleDateString() })}</span>
-                      </div>
+                      <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium flex items-center gap-1">
+                        <Award className="w-3.5 h-3.5" />
+                        {profileData.experienceYears} năm KN
+                      </span>
                     )}
                   </div>
                 </div>
-              </Col>
-            </Row>
-          </div>
 
-          {/* Details Section */}
-          <div className="p-6">
-            <Row gutter={[32, 32]}>
-              {/* Personal Information */}
-              <Col xs={24} lg={12}>
-                <Card 
-                  title={
-                    <div className="flex items-center gap-2">
-                      <User className="text-blue-600" />
-                      <span>{t('instructor.profile.personalInformation')}</span>
-                    </div>
-                  }
-                  className="h-full shadow-md border-l-4 border-l-blue-500"
-                  bodyStyle={{ padding: '24px' }}
+                {/* Edit Button */}
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<Edit className="w-4 h-4" />}
+                  onClick={() => navigate('/instructor/profile/edit')}
+                  className="!rounded-xl !font-semibold !flex !items-center !gap-2"
                 >
-                  <Descriptions column={1} size="small" className="custom-descriptions">
-                    <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.fullName')}</span>}
-                      labelStyle={{ width: '120px' }}
-                    >
-                      <span className="text-gray-900">{profileData?.fullname || t('common.na')}</span>
-                    </Descriptions.Item>
-                    <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.email')}</span>}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Mail className="text-gray-500 w-4 h-4" />
-                        <span className="text-blue-600">{profileData?.email || t('common.na')}</span>
-                      </div>
-                    </Descriptions.Item>
-                    <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.phone')}</span>}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Phone className="text-gray-500 w-4 h-4" />
-                        <span className="text-gray-900">{profileData?.phoneNumber || t('common.na')}</span>
-                      </div>
-                    </Descriptions.Item>
-                  </Descriptions>
-                </Card>
-              </Col>
-
-              {/* Professional Information */}
-              <Col xs={24} lg={12}>
-                <Card 
-                  title={
-                    <div className="flex items-center gap-2">
-                      <IdCard className="text-indigo-600" />
-                      <span>{t('instructor.profile.professionalDetails')}</span>
-                    </div>
-                  }
-                  className="h-full shadow-md border-l-4 border-l-indigo-500"
-                  bodyStyle={{ padding: '24px' }}
-                >
-                  <Descriptions column={1} size="small">
-                    <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.role')}</span>}
-                    >
-                      <Tag color="blue" className="px-3 py-1">
-                        {getRoleName(profileData?.role)}
-                      </Tag>
-                    </Descriptions.Item>
-                    <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.instructorCode')}</span>}
-                    >
-                      <span className="text-gray-900 font-mono bg-gray-100 px-2 py-1 rounded">
-                        {profileData?.instructorCode || t('common.na')}
-                      </span>
-                    </Descriptions.Item>
-                    <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.experienceYears')}</span>}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Award className="text-gray-500 w-4 h-4" />
-                        <span className="text-gray-900">{t('instructor.profile.years', { count: profileData?.experienceYears || 0 })}</span>
-                      </div>
-                    </Descriptions.Item>
-                    <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.hireDate')}</span>}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Calendar className="text-gray-500 w-4 h-4" />
-                        <span className="text-gray-900">
-                          {profileData?.hireDate ? new Date(profileData.hireDate).toLocaleDateString() : t('common.na')}
-                        </span>
-                      </div>
-                    </Descriptions.Item>
-                    <Descriptions.Item 
-                      label={<span className="font-medium text-gray-700">{t('instructor.profile.form.status')}</span>}
-                    >
-                      <Tag 
-                        color={profileData?.isInstructorActive ? 'green' : 'red'} 
-                        className="px-3 py-1"
-                      >
-                        {profileData?.isInstructorActive ? t('common.active') : t('common.inactive')}
-                      </Tag>
-                    </Descriptions.Item>
-                  </Descriptions>
-                </Card>
-              </Col>
-            </Row>
-
-            <Divider className="my-8" />
-
-            {/* Biography and Specialization */}
-            <Row gutter={[32, 32]}>
-              {/* Biography */}
-              {profileData?.biography && (
-                <Col xs={24}>
-                  <Card 
-                    title={
-                      <div className="flex items-center gap-2">
-                        <Briefcase className="text-green-600" />
-                        <span>{t('instructor.profile.biography')}</span>
-                      </div>
-                    }
-                    className="shadow-md border-l-4 border-l-green-500"
-                  >
-                    <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                      {profileData.biography}
-                    </p>
-                  </Card>
-                </Col>
-              )}
-
-              {/* Specialization */}
-              {profileData?.specialization && (
-                <Col xs={24}>
-                  <Card 
-                    title={
-                      <div className="flex items-center gap-2">
-                        <Award className="text-purple-600" />
-                        <span>{t('instructor.profile.specialization')}</span>
-                      </div>
-                    }
-                    className="shadow-md border-l-4 border-l-purple-500"
-                  >
-                    <p className="text-gray-700">
-                      {profileData.specialization}
-                    </p>
-                  </Card>
-                </Col>
-              )}
-
-              {/* Professional Profile Certificate */}
-              {profileData?.professionalProfileUrl && (
-                <Col xs={24}>
-                  <Card 
-                    title={
-                      <div className="flex items-center gap-2">
-                        <Award className="text-orange-600" />
-                        <span>{t('instructor.profile.professionalCertificate')}</span>
-                      </div>
-                    }
-                    className="shadow-md border-l-4 border-l-orange-500"
-                  >
-                    <img
-                      src={profileData.professionalProfileUrl}
-                      alt={t('instructor.profile.professionalCertificate')}
-                      className="max-w-2xl w-full rounded-lg shadow-md"
-                    />
-                  </Card>
-                </Col>
-              )}
-            </Row>
-
-            <Divider className="my-8" />
-
-            {/* Action Buttons */}
-            <div className="flex justify-center gap-4">
-              <Button 
-                type="primary" 
-                size="large"
-                className="px-8 shadow-md hover:shadow-lg transition-shadow"
-                onClick={() => navigate('/instructor/profile/edit')}
-              >
-                {t('instructor.profile.editProfile')}
-              </Button>
+                  {t('instructor.profile.editProfile')}
+                </Button>
+              </div>
             </div>
           </div>
+
+          {/* Personal Information */}
+          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+            <div className="h-1 bg-gradient-to-r from-blue-400 to-indigo-500" />
+            <div className="p-6">
+              <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                <User className="w-5 h-5 text-blue-500" />
+                {t('instructor.profile.personalInformation')}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <InfoItem icon={User} label={t('instructor.profile.form.fullName')} value={profileData?.fullname} iconColor="text-blue-500" />
+                <InfoItem icon={Mail} label={t('instructor.profile.form.email')} value={profileData?.email} iconColor="text-indigo-500" />
+                <InfoItem icon={Phone} label={t('instructor.profile.form.phone')} value={profileData?.phoneNumber} iconColor="text-purple-500" />
+                <InfoItem icon={Shield} label={t('instructor.profile.form.role')} value={getRoleName(profileData?.role)} iconColor="text-emerald-500" />
+              </div>
+            </div>
+          </div>
+
+          {/* Professional Information */}
+          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+            <div className="h-1 bg-gradient-to-r from-indigo-400 to-purple-500" />
+            <div className="p-6">
+              <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                <IdCard className="w-5 h-5 text-indigo-500" />
+                {t('instructor.profile.professionalDetails')}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <InfoItem icon={IdCard} label={t('instructor.profile.form.instructorCode')} value={profileData?.instructorCode} iconColor="text-indigo-500" />
+                <InfoItem icon={Award} label={t('instructor.profile.form.experienceYears')} value={`${profileData?.experienceYears || 0} năm`} iconColor="text-purple-500" />
+                <InfoItem icon={Calendar} label={t('instructor.profile.form.hireDate')} value={fmtDate(profileData?.hireDate)} iconColor="text-blue-500" />
+                <InfoItem
+                  icon={Shield}
+                  label={t('instructor.profile.form.status')}
+                  value={
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${profileData?.isInstructorActive
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-red-100 text-red-700'
+                      }`}>
+                      {profileData?.isInstructorActive ? t('common.active') : t('common.inactive')}
+                    </span>
+                  }
+                  iconColor="text-emerald-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Biography Section */}
+          {profileData?.biography && (
+            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+              <div className="h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
+              <div className="p-6">
+                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-emerald-500" />
+                  {t('instructor.profile.biography')}
+                </h2>
+                <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+                  {profileData.biography}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Specialization Section */}
+          {profileData?.specialization && (
+            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+              <div className="h-1 bg-gradient-to-r from-purple-400 to-pink-500" />
+              <div className="p-6">
+                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                  <Award className="w-5 h-5 text-purple-500" />
+                  {t('instructor.profile.specialization')}
+                </h2>
+                <p className="text-slate-600 leading-relaxed">
+                  {profileData.specialization}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Professional Certificate */}
+          {profileData?.professionalProfileUrl && (
+            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+              <div className="h-1 bg-gradient-to-r from-amber-400 to-orange-500" />
+              <div className="p-6">
+                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                  <Award className="w-5 h-5 text-amber-500" />
+                  {t('instructor.profile.professionalCertificate')}
+                </h2>
+                <img
+                  src={profileData.professionalProfileUrl}
+                  alt={t('instructor.profile.professionalCertificate')}
+                  className="max-w-2xl w-full rounded-xl border border-slate-200 shadow-sm"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

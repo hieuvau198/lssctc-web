@@ -115,37 +115,6 @@ const Program = () => {
               <p className="text-lg text-slate-600 mb-6 leading-relaxed">
                 Khám phá các chương trình đào tạo toàn diện về vận hành cần cẩu, an toàn lao động và kỹ năng logistics chuyên nghiệp.
               </p>
-
-              {/* Stats */}
-              {/* <div className="flex flex-wrap gap-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-200/50">
-                    <BookOpen className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-slate-800">{total || '10+'}</div>
-                    <div className="text-sm text-slate-500">Chương trình</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-200/50">
-                    <Award className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-slate-800">100%</div>
-                    <div className="text-sm text-slate-500">Chứng nhận</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-200/50">
-                    <TrendingUp className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-slate-800">98%</div>
-                    <div className="text-sm text-slate-500">Tỷ lệ đậu</div>
-                  </div>
-                </div>
-              </div> */}
             </div>
 
             {/* Right: Search Box */}
@@ -191,19 +160,6 @@ const Program = () => {
 
       {/* Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Section Header */}
-        {/* <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-200/50">
-              <GraduationCap className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-800">Danh sách chương trình</h2>
-              <p className="text-sm text-slate-500">{total} chương trình có sẵn</p>
-            </div>
-          </div>
-        </div> */}
-
         {error ? (
           <div className="max-w-md mx-auto">
             <Alert message="Error" description={error} type="error" showIcon />
