@@ -564,6 +564,7 @@
     "certificates": "Chứng chỉ",
     "enrollment": "Đăng ký học",
     "enrolled": "Đã đăng ký",
+    "viewDetails": "Xem chi tiết",
     "notEnrolled": "Chưa đăng ký",
     "progress": "Tiến độ",
     "completed": "Hoàn thành",
@@ -584,6 +585,7 @@
     "myClassDetail": {
       "loading": "Đang tải chi tiết lớp học...",
       "noClasses": "Không tìm thấy lớp học",
+      "noClassInfo": "Không tìm thấy thông tin lớp học",
       "students": "học viên",
       "hrs": "giờ",
       "learning": "Học tập"
@@ -604,13 +606,16 @@
       "email": "Email",
       "phone": "Điện thoại",
       "noInstructor": "Không có thông tin giảng viên",
-      "loadFailed": "Không tải được thông tin giảng viên"
+      "loadFailed": "Không tải được thông tin giảng viên",
+      "role": "Giảng viên"
     },
     "sections": {
       "noSections": "Chưa có nội dung học",
       "loadFailed": "Không tải được danh sách sections",
       "mins": "phút",
-      "progress": "Tiến độ"
+      "progress": "Tiến độ",
+      "lesson": "Bài",
+      "completed": "Hoàn thành"
     },
     "myEnrollments": {
       "title": "Đăng ký của tôi",

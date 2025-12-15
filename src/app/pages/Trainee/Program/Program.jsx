@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
-import { Input, Skeleton, Alert, Empty, Pagination } from "antd";
+import { Skeleton, Alert, Pagination } from "antd";
 import { useTranslation } from 'react-i18next';
 import ProgramCard from "../../../components/ProgramCard";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import PageNav from "../../../components/PageNav/PageNav";
-
-const { Search } = Input;
+import { Search, BookOpen, GraduationCap } from "lucide-react";
 
 const Program = () => {
   const { t } = useTranslation();
@@ -87,86 +86,123 @@ const Program = () => {
     };
   }, [pageNumber, pageSize, searchValue]);
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <PageNav nameMap={{ program: t('trainee.programs.title') }} />
-      <span className="text-2xl mb-4">{t('trainee.programs.title')}</span>
-      {/* prevent full page reload when pressing Enter */}
-      <form onSubmit={(e) => e.preventDefault()}>
-        <Search
-          placeholder={t('trainee.programs.searchPlaceholder')}
-          allowClear
-          className="mb-8"
-          value={searchInput}
-          onChange={(e) => {
-            const v = e.target.value;
-            setSearchInput(v);
-            // if user cleared the input using the clear button, trigger search immediately
-            if (v === "") {
-              setSearchValue("");
-              setPageNumber(1);
-            }
-          }}
-          onSearch={(v) => {
-            const trimmed = v.trim();
-            setSearchValue(trimmed);
-            setPageNumber(1);
-          }}
-          enterButton
-        />
-      </form>
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const trimmed = searchInput.trim();
+    setSearchValue(trimmed);
+    setPageNumber(1);
+  };
 
-      {/* Content area: keep search visible while swapping only cards/pagination */}
-      {error ? (
-        <div className="max-w-md mx-auto mt-4">
-          <Alert message="Error" description={error} type="error" showIcon />
-        </div>
-      ) : (
-        <>
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 6 }).map((_, idx) => (
-                <div key={idx} className="bg-white rounded-lg shadow">
-                  <div className="w-full h-40 overflow-hidden rounded-t-lg">
-                    <Skeleton.Image active className="!w-full !h-40" />
-                  </div>
-                  <div className="p-4">
-                    <Skeleton active title={{ width: '60%' }} paragraph={{ rows: 2 }} />
-                  </div>
-                </div>
-              ))}
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {/* Breadcrumb */}
+        <PageNav nameMap={{ program: t('trainee.programs.title') }} />
+
+        {/* Header Section */}
+        <div className="mt-2 mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div>
+              <span className="text-3xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent mb-1">
+                {t('trainee.programs.title')}
+              </span>
             </div>
-          ) : programs.length === 0 ? (
-            <Empty description={t('trainee.programs.noPrograms')} className="mt-16 min-h-[350px]" />
-          ) : (
-            <>
+          </div>
+
+          {/* Modern Search Bar */}
+          <form onSubmit={handleSearch} className="relative max-w-2xl">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Search className="w-5 h-5 text-slate-400" />
+              </div>
+              <input
+                type="text"
+                placeholder={t('trainee.programs.searchPlaceholder')}
+                value={searchInput}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setSearchInput(v);
+                  if (v === "") {
+                    setSearchValue("");
+                    setPageNumber(1);
+                  }
+                }}
+                className="w-full pl-12 pr-32 py-4 bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg shadow-slate-200/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all duration-300 text-slate-700 placeholder-slate-400"
+              />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105"
+              >
+                Tìm kiếm
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Content Area */}
+        {error ? (
+          <div className="max-w-md mx-auto mt-4">
+            <Alert message="Error" description={error} type="error" showIcon />
+          </div>
+        ) : (
+          <>
+            {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {programs.map((program) => (
-                  <ProgramCard
-                    key={program.id}
-                    program={program}
-                    onClick={() => navigate(`/program/${program.id}`)}
-                  />
+                {Array.from({ length: 8 }).map((_, idx) => (
+                  <div key={idx} className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+                    <div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
+                    <div className="w-full h-40 overflow-hidden">
+                      <Skeleton.Image active className="!w-full !h-40" />
+                    </div>
+                    <div className="p-5">
+                      <Skeleton active title={{ width: '70%' }} paragraph={{ rows: 2, width: ['100%', '60%'] }} />
+                    </div>
+                  </div>
                 ))}
               </div>
-              <div className="mt-8 flex justify-center">
-                <Pagination
-                  current={pageNumber}
-                  pageSize={pageSize}
-                  total={total}
-                  showSizeChanger
-                  onChange={(page, size) => {
-                    setPageNumber(page);
-                    setPageSize(size);
-                  }}
-                />
+            ) : programs.length === 0 ? (
+              <div className="min-h-[350px] flex flex-col items-center justify-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                  <GraduationCap className="w-12 h-12 text-slate-400" />
+                </div>
+                <p className="text-slate-600 text-lg font-medium">{t('trainee.programs.noPrograms')}</p>
+                <p className="text-slate-400 text-sm mt-2">Không tìm thấy chương trình nào phù hợp</p>
               </div>
-            </>
-          )}
-        </>
-      )}
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {programs.map((program) => (
+                    <ProgramCard
+                      key={program.id}
+                      program={program}
+                      onClick={() => navigate(`/program/${program.id}`)}
+                    />
+                  ))}
+                </div>
+
+                {/* Modern Pagination */}
+                <div className="mt-10 flex justify-center">
+                  <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl px-4 py-3 shadow-lg shadow-slate-200/50">
+                    <Pagination
+                      current={pageNumber}
+                      pageSize={pageSize}
+                      total={total}
+                      showSizeChanger
+                      onChange={(page, size) => {
+                        setPageNumber(page);
+                        setPageSize(size);
+                      }}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
 export default Program;
+

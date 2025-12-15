@@ -518,6 +518,7 @@
     "inProgress": "In Progress",
     "notStarted": "Not Started",
     "classCode": "Class Code",
+    "viewDetails": "View Details",
     "startDate": "Start Date",
     "endDate": "End Date",
     "duration": "Duration",
@@ -532,6 +533,7 @@
     "myClassDetail": {
       "loading": "Loading class details...",
       "noClasses": "No classes found",
+      "noClassInfo": "No class information found",
       "students": "students",
       "hrs": "hrs",
       "learning": "Learning"
@@ -552,13 +554,16 @@
       "email": "Email",
       "phone": "Phone",
       "noInstructor": "No instructor information available",
-      "loadFailed": "Failed to load instructor info"
+      "loadFailed": "Failed to load instructor info",
+      "role": "Instructor"
     },
     "sections": {
       "noSections": "No sections available at the moment",
       "loadFailed": "Failed to load sections",
       "mins": "mins",
-      "progress": "Progress"
+      "progress": "Progress",
+      "lesson": "Lesson",
+      "completed": "Completed"
     },
     "myEnrollments": {
       "title": "My Enrollments",

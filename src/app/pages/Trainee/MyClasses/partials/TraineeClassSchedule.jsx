@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { App, Spin } from 'antd';
-// read-only view for trainees — no navigation required
+import { App, Skeleton } from 'antd';
+import { Calendar, Clock, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getTraineeClassTimeslots } from '../../../../apis/TimeSlot/TimeSlot';
 import { mockTimeSlots, weekDays } from '../../../../mocks/instructorSchedule';
@@ -9,7 +9,6 @@ import WeekNavigation from '../../../Instructor/InstructorSchedule/partials/Week
 
 export default function TraineeClassSchedule({ classId, className }) {
   const { t } = useTranslation();
-  // no navigation needed for trainee read-only schedule
   const { message } = App.useApp();
 
   const [loading, setLoading] = useState(false);
@@ -171,31 +170,46 @@ export default function TraineeClassSchedule({ classId, className }) {
     setCurrentWeekStart(newWeekStart);
   };
 
-  // Trainee view: slots are view-only (no click handler)
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Spin size="large" tip={t('common.loading', 'Đang tải...')} />
+      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+        <div className="h-1 bg-gradient-to-r from-teal-400 to-cyan-500" />
+        <div className="p-6">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-cyan-200 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-slate-500">{t('common.loading', 'Đang tải...')}</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-2 w-full">
-      <WeekNavigation
-        currentWeekStart={currentWeekStart}
-        onPreviousWeek={handlePreviousWeek}
-        onNextWeek={handleNextWeek}
-        onToday={handleToday}
-        onWeekChange={handleWeekChange}
-      />
-      <ScheduleGrid
-        timeSlots={mockTimeSlots}
-        weekDates={weekDates}
-        scheduleGrid={scheduleGrid}
-      />
+    <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+      <div className="h-1 bg-gradient-to-r from-teal-400 to-cyan-500" />
+      <div className="p-4">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-teal-50 to-cyan-100 rounded-xl flex items-center justify-center">
+            <Calendar className="w-5 h-5 text-teal-500" />
+          </div>
+          <h3 className="text-lg font-bold text-slate-800">{t('attendance.classSchedule')}</h3>
+        </div>
+
+        <WeekNavigation
+          currentWeekStart={currentWeekStart}
+          onPreviousWeek={handlePreviousWeek}
+          onNextWeek={handleNextWeek}
+          onToday={handleToday}
+          onWeekChange={handleWeekChange}
+        />
+        <ScheduleGrid
+          timeSlots={mockTimeSlots}
+          weekDates={weekDates}
+          scheduleGrid={scheduleGrid}
+        />
+      </div>
     </div>
   );
 }
-
