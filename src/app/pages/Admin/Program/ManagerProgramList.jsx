@@ -147,6 +147,7 @@ const ManagerProgramList = () => {
         durationHours: detail.durationHours,
         imageUrl: detail.imageUrl,
         isActive: detail.isActive,
+        backgroundImageUrl: detail.backgroundImageUrl, // Added missing field
       });
     } catch (err) {
       message.error(err.message || 'Failed to load program detail');
@@ -164,6 +165,7 @@ const ManagerProgramList = () => {
         durationHours: currentProgram.durationHours,
         imageUrl: currentProgram.imageUrl,
         isActive: currentProgram.isActive,
+        backgroundImageUrl: currentProgram.backgroundImageUrl, // Added missing field
       });
     }
   };
