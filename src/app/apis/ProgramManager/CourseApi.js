@@ -38,6 +38,11 @@ export async function fetchCoursesPaged({ pageNumber = 1, pageSize = 10, searchT
   }
 }
 
+export async function fetchAvailableCourses() {
+  const response = await apiClient.get(`${BASE_URL}/available`);
+  return response.data;
+}
+
 export async function fetchCourseDetail(id) {
   try {
     const resp = await apiClient.get(`${BASE_URL}/${id}`);
