@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Form, Input, InputNumber, message } from 'antd';
-import { createSection, addSectionToCourse } from '../../../../../apis/ProgramManager/SectionApi';
+import { createSectionForCourse } from '../../../../../apis/ProgramManager/SectionApi';
 
 const AddSectionModal = ({ visible, onCancel, onSuccess, courseId }) => {
   const { t } = useTranslation();
@@ -12,15 +12,12 @@ const AddSectionModal = ({ visible, onCancel, onSuccess, courseId }) => {
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
-      // 1. Create the section
-      const newSection = await createSection({
+      // Use the new combined API to create and assign in one go
+      await createSectionForCourse(courseId, {
         sectionTitle: values.sectionTitle,
         sectionDescription: values.sectionDescription,
         estimatedDurationMinutes: values.estimatedDurationMinutes
       });
-
-      // 2. Link it to the course
-      await addSectionToCourse(courseId, newSection.id);
 
       message.success(t('admin.courses.sections.addSuccess'));
       form.resetFields();

@@ -38,6 +38,21 @@ export async function fetchCoursesPaged({ pageNumber = 1, pageSize = 10, searchT
   }
 }
 
+export async function fetchAvailableCourses() {
+  const response = await apiClient.get(`${BASE_URL}/available`);
+  return response.data;
+}
+
+export async function fetchAvailableCoursesByProgram(programId) {
+  try {
+    const response = await apiClient.get(`${BASE_URL}/program/${programId}/available`);
+    return response.data;
+  } catch (err) {
+    console.error(`Error fetching available courses for program ${programId}:`, err);
+    throw err;
+  }
+}
+
 export async function fetchCourseDetail(id) {
   try {
     const resp = await apiClient.get(`${BASE_URL}/${id}`);

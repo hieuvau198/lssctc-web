@@ -1,8 +1,9 @@
-import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined } from "@ant-design/icons";
 import { useTranslation } from 'react-i18next';
-import { Button, Empty, Pagination, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
+import { Button, Empty, Pagination, Space, Table, Tag, Tooltip } from "antd";
 import { getClassStatus } from "../../../../utils/classStatus";
 import PMClassCard from "./PMClassCard";
+import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 
 // Table View Component
 const ClassTableView = ({
@@ -35,7 +36,7 @@ const ClassTableView = ({
       title: t('admin.classes.columns.className'),
       dataIndex: "name",
       key: "name",
-      width: 200,
+      width: 250,
       render: (name, record) => (
         <div
           className="font-medium text-blue-600 cursor-pointer hover:underline"
@@ -49,68 +50,32 @@ const ClassTableView = ({
       title: t('admin.classes.columns.classCode'),
       dataIndex: "classCode",
       key: "classCode",
-      width: 120,
+      width: 150,
       render: (classCode) => classCode?.name || classCode || "-",
     },
     {
-      title: t('admin.classes.columns.capacity'),
-      dataIndex: "capacity",
-      key: "capacity",
-      width: 100,
+      title: t('admin.classes.form.startDate'),
+      dataIndex: "startDate",
+      key: "startDate",
+      width: 180,
+      render: (date) => <DayTimeFormat value={date} />,
+    },
+    {
+      title: t('admin.classes.form.endDate'),
+      dataIndex: "endDate",
+      key: "endDate",
+      width: 180,
+      render: (date) => <DayTimeFormat value={date} />,
     },
     {
       title: t('common.status'),
       dataIndex: "status",
       key: "status",
-      width: 120,
+      width: 150,
       render: (status) => {
         const s = getClassStatus(status);
         return <Tag color={s.color}>{t(`common.classStatus.${s.key}`)}</Tag>;
       },
-    },
-    {
-      title: t('common.actions'),
-      key: "actions",
-      width: 120,
-      fixed: "right",
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title={t('admin.classes.viewDetails')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={() => onView(record)}
-            />
-          </Tooltip>
-          <Tooltip title={t('admin.classes.editClass')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => onEdit(record)}
-              disabled={getClassStatus(record.status).key !== 'Draft'}
-            />
-          </Tooltip>
-          <Tooltip title={t('admin.classes.deleteClass')}>
-            <Popconfirm
-              title={t('admin.classes.deleteClassTitle')}
-              description={t('admin.classes.deleteConfirm')}
-              onConfirm={() => onDelete(record.id)}
-              okButtonProps={{ loading: deletingId === record.id }}
-            >
-              <Button
-                type="text"
-                size="small"
-                danger
-                icon={<DeleteOutlined />}
-                loading={deletingId === record.id}
-                disabled
-              />
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      ),
     },
   ];
 

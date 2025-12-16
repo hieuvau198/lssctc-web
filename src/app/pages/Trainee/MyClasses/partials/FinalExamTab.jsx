@@ -1,5 +1,18 @@
-import { Alert, Button, Empty, Skeleton, Table, Progress } from 'antd';
-import { Award, Calendar, Clock, FileText, CheckCircle, XCircle, BookOpen, Cpu, Wrench, Play } from 'lucide-react';
+import { Alert, Skeleton } from 'antd';
+import {
+  Award,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Cpu,
+  FileText,
+  Play,
+  Wrench,
+  XCircle
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +25,7 @@ export default function FinalExamTab({ classId }) {
   const [exam, setExam] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   useEffect(() => {
     const fetchExam = async () => {
@@ -35,20 +49,80 @@ export default function FinalExamTab({ classId }) {
     };
 
     fetchExam();
-  }, [classId]);
+  }, [classId, t]);
 
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case 'Theory':
+        return <BookOpen className="w-5 h-5" />;
+      case 'Simulation':
+        return <Cpu className="w-5 h-5" />;
+      case 'Practical':
+        return <Wrench className="w-5 h-5" />;
+      default:
+        return <FileText className="w-5 h-5" />;
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'Approved':
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider border-2 border-black">
+            <CheckCircle className="w-3 h-3" />
+            {t('trainee.finalExam.statusApproved', 'Approved')}
+          </span>
+        );
+      case 'Rejected':
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-600 text-white font-bold text-xs uppercase tracking-wider border-2 border-black">
+            <XCircle className="w-3 h-3" />
+            {t('trainee.finalExam.statusRejected', 'Rejected')}
+          </span>
+        );
+      case 'Pending':
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-neutral-200 text-neutral-700 font-bold text-xs uppercase tracking-wider border-2 border-black">
+            <Clock className="w-3 h-3" />
+            {t('trainee.finalExam.statusPending', 'Pending')}
+          </span>
+        );
+      case 'NotYet':
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-neutral-500 font-bold text-xs uppercase tracking-wider border-2 border-neutral-300">
+            {t('trainee.finalExam.statusNotYet', 'Not Yet')}
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-neutral-500 font-bold text-xs uppercase tracking-wider border-2 border-neutral-300">
+            {status}
+          </span>
+        );
+    }
+  };
+
+  const toggleRow = (id) => {
+    setExpandedRow(expandedRow === id ? null : id);
+  };
+
+  // Loading State
   if (loading) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl p-6 shadow-lg shadow-slate-200/50">
-        <Skeleton active paragraph={{ rows: 6 }} />
+      <div className="bg-white border-2 border-black">
+        <div className="h-0.5 bg-yellow-400 w-full" />
+        <div className="p-6">
+          <Skeleton active paragraph={{ rows: 6 }} />
+        </div>
       </div>
     );
   }
 
+  // Error State
   if (error) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-        <div className="h-1 bg-gradient-to-r from-amber-400 to-orange-500" />
+      <div className="bg-white border-2 border-black">
+        <div className="h-0.5 bg-yellow-400 w-full" />
         <div className="p-6">
           <Alert
             type="warning"
@@ -61,15 +135,16 @@ export default function FinalExamTab({ classId }) {
     );
   }
 
+  // No Exam State
   if (!exam) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-        <div className="h-1 bg-gradient-to-r from-violet-400 to-purple-500" />
+      <div className="bg-white border-2 border-black">
+        <div className="h-0.5 bg-yellow-400 w-full" />
         <div className="p-12 text-center">
-          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full flex items-center justify-center shadow-inner">
-            <Award className="w-10 h-10 text-slate-400" />
+          <div className="w-20 h-20 mx-auto mb-4 border-2 border-yellow-400 flex items-center justify-center">
+            <Award className="w-10 h-10 text-neutral-400" />
           </div>
-          <p className="text-slate-600 font-medium">{t('trainee.finalExam.noExamAvailable')}</p>
+          <p className="text-neutral-600 font-medium">{t('trainee.finalExam.noExamAvailable')}</p>
         </div>
       </div>
     );
@@ -79,178 +154,69 @@ export default function FinalExamTab({ classId }) {
   const hasPartials = exam.partials && exam.partials.length > 0;
   const totalMarks = exam.totalMarks || 0;
 
-  // Get type icon
-  const getTypeIcon = (type) => {
-    switch (type) {
-      case 'Theory':
-        return <BookOpen className="w-5 h-5 text-blue-500" />;
-      case 'Simulation':
-        return <Cpu className="w-5 h-5 text-purple-500" />;
-      case 'Practical':
-        return <Wrench className="w-5 h-5 text-amber-500" />;
-      default:
-        return <FileText className="w-5 h-5 text-slate-500" />;
-    }
-  };
-
-  // Get status color and text
-  const getStatusInfo = (status) => {
-    switch (status) {
-      case 'Approved':
-        return { bgColor: 'bg-emerald-100', textColor: 'text-emerald-700', text: t('trainee.finalExam.statusApproved') };
-      case 'Rejected':
-        return { bgColor: 'bg-red-100', textColor: 'text-red-700', text: t('trainee.finalExam.statusRejected') };
-      case 'Pending':
-        return { bgColor: 'bg-amber-100', textColor: 'text-amber-700', text: t('trainee.finalExam.statusPending') };
-      case 'NotYet':
-        return { bgColor: 'bg-slate-100', textColor: 'text-slate-600', text: t('trainee.finalExam.statusNotYet') };
-      default:
-        return { bgColor: 'bg-slate-100', textColor: 'text-slate-600', text: status };
-    }
-  };
-
-  // Partials table columns
-  const partialsColumns = [
-    {
-      title: t('trainee.finalExam.type'),
-      dataIndex: 'type',
-      key: 'type',
-      render: (type) => (
-        <div className="flex items-center gap-2">
-          {getTypeIcon(type)}
-          <span className="font-semibold text-slate-700">{type}</span>
-        </div>
-      ),
-    },
-    {
-      title: t('trainee.finalExam.duration'),
-      dataIndex: 'duration',
-      key: 'duration',
-      render: (duration) => (
-        <span className="text-slate-600">{duration} {t('common.minutes')}</span>
-      ),
-    },
-    {
-      title: t('trainee.finalExam.marks'),
-      dataIndex: 'marks',
-      key: 'marks',
-      render: (marks, record) => (
-        <span className={`font-bold ${record.isPass ? 'text-emerald-600' : 'text-red-600'}`}>
-          {marks.toFixed(2)} / {record.examWeight.toFixed(2)}
-        </span>
-      ),
-    },
-    {
-      title: t('trainee.finalExam.status'),
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => {
-        const statusInfo = getStatusInfo(status);
-        return (
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.bgColor} ${statusInfo.textColor}`}>
-            {statusInfo.text}
-          </span>
-        );
-      },
-    },
-    {
-      title: t('trainee.finalExam.timeRange'),
-      key: 'timeRange',
-      render: (_, record) => (
-        <div className="text-xs text-slate-500">
-          <div><DayTimeFormat value={record.startTime} /></div>
-          <div className="text-slate-400">→</div>
-          <div><DayTimeFormat value={record.endTime} /></div>
-        </div>
-      ),
-    },
-    {
-      title: t('trainee.finalExam.action'),
-      key: 'action',
-      render: (_, record) => (
-        record.type === 'Theory' ? (
-          <Button
-            type="primary"
-            onClick={() => navigate(`/final-exam/${record.id}`)}
-            icon={<Play className="w-4 h-4" />}
-          >
-            {t('trainee.finalExam.startExam')}
-          </Button>
-        ) : null
-      ),
-    },
-  ];
-
-  // Checklists table columns (for Practical exam)
-  const checklistColumns = [
-    {
-      title: t('trainee.finalExam.checklistName'),
-      dataIndex: 'name',
-      key: 'name',
-      render: (name) => <span className="font-medium text-slate-700">{name}</span>,
-    },
-    {
-      title: t('trainee.finalExam.description'),
-      dataIndex: 'description',
-      key: 'description',
-      render: (desc) => <span className="text-slate-500">{desc}</span>,
-    },
-    {
-      title: t('trainee.finalExam.result'),
-      dataIndex: 'isPass',
-      key: 'isPass',
-      render: (isPass) => (
-        <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${isPass ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-          {isPass ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
-          {isPass ? t('trainee.finalExam.passed') : t('trainee.finalExam.failed')}
-        </span>
-      ),
-    },
-  ];
-
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-        {/* Gradient Header */}
-        <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 p-6 text-white">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                <Award className="w-8 h-8" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold m-0">{t('trainee.finalExam.title')}</h2>
-                <p className="text-white/80 mt-1 text-sm">
-                  {exam.traineeName} - {exam.traineeCode}
-                </p>
-              </div>
+      <div className="bg-black border-2 border-black relative overflow-hidden">
+        <div className="h-0.5 bg-yellow-400 w-full" />
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between p-6 gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 border-2 border-yellow-400 flex items-center justify-center">
+              <Award className="w-8 h-8 text-yellow-400" />
             </div>
-            <span className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold ${isPassed ? 'bg-emerald-500' : 'bg-red-500/95'}`}>
-              {isPassed ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-              {isPassed ? t('trainee.finalExam.passed') : t('trainee.finalExam.failed')}
-            </span>
+            <div>
+              <h1 className="text-white font-black text-2xl uppercase tracking-tight">
+                {t('trainee.finalExam.title', 'Final Exam')}
+              </h1>
+              <p className="text-neutral-400 font-medium">
+                {exam.traineeName} - {exam.traineeCode}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            {isPassed ? (
+              <div className="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black font-black text-sm uppercase tracking-wider border-2 border-yellow-400">
+                <CheckCircle className="w-5 h-5" />
+                {t('trainee.finalExam.passed', 'Passed')}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-black text-sm uppercase tracking-wider border-2 border-red-600">
+                <XCircle className="w-5 h-5" />
+                {t('trainee.finalExam.failed', 'Failed')}
+              </div>
+            )}
           </div>
         </div>
+      </div>
 
-        {/* Overall Score */}
-        <div className="p-6 bg-gradient-to-r from-slate-50 to-cyan-50/30">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-slate-800">{t('trainee.finalExam.overallScore')}</h3>
-            <span className={`text-4xl font-bold ${isPassed ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-red-500 to-rose-500'} bg-clip-text text-transparent`}>
+      {/* Overall Score Section */}
+      <div className="bg-white border-2 border-black relative">
+        <div className="h-0.5 bg-yellow-400 w-full" />
+
+        <div className="p-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+              {t('trainee.finalExam.overallScore', 'Overall Score')}
+            </h2>
+            <div className="font-black text-4xl md:text-5xl tracking-tight text-black">
               {totalMarks.toFixed(2)} / 10
-            </span>
+            </div>
           </div>
-          <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+
+          {/* Progress bar */}
+          <div className="w-full h-2 border-2 border-black bg-white">
             <div
-              className={`h-full rounded-full transition-all duration-500 ${isPassed ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : 'bg-gradient-to-r from-red-400 to-rose-500'}`}
+              className={`h-full transition-all duration-1000 ${isPassed ? "bg-yellow-400" : "bg-red-400"}`}
               style={{ width: `${(totalMarks / 10) * 100}%` }}
             />
           </div>
+
           {exam.examCode && (
             <div className="mt-4 flex items-center gap-2">
-              <span className="text-sm text-slate-500">{t('trainee.finalExam.examCode')}:</span>
-              <span className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-lg font-mono text-sm font-semibold">
+              <span className="text-sm text-neutral-500">{t('trainee.finalExam.examCode', 'Exam Code')}:</span>
+              <span className="px-3 py-1 bg-neutral-100 text-neutral-700 font-mono text-sm font-semibold border-2 border-neutral-200">
                 {exam.examCode}
               </span>
             </div>
@@ -258,125 +224,244 @@ export default function FinalExamTab({ classId }) {
         </div>
       </div>
 
-      {/* Exam Partials */}
+      {/* Exam Parts */}
       {hasPartials && (
-        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-          <div className="h-1 bg-gradient-to-r from-blue-400 to-cyan-500" />
-          <div className="p-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-blue-500" />
-              {t('trainee.finalExam.examParts')}
-            </h3>
-            <Table
-              columns={partialsColumns}
-              dataSource={exam.partials}
-              rowKey="id"
-              pagination={false}
-              className="modern-table"
-              expandable={{
-                expandedRowRender: (record) => {
-                  // Show checklists for Practical exam
-                  if (record.type === 'Practical' && record.checklists && record.checklists.length > 0) {
-                    return (
-                      <div className="ml-8 my-4">
-                        <h4 className="font-semibold text-slate-700 mb-2">{t('trainee.finalExam.checklists')}</h4>
-                        <Table
-                          columns={checklistColumns}
-                          dataSource={record.checklists}
-                          rowKey="id"
-                          pagination={false}
-                          size="small"
-                        />
+        <div className="bg-white border-2 border-black">
+          <div className="h-0.5 bg-yellow-400 w-full" />
+
+          <div className="p-6 md:p-8">
+            <div className="flex items-center gap-2 mb-6">
+              <FileText className="w-5 h-5 text-black" />
+              <h2 className="text-xl font-black uppercase tracking-tight">
+                {t('trainee.finalExam.examParts', 'Exam Parts')}
+              </h2>
+            </div>
+            <div className="h-1 w-24 bg-yellow-400 mb-8" />
+
+            {/* Table - Desktop */}
+            <div className="hidden lg:block">
+              {/* Table Header */}
+              <div className="grid grid-cols-[200px_120px_140px_140px_180px_140px] gap-4 mb-4 pb-3 border-b-2 border-neutral-200">
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-500">{t('trainee.finalExam.type', 'Type')}</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-500">{t('trainee.finalExam.duration', 'Duration')}</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-500">{t('trainee.finalExam.marks', 'Marks')}</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-500">{t('trainee.finalExam.status', 'Status')}</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-500">{t('trainee.finalExam.timeRange', 'Time Range')}</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-500">{t('trainee.finalExam.action', 'Action')}</div>
+              </div>
+
+              {/* Table Rows */}
+              <div className="space-y-0">
+                {exam.partials.map((partial) => (
+                  <div key={partial.id} className="border-b-2 border-neutral-200">
+                    <div
+                      className="grid grid-cols-[200px_120px_140px_140px_180px_140px] gap-4 py-4 items-center hover:bg-neutral-50 transition-all duration-200 hover:border-l-4 hover:border-l-yellow-400 cursor-pointer"
+                      onClick={() => (partial.checklists || partial.description) && toggleRow(partial.id)}
+                    >
+                      {/* Type */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 border-2 border-black flex items-center justify-center flex-shrink-0">
+                          {getTypeIcon(partial.type)}
+                        </div>
+                        <span className="font-medium">{partial.type}</span>
+                        {(partial.checklists || partial.description) && (
+                          expandedRow === partial.id ? (
+                            <ChevronUp className="w-4 h-4 ml-auto" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4 ml-auto" />
+                          )
+                        )}
                       </div>
-                    );
-                  }
-                  // Theory partials - show Start button
-                  if (record.type === 'Theory') {
-                    return (
-                      <div className="ml-8 my-4 p-4 bg-gradient-to-r from-slate-50 to-blue-50/50 rounded-xl border border-slate-100">
-                        {record.description && (
-                          <div className="mb-2">
-                            <span className="font-semibold text-slate-600">{t('common.description')}:</span>{' '}
-                            <span className="text-slate-500">{record.description}</span>
-                          </div>
-                        )}
-                        {record.completeTime && (
-                          <div className="mt-2 text-sm text-slate-500">
-                            <span className="font-semibold">{t('trainee.finalExam.completedAt')}:</span>{' '}
-                            <DayTimeFormat value={record.completeTime} />
-                          </div>
-                        )}
-                        <div className="mt-4">
-                          <Button
-                            onClick={() => navigate(`/final-exam/${record.id}`)}
-                          // className="px-5 py-2.5 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105"
-                          >
-                            {t('trainee.finalExam.startExam')}
-                          </Button>
+
+                      {/* Duration */}
+                      <div className="flex items-center gap-2 text-neutral-600">
+                        <Clock className="w-4 h-4" />
+                        <span className="font-medium">{partial.duration} {t('common.minutes', 'Minutes')}</span>
+                      </div>
+
+                      {/* Marks */}
+                      <div className={`font-bold ${partial.isPass ? "text-yellow-500" : "text-red-600"}`}>
+                        {partial.marks?.toFixed(2) || '0.00'} / {partial.examWeight?.toFixed(2) || '0.00'}
+                      </div>
+
+                      {/* Status */}
+                      <div>{getStatusBadge(partial.status)}</div>
+
+                      {/* Time Range */}
+                      <div className="flex items-center gap-2 text-neutral-600 text-sm">
+                        <Calendar className="w-4 h-4 flex-shrink-0" />
+                        <div className="flex flex-col text-xs">
+                          <DayTimeFormat value={partial.startTime} />
+                          <span className="text-neutral-400">→</span>
+                          <DayTimeFormat value={partial.endTime} />
                         </div>
                       </div>
-                    );
-                  }
 
-                  // Other partials (e.g., Simulation) - view only
-                  if (record.quizName || record.practiceName) {
-                    return (
-                      <div className="ml-8 my-4 p-4 bg-gradient-to-r from-slate-50 to-purple-50/50 rounded-xl border border-slate-100">
-                        {record.quizName && (
+                      {/* Action */}
+                      <div>
+                        {partial.type === 'Theory' && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/final-exam/${partial.id}`);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider border-2 border-black hover:scale-[1.02] hover:shadow-lg transition-all duration-200"
+                          >
+                            <Play className="w-4 h-4" />
+                            {t('trainee.finalExam.startExam', 'Start Exam')}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Expandable Content */}
+                    {expandedRow === partial.id && (
+                      <div className="bg-neutral-50 p-6 border-t-2 border-neutral-200">
+                        {/* Checklists for Practical */}
+                        {partial.type === 'Practical' && partial.checklists && partial.checklists.length > 0 && (
+                          <>
+                            <h3 className="font-bold text-sm uppercase tracking-wider text-neutral-700 mb-4">
+                              {t('trainee.finalExam.checklists', 'Practical Checklists')}
+                            </h3>
+                            <div className="space-y-2">
+                              {partial.checklists.map((checklist) => (
+                                <div
+                                  key={checklist.id}
+                                  className="flex items-center justify-between p-4 bg-white border-2 border-neutral-200 hover:border-yellow-400 transition-colors duration-200"
+                                >
+                                  <div className="flex-1">
+                                    <div className="font-bold text-black">{checklist.name}</div>
+                                    <div className="text-sm text-neutral-600 mt-1">{checklist.description}</div>
+                                  </div>
+                                  <div>
+                                    {checklist.isPass ? (
+                                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider border-2 border-black">
+                                        <CheckCircle className="w-3 h-3" />
+                                        {t('trainee.finalExam.passed', 'Passed')}
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-600 text-white font-bold text-xs uppercase tracking-wider border-2 border-black">
+                                        <XCircle className="w-3 h-3" />
+                                        {t('trainee.finalExam.failed', 'Failed')}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
+
+                        {/* Description/Details for Theory or other */}
+                        {partial.description && (
                           <div className="mb-2">
-                            <span className="font-semibold text-slate-600">{t('trainee.finalExam.quiz')}:</span>{' '}
-                            <span className="text-slate-500">{record.quizName}</span>
+                            <span className="font-semibold text-neutral-600">{t('common.description', 'Description')}:</span>{' '}
+                            <span className="text-neutral-500">{partial.description}</span>
                           </div>
                         )}
-                        {record.practiceName && (
-                          <div className="mb-2">
-                            <span className="font-semibold text-slate-600">{t('trainee.finalExam.practice')}:</span>{' '}
-                            <span className="text-slate-500">{record.practiceName}</span>
-                          </div>
-                        )}
-                        {record.description && (
-                          <div>
-                            <span className="font-semibold text-slate-600">{t('common.description')}:</span>{' '}
-                            <span className="text-slate-500">{record.description}</span>
-                          </div>
-                        )}
-                        {record.completeTime && (
-                          <div className="mt-2 text-sm text-slate-500">
-                            <span className="font-semibold">{t('trainee.finalExam.completedAt')}:</span>{' '}
-                            <DayTimeFormat value={record.completeTime} />
+
+                        {partial.completeTime && (
+                          <div className="mt-2 text-sm text-neutral-500">
+                            <span className="font-semibold">{t('trainee.finalExam.completedAt', 'Completed at')}:</span>{' '}
+                            <DayTimeFormat value={partial.completeTime} />
                           </div>
                         )}
                       </div>
-                    );
-                  }
-                  return null;
-                },
-                rowExpandable: (record) =>
-                  (record.type === 'Practical' && record.checklists && record.checklists.length > 0) ||
-                  record.quizName ||
-                  record.practiceName ||
-                  record.description,
-              }}
-            />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile View */}
+            <div className="lg:hidden space-y-4">
+              {exam.partials.map((partial) => (
+                <div key={partial.id} className="border-2 border-black">
+                  <div className="h-0.5 bg-yellow-400 w-full" />
+                  <div
+                    className="p-4 cursor-pointer"
+                    onClick={() => (partial.checklists || partial.description) && toggleRow(partial.id)}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 border-2 border-black flex items-center justify-center">
+                          {getTypeIcon(partial.type)}
+                        </div>
+                        <span className="font-bold">{partial.type}</span>
+                      </div>
+                      {getStatusBadge(partial.status)}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                      <div className="flex items-center gap-2 text-neutral-600">
+                        <Clock className="w-4 h-4" />
+                        {partial.duration} {t('common.minutes', 'mins')}
+                      </div>
+                      <div className={`font-bold ${partial.isPass ? "text-yellow-500" : "text-red-600"}`}>
+                        {partial.marks?.toFixed(2) || '0.00'} / {partial.examWeight?.toFixed(2) || '0.00'}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-neutral-600 text-xs mb-3">
+                      <Calendar className="w-4 h-4" />
+                      <DayTimeFormat value={partial.startTime} /> → <DayTimeFormat value={partial.endTime} />
+                    </div>
+
+                    {partial.type === 'Theory' && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/final-exam/${partial.id}`);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider border-2 border-black"
+                      >
+                        <Play className="w-4 h-4" />
+                        {t('trainee.finalExam.startExam', 'Start Exam')}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Mobile Expandable */}
+                  {expandedRow === partial.id && partial.checklists && (
+                    <div className="bg-neutral-50 p-4 border-t-2 border-neutral-200">
+                      {partial.checklists.map((checklist) => (
+                        <div key={checklist.id} className="flex items-center justify-between p-3 bg-white border-2 border-neutral-200 mb-2">
+                          <div>
+                            <div className="font-bold text-sm">{checklist.name}</div>
+                            <div className="text-xs text-neutral-600">{checklist.description}</div>
+                          </div>
+                          {checklist.isPass ? (
+                            <CheckCircle className="w-5 h-5 text-yellow-500" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-500" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Complete Time Info */}
+      {/* Exam Completion Card */}
       {exam.completeTime && (
-        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-          <div className="h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
-          <div className="p-6">
-            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
-              <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="font-semibold text-emerald-700">{t('trainee.finalExam.examCompleted')}</p>
-                <div className="flex items-center gap-2 text-sm text-emerald-600">
-                  <Calendar className="w-4 h-4" />
-                  <DayTimeFormat value={exam.completeTime} />
-                </div>
+        <div className="bg-neutral-50 border-2 border-black relative">
+          <div className="h-0.5 bg-yellow-400 w-full" />
+
+          <div className="p-6 flex items-center gap-4">
+            <div className="w-12 h-12 border-2 border-yellow-400 flex items-center justify-center bg-yellow-400">
+              <CheckCircle className="w-6 h-6 text-black" />
+            </div>
+            <div>
+              <h3 className="font-black text-lg uppercase tracking-tight">
+                {t('trainee.finalExam.examCompleted', 'Exam Completed')}
+              </h3>
+              <div className="flex items-center gap-2 text-neutral-600 font-medium">
+                <Calendar className="w-4 h-4" />
+                <DayTimeFormat value={exam.completeTime} />
               </div>
             </div>
           </div>

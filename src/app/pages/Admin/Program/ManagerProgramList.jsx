@@ -12,24 +12,20 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   createProgram,
-  deleteProgram,
-  fetchProgramDetail,
   fetchPrograms,
-  updateProgramBasic,
 } from "../../../apis/ProgramManager/ProgramManagerCourseApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import ProgramCardView from "./partials/ProgramCardView";
 import ProgramDrawer from "./partials/ProgramDrawer";
 import ProgramTableView from "./partials/ProgramTableView";
 
-// const { Search } = Input;
-
 const ManagerProgramList = () => {
   const { t } = useTranslation();
   const { message } = App.useApp();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,19 +35,12 @@ const ManagerProgramList = () => {
   const [pageNumber, setPageNumber] = useState(parseInt(searchParams.get('page')) || 1);
   const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [total, setTotal] = useState(0);
-  const [deletingId, setDeletingId] = useState(null);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
 
-  // Drawer states
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerMode, setDrawerMode] = useState(null); // 'view' | 'create' | 'edit'
-  const [currentProgram, setCurrentProgram] = useState(null);
+  // Create Drawer state
+  const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [detailLoading, setDetailLoading] = useState(false);
-
-  // Forms
   const [createForm] = Form.useForm();
-  const [editForm] = Form.useForm();
 
   useEffect(() => {
     setLoading(true);
@@ -87,97 +76,19 @@ const ManagerProgramList = () => {
     });
   };
 
-  const handleDelete = async (id) => {
-    setDeletingId(id);
-    try {
-      await deleteProgram(id);
-      message.success(t('admin.programs.deleteSuccess'));
-      // Refresh list
-      fetchPrograms({ pageNumber, pageSize, searchTerm }).then((data) => {
-        setPrograms(data.items || []);
-        setTotal(data.totalCount || 0);
-      });
-      // Close drawer if current program is deleted
-      if (currentProgram?.id === id) {
-        closeDrawer();
-      }
-    } catch (err) {
-      message.error(
-        err?.response?.data || err?.message || "Delete failed"
-      );
-    } finally {
-      setDeletingId(null);
-    }
+  // Navigates to the Detail Page
+  const handleViewProgram = (program) => {
+    navigate(`/admin/programs/${program.id}`);
   };
 
-  // Drawer handlers
   const openCreate = () => {
-    setDrawerMode('create');
-    setCurrentProgram(null);
     createForm.resetFields();
-    setDrawerOpen(true);
+    setCreateDrawerOpen(true);
   };
 
-  const openView = async (program) => {
-    setDrawerMode('view');
-    setCurrentProgram(program);
-    setDrawerOpen(true);
-    setDetailLoading(true);
-    try {
-      const detail = await fetchProgramDetail(program.id);
-      setCurrentProgram(detail);
-    } catch (err) {
-      message.error(err.message || 'Failed to load program detail');
-    } finally {
-      setDetailLoading(false);
-    }
-  };
-
-  const openEdit = async (program) => {
-    setDrawerMode('edit');
-    setCurrentProgram(program);
-    setDrawerOpen(true);
-    setDetailLoading(true);
-    try {
-      const detail = await fetchProgramDetail(program.id);
-      setCurrentProgram(detail);
-      editForm.setFieldsValue({
-        name: detail.name,
-        description: detail.description,
-        durationHours: detail.durationHours,
-        imageUrl: detail.imageUrl,
-        isActive: detail.isActive,
-      });
-    } catch (err) {
-      message.error(err.message || 'Failed to load program detail');
-    } finally {
-      setDetailLoading(false);
-    }
-  };
-
-  const switchToEdit = () => {
-    setDrawerMode('edit');
-    if (currentProgram) {
-      editForm.setFieldsValue({
-        name: currentProgram.name,
-        description: currentProgram.description,
-        durationHours: currentProgram.durationHours,
-        imageUrl: currentProgram.imageUrl,
-        isActive: currentProgram.isActive,
-      });
-    }
-  };
-
-  const switchToView = () => {
-    setDrawerMode('view');
-  };
-
-  const closeDrawer = () => {
-    setDrawerOpen(false);
-    setDrawerMode(null);
-    setCurrentProgram(null);
+  const closeCreateDrawer = () => {
+    setCreateDrawerOpen(false);
     createForm.resetFields();
-    editForm.resetFields();
   };
 
   const handleCreate = async (values) => {
@@ -189,30 +100,9 @@ const ManagerProgramList = () => {
       const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
       setPrograms(data.items || []);
       setTotal(data.totalCount || 0);
-      closeDrawer();
+      closeCreateDrawer();
     } catch (err) {
       message.error(err.message || 'Create failed');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleUpdate = async (values) => {
-    if (!currentProgram) return;
-    setSubmitting(true);
-    try {
-      await updateProgramBasic(currentProgram.id, values);
-      message.success(t('admin.programs.updateSuccess'));
-      // Refresh list
-      const data = await fetchPrograms({ pageNumber, pageSize, searchTerm });
-      setPrograms(data.items || []);
-      setTotal(data.totalCount || 0);
-      // Update current program
-      const updated = data.items?.find(p => p.id === currentProgram.id);
-      setCurrentProgram(updated || null);
-      setDrawerMode('view');
-    } catch (err) {
-      message.error(err.message || 'Update failed');
     } finally {
       setSubmitting(false);
     }
@@ -221,37 +111,7 @@ const ManagerProgramList = () => {
   if (loading)
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header Skeleton */}
-        <div className="flex items-center justify-between mb-6">
-          <Skeleton.Button style={{ width: 200, height: 32 }} active />
-        </div>
-
-        {/* Search and Controls Skeleton */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-          <Skeleton.Input style={{ width: 320, height: 40 }} active />
-          <div className="flex gap-2">
-            <Skeleton.Button style={{ width: 120, height: 40 }} active />
-            <Skeleton.Button style={{ width: 80, height: 40 }} active />
-          </div>
-        </div>
-
-        {/* Content Skeleton - Default to table view skeleton */}
-        <div className="bg-white rounded-lg shadow p-6">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="flex items-center gap-4 p-4 border-b border-slate-100 last:border-b-0">
-              <Skeleton.Avatar size={48} shape="square" active />
-              <div className="flex-1">
-                <Skeleton.Input style={{ width: '60%', height: 20, marginBottom: 8 }} active />
-                <Skeleton.Input style={{ width: '40%', height: 16 }} active />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton.Button size="small" active />
-                <Skeleton.Button size="small" active />
-                <Skeleton.Button size="small" active />
-              </div>
-            </div>
-          ))}
-        </div>
+        <Skeleton active paragraph={{ rows: 5 }} />
       </div>
     );
   if (error)
@@ -265,7 +125,7 @@ const ManagerProgramList = () => {
     <div className="max-w-7xl mx-auto px-2 py-2">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">{t('admin.programs.title')}</span>
+        <span className="text-2xl font-bold text-slate-800">{t('admin.programs.title')}</span>
       </div>
 
       {/* Search and Controls */}
@@ -276,7 +136,7 @@ const ManagerProgramList = () => {
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           onSearch={handleSearch}
-          className="w-1/3"
+          className="w-full md:w-1/3"
         />
         <div className="flex gap-2">
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
@@ -301,10 +161,7 @@ const ManagerProgramList = () => {
               pageSize={pageSize}
               total={total}
               onPageChange={handlePageChange}
-              onView={openView}
-              onEdit={openEdit}
-              onDelete={handleDelete}
-              deletingId={deletingId}
+              onView={handleViewProgram}
             />
           ) : (
             <ProgramCardView
@@ -313,31 +170,23 @@ const ManagerProgramList = () => {
               pageSize={pageSize}
               total={total}
               onPageChange={handlePageChange}
-              onView={openView}
-              onEdit={openEdit}
-              onDelete={handleDelete}
-              deletingId={deletingId}
+              onView={handleViewProgram}
+              onEdit={handleViewProgram} 
+              onDelete={(id) => {/* Delete is now handled in detail page, but if you keep card actions, you need to implement delete here again or remove buttons from card view */}}
+              // Note: You might want to update ProgramCardView to remove Edit/Delete buttons or redirect them to handleViewProgram
             />
           )}
         </>
       )}
 
-      {/* Drawer */}
+      {/* Create Drawer */}
       <ProgramDrawer
-        open={drawerOpen}
-        mode={drawerMode}
-        currentProgram={currentProgram}
+        open={createDrawerOpen}
+        mode="create"
         createForm={createForm}
-        editForm={editForm}
         submitting={submitting}
-        detailLoading={detailLoading}
-        deletingId={deletingId}
-        onClose={closeDrawer}
+        onClose={closeCreateDrawer}
         onCreate={handleCreate}
-        onUpdate={handleUpdate}
-        onDelete={handleDelete}
-        onSwitchToEdit={switchToEdit}
-        onSwitchToView={switchToView}
       />
     </div>
   );

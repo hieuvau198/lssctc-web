@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, Award } from 'lucide-react';
+import { Clock, Award, ChevronRight } from 'lucide-react';
 
 export default function CourseCard({ course }) {
   const { t } = useTranslation();
@@ -14,9 +14,12 @@ export default function CourseCard({ course }) {
   } = course ?? {};
 
   return (
-    <div className="group cursor-pointer bg-white/90 backdrop-blur-sm border border-slate-200/60  overflow-hidden shadow-sm hover:shadow-xl hover:shadow-cyan-100/50 hover:border-cyan-200 transition-all duration-300">
+    <div className="group cursor-pointer bg-white border-2 border-neutral-900 hover:border-yellow-400 overflow-hidden transition-all duration-300">
+      {/* Status indicator bar */}
+      <div className="h-2 bg-neutral-100 group-hover:bg-yellow-400 transition-colors" />
+
       {/* Image Container */}
-      <div className="relative aspect-[16/9] bg-slate-100 overflow-hidden">
+      <div className="relative aspect-[16/9] bg-neutral-100 overflow-hidden">
         {thumbnail ? (
           <img
             src={thumbnail}
@@ -25,24 +28,24 @@ export default function CourseCard({ course }) {
             loading="lazy"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-cyan-100 to-blue-200 flex items-center justify-center">
-            <Award className="w-12 h-12 text-cyan-400" />
+          <div className="h-full w-full bg-neutral-100 flex items-center justify-center">
+            <Award className="w-12 h-12 text-neutral-300" />
           </div>
         )}
 
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
         {/* Corner badges */}
         {(level || duration) && (
           <div className="absolute left-2 top-2 flex gap-2">
             {level && (
-              <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-white/95 backdrop-blur-sm text-slate-700 border border-slate-200/60 shadow-sm">
+              <span className="px-3 py-1 text-xs font-bold bg-white text-black uppercase tracking-wider">
                 {level}
               </span>
             )}
             {duration && (
-              <span className="px-2.5 py-1 inline-flex items-center gap-1 rounded-lg text-xs font-medium bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-200/50">
+              <span className="px-3 py-1 inline-flex items-center gap-1 text-xs font-bold bg-yellow-400 text-black uppercase tracking-wider">
                 <Clock className="w-3 h-3" />
                 {duration} {t('common.hours')}
               </span>
@@ -54,9 +57,9 @@ export default function CourseCard({ course }) {
       {/* Content */}
       <div className="p-4">
         {provider && (
-          <div className="text-xs text-cyan-600 font-medium mb-1.5">{provider}</div>
+          <div className="text-xs text-neutral-500 font-bold uppercase tracking-wider mb-1.5">{provider}</div>
         )}
-        <h3 className="text-slate-900 font-semibold leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-cyan-700 transition-colors">
+        <h3 className="text-neutral-900 font-black leading-snug line-clamp-2 min-h-[2.5rem] uppercase group-hover:text-yellow-600 transition-colors">
           {title}
         </h3>
 
@@ -65,18 +68,26 @@ export default function CourseCard({ course }) {
             {tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-gradient-to-r from-slate-50 to-slate-100 text-slate-600 border border-slate-200"
+                className="px-2 py-0.5 text-[10px] font-bold bg-neutral-100 text-neutral-600 border border-neutral-300 uppercase tracking-wider"
               >
                 {tag}
               </span>
             ))}
             {tags.length > 3 && (
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-cyan-50 text-cyan-600 border border-cyan-200">
+              <span className="px-2 py-0.5 text-[10px] font-bold bg-yellow-400 text-black uppercase tracking-wider">
                 +{tags.length - 3}
               </span>
             )}
           </div>
         )}
+
+        {/* View more hint */}
+        <div className="mt-3 pt-3 border-t border-neutral-200">
+          <span className="text-xs font-bold text-neutral-900 group-hover:text-yellow-600 inline-flex items-center gap-1 uppercase tracking-wider">
+            {t('common.viewDetails', 'Xem chi tiết')}
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </span>
+        </div>
       </div>
     </div>
   );

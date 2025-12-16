@@ -1,17 +1,13 @@
-import { Button, Empty, Skeleton, Tag } from "antd";
+import { Divider, Empty, Skeleton } from "antd";
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from "react-router-dom";
 import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
-import EditClassStatus from "../../../../components/ClassStatus/EditClassStatus";
-import { getClassStatus } from "../../../../utils/classStatus";
 import InstructorCard from "./InstructorCard";
 import ClassMembersTable from "./ClassMembersTable";
-import ClassTimeslotManage from "./ClassTimeslotManage"; // Import the new component
-import { ArrowLeft } from "lucide-react";
+import ClassTimeslotManage from "./ClassTimeslotManage";
+import dayjs from "dayjs";
 
-const ClassDetailView = ({ classItem, loading, onRefresh }) => {
+const ClassDetailView = ({ classItem, loading }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   if (loading) {
     return <Skeleton active paragraph={{ rows: 8 }} />;
@@ -21,58 +17,74 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
     return <Empty description={t('admin.classes.noClassData')} />;
   }
 
+  const dateFormat = "YYYY-MM-DD HH:mm";
+
   return (
-    <div className="space-y-6">
-      {/* Basic Info */}
-      <div className="space-y-3">
-        <div className="flex justify-between items-center gap-2">
-          <div className="flex items-center gap-2">
-            <Button type="default" icon={<ArrowLeft size={16} />} onClick={() => navigate('/admin/class')} />
-            <span className="text-xl font-semibold">{classItem.name}</span>
-            {(() => {
-              const s = getClassStatus(classItem.status);
-              return <Tag color={s.color}>{t(`common.classStatus.${s.key}`)}</Tag>;
-            })()}
-            <EditClassStatus
-              classId={classItem.id}
-              status={classItem.status}
-              onSuccess={onRefresh}
-            />
+    <div className="space-y-10">
+      
+       {/* Top Section: Image & Metadata Grid */}
+       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        
+        {/* Column 2: Metadata & Description */}
+        <div className="md:col-span-2 space-y-6">
+          
+          {/* Metadata Grid - Flat Design */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            <div>
+                <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('admin.classes.columns.capacity')}</div>
+                <div className="font-semibold text-slate-700 mt-1">{classItem.capacity}</div>
+            </div>
+            <div>
+                <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('admin.classes.form.startDate')}</div>
+                <div className="font-semibold text-slate-700 mt-1"><DayTimeFormat value={classItem.startDate} /></div>
+            </div>
+            <div>
+                <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('admin.classes.form.endDate')}</div>
+                <div className="font-semibold text-slate-700 mt-1"><DayTimeFormat value={classItem.endDate} /></div>
+            </div>
+            {classItem.createdAt && (
+                <div>
+                    <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">Created</div>
+                    <div className="text-sm font-medium text-slate-700 mt-1">{dayjs(classItem.createdAt).format(dateFormat)}</div>
+                </div>
+            )}
+             {classItem.updatedAt && (
+                <div>
+                    <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">Updated</div>
+                    <div className="text-sm font-medium text-slate-700 mt-1">{dayjs(classItem.updatedAt).format(dateFormat)}</div>
+                </div>
+            )}
           </div>
+
+          <Divider className="my-4" />
+
+          {/* Description */}
           <div>
-            <Button onClick={() => navigate(`/admin/class/${classItem.id}/edit`)}>{t('admin.classes.editClassDetails')}</Button>
+            <h3 className="text-lg font-bold text-slate-800 mb-2">{t('common.description')}</h3>
+            <div className="text-slate-600 leading-relaxed whitespace-pre-line text-base">
+              {classItem.description || <span className="text-slate-400 italic">No description provided.</span>}
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600">
-          <div>
-            <span className="font-medium">{t('admin.classes.form.startDate')}:</span>{' '}
-            <DayTimeFormat value={classItem.startDate} />
-          </div>
-          <div>
-            <span className="font-medium">{t('admin.classes.form.endDate')}:</span>{' '}
-            <DayTimeFormat value={classItem.endDate} />
-          </div>
-          <div>
-            <span className="font-medium">{t('admin.classes.columns.capacity')}:</span> {classItem.capacity}
-          </div>
-          <div>
-            <span className="font-medium">{t('admin.classes.columns.classCode')}:</span> {classItem.classCode?.name || classItem.classCode || "-"}
-          </div>
-        </div>
-        <div className="text-sm text-slate-600">
-          <span className="font-medium">{t('common.description')}:</span>{" "}
-          <span className="whitespace-pre-line">{classItem.description}</span>
         </div>
       </div>
 
-      {/* Instructor */}
-      <InstructorCard classItem={classItem} />
+      {/* Sections */}
+      <div className="space-y-12">
+        {/* Instructor Section */}
+        <div>
+            <InstructorCard classItem={classItem} />
+        </div>
 
-      {/* Members / Trainees Table */}
-      <ClassMembersTable classItem={classItem} />
+        {/* Members / Trainees Table */}
+        <div>
+            <ClassMembersTable classItem={classItem} />
+        </div>
 
-      {/* Schedule / Timeslots - Added Component */}
-      <ClassTimeslotManage classItem={classItem} />
+        {/* Schedule / Timeslots */}
+        <div>
+            <ClassTimeslotManage classItem={classItem} />
+        </div>
+      </div>
     </div>
   );
 };

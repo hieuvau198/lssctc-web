@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { fetchCourseDetail } from '../../../../apis/Trainee/TraineeProgramApi';
 import { Skeleton } from 'antd';
-import { DownOutlined, UpOutlined } from '@ant-design/icons';
+import { ChevronDown, ChevronUp, Clock } from 'lucide-react';
 
 /**
- * CurriculumCourseItem
- * Displays a single course row similar to Coursera curriculum style:
+ * CurriculumCourseItem - Industrial Style
+ * Displays a single course row with:
  * - Thumbnail left (square)
- * - Title (underline) + meta (Course X • Y hours)
+ * - Title + meta (Course X • Y hours)
  * - Toggle to expand short description
- * Data is fetched individually to reuse existing API; consider batching later.
  */
 export default function CurriculumCourseItem({ courseId, order }) {
   const [course, setCourse] = useState(null);
@@ -26,48 +25,79 @@ export default function CurriculumCourseItem({ courseId, order }) {
 
   if (loading) {
     return (
-      <div className="py-5 flex gap-6 items-start">
-        <div className="w-24 h-16 rounded-md bg-slate-200 overflow-hidden flex items-center justify-center">
+      <div className="py-5 flex gap-6 items-start border-b-2 border-neutral-200">
+        <div className="w-24 h-16 bg-neutral-200 overflow-hidden flex items-center justify-center">
           <Skeleton.Image active className="!w-full !h-full" />
         </div>
         <div className="flex-1 min-w-0">
           <Skeleton active paragraph={{ rows: 2 }} className="max-w-xl" />
         </div>
-        <div className="w-6 flex justify-end pr-1">
-          <Skeleton.Button active size="small" style={{ width: 24 }} />
+        <div className="w-10 flex justify-end">
+          <Skeleton.Button active size="small" style={{ width: 32 }} />
         </div>
       </div>
     );
   }
+
   if (error || !course) {
     return (
-      <div className="py-5 text-sm text-red-500">Failed to load course (ID {courseId}).</div>
+      <div className="py-5 text-sm text-red-500 border-b-2 border-neutral-200">Failed to load course (ID {courseId}).</div>
     );
   }
 
   const hours = course.durationHours != null ? `${course.durationHours} hours` : '';
+
   return (
-    <div className="py-5 flex gap-6 items-start relative group">
-      <div className="w-24 h-16 rounded-md overflow-hidden bg-slate-200 flex-shrink-0">
-        {course.imageUrl && (
-          <img src={course.imageUrl} alt={course.name} className="object-cover w-full h-full" loading="lazy" />
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <button
-          type="button"
+    <div className="border-b-2 border-neutral-200 last:border-b-0 group">
+      <div className="py-5 flex gap-6 items-start">
+        {/* Order badge */}
+        <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center flex-shrink-0 font-black text-xl text-black">
+          {order}
+        </div>
+
+        {/* Thumbnail */}
+        <div className="w-24 h-16 overflow-hidden bg-neutral-200 flex-shrink-0 border-2 border-neutral-900">
+          {course.imageUrl && (
+            <img src={course.imageUrl} alt={course.name} className="object-cover w-full h-full" loading="lazy" />
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <button
+            type="button"
             className="text-left block w-full"
             onClick={() => setOpen(o => !o)}
+          >
+            <h4 className="text-lg font-black uppercase mb-1 text-neutral-900 group-hover:text-yellow-600 transition-colors">
+              {course.name}
+            </h4>
+            <div className="flex items-center gap-3 text-sm text-neutral-500 uppercase tracking-wider font-semibold">
+              <span>Course {order}</span>
+              {hours && (
+                <>
+                  <span className="h-1 w-1 rounded-full bg-neutral-400" />
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {hours}
+                  </span>
+                </>
+              )}
+            </div>
+          </button>
+          {open && (
+            <p className="text-sm text-neutral-600 mt-3 leading-relaxed max-w-2xl">{course.description}</p>
+          )}
+        </div>
+
+        {/* Toggle button */}
+        <button
+          type="button"
+          className="w-10 h-10 border-2 border-neutral-900 hover:bg-yellow-400 hover:border-yellow-400 flex items-center justify-center transition-all cursor-pointer"
+          onClick={() => setOpen(o => !o)}
         >
-          <h4 className="text-lg font-semibold underline decoration-slate-400 underline-offset-4 mb-1 text-slate-800 hover:decoration-slate-600">{course.name}</h4>
-          <div className="text-sm text-slate-600 mb-1">Course {order} {hours && <span className="mx-2">•</span>} {hours}</div>
+          {open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
         </button>
-        {open && (
-          <p className="text-sm text-slate-700 mt-1 leading-relaxed max-w-2xl">{course.description}</p>
-        )}
-      </div>
-      <div className="w-6 flex justify-end pt-1 cursor-pointer text-slate-500" onClick={() => setOpen(o => !o)}>
-        {open ? <UpOutlined /> : <DownOutlined />}
       </div>
     </div>
   );

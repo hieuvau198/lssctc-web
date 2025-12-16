@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from 'react-i18next';
-import { Table, Tag, Button, Space, Tooltip, Popconfirm, Pagination, Avatar } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table, Tag, Avatar } from "antd";
+import dayjs from "dayjs";
 
 const ProgramTableView = ({
   programs,
@@ -9,12 +9,10 @@ const ProgramTableView = ({
   pageSize,
   total,
   onPageChange,
-  onView,
-  onEdit,
-  onDelete,
-  deletingId
+  onView, // This will now handle navigation to the detail page
 }) => {
   const { t } = useTranslation();
+  
   const getInitials = (name = '') => {
     return name
       .split(' ')
@@ -23,8 +21,9 @@ const ProgramTableView = ({
       .slice(0, 2)
       .join('');
   };
+
+  const dateFormat = "YYYY-MM-DD HH:mm";
   
-  // Table columns definition
   const tableColumns = [
     {
       title: "#",
@@ -50,7 +49,7 @@ const ProgramTableView = ({
             alt={record.name}
             shape="square"
             size={48}
-            style={{ backgroundColor: '#f3f4f6', cursor: 'pointer' }}
+            className="cursor-pointer bg-slate-100"
             onClick={() => onView(record)}
           >
             {!imageUrl && getInitials(record.name)}
@@ -62,7 +61,6 @@ const ProgramTableView = ({
       title: t('admin.programs.table.name'),
       dataIndex: "name",
       key: "name",
-      width: 200,
       render: (name, record) => (
         <div
           className="font-medium text-blue-600 cursor-pointer hover:underline"
@@ -73,17 +71,26 @@ const ProgramTableView = ({
       ),
     },
     {
-      title: t('admin.programs.table.duration'),
-      dataIndex: "durationHours",
-      key: "duration",
-      width: 100,
+        title: t('admin.programs.table.courses'),
+        dataIndex: "totalCourses",
+        key: "totalCourses",
+        width: 100,
+        align: "center",
+        render: (count) => <Tag>{count || 0}</Tag>,
     },
     {
-      title: t('admin.programs.table.courses'),
-      dataIndex: "totalCourses",
-      key: "totalCourses",
-      width: 100,
-      render: (count) => <span>{count || 0}</span>,
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      width: 160,
+      render: (date) => date ? <span className="text-gray-600 text-sm">{dayjs(date).format(dateFormat)}</span> : "-",
+    },
+    {
+        title: "Updated At",
+        dataIndex: "updatedAt",
+        key: "updatedAt",
+        width: 160,
+        render: (date) => date ? <span className="text-gray-600 text-sm">{dayjs(date).format(dateFormat)}</span> : "-",
     },
     {
       title: t('admin.programs.table.status'),
@@ -96,73 +103,26 @@ const ProgramTableView = ({
         </Tag>
       ),
     },
-    {
-      title: t('admin.programs.table.actions'),
-      key: "actions",
-      width: 120,
-      fixed: "right",
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title={t('common.viewDetails')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={() => onView(record)}
-            />
-          </Tooltip>
-          <Tooltip title={t('admin.programs.editProgram')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => onEdit(record)}
-            />
-          </Tooltip>
-          <Tooltip title={t('admin.programs.deleteProgram')}>
-            <Popconfirm
-              title={t('admin.programs.deleteConfirmTitle')}
-              description={t('admin.programs.deleteConfirmDesc')}
-              onConfirm={() => onDelete(record.id)}
-              okButtonProps={{ loading: deletingId === record.id }}
-            >
-              <Button
-                type="text"
-                size="small"
-                danger
-                icon={<DeleteOutlined />}
-                loading={deletingId === record.id}
-              />
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      ),
-    },
   ];
 
   return (
-    <div className="rounded-lg shadow overflow-hidden">
-      <div className="overflow-hidden h-[450px]">
+    <div className="rounded-lg shadow overflow-hidden bg-white">
         <Table
           columns={tableColumns}
           dataSource={programs}
           rowKey="id"
-          scroll={{ y: 400 }}
-          pagination={false}
+          pagination={{
+            current: pageNumber,
+            pageSize: pageSize,
+            total: total,
+            onChange: onPageChange,
+            showSizeChanger: true,
+            pageSizeOptions: ["10", "20", "50"],
+            showTotal: (total, range) => t('admin.programs.pagination', { start: range[0], end: range[1], total })
+          }}
           size="middle"
+          scroll={{ x: 800 }}
         />
-      </div>
-      <div className="p-4 border-t border-gray-200 bg-white flex justify-center">
-        <Pagination
-          current={pageNumber}
-          pageSize={pageSize}
-          total={total}
-          onChange={onPageChange}
-          showSizeChanger
-          pageSizeOptions={["10", "20", "50"]}
-          showTotal={(total, range) => t('admin.programs.pagination', { start: range[0], end: range[1], total })}
-        />
-      </div>
     </div>
   );
 };
