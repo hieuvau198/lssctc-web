@@ -1,7 +1,6 @@
 import React from "react";
 import { useTranslation } from 'react-i18next';
-import { Empty, Pagination, Table, Tag, Button, Space, Tooltip, Popconfirm } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Empty, Pagination, Table, Tag } from "antd";
 import CourseCard from "./CourseCard";
 
 // Table View Component
@@ -74,13 +73,6 @@ const CourseTableView = ({
       width: 80,
     },
     {
-      title: t('admin.courses.columns.durationHours'),
-      dataIndex: "durationHours",
-      key: "durationHours",
-      width: 100,
-      render: (hours) => <span>{hours}</span>,
-    },
-    {
       title: t('common.status'),
       dataIndex: "isActive",
       key: "isActive",
@@ -89,48 +81,6 @@ const CourseTableView = ({
         <Tag color={isActive ? "green" : "red"}>
           {isActive ? t('common.active') : t('common.inactive')}
         </Tag>
-      ),
-    },
-    {
-      title: t('common.actions'),
-      key: "actions",
-      width: 120,
-      fixed: "right",
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title={t('admin.courses.viewDetails')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={() => onView(record)}
-            />
-          </Tooltip>
-          <Tooltip title={t('admin.courses.editCourse')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => onEdit(record)}
-            />
-          </Tooltip>
-          <Tooltip title={t('admin.courses.deleteCourseTitle')}>
-            <Popconfirm
-              title={t('admin.courses.deleteCourseTitle')}
-              description={t('admin.courses.deleteConfirm')}
-              onConfirm={() => onDelete(record.id)}
-              okButtonProps={{ loading: deletingId === record.id }}
-            >
-              <Button
-                type="text"
-                size="small"
-                danger
-                icon={<DeleteOutlined />}
-                loading={deletingId === record.id}
-              />
-            </Popconfirm>
-          </Tooltip>
-        </Space>
       ),
     },
   ];
@@ -145,6 +95,10 @@ const CourseTableView = ({
           scroll={{ y: 400 }}
           pagination={false}
           size="middle"
+          onRow={(record) => ({
+            onClick: () => onView(record),
+            style: { cursor: 'pointer' }
+          })}
         />
       </div>
       <div className="p-4 border-t border-gray-200 bg-white flex justify-center">

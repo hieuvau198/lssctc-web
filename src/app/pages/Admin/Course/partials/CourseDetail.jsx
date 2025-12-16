@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { fetchCourseDetail } from "../../../../apis/ProgramManager/CourseApi";
 import { Card, Skeleton, Alert, Button, Tag } from "antd";
 import SectionList from './Sections/SectionList';
+import CourseClassList from './CourseClassList';
 
 const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) => {
   const { t } = useTranslation();
@@ -94,10 +95,10 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
           </div>
         </div>
 
-        {/* BOTTOM PART: Sections List (Full Width) */}
-        {/* 2. PLACEMENT: Placed OUTSIDE the grid div above, so it takes 100% width */}
-        <div className="w-full">
+        {/* BOTTOM PART: Sections List & Class List (Full Width) */}
+        <div className="w-full space-y-8">
            {course && <SectionList courseId={course.id} />}
+           {course && <CourseClassList courseId={course.id} />}
         </div>
 
       </div>
@@ -113,8 +114,9 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
         <p>{course.description}</p>
         
         {/* Add SectionList here too for standalone view */}
-        <div className="mt-8">
+        <div className="mt-8 space-y-8">
             <SectionList courseId={course.id} />
+            <CourseClassList courseId={course.id} />
         </div>
       </Card>
     </div>
