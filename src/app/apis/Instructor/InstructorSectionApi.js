@@ -184,7 +184,8 @@ export const getPracticesByActivityId = async (activityId) => {
   }
   try {
     const response = await apiClient.get(`/Practices/activity/${activityId}`);
-    const data = Array.isArray(response.data) ? response.data : [];
+    const rawData = response.data;
+    const data = Array.isArray(rawData) ? rawData : (rawData.data || []);
     return data.map(mapPracticeFromApi);
   } catch (error) {
     console.error(`Error fetching practices for activity ${activityId}:`, error.response || error);

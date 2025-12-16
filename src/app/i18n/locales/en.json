@@ -1013,7 +1013,8 @@
         "manageMaterial": "Manage Material",
         "manageQuiz": "Manage Quiz",
         "managePractice": "Manage Practice",
-        "minutes": "minutes"
+        "minutes": "minutes",
+        "activityDetails": "Activity Details"
       },
       "addActivityModal": {
         "title": "Add New Activity",
