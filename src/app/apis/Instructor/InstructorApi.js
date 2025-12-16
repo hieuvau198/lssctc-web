@@ -17,22 +17,8 @@ const mapClassFromApi = (item) => ({
   status: item.status,
 });
 
-const mapActivityRecordFromApi = (item) => ({
-  id: item.id,
-  sectionRecordId: item.sectionRecordId,
-  activityId: item.activityId,
-  activityName: item.activityName,
-  status: item.status,
-  score: item.score,
-  isCompleted: item.isCompleted,
-  completedDate: item.completedDate,
-  activityType: item.activityType,
-  learningProgressId: item.learningProgressId,
-  sectionId: item.sectionId,
-  traineeId: item.traineeId,
-  traineeName: item.traineeName,
-  classId: item.classId,
-});
+// Mapping removed for ActivityRecord to allow raw data pass-through
+// const mapActivityRecordFromApi = (item) => ({ ... });
 
 //#endregion
 
@@ -47,7 +33,6 @@ export const getInstructorClasses = async (instructorId, { page = 1, pageSize = 
     const response = await apiClient.get(`/Classes/instructor/${instructorId}${qs}`);
     const data = response.data || {};
 
-    // If backend returned a plain array
     if (Array.isArray(data)) {
       const mapped = data.map(mapClassFromApi);
       const totalCount = mapped.length;
@@ -62,7 +47,6 @@ export const getInstructorClasses = async (instructorId, { page = 1, pageSize = 
       };
     }
 
-    // If backend returned a paged object with items
     const rawItems = Array.isArray(data.items) ? data.items : (Array.isArray(data) ? data : []);
     const items = rawItems.map(mapClassFromApi);
     return {
@@ -119,7 +103,7 @@ export const getInstructorClassById = async (classId) => {
   }
   try {
     const response = await apiClient.get(`/Classes/${classId}`);
-    return response.data; // Returns the class detail object directly
+    return response.data;
   } catch (error) {
     console.error(`Error fetching class detail for ID ${classId}:`, error);
     throw error.response?.data || error;
@@ -133,8 +117,7 @@ export const getActivityRecords = async (classId, sectionId, activityId) => {
   }
   try {
     const response = await apiClient.get(`/ActivityRecords/class/${classId}/section/${sectionId}/activity/${activityId}`);
-    const data = Array.isArray(response.data) ? response.data : [];
-    return data.map(mapActivityRecordFromApi);
+    return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     console.error(`Error fetching activity records:`, error.response || error);
     return [];

@@ -7,12 +7,13 @@ import VideoContent from "./partials/VideoContent";
 import ReadingContent from "./partials/ReadingContent";
 import QuizContent from "./partials/QuizContent";
 import PracticeContent from "./partials/PracticeContent";
+import SessionLockScreen from "./partials/SessionLockScreen";
 import {
   markSectionMaterialAsCompleted,
   markSectionMaterialAsNotCompleted,
   getActivityRecordsByClassAndSection,
   getMaterialsByActivityRecordId, // [UPDATED] Import hàm API mới
-  submitActivity, 
+  submitActivity,
 } from "../../../apis/Trainee/TraineeLearningApi";
 import {
   getQuizByActivityIdForTrainee,
@@ -44,7 +45,7 @@ export default function LearnContent() {
 
   const [activityRecord, setActivityRecord] = useState(null);
   const [materialsList, setMaterialsList] = useState([]);
-  
+
   // [UPDATED] State mới để lưu trạng thái Session
   const [sessionStatus, setSessionStatus] = useState(null);
 
@@ -83,7 +84,7 @@ export default function LearnContent() {
       setMaterialsList([]);
       setSessionStatus(null); // [UPDATED] Reset session status
       setSectionQuiz(null);
-      setSectionPractice(null); 
+      setSectionPractice(null);
       setActivityRecord(null);
 
       console.log("Fetching activity record for activityId:", activityId);
@@ -98,7 +99,7 @@ export default function LearnContent() {
         matchedRecord = activityRecords.find(
           (r) => r.activityId === activityId
         );
-        
+
         if (matchedRecord) {
           setActivityRecord(matchedRecord);
           console.log("Found Activity Record:", matchedRecord);
@@ -109,24 +110,24 @@ export default function LearnContent() {
         console.error("Failed to fetch activity record:", e);
         throw new Error(`Failed to load activity record: ${e.message}`);
       }
-      
+
       const activityType = matchedRecord.activityType; // "Material", "Quiz", "Practice"
 
       // 2. Load content based on type
       if (activityType === 'Material') {
         // [UPDATED] Sử dụng API mới nhận activityRecordId để lấy cả material và session status
         try {
-            const { materials, sessionStatus } = await getMaterialsByActivityRecordId(matchedRecord.activityRecordId);
-            setMaterialsList(materials || []);
-            setSessionStatus(sessionStatus); // Lưu trạng thái session
+          const { materials, sessionStatus } = await getMaterialsByActivityRecordId(matchedRecord.activityRecordId);
+          setMaterialsList(materials || []);
+          setSessionStatus(sessionStatus); // Lưu trạng thái session
         } catch (matError) {
-            console.error("Error loading materials with session:", matError);
-            throw new Error("Failed to verify session status or load materials.");
+          console.error("Error loading materials with session:", matError);
+          throw new Error("Failed to verify session status or load materials.");
         }
 
       } else if (activityType === 'Quiz') {
         // [OLD CODE] const quizData = await getQuizByActivityIdForTrainee(activityId);
-        
+
         // [NEW CODE] Gọi API mới
         const response = await getQuizByActivityRecordId(matchedRecord.activityRecordId);
         const quizData = response.quiz;
@@ -143,11 +144,11 @@ export default function LearnContent() {
           sectionQuizId: activityId,
           learningRecordPartitionId: activityId,
         };
-        
+
         setSectionQuiz(combinedQuizData);
         setSessionStatus(sessionStatus); // [NEW] Lưu trạng thái session cho Quiz
       } else if (activityType === 'Practice') {
-        const practiceData = await getPracticeByActivityRecordId(matchedRecord.activityRecordId); 
+        const practiceData = await getPracticeByActivityRecordId(matchedRecord.activityRecordId);
         const combinedPracticeData = {
           ...practiceData,
           title: matchedRecord.activityName || practiceData.practiceName,
@@ -187,7 +188,7 @@ export default function LearnContent() {
     try {
       const result = await submitQuizAttempt(payload);
       console.log('[LearnContent] API call successful, result:', result);
-      
+
       await fetchPartitionData();
       refreshSidebar();
       return result;
@@ -203,8 +204,8 @@ export default function LearnContent() {
 
     // [UPDATED] Kiểm tra logic session trước khi cho phép gọi API (Client-side validation)
     if (sessionStatus && !sessionStatus.isOpen) {
-        alert(t('trainee.learn.sessionNotOpenAlert')); // Cần đảm bảo có key translation này hoặc dùng text cứng
-        return;
+      alert(t('trainee.learn.sessionNotOpenAlert')); // Cần đảm bảo có key translation này hoặc dùng text cứng
+      return;
     }
 
     try {
@@ -213,10 +214,10 @@ export default function LearnContent() {
       };
 
       await submitActivity(payload);
-      
+
       await fetchPartitionData();
       refreshSidebar();
-      
+
     } catch (err) {
       console.error("Error submitting activity:", err);
       const msg = err.response?.data?.message || "Failed to mark as complete.";
@@ -232,6 +233,7 @@ export default function LearnContent() {
   if (loading) {
     return (
       <div className="text-center py-12">
+        <div className="w-12 h-12 border-4 border-cyan-200 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
         <p className="text-slate-600">{t('trainee.learn.loadingContent')}</p>
       </div>
     );
@@ -256,6 +258,18 @@ export default function LearnContent() {
           {t('trainee.learn.contentNotFoundDesc')}
         </p>
       </div>
+    );
+  }
+
+  // [NEW] Kiểm tra và khóa nội dung nếu session chưa mở
+  const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
+
+  if (!isSessionOpen) {
+    return (
+      <SessionLockScreen
+        sessionStatus={sessionStatus}
+        activityName={activityRecord?.activityName}
+      />
     );
   }
 
@@ -336,11 +350,11 @@ export default function LearnContent() {
           />
         )
       );
-    
+
     case "Practice":
       return (
         sectionPractice && (
-          <PracticeContent 
+          <PracticeContent
             title={sectionPractice.title}
             completed={sectionPractice.isCompleted}
             description={sectionPractice.practiceDescription}

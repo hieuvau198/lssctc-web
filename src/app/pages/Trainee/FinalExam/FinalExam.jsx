@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Input, Form, Alert, Descriptions, Tag, Spin, message, Result } from 'antd';
-import { ClockCircleOutlined, FileTextOutlined, LockOutlined, CalendarOutlined, CheckCircleOutlined, TrophyOutlined } from '@ant-design/icons';
+import { message } from 'antd';
+import { Clock, FileText, Lock, Calendar, Trophy, CheckCircle, Award, Play, AlertCircle, RefreshCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import PageNav from '../../../components/PageNav/PageNav';
@@ -10,11 +10,11 @@ export default function FinalExam() {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
   const [error, setError] = useState('');
   const [exam, setExam] = useState(null);
+  const [openCode, setOpenCode] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -29,11 +29,7 @@ export default function FinalExam() {
     try {
       setDataLoading(true);
       setError('');
-      console.log('Fetching exam details for ID:', id);
-
       const data = await PartialApi.getMyPartialDetail(id);
-      console.log('Fetched data:', data);
-
       if (data) {
         setExam(data);
       } else {
@@ -41,7 +37,6 @@ export default function FinalExam() {
       }
     } catch (err) {
       console.error('Error fetching exam:', err);
-      console.log('Failed Request URL:', err.config?.baseURL + err.config?.url);
       const errorMsg = err.response?.data?.message || err.message || t('exam.fetchError', 'Failed to load exam details');
       setError(errorMsg);
       message.error(errorMsg);
@@ -50,31 +45,33 @@ export default function FinalExam() {
     }
   };
 
-  const handleStartExam = async (values) => {
+  const handleStartExam = async (e) => {
+    e.preventDefault();
+    if (!openCode.trim()) {
+      message.error(t('exam.openCodeRequired', 'Please enter the open code'));
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
       let response;
-      const payload = { examCode: values.openCode.trim() };
+      const payload = { examCode: openCode.trim() };
 
       if (exam.type === 'Theory') {
         response = await PartialApi.startTheoryExam(id, payload);
       } else if (exam.type === 'Simulation') {
         response = await PartialApi.startSimulationExam(id, payload);
       } else {
-        // Default or other types if applicable
         message.error("Unknown exam type");
         setLoading(false);
         return;
       }
 
-      // Navigate to exam taking page with the response data (which typically includes questions for TE)
       navigate(`/final-exam/${id}/take`, { state: { examData: exam, sessionData: response } });
-
     } catch (err) {
       console.error(err);
-      // The API should return an error if the code is invalid
       if (err.response?.status === 401) {
         setError(t('exam.invalidCode', 'Mã đề không hợp lệ. Vui lòng kiểm tra lại.'));
       } else {
@@ -97,61 +94,74 @@ export default function FinalExam() {
     });
   };
 
-  const getStatusColor = (status) => {
+  const getStatusStyle = (status) => {
     switch (status) {
-      case 'Submitted': return 'green';
-      case 'In Progress': return 'blue';
-      case 'Not Started': return 'default';
-      default: return 'default';
+      case 'Submitted':
+      case 'Completed':
+        return 'bg-emerald-100 text-emerald-700';
+      case 'In Progress':
+        return 'bg-blue-100 text-blue-700';
+      default:
+        return 'bg-slate-100 text-slate-600';
     }
   };
 
   if (dataLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Spin size="large" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-cyan-200 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-500 font-medium">{t('common.loading', 'Đang tải...')}</p>
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (error && !exam) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30 p-4">
-        <Card className="max-w-md w-full shadow-2xl border-0 bg-white/80 backdrop-blur-lg rounded-2xl overflow-hidden">
-          <Result
-            status="error"
-            title={<span className="text-xl font-bold text-slate-800">{t('error.title', 'Có lỗi xảy ra')}</span>}
-            subTitle={<span className="text-slate-600 text-base">{error}</span>}
-            extra={[
-              <Button
-                type="primary"
-                key="retry"
-                onClick={() => {
-                  setError('');
-                  fetchExamDetail();
-                }}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0 h-10 px-8 rounded-lg shadow-lg shadow-blue-200 font-medium"
-              >
-                {t('common.retry', 'Thử lại')}
-              </Button>
-            ]}
-          />
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-rose-400 to-red-500" />
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-2xl flex items-center justify-center">
+              <AlertCircle className="w-8 h-8 text-red-500" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-800 mb-2">{t('error.title', 'Có lỗi xảy ra')}</h2>
+            <p className="text-slate-500 mb-6">{error}</p>
+            <button
+              onClick={() => {
+                setError('');
+                fetchExamDetail();
+              }}
+              className="flex items-center justify-center gap-2 mx-auto px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-cyan-200 hover:shadow-xl transition-all duration-300"
+            >
+              <RefreshCcw className="w-4 h-4" />
+              {t('common.retry', 'Thử lại')}
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!exam) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Alert message="Exam not found" type="warning" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-amber-100 rounded-2xl flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-amber-500" />
+          </div>
+          <p className="text-slate-600 font-medium">{t('exam.notFound', 'Exam not found')}</p>
+        </div>
       </div>
     );
   }
 
+  const isCompleted = exam.status === 'Submitted' || exam.status === 'Completed';
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 py-4">
-      <div className="max-w-6xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-4">
+      <div className="max-w-4xl mx-auto px-4">
         <PageNav
           items={[
             { title: t('exam.finalExam', 'Final Exam') },
@@ -159,144 +169,193 @@ export default function FinalExam() {
           ]}
         />
 
-        <div>
-          <Card className="shadow-xl gap-y-2 border-blue-100 bg-white/80 backdrop-blur-sm">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-xl shadow-blue-200 mb-6">
-                <FileTextOutlined className="text-5xl text-white" />
+        <div className="mt-4 space-y-6">
+          {/* Header Card */}
+          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+            <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 p-8 text-white text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                <FileText className="w-10 h-10" />
               </div>
-              <h1 className="text-4xl font-bold text-slate-800 mb-3">
+              <h1 className="text-3xl font-bold mb-2">
                 {exam.quizName || exam.practiceName || `${exam.type} Exam`}
               </h1>
               {exam.description && (
-                <p className="text-slate-600 text-lg">{exam.description}</p>
+                <p className="text-white/80 max-w-xl mx-auto">{exam.description}</p>
               )}
             </div>
+          </div>
 
-            <div className="mb-6">
-              <Descriptions bordered column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}>
-                <Descriptions.Item
-                  label={<span><ClockCircleOutlined className="mr-2" />{t('exam.duration', 'Duration')}</span>}
-                >
-                  {exam.duration} {t('exam.minutes', 'minutes')}
-                </Descriptions.Item>
-
-                <Descriptions.Item
-                  label={<span><TrophyOutlined className="mr-2" />{t('exam.weight', 'Weight')}</span>}
-                >
-                  {exam.examWeight}%
-                </Descriptions.Item>
-
-                {exam.marks !== null && (
-                  <Descriptions.Item
-                    label={<span><CheckCircleOutlined className="mr-2" />{t('exam.marks', 'Marks')}</span>}
-                  >
-                    {exam.marks}
-                  </Descriptions.Item>
-                )}
-
-                <Descriptions.Item label={t('exam.status', 'Status')}>
-                  <Tag color={getStatusColor(exam.status)}>{exam.status || 'Not Started'}</Tag>
-                </Descriptions.Item>
-
-                {exam.startTime && (
-                  <Descriptions.Item
-                    label={<span><CalendarOutlined className="mr-2" />{t('exam.startTime', 'Start Time')}</span>}
-                  >
-                    {formatDate(exam.startTime)}
-                  </Descriptions.Item>
-                )}
-
-                {exam.completeTime && (
-                  <Descriptions.Item
-                    label={<span><CalendarOutlined className="mr-2" />{t('exam.completeTime', 'Complete Time')}</span>}
-                  >
-                    {formatDate(exam.completeTime)}
-                  </Descriptions.Item>
-                )}
-
-                <Descriptions.Item label={t('exam.type', 'Type')}>
-                  {exam.type}
-                </Descriptions.Item>
-              </Descriptions>
+          {/* Info Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-4 shadow-lg shadow-slate-200/50">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-cyan-600" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.duration', 'Duration')}</div>
+              <div className="text-xl font-bold text-slate-800">{exam.duration} {t('exam.minutes', 'phút')}</div>
             </div>
 
-            {/* Only show start form if exam is NOT submitted */}
-            {exam.status !== 'Submitted' && exam.status !== 'Completed' && (
-              <div className="mb-6">
-                <Card
-                  type="inner"
-                  title={<span className="font- text-white">{t('exam.enterOpenCode', 'Enter Open Code to Start')}</span>}
-                  className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-md"
-                  headStyle={{ background: 'linear-gradient(to right, #3b82f6, #1d4ed8)', color: 'white' }}
-                >
-                  <Form form={form} onFinish={handleStartExam} layout="vertical">
-                    <Form.Item
-                      name="openCode"
-                      label={t('exam.openCode', 'Open Code')}
-                      rules={[
-                        { required: true, message: t('exam.openCodeRequired', 'Please enter the open code') },
-                      ]}
-                    >
-                      <Input
-                        prefix={<LockOutlined />}
-                        placeholder={t('exam.openCodePlaceholder', 'Enter open code')}
-                        size="large"
-                        disabled={loading}
-                      />
-                    </Form.Item>
+            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-4 shadow-lg shadow-slate-200/50">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Trophy className="w-5 h-5 text-blue-600" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.weight', 'Weight')}</div>
+              <div className="text-xl font-bold text-slate-800">{exam.examWeight}%</div>
+            </div>
 
-                    {error && (
-                      <Alert message={error} type="error" showIcon className="mb-4" />
-                    )}
-
-                    <Form.Item className="mb-0">
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        size="large"
-                        block
-                        loading={loading}
-                        className="font-semibold text-lg h-12 shadow-lg shadow-blue-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0"
-                      >
-                        {t('exam.startExam', 'Start Exam')}
-                      </Button>
-                    </Form.Item>
-                  </Form>
-                </Card>
+            {exam.marks !== null && exam.marks !== undefined && (
+              <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-4 shadow-lg shadow-slate-200/50">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <Award className="w-5 h-5 text-emerald-600" />
+                  </div>
+                </div>
+                <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.marks', 'Marks')}</div>
+                <div className="text-xl font-bold text-slate-800">{exam.marks}</div>
               </div>
             )}
 
-            {/* If submitted, maybe show a result summary or just the status above is enough */}
-            {(exam.status === 'Submitted' || exam.status === 'Completed') && (
-              <Alert
-                message={t('exam.completedTitle', 'Exam Completed')}
-                description={t('exam.completedDesc', 'You have completed this exam.')}
-                type="success"
-                showIcon
-                className="mb-6"
-              />
-            )}
+            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-4 shadow-lg shadow-slate-200/50">
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isCompleted ? 'bg-emerald-100' : 'bg-slate-100'
+                  }`}>
+                  <CheckCircle className={`w-5 h-5 ${isCompleted ? 'text-emerald-600' : 'text-slate-500'}`} />
+                </div>
+              </div>
+              <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.status', 'Status')}</div>
+              <span className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyle(exam.status)}`}>
+                {exam.status || 'Not Started'}
+              </span>
+            </div>
+          </div>
 
-            {exam.instructions && exam.instructions.length > 0 && (
+          {/* Time Info */}
+          {(exam.startTime || exam.completeTime) && (
+            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-5 shadow-lg shadow-slate-200/50">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {exam.startTime && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-cyan-600" />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.startTime', 'Start Time')}</div>
+                      <div className="text-slate-700 font-medium">{formatDate(exam.startTime)}</div>
+                    </div>
+                  </div>
+                )}
+                {exam.completeTime && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.completeTime', 'Complete Time')}</div>
+                      <div className="text-slate-700 font-medium">{formatDate(exam.completeTime)}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Completed Alert */}
+          {isCompleted && (
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 flex items-center gap-4">
+              <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-emerald-600" />
+              </div>
               <div>
-                <Card
-                  type="inner"
-                  title={<span className="font-bold text-slate-700">{t('exam.instructions', 'Instructions')}</span>}
-                  className="mb-6 border-blue-100 shadow-md"
-                  headStyle={{ background: 'linear-gradient(to right, #dbeafe, #bfdbfe)' }}
-                >
-                  <ul className="list-disc ml-6 space-y-3">
-                    {exam.instructions.map((instruction, idx) => (
-                      <li key={idx} className="text-slate-700 leading-relaxed">
-                        {instruction}
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
+                <h3 className="font-bold text-emerald-800">{t('exam.completedTitle', 'Bài thi đã hoàn thành')}</h3>
+                <p className="text-emerald-600 text-sm">{t('exam.completedDesc', 'Bạn đã hoàn thành bài thi này.')}</p>
               </div>
-            )}
-          </Card>
+            </div>
+          )}
+
+          {/* Start Exam Form */}
+          {!isCompleted && (
+            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+              <div className="bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-4">
+                <h3 className="text-white font-bold text-lg flex items-center gap-2">
+                  <Lock className="w-5 h-5" />
+                  {t('exam.enterOpenCode', 'Nhập mã để bắt đầu')}
+                </h3>
+              </div>
+              <form onSubmit={handleStartExam} className="p-6">
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-slate-600 mb-2">
+                    {t('exam.openCode', 'Mã đề thi')}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Lock className="w-5 h-5 text-slate-400" />
+                    </div>
+                    <input
+                      type="text"
+                      value={openCode}
+                      onChange={(e) => setOpenCode(e.target.value)}
+                      placeholder={t('exam.openCodePlaceholder', 'Nhập mã đề thi')}
+                      disabled={loading}
+                      className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all duration-300 text-slate-700 placeholder-slate-400"
+                    />
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                    <span className="text-red-700 text-sm">{error}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold text-lg rounded-xl shadow-lg shadow-cyan-200 hover:shadow-xl hover:shadow-cyan-300 transition-all duration-300 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      {t('common.loading', 'Đang tải...')}
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-5 h-5" />
+                      {t('exam.startExam', 'Bắt đầu làm bài')}
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Instructions */}
+          {exam.instructions && exam.instructions.length > 0 && (
+            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 px-6 py-4 border-b border-amber-100">
+                <h3 className="text-amber-800 font-bold flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5" />
+                  {t('exam.instructions', 'Hướng dẫn')}
+                </h3>
+              </div>
+              <div className="p-6">
+                <ul className="space-y-3">
+                  {exam.instructions.map((instruction, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <span className="w-6 h-6 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {idx + 1}
+                      </span>
+                      <span className="text-slate-700 leading-relaxed">{instruction}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

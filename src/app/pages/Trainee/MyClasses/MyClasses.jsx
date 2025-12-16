@@ -1,5 +1,5 @@
-import { Card, Empty, Progress, Segmented, Skeleton, Spin, Tag } from 'antd';
-import { BookOpen } from 'lucide-react';
+import { Empty, Progress, Spin, Tag } from 'antd';
+import { BookOpen, Calendar, Clock, ArrowRight, GraduationCap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -74,111 +74,130 @@ export default function MyClasses() {
   }, [tab, traineeIdFromStore]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <PageNav nameMap={{ 'my-program': 'My Program' }} />
-      <div className="mt-2 space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900 mb-4">{t('trainee.myLearning.title')}</h1>
-          <Segmented
-            options={[
-              { label: t('trainee.myLearning.inProgressTab'), value: 'in-progress' },
-              { label: t('trainee.myLearning.completedTab'), value: 'completed' },
-            ]}
-            value={tab}
-            onChange={setTab}
-            className="bg-slate-100"
-          />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {/* Breadcrumb */}
+        <PageNav nameMap={{ 'my-program': 'My Program' }} />
 
-        {loading && (
-          <div className="min-h-screen flex items-center justify-center">
-            <Spin tip={t('common.loading')}/>
+        <div className="mt-1 space-y-2">
+          {/* Header Section */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <span className="text-3xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent mb-2">
+                {t('trainee.myLearning.title')}
+              </span>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="flex gap-4">
+              <div className="bg-white/80 flex items-center justify-center gap-2 border border-slate-200 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-lg shadow-slate-200/50">
+                <div className="text-3xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">{programs.length}</div>
+                <div className="text-sm text-slate-500 font-medium">{tab === 'in-progress' ? t('trainee.inProgress') : t('trainee.completed')}</div>
+              </div>
+            </div>
           </div>
-        )}
 
-        {!loading && programs.length === 0 && (
-          <div className="min-h-screen flex items-center justify-center">
-            <Empty description={t('trainee.myLearning.noClasses')} className="py-16" />
-          </div>
-        )}
+          {/* Loading State */}
+          {loading && (
+            <div className="min-h-[400px] flex flex-col items-center justify-center">
+              <div className="w-12 h-12 border-4 border-cyan-200 border-t-cyan-500 rounded-full animate-spin mb-4"></div>
+              <p className="text-slate-500">{t('common.loading')}</p>
+            </div>
+          )}
 
-        {!loading && programs.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {programs.map((p) => (
-              <div key={p.id}>
-                <Link to={`/my-classes/${p.id}`}>
-                  <Card
-                    className="group rounded-xl shadow-md border hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative cursor-pointer bg-white h-full"
-                    bodyStyle={{ padding: '0' }}
-                  >
-                    {/* Top gradient bar */}
-                    <div className="h-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600" />
-                    
-                    {/* Card body */}
-                    <div className="p-4 space-y-3">
-                      {/* Header section */}
-                      <div className="flex items-start justify-between gap-2">
+          {/* Empty State */}
+          {!loading && programs.length === 0 && (
+            <div className="min-h-[400px] flex flex-col items-center justify-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                <GraduationCap className="w-12 h-12 text-slate-400" />
+              </div>
+              <p className="text-slate-600 text-lg font-medium">{t('trainee.myLearning.noClasses')}</p>
+              <p className="text-slate-400 text-sm mt-2">Hãy đăng ký một khóa học để bắt đầu</p>
+            </div>
+          )}
+
+          {/* Course Cards Grid */}
+          {!loading && programs.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              {programs.map((p) => (
+                <Link
+                  key={p.id}
+                  to={`/my-classes/${p.id}`}
+                  className="group block"
+                >
+                  <div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-cyan-500/10 hover:border-cyan-300/50 h-full shadow-lg shadow-slate-200/50">
+                    {/* Gradient Top Bar */}
+                    <div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
+
+                    {/* Card Content */}
+                    <div className="px-5 py-3 space-y-2">
+                      {/* Header */}
+                      <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <span className="text-base font-bold text-slate-900 leading-tight line-clamp-2 group-hover:text-cyan-600 transition-colors">
-                            {p.name}
-                          </span>
-                          <div className="text-xs text-slate-500 font-medium uppercase tracking-wide mb-1">
+                          <div className="text-xs text-cyan-600 font-semibold uppercase tracking-wider mb-1">
                             {p.classCode}
                           </div>
+                          <h3 className="text-lg font-bold text-slate-800 leading-snug line-clamp-2 group-hover:text-cyan-600 transition-colors duration-300">
+                            {p.name}
+                          </h3>
                         </div>
                         {p._statusMapped && (() => {
                           const s = getClassStatus(p._statusMapped);
                           return (
-                            <Tag color={s.color} className="text-xs font-semibold mt-8 shrink-0">
+                            <span className={`shrink-0 px-3 py-1 rounded-full text-xs font-semibold ${s.color === 'green' ? 'bg-emerald-100 text-emerald-700' :
+                              s.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                s.color === 'orange' ? 'bg-amber-100 text-amber-700' :
+                                  'bg-slate-100 text-slate-600'
+                              }`}>
                               {s.label}
-                            </Tag>
+                            </span>
                           );
                         })()}
                       </div>
 
-                      {/* Info section */}
-                      <div className="space-y-2 text-xs text-slate-600">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-700">{t('trainee.startDate')}:</span>
-                          <span>{new Date(p.startDate).toLocaleDateString()}</span>
+                      {/* Info Grid */}
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-3 text-sm">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-50 to-cyan-100/80 flex items-center justify-center shadow-sm">
+                            <Calendar className="w-4 h-4 text-cyan-600" />
+                          </div>
+                          <div>
+                            <div className="text-slate-400 text-xs font-medium">{t('trainee.startDate')}</div>
+                            <div className="text-slate-700 font-semibold">{new Date(p.startDate).toLocaleDateString('vi-VN')}</div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-700">{t('trainee.endDate')}:</span>
-                          <span>{new Date(p.endDate).toLocaleDateString()}</span>
+                        <div className="flex items-center gap-3 text-sm">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/80 flex items-center justify-center shadow-sm">
+                            <Calendar className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div>
+                            <div className="text-slate-400 text-xs font-medium">{t('trainee.endDate')}</div>
+                            <div className="text-slate-700 font-semibold">{new Date(p.endDate).toLocaleDateString('vi-VN')}</div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-700">{t('trainee.duration')}:</span>
-                          <span>{p.durationHours} {t('common.hours')}</span>
+                        <div className="flex items-center gap-3 text-sm">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100/80 flex items-center justify-center shadow-sm">
+                            <Clock className="w-4 h-4 text-indigo-600" />
+                          </div>
+                          <div>
+                            <div className="text-slate-400 text-xs font-medium">{t('trainee.duration')}</div>
+                            <div className="text-slate-700 font-semibold">{p.durationHours} {t('common.hours')}</div>
+                          </div>
                         </div>
                       </div>
-
-                      {/* Progress bar */}
-                      {/* <div className="pt-2 border-t border-slate-100">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-                            <BookOpen className="w-3.5 h-3.5 text-cyan-500" />
-                            <span>{t('trainee.progress')}</span>
-                          </div>
-                          <span className="text-xs font-bold text-cyan-600">{p.progress}%</span>
-                        </div>
-                        <Progress
-                          percent={p.progress}
-                          showInfo={false}
-                          strokeColor={{
-                            '0%': '#06b6d4',
-                            '100%': '#3b82f6',
-                          }}
-                          trailColor="#e2e8f0"
-                          strokeWidth={6}
-                        />
-                      </div> */}
+                      
+                      {/* Action Hint */}
+                      <div className="flex items-center justify-end gap-1.5 text-sm font-semibold text-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <span>{t('trainee.viewDetails') || 'Xem chi tiết'}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
                     </div>
-                  </Card>
+                  </div>
                 </Link>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

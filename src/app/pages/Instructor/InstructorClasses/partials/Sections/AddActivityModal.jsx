@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, Select, InputNumber, Button, Alert } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { createActivity, assignActivityToSection } from '../../../../../apis/Instructor/InstructorSectionApi';
+import { createActivityInSection  } from '../../../../../apis/Instructor/InstructorSectionApi';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -13,31 +13,31 @@ const AddActivityModal = ({ sectionId, isVisible, onClose, onActivityAdded }) =>
   const [error, setError] = useState(null);
 
   const handleFinish = async (values) => {
-    setLoading(true);
-    setError(null);
-    try {
-      // 1. Create the activity
-      const newActivity = await createActivity({
-        activityTitle: values.title,
-        activityDescription: values.description,
-        activityType: values.type,
-        estimatedDurationMinutes: values.duration,
-      });
+  setLoading(true);
+  setError(null);
 
-      // 2. Assign it to the section
-      if (newActivity && newActivity.id) {
-        await assignActivityToSection(sectionId, newActivity.id);
-      }
+  try {
+    await createActivityInSection(sectionId, {
+      activityTitle: values.title,
+      activityDescription: values.description,
+      activityType: values.type,
+      estimatedDurationMinutes: values.duration,
+    });
 
-      // 3. Close modal and trigger refresh
-      onActivityAdded();
-      form.resetFields();
-    } catch (err) {
-      setError(err.message || t('instructor.classes.addActivityModal.addFailed'));
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Refresh parent UI (activities list)
+    onActivityAdded();
+    form.resetFields();
+    onClose();
+
+  } catch (err) {
+    setError(
+      err?.message || t('instructor.classes.addActivityModal.addFailed')
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleCancel = () => {
     form.resetFields();

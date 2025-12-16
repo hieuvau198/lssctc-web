@@ -110,25 +110,27 @@ export const getActivitiesBySectionId = async (sectionId) => {
   }
 };
 
-export const createActivity = async (payload) => {
-  try {
-    const response = await apiClient.post('/Activities', payload);
-    return mapActivityFromApi(response.data);
-  } catch (error) {
-    console.error('Error creating activity:', error.response || error);
-    throw error.response?.data || error;
+export const createActivityInSection = async (sectionId, payload) => {
+  if (!sectionId) {
+    return Promise.reject(new Error('Section ID is required.'));
   }
-};
 
-export const assignActivityToSection = async (sectionId, activityId) => {
-  if (!sectionId || !activityId) {
-    return Promise.reject(new Error('Section ID and Activity ID are required.'));
-  }
   try {
-    const response = await apiClient.post(`/Activities/section/${sectionId}/activity/${activityId}`);
-    return response.data;
+    const response = await apiClient.post(
+      `/Activities/section/${sectionId}/activity/create`,
+      payload
+    );
+
+    // If your backend returns the created activity
+    return mapActivityFromApi
+      ? mapActivityFromApi(response.data)
+      : response.data;
+
   } catch (error) {
-    console.error(`Error assigning activity ${activityId} to section ${sectionId}:`, error.response || error);
+    console.error(
+      `Error creating activity in section ${sectionId}:`,
+      error.response || error
+    );
     throw error.response?.data || error;
   }
 };
@@ -182,7 +184,8 @@ export const getPracticesByActivityId = async (activityId) => {
   }
   try {
     const response = await apiClient.get(`/Practices/activity/${activityId}`);
-    const data = Array.isArray(response.data) ? response.data : [];
+    const rawData = response.data;
+    const data = Array.isArray(rawData) ? rawData : (rawData.data || []);
     return data.map(mapPracticeFromApi);
   } catch (error) {
     console.error(`Error fetching practices for activity ${activityId}:`, error.response || error);

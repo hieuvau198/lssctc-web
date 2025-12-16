@@ -1,5 +1,5 @@
-import { Alert, Button, Card, Empty, Skeleton, Tag, Descriptions, Table, Progress } from 'antd';
-import { Award, Calendar, Clock, FileText, CheckCircle, XCircle, BookOpen, Cpu, Wrench } from 'lucide-react';
+import { Alert, Button, Empty, Skeleton, Table, Progress } from 'antd';
+import { Award, Calendar, Clock, FileText, CheckCircle, XCircle, BookOpen, Cpu, Wrench, Play } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -39,34 +39,39 @@ export default function FinalExamTab({ classId }) {
 
   if (loading) {
     return (
-      <Card className="rounded-xl shadow-lg">
+      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl p-6 shadow-lg shadow-slate-200/50">
         <Skeleton active paragraph={{ rows: 6 }} />
-      </Card>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Card className="rounded-xl shadow-lg">
-        <Alert
-          type="warning"
-          message={t('trainee.finalExam.noExam')}
-          description={error}
-          showIcon
-        />
-      </Card>
+      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+        <div className="h-1 bg-gradient-to-r from-amber-400 to-orange-500" />
+        <div className="p-6">
+          <Alert
+            type="warning"
+            message={t('trainee.finalExam.noExam')}
+            description={error}
+            showIcon
+          />
+        </div>
+      </div>
     );
   }
 
   if (!exam) {
     return (
-      <Card className="rounded-xl shadow-lg p-12 text-center">
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={t('trainee.finalExam.noExamAvailable')}
-          className="py-8"
-        />
-      </Card>
+      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+        <div className="h-1 bg-gradient-to-r from-violet-400 to-purple-500" />
+        <div className="p-12 text-center">
+          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full flex items-center justify-center shadow-inner">
+            <Award className="w-10 h-10 text-slate-400" />
+          </div>
+          <p className="text-slate-600 font-medium">{t('trainee.finalExam.noExamAvailable')}</p>
+        </div>
+      </div>
     );
   }
 
@@ -78,13 +83,13 @@ export default function FinalExamTab({ classId }) {
   const getTypeIcon = (type) => {
     switch (type) {
       case 'Theory':
-        return <BookOpen className="w-5 h-5" />;
+        return <BookOpen className="w-5 h-5 text-blue-500" />;
       case 'Simulation':
-        return <Cpu className="w-5 h-5" />;
+        return <Cpu className="w-5 h-5 text-purple-500" />;
       case 'Practical':
-        return <Wrench className="w-5 h-5" />;
+        return <Wrench className="w-5 h-5 text-amber-500" />;
       default:
-        return <FileText className="w-5 h-5" />;
+        return <FileText className="w-5 h-5 text-slate-500" />;
     }
   };
 
@@ -92,15 +97,15 @@ export default function FinalExamTab({ classId }) {
   const getStatusInfo = (status) => {
     switch (status) {
       case 'Approved':
-        return { color: 'success', text: t('trainee.finalExam.statusApproved') };
+        return { bgColor: 'bg-emerald-100', textColor: 'text-emerald-700', text: t('trainee.finalExam.statusApproved') };
       case 'Rejected':
-        return { color: 'error', text: t('trainee.finalExam.statusRejected') };
+        return { bgColor: 'bg-red-100', textColor: 'text-red-700', text: t('trainee.finalExam.statusRejected') };
       case 'Pending':
-        return { color: 'warning', text: t('trainee.finalExam.statusPending') };
+        return { bgColor: 'bg-amber-100', textColor: 'text-amber-700', text: t('trainee.finalExam.statusPending') };
       case 'NotYet':
-        return { color: 'default', text: t('trainee.finalExam.statusNotYet') };
+        return { bgColor: 'bg-slate-100', textColor: 'text-slate-600', text: t('trainee.finalExam.statusNotYet') };
       default:
-        return { color: 'default', text: status };
+        return { bgColor: 'bg-slate-100', textColor: 'text-slate-600', text: status };
     }
   };
 
@@ -113,7 +118,7 @@ export default function FinalExamTab({ classId }) {
       render: (type) => (
         <div className="flex items-center gap-2">
           {getTypeIcon(type)}
-          <span className="font-medium">{type}</span>
+          <span className="font-semibold text-slate-700">{type}</span>
         </div>
       ),
     },
@@ -121,14 +126,16 @@ export default function FinalExamTab({ classId }) {
       title: t('trainee.finalExam.duration'),
       dataIndex: 'duration',
       key: 'duration',
-      render: (duration) => `${duration} ${t('common.minutes')}`,
+      render: (duration) => (
+        <span className="text-slate-600">{duration} {t('common.minutes')}</span>
+      ),
     },
     {
       title: t('trainee.finalExam.marks'),
       dataIndex: 'marks',
       key: 'marks',
       render: (marks, record) => (
-        <span className={`font-bold ${record.isPass ? 'text-green-600' : 'text-red-600'}`}>
+        <span className={`font-bold ${record.isPass ? 'text-emerald-600' : 'text-red-600'}`}>
           {marks.toFixed(2)} / {record.examWeight.toFixed(2)}
         </span>
       ),
@@ -137,14 +144,12 @@ export default function FinalExamTab({ classId }) {
       title: t('trainee.finalExam.status'),
       dataIndex: 'status',
       key: 'status',
-      render: (status, record) => {
+      render: (status) => {
         const statusInfo = getStatusInfo(status);
         return (
-          <Tag
-            color={statusInfo.color}
-          >
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.bgColor} ${statusInfo.textColor}`}>
             {statusInfo.text}
-          </Tag>
+          </span>
         );
       },
     },
@@ -152,9 +157,9 @@ export default function FinalExamTab({ classId }) {
       title: t('trainee.finalExam.timeRange'),
       key: 'timeRange',
       render: (_, record) => (
-        <div className="text-xs">
+        <div className="text-xs text-slate-500">
           <div><DayTimeFormat value={record.startTime} /></div>
-          <div className="text-gray-500">→</div>
+          <div className="text-slate-400">→</div>
           <div><DayTimeFormat value={record.endTime} /></div>
         </div>
       ),
@@ -166,8 +171,8 @@ export default function FinalExamTab({ classId }) {
         record.type === 'Theory' ? (
           <Button
             type="primary"
-            size="small"
             onClick={() => navigate(`/final-exam/${record.id}`)}
+            icon={<Play className="w-4 h-4" />}
           >
             {t('trainee.finalExam.startExam')}
           </Button>
@@ -182,23 +187,23 @@ export default function FinalExamTab({ classId }) {
       title: t('trainee.finalExam.checklistName'),
       dataIndex: 'name',
       key: 'name',
+      render: (name) => <span className="font-medium text-slate-700">{name}</span>,
     },
     {
       title: t('trainee.finalExam.description'),
       dataIndex: 'description',
       key: 'description',
+      render: (desc) => <span className="text-slate-500">{desc}</span>,
     },
     {
       title: t('trainee.finalExam.result'),
       dataIndex: 'isPass',
       key: 'isPass',
       render: (isPass) => (
-        <Tag
-          color={isPass ? 'success' : 'error'}
-          icon={isPass ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-        >
+        <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${isPass ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+          {isPass ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
           {isPass ? t('trainee.finalExam.passed') : t('trainee.finalExam.failed')}
-        </Tag>
+        </span>
       ),
     },
   ];
@@ -206,8 +211,9 @@ export default function FinalExamTab({ classId }) {
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <Card className="rounded-xl shadow-lg border-0 overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white">
+      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+        {/* Gradient Header */}
+        <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 p-6 text-white">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
@@ -215,53 +221,50 @@ export default function FinalExamTab({ classId }) {
               </div>
               <div>
                 <h2 className="text-2xl font-bold m-0">{t('trainee.finalExam.title')}</h2>
-                <p className="text-indigo-100 mt-1 text-sm">
+                <p className="text-white/80 mt-1 text-sm">
                   {exam.traineeName} - {exam.traineeCode}
                 </p>
               </div>
             </div>
-            <Tag
-              icon={isPassed ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-              color={isPassed ? 'success' : 'error'}
-              className="text-base px-4 py-1"
-            >
+            <span className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold ${isPassed ? 'bg-emerald-500' : 'bg-red-500/95'}`}>
+              {isPassed ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
               {isPassed ? t('trainee.finalExam.passed') : t('trainee.finalExam.failed')}
-            </Tag>
+            </span>
           </div>
         </div>
 
         {/* Overall Score */}
-        <div className="p-6 bg-gradient-to-r from-gray-50 to-blue-50">
+        <div className="p-6 bg-gradient-to-r from-slate-50 to-cyan-50/30">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">{t('trainee.finalExam.overallScore')}</h3>
-            <span className={`text-4xl font-bold ${isPassed ? 'text-green-600' : 'text-red-600'}`}>
+            <h3 className="text-lg font-bold text-slate-800">{t('trainee.finalExam.overallScore')}</h3>
+            <span className={`text-4xl font-bold ${isPassed ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-red-500 to-rose-500'} bg-clip-text text-transparent`}>
               {totalMarks.toFixed(2)} / 10
             </span>
           </div>
-          <Progress
-            percent={(totalMarks / 10) * 100}
-            status={isPassed ? 'success' : 'exception'}
-            strokeColor={isPassed ? '#10b981' : '#ef4444'}
-            strokeWidth={12}
-            className="mb-2"
-          />
+          <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${isPassed ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : 'bg-gradient-to-r from-red-400 to-rose-500'}`}
+              style={{ width: `${(totalMarks / 10) * 100}%` }}
+            />
+          </div>
           {exam.examCode && (
             <div className="mt-4 flex items-center gap-2">
-              <span className="text-sm text-gray-600">{t('trainee.finalExam.examCode')}:</span>
-              <Tag color="blue" className="font-mono">
+              <span className="text-sm text-slate-500">{t('trainee.finalExam.examCode')}:</span>
+              <span className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-lg font-mono text-sm font-semibold">
                 {exam.examCode}
-              </Tag>
+              </span>
             </div>
           )}
         </div>
-      </Card>
+      </div>
 
       {/* Exam Partials */}
       {hasPartials && (
-        <Card className="rounded-xl shadow-lg">
+        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+          <div className="h-1 bg-gradient-to-r from-blue-400 to-cyan-500" />
           <div className="p-6">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5" />
+            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-blue-500" />
               {t('trainee.finalExam.examParts')}
             </h3>
             <Table
@@ -269,13 +272,14 @@ export default function FinalExamTab({ classId }) {
               dataSource={exam.partials}
               rowKey="id"
               pagination={false}
+              className="modern-table"
               expandable={{
                 expandedRowRender: (record) => {
                   // Show checklists for Practical exam
                   if (record.type === 'Practical' && record.checklists && record.checklists.length > 0) {
                     return (
                       <div className="ml-8 my-4">
-                        <h4 className="font-semibold mb-2">{t('trainee.finalExam.checklists')}</h4>
+                        <h4 className="font-semibold text-slate-700 mb-2">{t('trainee.finalExam.checklists')}</h4>
                         <Table
                           columns={checklistColumns}
                           dataSource={record.checklists}
@@ -286,28 +290,26 @@ export default function FinalExamTab({ classId }) {
                       </div>
                     );
                   }
-                  // Show quiz/practice info
-                  // - Practical handled above (checklists)
-                  // - For Theory partials show Start button (take quiz)
+                  // Theory partials - show Start button
                   if (record.type === 'Theory') {
                     return (
-                      <div className="ml-8 my-4 p-4 bg-gray-50 rounded-lg">
+                      <div className="ml-8 my-4 p-4 bg-gradient-to-r from-slate-50 to-blue-50/50 rounded-xl border border-slate-100">
                         {record.description && (
                           <div className="mb-2">
-                            <span className="font-semibold">{t('common.description')}:</span> {record.description}
+                            <span className="font-semibold text-slate-600">{t('common.description')}:</span>{' '}
+                            <span className="text-slate-500">{record.description}</span>
                           </div>
                         )}
                         {record.completeTime && (
-                          <div className="mt-2">
-                            <span className="font-semibold">{t('trainee.finalExam.completedAt')}:</span> <DayTimeFormat value={record.completeTime} />
+                          <div className="mt-2 text-sm text-slate-500">
+                            <span className="font-semibold">{t('trainee.finalExam.completedAt')}:</span>{' '}
+                            <DayTimeFormat value={record.completeTime} />
                           </div>
                         )}
-
                         <div className="mt-4">
                           <Button
-                            type="primary"
-                            size="middle"
                             onClick={() => navigate(`/final-exam/${record.id}`)}
+                          // className="px-5 py-2.5 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105"
                           >
                             {t('trainee.finalExam.startExam')}
                           </Button>
@@ -319,25 +321,29 @@ export default function FinalExamTab({ classId }) {
                   // Other partials (e.g., Simulation) - view only
                   if (record.quizName || record.practiceName) {
                     return (
-                      <div className="ml-8 my-4 p-4 bg-gray-50 rounded-lg">
+                      <div className="ml-8 my-4 p-4 bg-gradient-to-r from-slate-50 to-purple-50/50 rounded-xl border border-slate-100">
                         {record.quizName && (
                           <div className="mb-2">
-                            <span className="font-semibold">{t('trainee.finalExam.quiz')}:</span> {record.quizName}
+                            <span className="font-semibold text-slate-600">{t('trainee.finalExam.quiz')}:</span>{' '}
+                            <span className="text-slate-500">{record.quizName}</span>
                           </div>
                         )}
                         {record.practiceName && (
                           <div className="mb-2">
-                            <span className="font-semibold">{t('trainee.finalExam.practice')}:</span> {record.practiceName}
+                            <span className="font-semibold text-slate-600">{t('trainee.finalExam.practice')}:</span>{' '}
+                            <span className="text-slate-500">{record.practiceName}</span>
                           </div>
                         )}
                         {record.description && (
                           <div>
-                            <span className="font-semibold">{t('common.description')}:</span> {record.description}
+                            <span className="font-semibold text-slate-600">{t('common.description')}:</span>{' '}
+                            <span className="text-slate-500">{record.description}</span>
                           </div>
                         )}
                         {record.completeTime && (
-                          <div className="mt-2">
-                            <span className="font-semibold">{t('trainee.finalExam.completedAt')}:</span> <DayTimeFormat value={record.completeTime} />
+                          <div className="mt-2 text-sm text-slate-500">
+                            <span className="font-semibold">{t('trainee.finalExam.completedAt')}:</span>{' '}
+                            <DayTimeFormat value={record.completeTime} />
                           </div>
                         )}
                       </div>
@@ -353,26 +359,28 @@ export default function FinalExamTab({ classId }) {
               }}
             />
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Complete Time Info */}
       {exam.completeTime && (
-        <Card className="rounded-xl shadow-lg">
+        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+          <div className="h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
           <div className="p-6">
-            <Alert
-              type="info"
-              message={t('trainee.finalExam.examCompleted')}
-              description={
-                <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
+              <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-emerald-700">{t('trainee.finalExam.examCompleted')}</p>
+                <div className="flex items-center gap-2 text-sm text-emerald-600">
                   <Calendar className="w-4 h-4" />
                   <DayTimeFormat value={exam.completeTime} />
                 </div>
-              }
-              showIcon
-            />
+              </div>
+            </div>
           </div>
-        </Card>
+        </div>
       )}
     </div>
   );

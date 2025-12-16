@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Tag, Typography, Alert, Skeleton } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { getActivityRecords } from '../../../../../../apis/Instructor/InstructorApi'; // Adjust path as needed
+import { getActivityRecords } from '../../../../../../apis/Instructor/InstructorApi';
 import DayTimeFormat from '../../../../../../components/DayTimeFormat/DayTimeFormat';
 
 const { Title } = Typography;
@@ -15,19 +15,11 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
 
   useEffect(() => {
     const fetchRecords = async () => {
-      // --- ADDED FOR DEBUGGING ---
-      console.log('TraineeActivityRecords Props:', {
-        classId: classId,
-        sectionId: sectionId,
-        activityId: activityId,
-      });
-      // --- END OF DEBUGGING ---
-
       if (!classId || !sectionId || !activityId) {
-        setError(t('instructor.classes.activityDetail.missingIds'));
         setLoading(false);
         return;
       }
+
       setLoading(true);
       setError(null);
       try {
@@ -51,7 +43,6 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
       align: 'center',
       render: (_, __, idx) => idx + 1,
     },
-    // ... (columns - no changes)
     {
       title: t('instructor.classes.activityDetail.trainee'),
       dataIndex: 'traineeName',
@@ -62,37 +53,54 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
       title: t('instructor.classes.activityDetail.status'),
       dataIndex: 'status',
       key: 'status',
-      render: (status) => (
-        <Tag
-          color={status === 'Completed' ? 'success' : 'processing'}
-          icon={status === 'Completed' ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
-        >
-          {status === 'Completed' ? t('instructor.classes.activityDetail.statusCompleted') : t('instructor.classes.activityDetail.statusInProgress')}
-        </Tag>
-      ),
+      render: (status) => {
+        const isCompleted = status === 'Completed';
+        return (
+          <Tag
+            color={isCompleted ? 'success' : 'processing'}
+            icon={isCompleted ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
+          >
+            {isCompleted
+              ? t('instructor.classes.activityDetail.statusCompleted')
+              : t('instructor.classes.activityDetail.statusInProgress')}
+          </Tag>
+        );
+      },
     },
     {
       title: t('instructor.classes.activityDetail.score'),
       dataIndex: 'score',
       key: 'score',
+      align: 'center',
       sorter: (a, b) => (a.score || 0) - (b.score || 0),
-      render: (score) => score ?? 'N/A',
+      render: (score) => (score !== null && score !== undefined ? score : t('common.na')),
     },
     {
       title: t('instructor.classes.activityDetail.completedDate'),
       dataIndex: 'completedDate',
       key: 'completedDate',
-      render: (date) => (date ? <DayTimeFormat date={date} /> : 'N/A'),
-      sorter: (a, b) => new Date(a.completedDate) - new Date(b.completedDate),
+      sorter: (a, b) => new Date(a.completedDate || 0) - new Date(b.completedDate || 0),
+      render: (date) => {
+        if (!date) return t('common.na');
+        return <DayTimeFormat value={date} />;
+      },
     },
   ];
 
   if (loading) {
-    // ... (no changes)
+    return <Skeleton active paragraph={{ rows: 5 }} className="mt-6" />;
   }
 
   if (error) {
-    return <Alert message={t('common.error')} description={error} type="error" showIcon />;
+    return (
+      <Alert
+        message={t('common.error')}
+        description={error}
+        type="error"
+        showIcon
+        className="mt-6"
+      />
+    );
   }
 
   return (

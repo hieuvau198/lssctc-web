@@ -1,10 +1,10 @@
 // src\app\layouts\SectionLayout\SectionLayout.jsx
-import React from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import ScrollTop from '../../components/ScrollTop/ScrollTop';
 import { Alert, Skeleton, Tooltip, Button, Progress, Modal } from 'antd';
-import { CheckCircle2, ArrowLeft, GraduationCap, Trophy, PartyPopper, Star } from 'lucide-react';
+import { CheckCircle2, ArrowLeft, GraduationCap, Trophy, PartyPopper, Star, GripVertical } from 'lucide-react';
 import { useLearningSidebar } from '../../contexts/LearningSidebarContext';
 import './SectionLayout.css';
 
@@ -20,6 +20,53 @@ export default function SectionLayout({
   const navigate = useNavigate();
   const { courseId, sessionId } = useParams();
   const classId = courseId;
+
+  // Resizable sidebar state
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    const saved = localStorage.getItem('learningSidebarWidth');
+    return saved ? parseInt(saved, 10) : 320;
+  });
+  const [isResizing, setIsResizing] = useState(false);
+  const sidebarRef = useRef(null);
+  const minWidth = 280;
+  const maxWidth = 500;
+
+  // Handle resize
+  const handleMouseDown = useCallback((e) => {
+    e.preventDefault();
+    setIsResizing(true);
+  }, []);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isResizing) return;
+    const newWidth = e.clientX;
+    if (newWidth >= minWidth && newWidth <= maxWidth) {
+      setSidebarWidth(newWidth);
+    }
+  }, [isResizing]);
+
+  const handleMouseUp = useCallback(() => {
+    if (isResizing) {
+      setIsResizing(false);
+      localStorage.setItem('learningSidebarWidth', sidebarWidth.toString());
+    }
+  }, [isResizing, sidebarWidth]);
+
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
   // Get completion modal state from context
   const { showCompletionModal, courseTitle: completedCourseTitle, closeCompletionModal } = useLearningSidebar();
@@ -41,7 +88,7 @@ export default function SectionLayout({
   const completedActivities = items.filter(item => !item.isHeader && item.isCompleted).length;
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50/30">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       {/* Course Completion Celebration Modal */}
       <Modal
         open={showCompletionModal}
@@ -72,8 +119,8 @@ export default function SectionLayout({
           <p className="text-lg text-slate-600 mb-4">
             {t('sectionLayout.youHaveCompleted')}
           </p>
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6 border border-blue-100">
-            <h3 className="text-xl font-bold text-blue-700">
+          <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-4 mb-6 border border-cyan-100">
+            <h3 className="text-xl font-bold text-cyan-700">
               {completedCourseTitle || courseTitle}
             </h3>
           </div>
@@ -91,8 +138,8 @@ export default function SectionLayout({
 
           {/* Actions */}
           <div className="flex gap-3 justify-center">
-            <Button 
-              size="large" 
+            <Button
+              size="large"
               onClick={() => {
                 closeCompletionModal();
                 navigate(`/my-classes/${classId}`);
@@ -100,11 +147,11 @@ export default function SectionLayout({
             >
               {t('sectionLayout.backToClass')}
             </Button>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               size="large"
               onClick={closeCompletionModal}
-              className="shadow-lg shadow-blue-200"
+              className="shadow-lg shadow-cyan-200"
             >
               {t('sectionLayout.continueLearning')}
             </Button>
@@ -114,53 +161,55 @@ export default function SectionLayout({
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-80 border-r border-blue-100 bg-white/80 backdrop-blur-sm flex flex-col shadow-sm">
+        <aside
+          ref={sidebarRef}
+          style={{ width: sidebarWidth }}
+          className="border-r border-slate-200/60 bg-white/90 backdrop-blur-sm flex flex-col shadow-lg shadow-slate-200/50 relative"
+        >
           {/* Header Section */}
-          <div className="px-5 py-4 border-b border-blue-100 bg-blue-200 relative overflow-hidden">
-            {/* Decorative background matching Home banner */}
+          <div className="px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-cyan-500 to-blue-500 relative overflow-hidden">
+            {/* Decorative background */}
             <div className="absolute inset-0 pointer-events-none" aria-hidden>
-              <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full bg-blue-100 blur-2xl" />
-              <div className="absolute top-1/2 right-0 w-32 h-32 -translate-y-1/2 rounded-full bg-blue-50 blur-xl" />
+              <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
+              <div className="absolute top-1/2 right-0 w-32 h-32 -translate-y-1/2 rounded-full bg-white/5 blur-xl" />
             </div>
 
-            <div className="relative flex items-center gap-3 mb-3">
+            <div className="relative flex items-center gap-2 mb-3">
               <Button
                 type="text"
                 shape="circle"
                 size="small"
                 aria-label={t('sectionLayout.backToClassAriaLabel')}
                 onClick={() => navigate(`/my-classes/${classId}`)}
-                icon={<ArrowLeft className="w-4 h-4 text-blue-700" />}
-                className="hover:bg-blue-300/50 border-blue-300"
+                icon={<ArrowLeft color="white" className="w-5 h-5" />}
+                className="hover:bg-white/20 border-white/30 flex-shrink-0 mt-0.5"
               />
-              <div className="flex flex-1 items-center gap-2">
-                <div>
-                  <GraduationCap className="w-5 h-5 text-blue-700 flex-shrink-0" />
+              <div className="flex flex-1 items-center gap-2 min-w-0">
+                <div className="flex-shrink-0">
+                  <GraduationCap className="w-5 h-5 text-white" />
                 </div>
-                <div>
-                  <Tooltip title={courseTitle} placement="bottom">
-                    <span className="text-sm font-semibold text-blue-900 truncate line-clamp-2">
-                      {courseTitle}
-                    </span>
-                  </Tooltip>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-semibold text-white leading-tight block break-words">
+                    {courseTitle}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Progress Bar */}
             <div className="relative space-y-2">
-              <div className="flex items-center justify-between text-xs text-blue-800">
+              <div className="flex items-center justify-between text-xs text-white/90">
                 <span className="font-medium">{t('sectionLayout.yourProgress')}</span>
                 <span className="font-semibold">{completedActivities}/{totalActivities} {t('sectionLayout.activities')}</span>
               </div>
               <Progress
                 percent={progress}
-                strokeColor={{ from: '#3b82f6', to: '#1d4ed8' }}
-                trailColor="rgba(255,255,255,0.6)"
+                strokeColor={{ from: '#fff', to: 'rgba(255,255,255,0.8)' }}
+                trailColor="rgba(255,255,255,0.3)"
                 size="small"
                 showInfo={false}
               />
-              <div className="text-right text-xs font-semibold text-blue-700">
+              <div className="text-right text-xs font-semibold text-white">
                 {progress}% {t('sectionLayout.complete')}
               </div>
             </div>
@@ -187,6 +236,16 @@ export default function SectionLayout({
             ) : (
               <SidebarMenu items={items} activeId={activeId} navigate={navigate} onSelectItem={onSelectItem} t={t} />
             )}
+          </div>
+
+          {/* Resize Handle */}
+          <div
+            onMouseDown={handleMouseDown}
+            className={`absolute top-0 right-0 w-1 h-full cursor-col-resize group hover:bg-cyan-400 transition-colors ${isResizing ? 'bg-cyan-500' : 'bg-transparent'}`}
+          >
+            <div className="absolute top-1/2 -translate-y-1/2 right-0 translate-x-1/2 w-4 h-8 rounded bg-slate-300 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+              <GripVertical className="w-3 h-3 text-slate-500" />
+            </div>
           </div>
         </aside>
 
@@ -270,13 +329,13 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem, t }) {
             <button
               type="button"
               onClick={() => toggleSection(group.section.id)}
-              className="w-full flex items-center justify-between px-4 py-3 text-left bg-gradient-to-r from-slate-100 to-slate-50 hover:from-blue-100 hover:to-blue-50 rounded-xl transition-all duration-200 group cursor-pointer border border-slate-200 hover:border-blue-300 shadow-sm hover:shadow"
+              className="w-full flex items-center justify-between px-4 py-3 text-left bg-gradient-to-r from-slate-50 to-white hover:from-cyan-50 hover:to-blue-50 rounded-xl transition-all duration-200 group cursor-pointer border border-slate-200 hover:border-cyan-300 shadow-sm hover:shadow"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className={[
                   'w-8 h-8 rounded-lg flex items-center justify-center transition-colors',
                   group.section.isCompleted
-                    ? 'bg-green-500 text-white'
+                    ? 'bg-emerald-500 text-white'
                     : 'bg-white border-2 border-slate-300 text-slate-500'
                 ].join(' ')}>
                   {group.section.isCompleted ? (
@@ -285,7 +344,7 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem, t }) {
                     <span className="text-xs font-bold">{group.partitions.filter(p => p.isCompleted).length}/{group.partitions.length}</span>
                   )}
                 </div>
-                <span className="text-sm font-semibold text-slate-900 group-hover:text-blue-700 truncate">
+                <span className="text-sm font-semibold text-slate-900 group-hover:text-cyan-700 truncate">
                   {group.section.title}
                 </span>
               </div>
@@ -295,7 +354,7 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem, t }) {
                 'transition-transform duration-300 flex-shrink-0',
                 isExpanded ? 'rotate-90' : 'rotate-0'
               ].join(' ')}>
-                <svg className="w-5 h-5 text-slate-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-slate-400 group-hover:text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -305,7 +364,8 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem, t }) {
             {isExpanded && (
               <div className="mt-2 ml-3 space-y-1.5 border-l-2 border-slate-200 pl-3">
                 {group.partitions.map((partition) => {
-                  const isActive = partition.id === activeId;
+                  // Fix: Convert both to string for comparison
+                  const isActive = String(partition.id) === String(activeId);
 
                   // Get icon based on activity type
                   const getActivityIcon = () => {
@@ -342,7 +402,7 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem, t }) {
                     <div key={partition.id} className="relative group/item">
                       {/* Active State Indicator */}
                       {isActive && (
-                        <div className="absolute -left-3 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full"></div>
+                        <div className="absolute -left-3 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-500 to-blue-600 rounded-full"></div>
                       )}
 
                       <button
@@ -351,24 +411,26 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem, t }) {
                         className={[
                           'w-full text-left px-3 py-2.5 rounded-lg transition-all duration-200 flex items-center gap-3 cursor-pointer',
                           isActive
-                            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-sm'
+                            ? 'bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 shadow-sm'
                             : 'hover:bg-slate-50 border border-transparent hover:border-slate-200 hover:shadow-sm'
                         ].join(' ')}
                       >
                         {/* Completion Status */}
                         <div className="flex-shrink-0">
                           {partition.isCompleted ? (
-                            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-sm ring-2 ring-green-200">
+                            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-sm ring-2 ring-emerald-200">
                               <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
+                            </div>
+                          ) : isActive ? (
+                            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-sm ring-2 ring-cyan-200 animate-pulse">
+                              <div className="w-2 h-2 rounded-full bg-white"></div>
                             </div>
                           ) : (
                             <div className={[
                               'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                              isActive
-                                ? 'border-blue-400 bg-blue-50'
-                                : 'border-slate-300 bg-white group-hover/item:border-blue-300 group-hover/item:bg-blue-50'
+                              'border-slate-300 bg-white group-hover/item:border-cyan-300 group-hover/item:bg-cyan-50'
                             ].join(' ')}>
-                              <div className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover/item:bg-blue-400"></div>
+                              <div className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover/item:bg-cyan-400"></div>
                             </div>
                           )}
                         </div>
@@ -379,22 +441,13 @@ function SidebarMenu({ items, activeId, navigate, onSelectItem, t }) {
                             <span className={[
                               'text-sm font-medium truncate block leading-5',
                               isActive
-                                ? 'text-blue-700 font-semibold'
-                                : 'text-slate-700 group-hover/item:text-blue-600'
+                                ? 'text-cyan-700 font-semibold'
+                                : 'text-slate-700 group-hover/item:text-cyan-600'
                             ].join(' ')}>
                               {partition.title}
                             </span>
                           </Tooltip>
                         </div>
-
-                        {/* Active indicator badge */}
-                        {isActive && (
-                          <div className="flex-shrink-0 flex items-center">
-                            <div className="px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full leading-tight">
-                              {t('sectionLayout.current')}
-                            </div>
-                          </div>
-                        )}
                       </button>
                     </div>
                   );

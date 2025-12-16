@@ -6,34 +6,35 @@ import { Button, Progress, Tag } from 'antd';
 import { Settings, CheckCircle2, Clock, Play, ListTodo, ChevronsRight, Monitor, Download, LogIn, MousePointer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export default function PracticeContent({ 
-	title, 
-	duration, 
-	completed = false, 
-	description, 
-	tasks = [] 
+export default function PracticeContent({
+	title,
+	duration,
+	completed = false,
+	description,
+	tasks = []
 }) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
 	const completedTasks = tasks.filter(t => t.isPass).length;
-	const avgScore = tasks.length > 0 
+	const avgScore = tasks.length > 0
 		? Math.round(tasks.reduce((acc, t) => acc + (t.score || 0), 0) / tasks.length)
 		: 0;
 
 	return (
 		<div className="space-y-6">
 			{/* Header Card */}
-			<div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-				<div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-orange-50 to-amber-50">
+			<div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-lg shadow-slate-200/50 overflow-hidden">
+				<div className="h-1 bg-gradient-to-r from-cyan-400 to-blue-500" />
+				<div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-cyan-50/50 to-blue-50/50">
 					<div className="flex items-start justify-between gap-4">
 						<div className="flex items-start gap-4">
-							<div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-200">
+							<div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-200">
 								<Settings className="w-6 h-6 text-white" />
 							</div>
 							<div>
 								<div className="flex items-center gap-2 mb-1">
-									<Tag color="orange" className="text-xs font-medium">{t('trainee.learn.practice')}</Tag>
+									<Tag color="cyan" className="text-xs font-medium">{t('trainee.learn.practice')}</Tag>
 									{completed && (
 										<Tag color="success" className="text-xs font-medium">{t('trainee.learn.completed')}</Tag>
 									)}
@@ -63,10 +64,10 @@ export default function PracticeContent({
 							</div>
 						</div>
 
-						<div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
+						<div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-4 border border-cyan-100">
 							<div className="flex items-center gap-3">
-								<div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
-									<Monitor className="w-5 h-5 text-orange-600" />
+								<div className="w-10 h-10 rounded-lg bg-cyan-100 flex items-center justify-center">
+									<Monitor className="w-5 h-5 text-cyan-600" />
 								</div>
 								<div>
 									<div className="text-sm text-slate-500">{t('trainee.learn.type')}</div>
@@ -86,11 +87,10 @@ export default function PracticeContent({
 							<ul className="space-y-3">
 								{tasks.map((task, index) => (
 									<li key={task.taskId || index} className="flex items-start gap-3 bg-white rounded-lg p-3 border border-blue-100">
-										<div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-											task.isPass 
-												? 'bg-green-100 text-green-600' 
+										<div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${task.isPass
+												? 'bg-emerald-100 text-emerald-600'
 												: 'bg-slate-100 text-slate-400'
-										}`}>
+											}`}>
 											{task.isPass ? (
 												<CheckCircle2 className="w-4 h-4" />
 											) : (
@@ -138,11 +138,11 @@ export default function PracticeContent({
 
 					{/* Action Button */}
 					<div className="text-center">
-						<Button 
-							type="primary" 
+						<Button
+							type="primary"
 							size="large"
 							icon={<Play className="w-4 h-4" />}
-							className="px-8 shadow-lg shadow-orange-200"
+							className="px-8 shadow-lg shadow-cyan-200"
 							onClick={() => navigate('/simulator')}
 						>
 							{completed ? t('trainee.learn.practiceAgain') : t('trainee.learn.startPractice')}
@@ -153,16 +153,17 @@ export default function PracticeContent({
 
 			{/* Summary Card - Only show when completed */}
 			{completed && (
-				<div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-					<div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-green-50 to-emerald-50">
+				<div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-lg shadow-slate-200/50 overflow-hidden">
+					<div className="h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
+					<div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50/50 to-teal-50/50">
 						<h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
-							<CheckCircle2 className="w-5 h-5 text-green-600" />
+							<CheckCircle2 className="w-5 h-5 text-emerald-600" />
 							{t('trainee.learn.practiceSummary')}
 						</h3>
 					</div>
 					<div className="p-6">
-						<Progress 
-							percent={100} 
+						<Progress
+							percent={100}
 							status="success"
 							strokeColor={{ from: '#10b981', to: '#059669' }}
 							className="mb-6"
@@ -174,9 +175,9 @@ export default function PracticeContent({
 									{completedTasks} / {tasks.length}
 								</div>
 							</div>
-							<div className="bg-green-50 rounded-xl p-4 text-center">
+							<div className="bg-emerald-50 rounded-xl p-4 text-center">
 								<div className="text-sm text-slate-500 mb-1">{t('trainee.learn.averageScore')}</div>
-								<div className="text-2xl font-bold text-green-600">
+								<div className="text-2xl font-bold text-emerald-600">
 									{avgScore}%
 								</div>
 							</div>

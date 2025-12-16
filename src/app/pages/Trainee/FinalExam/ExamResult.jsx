@@ -1,8 +1,7 @@
 import React from 'react';
-import { Card, Button, Result, Descriptions, Tag, Progress } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, HomeOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Trophy, Home, RefreshCcw, CheckCircle, XCircle, Award, FileText } from 'lucide-react';
 
 export default function ExamResult() {
     const { t } = useTranslation();
@@ -10,135 +9,168 @@ export default function ExamResult() {
     const location = useLocation();
     const { examData, resultData, score: navScore, isPass: navIsPass } = location.state || {};
 
-    // Prefer data from API result (resultData) if available, otherwise fallback to navigation params or defaults
-    // Note: API (FinalExamDto) usually has 'totalMarks' and 'isPass' fields.
-    // Note: API (FinalExamDto) usually has 'totalMarks' and 'isPass' fields.
-    // 'marks' in the UI usually refers to the score achieved.
-
     // Determine the final score and pass status to display
     let displayScore = 0;
     let isPassed = false;
 
     if (resultData) {
-        // 1. Try to get data from the root object first
         displayScore = resultData.totalMarks || resultData.marks || resultData.score || 0;
         isPassed = resultData.isPass === true || String(resultData.isPass).toLowerCase() === 'true';
 
-        // 2. Scenario: Root object might show 0/False if it's an aggregate of multiple parts, 
-        // but the user just finished ONE part (e.g. Theory) which IS passed/has marks.
-        // If root seems "empty" or "failed" (score 0 and not passed), look deeper into partials.
         if (displayScore === 0 && !isPassed && resultData.partials && Array.isArray(resultData.partials)) {
-            // Find the most relevant partial: preferably one that is Submitted/Completed or has marks
-            // In the user's case, the Theory partial has marks: 10 and isPass: true, status: "Submitted"
             const relevantPartial = resultData.partials.find(p =>
                 (p.status === 'Submitted' || p.status === 'Completed') || (p.marks && p.marks > 0)
             );
 
             if (relevantPartial) {
-                // Determine partial pass status
                 const partialPass = relevantPartial.isPass === true || String(relevantPartial.isPass).toLowerCase() === 'true';
                 const partialScore = relevantPartial.marks || 0;
-
-                // Use partial data if it looks like a valid result (either passed or has score)
-                // This fixes the issue where the user sees "Failed" despite passing the specific component
                 displayScore = partialScore;
                 isPassed = partialPass;
             }
         }
     } else {
-        // Fallback to navigation state if no API result data
         displayScore = navScore || 0;
         isPassed = navIsPass === true || String(navIsPass).toLowerCase() === 'true';
     }
 
-    // Additional info
     const examName = examData?.quizName || examData?.practiceName || examData?.name || t('exam.finalExam', 'Final Exam');
-    const examStatus = resultData?.status || examData?.status || (isPassed ? 'Passed' : 'Failed');
 
     return (
-        <div className="min-h-screen bg-slate-50 py-8">
-            <div className="max-w-3xl mx-auto px-4">
-                <Card className="shadow-sm">
-                    <Result
-                        status={isPassed ? 'success' : 'error'}
-                        icon={
-                            isPassed ? (
-                                <CheckCircleOutlined className="text-green-500" />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-8">
+            <div className="max-w-2xl mx-auto px-4">
+                <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50">
+                    {/* Header */}
+                    <div className={`p-8 text-center text-white ${isPassed
+                            ? 'bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500'
+                            : 'bg-gradient-to-br from-rose-500 via-red-500 to-orange-500'
+                        }`}>
+                        <div className="w-24 h-24 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg bg-white/20">
+                            {isPassed ? (
+                                <Trophy className="w-12 h-12 text-white" />
                             ) : (
-                                <CloseCircleOutlined className="text-red-500" />
-                            )
-                        }
-                        title={
-                            <span className="text-2xl font-bold">
-                                {isPassed
-                                    ? t('exam.congratulations', 'Xin chúc mừng!')
-                                    : t('exam.failed', 'Chưa đạt')}
-                            </span>
-                        }
-                        subTitle={
-                            isPassed
+                                <XCircle className="w-12 h-12 text-white" />
+                            )}
+                        </div>
+                        <h1 className="text-3xl font-bold mb-2">
+                            {isPassed
+                                ? t('exam.congratulations', 'Xin chúc mừng!')
+                                : t('exam.failed', 'Chưa đạt')}
+                        </h1>
+                        <p className="text-white/90 text-lg">
+                            {isPassed
                                 ? t('exam.passedMessage', 'Bạn đã hoàn thành bài thi xuất sắc!')
-                                : t('exam.failedMessage', 'Rất tiếc, bạn chưa đạt lần này. Hãy tiếp tục học và thử lại!')
-                        }
-                    />
+                                : t('exam.failedMessage', 'Rất tiếc, bạn chưa đạt lần này. Hãy tiếp tục học và thử lại!')}
+                        </p>
+                    </div>
 
-                    <div className="mt-0">
-                        <div className="text-center mb-2">
-                            <Progress
-                                type="circle"
-                                percent={displayScore === 0 ? 0 : 100} // Simplified visual: full circle if score > 0 or just show text
-                                strokeColor={isPassed ? '#52c41a' : '#ff4d4f'}
-                                width={150}
-                                format={() => (
-                                    <div>
-                                        <div className="text-4xl font-bold">{displayScore}</div>
-                                        <div className="text-sm text-slate-500">
-                                            {t('exam.yourScore', 'Điểm của bạn')}
-                                        </div>
-                                    </div>
-                                )}
-                            />
+                    {/* Score Display */}
+                    <div className="p-8">
+                        <div className="text-center mb-8">
+                            <div className="relative w-40 h-40 mx-auto">
+                                {/* Background Circle */}
+                                <svg className="w-full h-full transform -rotate-90">
+                                    <circle
+                                        cx="80"
+                                        cy="80"
+                                        r="70"
+                                        stroke="currentColor"
+                                        strokeWidth="12"
+                                        fill="none"
+                                        className="text-slate-100"
+                                    />
+                                    <circle
+                                        cx="80"
+                                        cy="80"
+                                        r="70"
+                                        stroke="url(#scoreGradient)"
+                                        strokeWidth="12"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeDasharray={`${(displayScore / 10) * 440} 440`}
+                                    />
+                                    <defs>
+                                        <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stopColor={isPassed ? "#10b981" : "#ef4444"} />
+                                            <stop offset="100%" stopColor={isPassed ? "#06b6d4" : "#f97316"} />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                {/* Score Text */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span className={`text-4xl font-bold ${isPassed ? 'text-emerald-600' : 'text-red-600'}`}>
+                                        {displayScore}
+                                    </span>
+                                    <span className="text-sm text-slate-500 font-medium">/ 10 {t('exam.points', 'điểm')}</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <Descriptions bordered column={1}>
-                            <Descriptions.Item label={t('exam.examName', 'Tên bài thi')}>
-                                {examName}
-                            </Descriptions.Item>
+                        {/* Exam Details */}
+                        <div className="space-y-3 mb-8">
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
+                                        <FileText className="w-5 h-5 text-cyan-600" />
+                                    </div>
+                                    <span className="text-slate-600 font-medium">{t('exam.examName', 'Tên bài thi')}</span>
+                                </div>
+                                <span className="font-bold text-slate-800">{examName}</span>
+                            </div>
 
-                            <Descriptions.Item label={t('exam.yourScore', 'Điểm của bạn')}>
-                                <Tag color={isPassed ? 'success' : 'error'} className="text-lg font-semibold px-3 py-1">
-                                    {displayScore}
-                                </Tag>
-                            </Descriptions.Item>
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <Award className="w-5 h-5 text-blue-600" />
+                                    </div>
+                                    <span className="text-slate-600 font-medium">{t('exam.yourScore', 'Điểm của bạn')}</span>
+                                </div>
+                                <span className={`px-4 py-1.5 rounded-full text-sm font-bold ${isPassed ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                                    }`}>
+                                    {displayScore} / 10
+                                </span>
+                            </div>
 
-                            <Descriptions.Item label={t('exam.status', 'Trạng thái')}>
-                                <Tag color={isPassed ? 'success' : 'error'} className="font-semibold uppercase">
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isPassed ? 'bg-emerald-100' : 'bg-red-100'
+                                        }`}>
+                                        {isPassed ? (
+                                            <CheckCircle className="w-5 h-5 text-emerald-600" />
+                                        ) : (
+                                            <XCircle className="w-5 h-5 text-red-600" />
+                                        )}
+                                    </div>
+                                    <span className="text-slate-600 font-medium">{t('exam.status', 'Trạng thái')}</span>
+                                </div>
+                                <span className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase ${isPassed ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                                    }`}>
                                     {isPassed ? t('exam.passed', 'ĐẠT') : t('exam.notPassed', 'CHƯA ĐẠT')}
-                                </Tag>
-                            </Descriptions.Item>
-                        </Descriptions>
-                    </div>
+                                </span>
+                            </div>
+                        </div>
 
-                    <div className="mt-6 flex justify-center gap-4">
-                        <Button
-                            type="primary"
-                            size="large"
-                            href="/"
-                            target="_top"
-                            icon={<HomeOutlined />}
-                        >
-                            {t('common.home', 'Trang chủ')}
-                        </Button>
-                        {!isPassed && examData?.id && (
-                            <Button
-                                size="large"
-                                onClick={() => navigate(`/final-exam/${examData.id}`)}
+                        {/* Actions */}
+                        <div className="flex gap-4">
+                            <a
+                                href="/"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-cyan-200 hover:shadow-xl hover:shadow-cyan-300 transition-all duration-300"
                             >
-                                {t('exam.tryAgain', 'Thử lại')}
-                            </Button>
-                        )}
+                                <Home className="w-5 h-5" />
+                                {t('common.home', 'Trang chủ')}
+                            </a>
+                            {!isPassed && examData?.id && (
+                                <button
+                                    onClick={() => navigate(`/final-exam/${examData.id}`)}
+                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-all duration-300"
+                                >
+                                    <RefreshCcw className="w-5 h-5" />
+                                    {t('exam.tryAgain', 'Thử lại')}
+                                </button>
+                            )}
+                        </div>
                     </div>
-                </Card>
+                </div>
             </div>
         </div>
     );

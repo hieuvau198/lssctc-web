@@ -82,7 +82,7 @@ export default function PageNav({ items, className = '', rootHref = '/', rootLab
                       title={item.title}
                     >
                       {item.isRoot && <Home className="w-4 h-4" />}
-                      <span className="text-sm font-medium text-gray-700">{item.title}</span>
+                      <span className="text-sm font-medium text-slate-600 group-hover:text-cyan-600 transition-colors">{item.title}</span>
                     </Link>
                   </BreadcrumbLink>
                 )}

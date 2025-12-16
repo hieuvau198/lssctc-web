@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
-import { Input, Skeleton, Alert, Empty, Pagination } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { Alert, Button, Pagination, Skeleton } from "antd";
+import { GraduationCap, Search, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
-import ProgramCard from "../../../components/ProgramCard";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
 import PageNav from "../../../components/PageNav/PageNav";
-
-const { Search } = Input;
+import ProgramCard from "../../../components/ProgramCard";
 
 const Program = () => {
   const { t } = useTranslation();
@@ -17,7 +17,6 @@ const Program = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Read from URL params on first render, else use defaults
   const [searchInput, setSearchInput] = useState(
     () => searchParams.get("search") || ""
   );
@@ -28,11 +27,10 @@ const Program = () => {
     () => Number(searchParams.get("page")) || 1
   );
   const [pageSize, setPageSize] = useState(
-    () => Number(searchParams.get("pageSize")) || 10
+    () => Number(searchParams.get("pageSize")) || 12
   );
   const [total, setTotal] = useState(0);
 
-  // Sync state to URL whenever pageNumber, pageSize, or searchValue changes
   useEffect(() => {
     const params = new URLSearchParams();
     if (searchValue) params.set("search", searchValue);
@@ -41,7 +39,6 @@ const Program = () => {
     setSearchParams(params);
   }, [pageNumber, pageSize, searchValue, setSearchParams]);
 
-  // Fetch programs whenever params change
   useEffect(() => {
     let isCancelled = false;
     setLoading(true);
@@ -54,10 +51,8 @@ const Program = () => {
     })
       .then((data) => {
         if (isCancelled) return;
-        // Normalize API response: support paged ({items, totalCount}) or plain array
         const rawItems = data?.items || data?.data || data || [];
 
-        // Map fields from API to UI-friendly names. API may return different aliases.
         const mapProgram = (p) => ({
           id: p.id ?? p.programId ?? p.program_id,
           name: p.name ?? p.title ?? '',
@@ -66,13 +61,11 @@ const Program = () => {
           durationHours: p.durationHours ?? p.duration ?? p.duration_hours ?? 0,
           totalCourses: p.totalCourses ?? p.total_courses ?? p.courseCount ?? 0,
           imageUrl: p.imageUrl ?? p.image ?? p.image_url ?? p.thumbnailUrl ?? p.thumbnail_url ?? '',
-          // keep original raw object for other needs
           _raw: p,
         });
 
         const items = Array.isArray(rawItems) ? rawItems.map(mapProgram) : [];
         setPrograms(items);
-        // Try to find total from common keys; fallback to items length
         const t = data?.totalItems ?? data?.total ?? data?.totalCount ?? items.length ?? 0;
         setTotal(typeof t === 'number' ? t : Number(t) || 0);
         setLoading(false);
@@ -87,84 +80,151 @@ const Program = () => {
     };
   }, [pageNumber, pageSize, searchValue]);
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <PageNav nameMap={{ program: t('trainee.programs.title') }} />
-      <span className="text-2xl mb-4">{t('trainee.programs.title')}</span>
-      {/* prevent full page reload when pressing Enter */}
-      <form onSubmit={(e) => e.preventDefault()}>
-        <Search
-          placeholder={t('trainee.programs.searchPlaceholder')}
-          allowClear
-          className="mb-8"
-          value={searchInput}
-          onChange={(e) => {
-            const v = e.target.value;
-            setSearchInput(v);
-            // if user cleared the input using the clear button, trigger search immediately
-            if (v === "") {
-              setSearchValue("");
-              setPageNumber(1);
-            }
-          }}
-          onSearch={(v) => {
-            const trimmed = v.trim();
-            setSearchValue(trimmed);
-            setPageNumber(1);
-          }}
-          enterButton
-        />
-      </form>
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const trimmed = searchInput.trim();
+    setSearchValue(trimmed);
+    setPageNumber(1);
+  };
 
-      {/* Content area: keep search visible while swapping only cards/pagination */}
-      {error ? (
-        <div className="max-w-md mx-auto mt-4">
-          <Alert message="Error" description={error} type="error" showIcon />
-        </div>
-      ) : (
-        <>
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 6 }).map((_, idx) => (
-                <div key={idx} className="bg-white rounded-lg shadow">
-                  <div className="w-full h-40 overflow-hidden rounded-t-lg">
-                    <Skeleton.Image active className="!w-full !h-40" />
-                  </div>
-                  <div className="p-4">
-                    <Skeleton active title={{ width: '60%' }} paragraph={{ rows: 2 }} />
-                  </div>
-                </div>
-              ))}
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-cyan-50/80 via-blue-50/50 to-white border-b border-slate-200/60 overflow-hidden">
+        {/* Decorative Blurs */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+        <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-10">
+          <PageNav nameMap={{ program: t('trainee.programs.title') }} />
+
+          <div className="mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+            {/* Left Content */}
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-full border border-cyan-200/60 mb-4">
+                <Sparkles className="w-4 h-4 text-cyan-500" />
+                <span className="text-sm font-medium text-cyan-700">Chương trình đào tạo chuyên nghiệp</span>
+              </div>
+
+              <div className="text-4xl lg:text-5xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
+                  {t('trainee.programs.title')}
+                </span>
+              </div>
+
+              <p className="text-lg text-slate-600 mb-6 leading-relaxed">
+                Khám phá các chương trình đào tạo toàn diện về vận hành cần cẩu, an toàn lao động và kỹ năng logistics chuyên nghiệp.
+              </p>
             </div>
-          ) : programs.length === 0 ? (
-            <Empty description={t('trainee.programs.noPrograms')} className="mt-16 min-h-[350px]" />
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {programs.map((program) => (
-                  <ProgramCard
-                    key={program.id}
-                    program={program}
-                    onClick={() => navigate(`/program/${program.id}`)}
-                  />
+
+            {/* Right: Search Box */}
+            <div className="w-full lg:w-auto lg:min-w-[400px]">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-xl shadow-slate-200/50 p-6">
+                <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                  <Search className="w-5 h-5 text-cyan-500" />
+                  Tìm kiếm chương trình
+                </h3>
+                <form onSubmit={handleSearch} className="space-y-4">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder={t('trainee.programs.searchPlaceholder')}
+                      value={searchInput}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setSearchInput(v);
+                        if (v === "") {
+                          setSearchValue("");
+                          setPageNumber(1);
+                        }
+                      }}
+                      className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all duration-300 text-slate-700 placeholder-slate-400"
+                    />
+                  </div>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    block
+                    size="large"
+                    icon={<SearchOutlined />}
+                    className="!rounded-xl !h-12 !font-semibold"
+                  >
+                    Tìm kiếm
+                  </Button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Area */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-10">
+        {error ? (
+          <div className="max-w-md mx-auto">
+            <Alert message="Error" description={error} type="error" showIcon />
+          </div>
+        ) : (
+          <>
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {Array.from({ length: 8 }).map((_, idx) => (
+                  <div key={idx} className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+                    <div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
+                    <div className="w-full h-44 overflow-hidden">
+                      <Skeleton.Image active className="!w-full !h-44" />
+                    </div>
+                    <div className="p-5">
+                      <Skeleton active title={{ width: '70%' }} paragraph={{ rows: 2, width: ['100%', '60%'] }} />
+                    </div>
+                  </div>
                 ))}
               </div>
-              <div className="mt-8 flex justify-center">
-                <Pagination
-                  current={pageNumber}
-                  pageSize={pageSize}
-                  total={total}
-                  showSizeChanger
-                  onChange={(page, size) => {
-                    setPageNumber(page);
-                    setPageSize(size);
-                  }}
-                />
+            ) : programs.length === 0 ? (
+              <div className="min-h-[400px] flex flex-col items-center justify-center">
+                <div className="w-32 h-32 bg-gradient-to-br from-cyan-100 to-blue-200 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                  <GraduationCap className="w-16 h-16 text-cyan-400" />
+                </div>
+                <p className="text-slate-700 text-xl font-semibold mb-2">{t('trainee.programs.noPrograms')}</p>
+                <p className="text-slate-500 text-sm">Không tìm thấy chương trình nào phù hợp với tìm kiếm của bạn</p>
               </div>
-            </>
-          )}
-        </>
-      )}
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {programs.map((program) => (
+                    <ProgramCard
+                      key={program.id}
+                      program={program}
+                      onClick={() => {
+                        window.scrollTo({ top: 0 });
+                        navigate(`/program/${program.id}`);
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <div className="mt-12 flex justify-center">
+                  <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl px-6 py-4 shadow-lg shadow-slate-200/50">
+                    <Pagination
+                      current={pageNumber}
+                      pageSize={pageSize}
+                      total={total}
+                      showSizeChanger
+                      showTotal={(total, range) => `${range[0]}-${range[1]} của ${total} chương trình`}
+                      onChange={(page, size) => {
+                        window.scrollTo({ top: 300 });
+                        setPageNumber(page);
+                        setPageSize(size);
+                      }}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
