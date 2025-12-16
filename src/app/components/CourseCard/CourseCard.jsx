@@ -14,7 +14,7 @@ export default function CourseCard({ course }) {
   } = course ?? {};
 
   return (
-    <div className="group cursor-pointer bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-cyan-100/50 hover:border-cyan-200 transition-all duration-300">
+    <div className="group cursor-pointer bg-white/90 backdrop-blur-sm border border-slate-200/60  overflow-hidden shadow-sm hover:shadow-xl hover:shadow-cyan-100/50 hover:border-cyan-200 transition-all duration-300">
       {/* Image Container */}
       <div className="relative aspect-[16/9] bg-slate-100 overflow-hidden">
         {thumbnail ? (

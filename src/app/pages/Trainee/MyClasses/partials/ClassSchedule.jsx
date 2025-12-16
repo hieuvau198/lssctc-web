@@ -10,7 +10,7 @@ export default function ClassSchedule({ classData }) {
   const end = new Date(classData.endDate).toLocaleDateString("vi-VN");
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+    <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-lg overflow-hidden shadow-lg shadow-slate-200/50">
       <div className="h-1 bg-gradient-to-r from-teal-400 to-emerald-500" />
       <div className="p-5">
         <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
