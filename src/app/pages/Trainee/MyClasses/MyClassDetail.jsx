@@ -164,7 +164,7 @@ export default function MyClassDetail() {
   }
 
   const courseFeatures = [
-    { icon: Award, title: "Industry Certification", value: "NCCCO Standard" },
+    { icon: Award, title: "Industry Certification", value: "LSSCTC Standard" },
     { icon: Target, title: "Completion Rate", value: "95% Success" },
     { icon: TrendingUp, title: "Career Growth", value: "+40% Salary" },
     { icon: Calendar, title: "Course Length", value: "12 Weeks" },
@@ -177,7 +177,7 @@ export default function MyClassDetail() {
     phone: instructor.phoneNumber || instructor.phone || "N/A",
     avatar: instructor.avatarUrl || instructor.avatar || null,
     bio: "Certified crane operator with 15+ years of experience in industrial training and safety compliance.",
-    certifications: ["NCCCO Certified", "OSHA 30-Hour", "Advanced Rigging Specialist"],
+    certifications: ["LSSCTC Certified", "OSHA 30-Hour", "Advanced Rigging Specialist"],
   } : {
     name: "TBD",
     role: "Instructor",
@@ -531,19 +531,6 @@ export default function MyClassDetail() {
           {activeTab === "exam" && (
             <FinalExamTab classId={id} />
           )}
-        </div>
-      </section>
-
-      {/* Footer CTA */}
-      <section className="bg-black text-white py-16 border-t-4 border-yellow-400">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-black uppercase mb-4">Need Help With This Course?</h2>
-          <p className="text-neutral-400 mb-8 max-w-2xl mx-auto">
-            Our support team is available 24/7 to assist you with any questions or concerns.
-          </p>
-          <button className="px-8 py-4 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-white transition-colors">
-            Contact Support
-          </button>
         </div>
       </section>
     </div>
