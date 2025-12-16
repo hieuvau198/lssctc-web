@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
-import { Form, Input, InputNumber, Switch, Button, Space, Image } from "antd";
+import { Form, Input, Button, Space, Image } from "antd";
 
 const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
   const { t } = useTranslation();
   const [preview, setPreview] = useState(null);
+  const [bgPreview, setBgPreview] = useState(null);
 
   useEffect(() => {
     try {
       const v = form?.getFieldValue?.('imageUrl') || '';
       setPreview(v?.trim() ? v.trim() : null);
+
+      const bg = form?.getFieldValue?.('backgroundImageUrl') || '';
+      setBgPreview(bg?.trim() ? bg.trim() : null);
     } catch (err) {}
   }, [form]);
+
   return (
     <Form
       form={form}
@@ -26,58 +31,72 @@ const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
         <Input maxLength={120} showCount placeholder={t('admin.programs.form.namePlaceholder')} />
       </Form.Item>
 
-      {/* <Form.Item
-        name="durationHours"
-        label="Duration (hours)"
-        rules={[{ required: true, message: "Please enter duration" }]}
-      >
-        <InputNumber
-          min={0}
-          max={1000}
-          className="w-full"
-          placeholder="Enter duration in hours"
-        />
-      </Form.Item> */}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-        <Form.Item
-          name="imageUrl"
-          label={t('admin.programs.form.imageUrl')}
-          rules={[
-            { required: true, message: t('admin.programs.form.imageUrlRequired') },
-            { type: "url", message: t('admin.programs.form.imageUrlInvalid') },
-          ]}
-        >
-          <Input
-            maxLength={300}
-            allowClear
-            placeholder="https://example.com/image.jpg"
-            onChange={(e) => {
-              const v = e?.target?.value || '';
-              setPreview(v.trim() ? v.trim() : null);
-            }}
-          />
-        </Form.Item>
-
+        {/* Main Image */}
         <div>
-          <div className="text-sm text-gray-600 mb-2">{t('admin.programs.form.imagePreview')}</div>
-          <div className="w-32 h-32 flex items-center justify-center rounded-lg overflow-hidden bg-gray-100">
-            {preview ? (
-              <Image src={preview} preview={{ mask: t('common.clickToPreview') }} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">{t('common.noImage')}</div>
-            )}
-          </div>
+            <Form.Item
+            name="imageUrl"
+            label={t('admin.programs.form.imageUrl')}
+            rules={[
+                { required: true, message: t('admin.programs.form.imageUrlRequired') },
+                { type: "url", message: t('admin.programs.form.imageUrlInvalid') },
+            ]}
+            >
+            <Input
+                maxLength={300}
+                allowClear
+                placeholder="https://example.com/image.jpg"
+                onChange={(e) => {
+                const v = e?.target?.value || '';
+                setPreview(v.trim() ? v.trim() : null);
+                }}
+            />
+            </Form.Item>
+
+            <div className="mb-4">
+                <div className="text-sm text-gray-600 mb-2">{t('admin.programs.form.imagePreview')}</div>
+                <div className="w-32 h-32 flex items-center justify-center rounded-lg overflow-hidden bg-gray-100 border">
+                    {preview ? (
+                    <Image src={preview} preview={{ mask: t('common.clickToPreview') }} className="w-full h-full object-cover" />
+                    ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">{t('common.noImage')}</div>
+                    )}
+                </div>
+            </div>
+        </div>
+
+        {/* Background Image */}
+        <div>
+            <Form.Item
+            name="backgroundImageUrl"
+            label="Background Image URL"
+            rules={[
+                { type: "url", message: t('admin.programs.form.imageUrlInvalid') },
+            ]}
+            >
+            <Input
+                maxLength={300}
+                allowClear
+                placeholder="https://example.com/bg-image.jpg"
+                onChange={(e) => {
+                const v = e?.target?.value || '';
+                setBgPreview(v.trim() ? v.trim() : null);
+                }}
+            />
+            </Form.Item>
+
+            <div className="mb-4">
+                <div className="text-sm text-gray-600 mb-2">Background Preview</div>
+                <div className="w-full h-32 flex items-center justify-center rounded-lg overflow-hidden bg-gray-100 border">
+                    {bgPreview ? (
+                    <Image src={bgPreview} preview={{ mask: t('common.clickToPreview') }} className="w-full h-full object-cover" />
+                    ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">No background</div>
+                    )}
+                </div>
+            </div>
         </div>
       </div>
-
-      {/* <Form.Item
-        name="isActive"
-        label="Status"
-        valuePropName="checked"
-      >
-        <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
-      </Form.Item> */}
       
       <Form.Item
         name="description"
@@ -86,7 +105,7 @@ const ProgramEditForm = ({ form, onFinish, onCancel, submitting }) => {
       >
         <Input.TextArea
           rows={3}
-          maxLength={500}
+          maxLength={1000} // Updated to match DTO
           showCount
           placeholder={t('admin.programs.form.descriptionPlaceholder')}
         />
