@@ -7,9 +7,9 @@ const BrandModelTable = ({
   data = [],
   loading = false,
   deleting = null,
-  onView = () => {},
-  onEdit = () => {},
-  onDelete = () => {},
+  onView = () => { },
+  onEdit = () => { },
+  onDelete = () => { },
   pagination = {},
 }) => {
   const { t } = useTranslation();
@@ -34,7 +34,7 @@ const BrandModelTable = ({
       width: 300,
       render: (name, record) => (
         <div
-          className="font-medium text-blue-600 cursor-pointer hover:underline"
+          className="font-medium text-violet-600 cursor-pointer hover:underline"
           onClick={() => onView(record)}
         >
           {name}
@@ -75,11 +75,11 @@ const BrandModelTable = ({
             <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(record)} />
           </Tooltip>
           <Tooltip title={t('simManager.brandModel.delete')}>
-            <Button 
-              type="text" 
-              size="small" 
+            <Button
+              type="text"
+              size="small"
               danger
-              icon={<DeleteOutlined />} 
+              icon={<DeleteOutlined />}
               onClick={() => onDelete(record)}
               loading={deleting === record.id}
             />

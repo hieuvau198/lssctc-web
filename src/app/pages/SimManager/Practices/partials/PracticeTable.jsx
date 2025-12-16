@@ -7,12 +7,12 @@ const PracticeTable = ({
   data = [],
   loading = false,
   deleting = null,
-  onView = () => {},
-  onDelete = () => {},
+  onView = () => { },
+  onDelete = () => { },
   pagination = {},
 }) => {
   const { t } = useTranslation();
-  
+
   const getDifficultyColor = (level) => {
     const map = { Entry: 'green', Intermediate: 'orange', Advanced: 'red' };
     return map[level] || 'default';
@@ -45,7 +45,7 @@ const PracticeTable = ({
       width: 280,
       render: (name, record) => (
         <div
-          className="font-medium text-blue-600 cursor-pointer hover:underline line-clamp-1"
+          className="font-medium text-violet-600 cursor-pointer hover:underline line-clamp-1"
           onClick={() => onView(record)}
         >
           <Tooltip title={name}>{name}</Tooltip>
@@ -100,11 +100,11 @@ const PracticeTable = ({
             <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(record)} />
           </Tooltip>
           <Tooltip title={t('common.delete')}>
-            <Button 
-              type="text" 
-              size="small" 
+            <Button
+              type="text"
+              size="small"
               danger
-              icon={<DeleteOutlined />} 
+              icon={<DeleteOutlined />}
               onClick={() => onDelete(record)}
               loading={deleting === record.id}
             />

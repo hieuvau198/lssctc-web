@@ -41,7 +41,7 @@ const TaskTable = ({
             width: 200,
             render: (name, record) => (
                 <div
-                    className="font-medium text-blue-600 cursor-pointer hover:underline"
+                    className="font-medium text-violet-600 cursor-pointer hover:underline"
                     onClick={() => onView(record)}
                 >
                     {name}

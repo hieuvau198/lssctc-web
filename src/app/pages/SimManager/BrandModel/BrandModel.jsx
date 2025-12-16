@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Skeleton, Empty, App, Form, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { Truck } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -177,19 +178,31 @@ export default function BrandModel() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-2">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('simManager.brandModel.title')}</h1>
+    <div className="max-w-[1380px] mx-auto px-4 py-4 space-y-4">
+      {/* Header with Violet Gradient */}
+      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+        <div className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-200/50">
+                <Truck className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                  {t('simManager.brandModel.title')}
+                </span>
+              </div>
+            </div>  
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleCreate}
+              className="!bg-gradient-to-r !from-violet-500 !to-purple-600 !border-0 hover:!from-violet-600 hover:!to-purple-700"
+            >
+              {t('simManager.brandModel.createBrandModel')}
+            </Button>
+          </div>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleCreate}
-        >
-          {t('simManager.brandModel.createBrandModel')}
-        </Button>
       </div>
 
       {/* Content */}

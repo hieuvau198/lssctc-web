@@ -6,9 +6,9 @@ import TaskCard from '../../../../components/TaskCard/TaskCard';
 export default function TaskList({
   data = [],
   loading = false,
-  onView = () => {},
-  onEdit = () => {},
-  onDelete = () => {},
+  onView = () => { },
+  onEdit = () => { },
+  onDelete = () => { },
   pagination = {},
 }) {
   const { t } = useTranslation();
@@ -33,6 +33,7 @@ export default function TaskList({
             onView={onView}
             onEdit={onEdit}
             onDelete={onDelete}
+            color="violet"
           />
         ))}
       </div>
