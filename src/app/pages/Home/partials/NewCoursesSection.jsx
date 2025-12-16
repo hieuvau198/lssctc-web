@@ -37,7 +37,7 @@ export default function NewCoursesSection() {
 
   return (
     <section id="new-courses" className="py-8 md:py-16 bg-gray-50">
-      <div className="max-w-[1380px] mx-auto px-5 sm:px-6 md:px-10">
+      <div className="max-w-[1400px] mx-auto px-5 sm:px-6 md:px-10">
         <div className="flex items-baseline justify-between mb-6">
           <h2 className="text-lg md:text-xl font-semibold text-slate-900 tracking-tight">{t('home.courses.title')}</h2>
         </div>
@@ -58,6 +58,7 @@ export default function NewCoursesSection() {
             <Carousel
               ref={carouselRef}
               autoplay
+              size="large"
               autoplaySpeed={3000}
               slidesToShow={5}
               slidesToScroll={1}
@@ -104,7 +105,7 @@ export default function NewCoursesSection() {
                     } catch (e) {}
                     navigate(`/course/${course.id}`);
                   }}
-                  className="cursor-pointer"
+                  className="cursor-pointer h-auto"
                 >
                   <CourseCard
                     course={{

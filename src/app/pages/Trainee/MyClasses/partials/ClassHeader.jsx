@@ -9,7 +9,7 @@ export default function ClassHeader({ classData }) {
 	const status = getClassStatus(classData.status ?? classData._statusMapped);
 
 	return (
-		<div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50 mb-6">
+		<div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-lg overflow-hidden shadow-lg shadow-slate-200/50 mb-6">
 			{/* Gradient Top Bar */}
 			<div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
 

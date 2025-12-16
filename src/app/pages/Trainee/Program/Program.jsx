@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
-import { Skeleton, Alert, Pagination, Button } from "antd";
-import { useTranslation } from 'react-i18next';
-import ProgramCard from "../../../components/ProgramCard";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import PageNav from "../../../components/PageNav/PageNav";
 import { SearchOutlined } from "@ant-design/icons";
-import { Search, GraduationCap, Sparkles, BookOpen, Award, TrendingUp } from "lucide-react";
+import { Alert, Button, Pagination, Skeleton } from "antd";
+import { GraduationCap, Search, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { fetchPrograms } from "../../../apis/Trainee/TraineeProgramApi";
+import PageNav from "../../../components/PageNav/PageNav";
+import ProgramCard from "../../../components/ProgramCard";
 
 const Program = () => {
   const { t } = useTranslation();
@@ -27,7 +27,7 @@ const Program = () => {
     () => Number(searchParams.get("page")) || 1
   );
   const [pageSize, setPageSize] = useState(
-    () => Number(searchParams.get("pageSize")) || 10
+    () => Number(searchParams.get("pageSize")) || 12
   );
   const [total, setTotal] = useState(0);
 
@@ -95,7 +95,7 @@ const Program = () => {
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-10">
           <PageNav nameMap={{ program: t('trainee.programs.title') }} />
 
           <div className="mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
@@ -159,7 +159,7 @@ const Program = () => {
       </div>
 
       {/* Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-10">
         {error ? (
           <div className="max-w-md mx-auto">
             <Alert message="Error" description={error} type="error" showIcon />
@@ -195,7 +195,10 @@ const Program = () => {
                     <ProgramCard
                       key={program.id}
                       program={program}
-                      onClick={() => navigate(`/program/${program.id}`)}
+                      onClick={() => {
+                        window.scrollTo({ top: 0 });
+                        navigate(`/program/${program.id}`);
+                      }}
                     />
                   ))}
                 </div>
@@ -210,6 +213,7 @@ const Program = () => {
                       showSizeChanger
                       showTotal={(total, range) => `${range[0]}-${range[1]} của ${total} chương trình`}
                       onChange={(page, size) => {
+                        window.scrollTo({ top: 300 });
                         setPageNumber(page);
                         setPageSize(size);
                       }}

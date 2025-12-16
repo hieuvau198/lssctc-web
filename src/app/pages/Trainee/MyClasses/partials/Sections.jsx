@@ -102,7 +102,7 @@ export default function Sections({ classId }) {
 
 				return (
 					<Link key={section.sectionId} to={deepLink} className="block group">
-						<div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 hover:border-cyan-300/50 hover:scale-[1.01]">
+						<div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-lg overflow-hidden shadow-lg shadow-slate-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 hover:border-cyan-300/50 hover:scale-[1.01]">
 							{/* Gradient Top Bar */}
 							<div className={`h-1 ${isCompleted ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : 'bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500'}`} />
 

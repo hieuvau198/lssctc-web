@@ -125,7 +125,7 @@ export default function MyClasses() {
                   to={`/my-classes/${p.id}`}
                   className="group block"
                 >
-                  <div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-cyan-500/10 hover:border-cyan-300/50 h-full shadow-lg shadow-slate-200/50">
+                  <div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-cyan-500/10 hover:border-cyan-300/50 h-full shadow-lg shadow-slate-200/50">
                     {/* Gradient Top Bar */}
                     <div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
 

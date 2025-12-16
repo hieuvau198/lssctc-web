@@ -108,11 +108,11 @@ export default function MyClassDetail() {
       key: 'learning',
       label: t('trainee.myClassDetail.learning'),
       children: (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <div className="lg:col-span-2 space-y-5">
             <Sections classId={classData.id} />
           </div>
-          <div className="space-y-6">
+          <div className="space-y-5 lg:sticky lg:top-12">
             <InstructorInfo classId={classData.id} />
             <ClassSchedule classData={classData} />
           </div>
@@ -151,7 +151,7 @@ export default function MyClassDetail() {
         <PageNav items={[{ title: 'My Classes', href: '/my-classes' }, { title: classData?.name }]} />
         <div className="mt-4">
           <ClassHeader classData={classData} />
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg shadow-slate-200/50 p-6 mt-6">
+          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl shadow-lg shadow-slate-200/50 p-6 mt-6">
             <Tabs items={tabItems} defaultActiveKey="learning" />
           </div>
         </div>
