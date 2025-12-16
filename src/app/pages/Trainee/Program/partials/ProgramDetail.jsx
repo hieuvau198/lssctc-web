@@ -87,9 +87,9 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
           <div className="flex flex-col-reverse lg:flex-row gap-10 items-stretch">
             {/* Left content */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold mb-4 leading-tight text-slate-900 max-w-3xl">
+              <span className="text-3xl font-bold mb-4 leading-tight text-slate-900 max-w-3xl">
                 {program.name}
-              </h1>
+              </span>
 
               {/* Meta badges */}
               <div className="flex flex-wrap gap-3 mb-6">
@@ -98,8 +98,8 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
                   {program.totalCourses} {t('trainee.programDetail.courses')}
                 </span>
                 <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium ${program.isActive
-                    ? 'bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200 text-emerald-700'
-                    : 'bg-slate-50 border-slate-200 text-slate-600'
+                  ? 'bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200 text-emerald-700'
+                  : 'bg-slate-50 border-slate-200 text-slate-600'
                   }`}>
                   <CheckCircle className="w-4 h-4" />
                   {program.isActive ? t('common.active') : t('common.inactive')}
@@ -164,7 +164,7 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-200/50">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">{t('trainee.courses.title')}</h2>
+            <span className="text-2xl font-bold text-slate-900">{t('trainee.courses.title')}</span>
           </div>
 
           {courses && courses.length > 0 ? (
@@ -173,7 +173,10 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => navigate(`/course/${c.id}`, { state: { fromProgram: { id, name: program?.name } } })}
+                  onClick={() => {
+                    window.scrollTo({ top: 0 });
+                    navigate(`/course/${c.id}`, { state: { fromProgram: { id, name: program?.name } } })
+                  }}
                   className="text-left"
                 >
                   <CourseCard

@@ -74,7 +74,7 @@ export default function InstructorInfo({ classId }) {
 	const initials = name.split(' ').filter(Boolean).slice(0, 2).map(n => n[0]).join('').toUpperCase();
 
 	return (
-		<div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+		<div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-lg overflow-hidden shadow-lg shadow-slate-200/50">
 			<div className="h-1 bg-gradient-to-r from-indigo-400 to-purple-500" />
 			<div className="p-5">
 				<h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">

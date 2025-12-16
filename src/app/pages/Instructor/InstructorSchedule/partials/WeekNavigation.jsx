@@ -1,4 +1,4 @@
-import { Button, Space, DatePicker } from 'antd';
+import { Button, DatePicker } from 'antd';
 import { LeftOutlined, RightOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import '../InstructorSchedule.css';
@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 
 /**
  * WeekNavigation - Component điều hướng tuần
+ * Thiết kế hiện đại với glassmorphism và cyan-blue gradient
  * @param {Date} currentWeekStart - Ngày bắt đầu tuần hiện tại
  * @param {Function} onPreviousWeek - Handler chuyển tuần trước
  * @param {Function} onNextWeek - Handler chuyển tuần sau
@@ -46,59 +47,70 @@ export default function WeekNavigation({
   };
 
   return (
-    <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-4 mb-6">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center">
-            <span className="text-3xl">📅</span>
+    <div className="relative overflow-hidden bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 rounded-2xl shadow-xl p-5 mb-6">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-cyan-400/20 rounded-full blur-xl"></div>
+
+      <div className="relative flex items-center justify-between gap-4 flex-wrap">
+        {/* Left side - Title and week info */}
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-white/15 text-white backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg border border-white/20">
+            <CalendarOutlined color="white" className="text-2xl" />
           </div>
           {!compact && (
             <div className="flex flex-col">
-              <span className="text-2xl font-semibold text-white">
+              <span className="text-2xl font-bold text-white tracking-tight">
                 {t('instructor.schedule.title')}
               </span>
-              <span className="text-orange-100 text-sm">
-                {t('instructor.schedule.week')}: {getWeekRangeText()}
-              </span>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white/90 font-medium border border-white/20">
+                  {t('instructor.schedule.week')}: {getWeekRangeText()}
+                </span>
+              </div>
             </div>
           )}
         </div>
 
-        <Space size="small" className={compact ? 'ml-auto' : ''}>
-          <div className="w-12 h-12 text-white bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center">
-            <Button
-              icon={<LeftOutlined className="text-white" />}
-              onClick={onPreviousWeek}
-              type="text"
-              size="small"
-              className="text-white hover:bg-white/10 border border-white/20 rounded-md p-1"
-            />
-          </div>
+        {/* Right side - Navigation controls */}
+        <div className={`flex items-center gap-2 ${compact ? 'ml-auto' : ''}`}>
+          {/* Previous week button */}
+          <Button
+            icon={<div className='text-white'><LeftOutlined /></div>}
+            onClick={onPreviousWeek}
+            type="text"
+            className="w-10 h-10 flex items-center justify-center bg-white/15 backdrop-blur-md hover:bg-white/50 border border-white/20 rounded-xl transition-all duration-200 shadow-md"
+          />
+
+          {/* Today button */}
           <Button
             onClick={onToday}
             type="default"
-            size="small"
-            className="bg-white text-orange-600 font-semibold hover:opacity-95 border border-white/20 rounded-md px-3 py-1"
+            className="h-10 px-5 bg-white text-cyan-600 font-semibold hover:bg-cyan-50 border-none rounded-xl shadow-md transition-all duration-200 hover:shadow-lg"
           >
             {t('instructor.schedule.today')}
           </Button>
+
+          {/* Next week button */}
           <Button
-            icon={<RightOutlined className="text-white" />}
+            icon={<div className='text-white'><RightOutlined /></div>}
             onClick={onNextWeek}
             type="text"
-            size="small"
-            className="text-white hover:bg-white/10 border border-white/20 rounded-md p-1"
+            className="w-10 h-10 flex items-center justify-center bg-white/15 backdrop-blur-md hover:bg-white/50 border border-white/20 rounded-xl transition-all duration-200 shadow-md"
           />
+
+          {/* Date picker */}
           <DatePicker
             picker="week"
             value={dayjs(currentWeekStart)}
             onChange={handleDateChange}
             format="wo - YYYY"
             allowClear={false}
-            className="!text-white border border-white/20 rounded-md p-1"
-            style={{ color: '#fff', background: 'transparent', borderColor: 'rgba(255,255,255,0.12)' }}
+            className="week-picker-modern h-10 bg-white/15 backdrop-blur-md border border-white/20 rounded-xl hover:bg-white/50 transition-all duration-200"
+            popupClassName="schedule-datepicker-popup"
           />
-        </Space>
+        </div>
       </div>
     </div>
   );

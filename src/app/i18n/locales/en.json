@@ -612,7 +612,9 @@
       "active": "Active",
       "inactive": "Inactive",
       "noToken": "Authentication token not found. Please login again.",
-      "loadFailed": "Unable to load profile information"
+      "loadFailed": "Unable to load profile information",
+      "driverLicenseInfo": "Driver License Information",
+      "citizenCardInfo": "Citizen ID Information"
     },
     "editProfile": {
       "title": "Edit Profile",
@@ -1095,6 +1097,21 @@
         "quiz": "Quiz",
         "practice": "Practice",
         "activity": "Activity"
+      },
+      "sessionManager": {
+        "title": "Session Availability",
+        "status": "Access Status",
+        "timeWindow": "Available Time Window",
+        "timeHelp": "Leave empty for unlimited time access while Active.",
+        "updateSuccess": "Session updated successfully",
+        "traineeProgress": "Trainee Progress",
+        "trainee": "Trainee",
+        "progressStatus": "Status",
+        "score": "Score",
+        "completionDate": "Completion Date",
+        "inProgress": "In Progress",
+        "completed": "Completed",
+        "notStarted": "Not Started"
       }
     },
     "practices": {
@@ -1671,16 +1688,23 @@
   },
   "simManager": {
     "dashboard": {
-      "title": "Simulator Manager Dashboard",
-      "subtitle": "Monitor simulations and real-time activity",
-      "activeUsers": "Active Users",
-      "activeSimulations": "Active Simulations",
-      "totalSimulations": "Total Simulations",
-      "avgSession": "Avg Session (min)",
-      "liveUsers": "Live Users",
-      "quickActions": "Quick Actions",
-      "newSimulation": "New Simulation",
-      "manageComponents": "Manage Components"
+      "title": "Simulation Dashboard",
+      "subtitle": "Overview of simulation and practice activities",
+      "totalPractices": "Total Practices",
+      "completedPractices": "Completed Practices",
+      "activePractices": "Active Practices",
+      "totalSimulators": "Total Simulators",
+      "completionDistribution": "Practice Completion Distribution",
+      "durationDistribution": "Practice Duration Distribution",
+      "completed": "Completed",
+      "notCompleted": "Not Completed",
+      "total": "Total",
+      "fast": "Fast (< 15 mins)",
+      "moderate": "Moderate (15-45 mins)",
+      "slow": "Slow (> 45 mins)",
+      "createSimulation": "Create Simulation",
+      "manageComponents": "Manage Components",
+      "settings": "Settings"
     },
     "activeSimulations": {
       "title": "Active Simulations",
@@ -2700,6 +2724,25 @@
         "editClass": "Edit Class",
         "addTraineeTitle": "Add Trainees to Class",
         "enrollSelected": "Enroll Selected ({{count}})"
+      },
+      "sessionManager": {
+        "title": "Session Manager",
+        "status": "Activity Status",
+        "timeWindow": "Time Window",
+        "timeHelp": "Select start and end time for the session",
+        "save": "Save",
+        "inactive": "Inactive",
+        "active": "Active",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "traineeProgress": "Trainee Progress",
+        "trainee": "Trainee",
+        "progressStatus": "Status",
+        "score": "Score",
+        "completionDate": "Completion Date",
+        "inProgress": "In Progress",
+        "completed": "Completed",
+        "notStarted": "Not Started"
       }
     }
   }

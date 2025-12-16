@@ -1,38 +1,73 @@
 // src/app/pages/SimManager/Dashboard/partials/StatsOverview.jsx
-import React from 'react';
-import { Card, Statistic, Row, Col } from 'antd';
-import { Users, Activity, PlayCircle, Timer } from 'lucide-react';
+import { Spin } from 'antd';
+import { Activity, CheckCircle, PlayCircle, Monitor } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function StatsOverview({
-  activeUsers = 0,
-  activeSimulations = 0,
-  totalSimulations = 0,
-  avgSessionMins = 0,
+  totalPractices = 0,
+  completedPractices = 0,
+  activePractices = 0,
+  totalSimulators = 0,
+  loading = false,
 }) {
   const { t } = useTranslation();
   const items = [
-    { title: t('simManager.dashboard.activeUsers'), value: activeUsers, icon: <Users className="w-5 h-5 text-blue-600" /> },
-    { title: t('simManager.dashboard.activeSimulations'), value: activeSimulations, icon: <Activity className="w-5 h-5 text-blue-600" /> },
-    { title: t('simManager.dashboard.totalSimulations'), value: totalSimulations, icon: <PlayCircle className="w-5 h-5 text-blue-600" /> },
-    { title: t('simManager.dashboard.avgSession'), value: avgSessionMins, icon: <Timer className="w-5 h-5 text-blue-600" /> },
+    {
+      title: t('simManager.dashboard.totalPractices') || 'Tổng thực hành',
+      value: totalPractices,
+      icon: <PlayCircle className="w-6 h-6" />,
+      gradient: 'from-violet-500 to-purple-600',
+      bgColor: 'bg-violet-50',
+      textColor: 'text-violet-600',
+    },
+    {
+      title: t('simManager.dashboard.completedPractices') || 'Đã hoàn thành',
+      value: completedPractices,
+      icon: <CheckCircle className="w-6 h-6" />,
+      gradient: 'from-emerald-500 to-teal-600',
+      bgColor: 'bg-emerald-50',
+      textColor: 'text-emerald-600',
+    },
+    {
+      title: t('simManager.dashboard.activePractices') || 'Đang thực hành',
+      value: activePractices,
+      icon: <Activity className="w-6 h-6" />,
+      gradient: 'from-amber-500 to-orange-600',
+      bgColor: 'bg-amber-50',
+      textColor: 'text-amber-600',
+    },
+    {
+      title: t('simManager.dashboard.totalSimulators') || 'Tổng thiết bị',
+      value: totalSimulators,
+      icon: <Monitor className="w-6 h-6" />,
+      gradient: 'from-blue-500 to-indigo-600',
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-600',
+    },
   ];
 
   return (
-    <Row gutter={[16, 16]}>
-      {items.map((it) => (
-        <Col key={it.title} xs={12} sm={12} md={6}>
-          <Card className="border-slate-200 hover:shadow-md transition">
-            <div className="flex items-center justify-between">
+    <Spin spinning={loading}>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {items.map((item) => (
+          <div
+            key={item.title}
+            className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-5 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+          >
+            <div className="flex items-start justify-between">
               <div>
-                <div className="text-slate-500 text-sm">{it.title}</div>
-                <Statistic value={it.value} valueStyle={{ color: '#0ea5e9' }} />
+                <p className="text-sm text-slate-500 mb-1">{item.title}</p>
+                <p className={`text-3xl font-bold bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`}>
+                  {item.value}
+                </p>
               </div>
-              <div className="p-2 bg-blue-50 rounded-lg">{it.icon}</div>
+              <div className={`p-3 ${item.bgColor} rounded-xl ${item.textColor}`}>
+                {item.icon}
+              </div>
             </div>
-          </Card>
-        </Col>
-      ))}
-    </Row>
+          </div>
+        ))}
+      </div>
+    </Spin>
   );
 }

@@ -37,7 +37,7 @@ export default function NewCoursesSection() {
 
   return (
     <section id="new-courses" className="py-8 md:py-16 bg-gray-50">
-      <div className="max-w-[1380px] mx-auto px-5 sm:px-6 md:px-10">
+      <div className="max-w-[1400px] mx-auto px-5 sm:px-6 md:px-10">
         <div className="flex items-baseline justify-between mb-6">
           <h2 className="text-lg md:text-xl font-semibold text-slate-900 tracking-tight">{t('home.courses.title')}</h2>
         </div>
@@ -58,6 +58,7 @@ export default function NewCoursesSection() {
             <Carousel
               ref={carouselRef}
               autoplay
+              size="large"
               autoplaySpeed={3000}
               slidesToShow={5}
               slidesToScroll={1}
@@ -92,55 +93,55 @@ export default function NewCoursesSection() {
                 },
               ]}
             >
-            {courses.map((course) => (
-              <div key={course.id} className="px-3">
-                <div
-                  onClick={() => {
-                    try {
-                      if (window && window.top) {
-                        window.top.location.href = `/course/${course.id}`;
-                        return;
-                      }
-                    } catch (e) {}
-                    navigate(`/course/${course.id}`);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <CourseCard
-                    course={{
-                      id: course.id,
-                      title: course.name || course.title,
-                      provider: 'LSSCTC Academy',
-                      level: course.levelName || course.level,
-                      duration: course.durationHours,
-                      thumbnail: course.imageUrl,
-                      tags: course.tags || course.keywords || [course.category].filter(Boolean),
-                      price: course.price,
+              {courses.map((course) => (
+                <div key={course.id} className="px-3 py-4">
+                  <div
+                    onClick={() => {
+                      try {
+                        if (window && window.top) {
+                          window.top.location.href = `/course/${course.id}`;
+                          return;
+                        }
+                      } catch (e) { }
+                      navigate(`/course/${course.id}`);
                     }}
-                  />
+                    className="cursor-pointer h-full"
+                  >
+                    <CourseCard
+                      course={{
+                        id: course.id,
+                        title: course.name || course.title,
+                        provider: 'LSSCTC Academy',
+                        level: course.levelName || course.level,
+                        duration: course.durationHours,
+                        thumbnail: course.imageUrl,
+                        tags: course.tags || course.keywords || [course.category].filter(Boolean),
+                        price: course.price,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </Carousel>
-          
-          {/* Navigation Buttons */}
-          <Button
-            icon={<LeftOutlined />}
-            onClick={() => carouselRef.current?.prev()}
-            className="!absolute !left-0 top-1/2 !-translate-y-1/2 !-translate-x-1/2 z-10 !bg-white hover:!bg-gray-50"
-            shape="circle"
-            size="large"
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
-          />
-          <Button
-            icon={<RightOutlined />}
-            onClick={() => carouselRef.current?.next()}
-            className="!absolute !right-0 top-1/2 !-translate-y-1/2 !translate-x-1/2 z-10 !bg-white hover:!bg-gray-50"
-            shape="circle"
-            size="large"
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
-          />
-        </div>
+              ))}
+            </Carousel>
+
+            {/* Navigation Buttons */}
+            <Button
+              icon={<LeftOutlined />}
+              onClick={() => carouselRef.current?.prev()}
+              className="!absolute !left-0 top-1/2 !-translate-y-1/2 !-translate-x-1/2 z-10 !bg-white hover:!bg-gray-50"
+              shape="circle"
+              size="large"
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+            />
+            <Button
+              icon={<RightOutlined />}
+              onClick={() => carouselRef.current?.next()}
+              className="!absolute !right-0 top-1/2 !-translate-y-1/2 !translate-x-1/2 z-10 !bg-white hover:!bg-gray-50"
+              shape="circle"
+              size="large"
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+            />
+          </div>
         )}
       </div>
     </section>

@@ -1,7 +1,5 @@
-import React from 'react';
-import { Tag } from 'antd';
-import { useTranslation } from 'react-i18next';
 import { BookOpen, GraduationCap } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const ProgramCard = ({ program, onClick }) => {
   const { t } = useTranslation();
@@ -10,7 +8,7 @@ const ProgramCard = ({ program, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-cyan-100/50 hover:border-cyan-200 transition-all duration-300 flex flex-col h-full"
+      className="group cursor-pointer bg-white/90 backdrop-blur-sm border border-slate-200/60 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-cyan-100/50 hover:border-cyan-200 transition-all duration-300 flex flex-col h-full"
     >
       {/* Image Container */}
       <div className="relative h-40 overflow-hidden">

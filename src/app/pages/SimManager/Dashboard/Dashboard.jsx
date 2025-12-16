@@ -1,59 +1,100 @@
 // src\app\pages\SimManager\Dashboard\Dashboard.jsx
 
-import React, { useEffect, useRef, useState } from 'react';
+import { Typography, message } from 'antd';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  getMonthlyCompletionDistribution,
+  getPracticeDurationDistribution,
+  getSimulationManagerSummary,
+} from '../../../apis/SimulationManager/SimulationManagerDashbard';
+import CompletionDistributionChart from './partials/CompletionDistributionChart';
+import DurationDistributionChart from './partials/DurationDistributionChart';
 import StatsOverview from './partials/StatsOverview';
-import LiveUsersChart from './partials/LiveUsersChart';
-import ActiveSimulationsTable from './partials/ActiveSimulationsTable';
-import QuickActions from './partials/QuickActions';
-import { Typography } from 'antd';
 
 const { Title } = Typography;
 
 export default function SimDashboard() {
   const { t } = useTranslation();
-  const [liveUsers, setLiveUsers] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [activeRows, setActiveRows] = useState([]);
-  const [loadingActive, setLoadingActive] = useState(false);
-  const [stats, setStats] = useState({ activeUsers: 0, activeSimulations: 0, totalSimulations: 0, avgSessionMins: 0 });
-  const timerRef = useRef(null);
 
-  // Mock polling for live users; replace with real-time source or API as needed.
+  // State for summary stats
+  const [stats, setStats] = useState({
+    totalPractices: 0,
+    completedPractices: 0,
+    activePractices: 0,
+    totalSimulators: 0,
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  // State for completion distribution
+  const [completionData, setCompletionData] = useState([]);
+  const [loadingCompletion, setLoadingCompletion] = useState(true);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  // State for duration distribution
+  const [durationData, setDurationData] = useState([]);
+  const [loadingDuration, setLoadingDuration] = useState(true);
+
+  // Fetch summary data
   useEffect(() => {
-    const maxPoints = 20;
-    const tick = () => {
-      setLiveUsers(prev => {
-        const nextVal = Math.max(0, (prev.at(-1) ?? 12) + Math.round((Math.random() - 0.5) * 6));
-        const next = [...prev, nextVal];
-        return next.slice(-maxPoints);
-      });
-      setCategories(prev => {
-        const next = [...prev, new Date().toLocaleTimeString([], { hour12: false, minute: '2-digit', second: '2-digit' })];
-        return next.slice(-maxPoints);
-      });
-      setStats(s => ({ ...s, activeUsers: liveUsers.at(-1) ?? s.activeUsers }));
+    const fetchSummary = async () => {
+      try {
+        setLoadingStats(true);
+        const data = await getSimulationManagerSummary();
+        if (data) {
+          setStats({
+            totalPractices: data.totalPractices ?? data.totalPracticeCount ?? 0,
+            completedPractices: data.completedPractices ?? data.completedCount ?? 0,
+            activePractices: data.activePractices ?? data.activeCount ?? 0,
+            totalSimulators: data.totalSimulators ?? data.simulatorCount ?? 0,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch summary:', error);
+        message.error(t('common.fetchError'));
+      } finally {
+        setLoadingStats(false);
+      }
     };
-    timerRef.current = setInterval(tick, 2000);
-    return () => clearInterval(timerRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  // Mock load active simulations table
+    fetchSummary();
+  }, [t]);
+
+  // Fetch completion distribution
   useEffect(() => {
-    setLoadingActive(true);
-    const t = setTimeout(() => {
-      const now = new Date();
-      setActiveRows([
-        { id: 'sim-1', name: 'Seaport Crane Basic', learners: 8, instructor: 'A. Nguyen', startedAt: now.toLocaleTimeString(), status: 'running' },
-        { id: 'sim-2', name: 'Container Yard Advanced', learners: 5, instructor: 'B. Tran', startedAt: now.toLocaleTimeString(), status: 'running' },
-        { id: 'sim-3', name: 'Tower Crane Safety', learners: 0, instructor: 'C. Le', startedAt: '-', status: 'idle' },
-      ]);
-      setStats(s => ({ ...s, activeSimulations: 2, totalSimulations: 3, avgSessionMins: 42 }));
-      setLoadingActive(false);
-    }, 400);
-    return () => clearTimeout(t);
-  }, []);
+    const fetchCompletion = async () => {
+      try {
+        setLoadingCompletion(true);
+        const data = await getMonthlyCompletionDistribution(selectedYear);
+        setCompletionData(data || []);
+      } catch (error) {
+        console.error('Failed to fetch completion distribution:', error);
+        message.error(t('common.fetchError'));
+      } finally {
+        setLoadingCompletion(false);
+      }
+    };
+
+    fetchCompletion();
+  }, [selectedYear, t]);
+
+  // Fetch duration distribution
+  useEffect(() => {
+    const fetchDuration = async () => {
+      try {
+        setLoadingDuration(true);
+        const data = await getPracticeDurationDistribution();
+        setDurationData(data || []);
+      } catch (error) {
+        console.error('Failed to fetch duration distribution:', error);
+        message.error(t('common.fetchError'));
+      } finally {
+        setLoadingDuration(false);
+      }
+    };
+
+    fetchDuration();
+  }, [t]);
 
   const handleCreate = () => {
     // TODO: navigate to create simulation page
@@ -69,33 +110,45 @@ export default function SimDashboard() {
   };
 
   return (
-    <div className="max-w-[1380px] mx-auto px-4 py-6 space-y-6">
-      <div className="bg-white border rounded-xl p-6">
-        <Title level={3} className="!mb-0">{t('simManager.dashboard.title')}</Title>
-        <div className="text-slate-600">{t('simManager.dashboard.subtitle')}</div>
+    <div className="max-w-[1380px] mx-auto px-4 py-4 space-y-4">
+      <div className="bg-white/20 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+        <div className="p-6">
+          <div className="flex items-center gap-4">
+            <div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                {t('simManager.dashboard.title')}
+              </span>
+              <p className="text-slate-500 text-sm mt-0.5">{t('simManager.dashboard.subtitle')}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <StatsOverview
-        activeUsers={stats.activeUsers}
-        activeSimulations={stats.activeSimulations}
-        totalSimulations={stats.totalSimulations}
-        avgSessionMins={stats.avgSessionMins}
+        totalPractices={stats.totalPractices}
+        completedPractices={stats.completedPractices}
+        activePractices={stats.activePractices}
+        totalSimulators={stats.totalSimulators}
+        loading={loadingStats}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
-          <LiveUsersChart data={liveUsers} categories={categories} title={t('simManager.dashboard.liveUsers')} />
+          <CompletionDistributionChart
+            data={completionData}
+            loading={loadingCompletion}
+            year={selectedYear}
+            onYearChange={setSelectedYear}
+          />
         </div>
         <div>
-          <QuickActions
-            onCreate={handleCreate}
-            onManageComponents={handleManageComponents}
-            onSettings={handleSettings}
+          <DurationDistributionChart
+            data={durationData}
+            loading={loadingDuration}
           />
         </div>
       </div>
-
-      <ActiveSimulationsTable rows={activeRows} loading={loadingActive} />
     </div>
   );
 }
+

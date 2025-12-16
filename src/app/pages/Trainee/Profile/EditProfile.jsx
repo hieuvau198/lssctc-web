@@ -154,11 +154,11 @@ export default function EditProfile() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg shadow-slate-200/50 overflow-hidden">
+        <div className="bg-white/90 p-6 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg shadow-slate-200/50 overflow-hidden">
           <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off" className="p-6">
 
             {/* Read-only Information */}
-            <div className="mb-8">
+            <div className="mb-6">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
                   <FileText className="w-4 h-4 text-slate-600" />
