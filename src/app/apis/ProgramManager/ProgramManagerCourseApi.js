@@ -24,6 +24,11 @@ export async function updateProgramBasic(id, payload) {
   return response.data;
 }
 
+export async function fetchAvailablePrograms() {
+  const response = await apiClient.get(`${API_BASE_URL}/Programs/available`);
+  return response.data;
+}
+
 // Update program courses (with order)
 export async function updateProgramCourses(id, courses) {
   try {

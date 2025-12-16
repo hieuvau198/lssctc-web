@@ -31,6 +31,19 @@ export async function createSection(sectionData) {
 }
 
 /**
+ * Create a new section and assign it to a course immediately
+ */
+export async function createSectionForCourse(courseId, sectionData) {
+  try {
+    const resp = await apiClient.post(`${BASE_URL}/course/${courseId}`, sectionData);
+    return resp.data;
+  } catch (err) {
+    console.error('Error creating section for course:', err);
+    throw err;
+  }
+}
+
+/**
  * Assign an existing section to a course
  */
 export async function addSectionToCourse(courseId, sectionId) {

@@ -5,6 +5,7 @@ import ClassEditPage from '../../../pages/Admin/Class/ClassEditPage'
 import ClassViewPage from '../../../pages/Admin/Class/ClassViewPage'
 import PMClasses from '../../../pages/Admin/Class/PMClasses'
 import Courses from '../../../pages/Admin/Course/Courses'
+import CourseViewPage from '../../../pages/Admin/Course/CourseViewPage'
 import Dashboard from '../../../pages/Admin/Dashboard/Dashboard'
 import ManageUser from '../../../pages/Admin/ManageUser/ManageUser'
 import InstructorTable from '../../../pages/Admin/ManageUser/partials/InstructorTable'
@@ -30,7 +31,12 @@ export default function AdminRoutes() {
           <Route path="instructors" element={<InstructorTable />} />
           <Route path="simulation-managers" element={<SimulationManagerTable />} />
         </Route>
-        <Route path="courses" element={<Courses />} />
+        
+        <Route path="courses">
+          <Route index element={<Courses />} />
+          <Route path=":id" element={<CourseViewPage />} />
+        </Route>
+
         <Route path="programs" element={<ManagerProgramList />} />
         <Route path="class">
           <Route index element={<PMClasses />} />
