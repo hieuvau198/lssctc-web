@@ -20,6 +20,7 @@ import {
 } from "../../../../apis/ProgramManager/ClassApi";
 import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
 import { fetchPrograms } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
+import { getClassStatus } from "../../../../utils/classStatus";
 
 /**
  * @param {Object} props
@@ -32,6 +33,7 @@ import { fetchPrograms } from "../../../../apis/ProgramManager/ProgramManagerCou
  * @param {Object} props.classItem
  * @param {Function} props.onUpdated
  * @param {Function} props.onDeleted
+ * @param {boolean} props.showDelete
  */
 const EditDeleteClassForm = ({
   open,
@@ -43,6 +45,7 @@ const EditDeleteClassForm = ({
   classItem,
   onUpdated,
   onDeleted,
+  showDelete = true,
 }) => {
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -57,14 +60,17 @@ const EditDeleteClassForm = ({
   const [loadingPrograms, setLoadingPrograms] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState(null);
 
+  // Check if class is in Draft status
+  const isDraft = classItem ? getClassStatus(classItem.status).key === 'Draft' : true;
+
   const handleFinish = async (values) => {
-    if (embedded && onUpdate) {
-      // Use the parent's handler
+    // If onUpdate is provided, let the parent handle it
+    if (onUpdate) {
       onUpdate(values);
       return;
     }
 
-    // Original modal logic
+    // Default internal logic
     setSaving(true);
     setError(null);
     try {
@@ -77,6 +83,7 @@ const EditDeleteClassForm = ({
         classCode: values.classCode,
         programId: values.programId,
         courseId: values.courseId,
+        backgroundImageUrl: values.backgroundImageUrl, // Added field
       });
       onUpdated?.();
       onClose();
@@ -117,12 +124,11 @@ const EditDeleteClassForm = ({
         programId: classItem?.programId || null,
         courseId:
           classItem?.programCourseId || classItem?.courseId || classItem?.course?.id || classItem?.programCourse?.id || null,
+        backgroundImageUrl: classItem?.backgroundImageUrl || "", // Initialize field
       });
     }
   }, [classItem, form]);
 
-  // Fetch programs when modal opens or when used embedded (page/edit).
-  // Also ensure the courses for the class's program are loaded so Selects show labels.
   useEffect(() => {
     const shouldFetchPrograms = open || embedded;
     if (shouldFetchPrograms) {
@@ -133,7 +139,6 @@ const EditDeleteClassForm = ({
         .finally(() => setLoadingPrograms(false));
     }
 
-    // If classItem has a programId, load its courses regardless of modal state
     const pid = classItem?.programId || null;
     if (pid) {
       setSelectedProgram(pid);
@@ -146,7 +151,6 @@ const EditDeleteClassForm = ({
         })
         .finally(() => setLoadingCourses(false));
     } else {
-      // clear courses when no program
       setCourses([]);
     }
   }, [open, classItem, embedded]);
@@ -187,13 +191,14 @@ const EditDeleteClassForm = ({
         >
           <Input placeholder={t('admin.classes.placeholders.className')} allowClear showCount maxLength={120} />
         </Form.Item>
+        
+        {/* Class Code - Disabled */}
         <Form.Item
           label={t('admin.classes.form.classCode')}
           name="classCode"
-          rules={[{ required: true, message: t('admin.classes.validation.classCodeRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input placeholder={t('admin.classes.placeholders.classCode')} allowClear showCount maxLength={50} />
+          <Input disabled placeholder={t('admin.classes.placeholders.classCode')} />
         </Form.Item>
 
         <Form.Item
@@ -209,6 +214,7 @@ const EditDeleteClassForm = ({
             allowClear
             optionFilterProp="children"
             onChange={handleProgramChange}
+            disabled={!isDraft} // Prevent changing structure if not draft
             filterOption={(input, option) =>
               option?.children?.toLowerCase().includes(input.toLowerCase())
             }
@@ -230,7 +236,7 @@ const EditDeleteClassForm = ({
           <Select
             placeholder={t('admin.classes.placeholders.selectCourse')}
             loading={loadingCourses}
-            disabled={!selectedProgram}
+            disabled={!selectedProgram || !isDraft} // Prevent changing structure if not draft
             showSearch
             allowClear
             optionFilterProp="children"
@@ -246,14 +252,17 @@ const EditDeleteClassForm = ({
           </Select>
         </Form.Item>
 
+        {/* Start Date - Disabled unless Draft */}
         <Form.Item
           label={t('admin.classes.form.startDate')}
           name="startDate"
           rules={[{ required: true, message: t('admin.classes.validation.startDateRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <DatePicker className="w-full" />
+          <DatePicker className="w-full" disabled={!isDraft} />
         </Form.Item>
+        
+        {/* End Date - Disabled unless Draft */}
         <Form.Item
           label={t('admin.classes.form.endDate')}
           name="endDate"
@@ -270,9 +279,10 @@ const EditDeleteClassForm = ({
           ]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <DatePicker className="w-full" />
+          <DatePicker className="w-full" disabled={!isDraft} />
         </Form.Item>
 
+        {/* Capacity - Disabled unless Draft */}
         <Form.Item
           label={t('admin.classes.form.capacity')}
           name="capacity"
@@ -286,7 +296,16 @@ const EditDeleteClassForm = ({
           ]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <InputNumber min={1} className="w-full" />
+          <InputNumber min={1} className="w-full" disabled={!isDraft} />
+        </Form.Item>
+
+        {/* Background Image URL - New Field */}
+        <Form.Item
+          label="Background Image URL"
+          name="backgroundImageUrl"
+          className={embedded ? "md:col-span-2" : undefined}
+        >
+          <Input placeholder="Enter image URL" allowClear />
         </Form.Item>
 
         <Form.Item label={t('admin.classes.form.description')} name="description" className={embedded ? "md:col-span-2" : undefined}>
@@ -309,7 +328,8 @@ const EditDeleteClassForm = ({
           </Space>
         </Form.Item>
       </Form>
-      {!embedded && (
+      
+      {!embedded && showDelete && (
         <div className="mt-4">
           {deleteError && (
             <Alert type="error" message={deleteError} showIcon className="mb-2" />
