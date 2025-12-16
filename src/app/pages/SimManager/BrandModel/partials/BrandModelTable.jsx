@@ -91,13 +91,13 @@ const BrandModelTable = ({
 
   return (
     <div className="rounded-lg shadow overflow-hidden">
-      <div className="overflow-hidden min-h-[500px]">
+      <div className="overflow-hidden min-h-[450px]">
         <Table
           columns={tableColumns}
           dataSource={data}
           rowKey="id"
           pagination={false}
-          scroll={{ y: 450 }}
+          scroll={{ y: 400 }}
           size="middle"
           loading={loading}
         />

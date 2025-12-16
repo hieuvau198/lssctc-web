@@ -184,7 +184,7 @@ export default function TaskPractice() {
     }
 
     return (
-        <div className="max-w-[1380px] mx-auto px-4 py-4 space-y-4">
+        <div className="max-w-[1380px] mx-auto px-4 py-2 space-y-4">
             {/* Header with Violet Gradient */}
             <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
                 <div className="p-6">
