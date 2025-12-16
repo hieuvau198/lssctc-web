@@ -23,55 +23,56 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="mt-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-300 relative overflow-hidden">
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-900/10 via-transparent to-blue-900/10 pointer-events-none" />
+    <footer className="mt-auto bg-black text-white">
+      {/* Yellow accent bar */}
+      <div className="h-1 bg-yellow-400" />
 
       {/* Main Content */}
-      <div className="relative max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand Section */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 border border-cyan-400/30">
-                <ShieldCheck className="w-7 h-7 text-white" />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-12 w-12 bg-yellow-400 flex items-center justify-center">
+                <ShieldCheck className="w-7 h-7 text-black" />
               </div>
-              <span className="font-bold text-xl text-white tracking-wide">
+              <span className="font-black text-2xl text-white uppercase tracking-wide">
                 LSSCTC
               </span>
             </div>
-            <p className="text-slate-400 text-sm leading-relaxed mb-5">
+            <p className="text-neutral-400 text-sm leading-relaxed mb-6">
               {t('footer.description', 'Trung tâm đào tạo vận hành cần cẩu và an toàn logistics hàng đầu Việt Nam với công nghệ mô phỏng 3D tiên tiến.')}
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-3">
               <a
                 href="#"
-                className="w-10 h-10 rounded-full bg-slate-700/50 border border-slate-600/50 hover:bg-cyan-600 hover:border-cyan-500 flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/30"
+                className="w-10 h-10 border-2 border-neutral-700 hover:bg-yellow-400 hover:border-yellow-400 flex items-center justify-center transition-all duration-300 group"
                 aria-label="Facebook"
               >
-                <Facebook className="w-4 h-4" />
+                <Facebook className="w-4 h-4 text-neutral-400 group-hover:text-black" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full bg-slate-700/50 border border-slate-600/50 hover:bg-red-600 hover:border-red-500 flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:shadow-red-500/30"
+                className="w-10 h-10 border-2 border-neutral-700 hover:bg-yellow-400 hover:border-yellow-400 flex items-center justify-center transition-all duration-300 group"
                 aria-label="YouTube"
               >
-                <Youtube className="w-4 h-4" />
+                <Youtube className="w-4 h-4 text-neutral-400 group-hover:text-black" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full bg-slate-700/50 border border-slate-600/50 hover:bg-blue-600 hover:border-blue-500 flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/30"
+                className="w-10 h-10 border-2 border-neutral-700 hover:bg-yellow-400 hover:border-yellow-400 flex items-center justify-center transition-all duration-300 group"
                 aria-label="LinkedIn"
               >
-                <Linkedin className="w-4 h-4" />
+                <Linkedin className="w-4 h-4 text-neutral-400 group-hover:text-black" />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold text-white mb-5 text-base">
+            <h4 className="font-black text-white mb-6 uppercase tracking-wider flex items-center gap-2">
+              <div className="w-1 h-5 bg-yellow-400" />
               {t('footer.quickLinks', 'Liên kết nhanh')}
             </h4>
             <ul className="space-y-3">
@@ -79,10 +80,10 @@ export default function Footer() {
                 <li key={link.to + link.label}>
                   <NavLink
                     to={link.to}
-                    className={`group text-sm flex items-center transition-colors duration-200 hover:text-cyan-400 ${link.highlight ? 'text-cyan-400' : 'text-slate-400'
+                    className={`group text-sm flex items-center transition-colors duration-200 hover:text-yellow-400 ${link.highlight ? 'text-yellow-400' : 'text-neutral-400'
                       }`}
                   >
-                    <ChevronRight className="w-0 h-3 group-hover:w-4 group-hover:mr-1 overflow-hidden transition-all duration-200" />
+                    <ChevronRight className="w-4 h-4 mr-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                     {link.label}
                   </NavLink>
                 </li>
@@ -92,7 +93,8 @@ export default function Footer() {
 
           {/* Training Programs */}
           <div>
-            <h4 className="font-semibold text-white mb-5 text-base">
+            <h4 className="font-black text-white mb-6 uppercase tracking-wider flex items-center gap-2">
+              <div className="w-1 h-5 bg-yellow-400" />
               {t('footer.trainingPrograms', 'Chương trình đào tạo')}
             </h4>
             <ul className="space-y-3">
@@ -100,9 +102,9 @@ export default function Footer() {
                 <li key={idx}>
                   <NavLink
                     to={link.to}
-                    className="group text-slate-400 hover:text-cyan-400 text-sm flex items-center transition-colors duration-200"
+                    className="group text-neutral-400 hover:text-yellow-400 text-sm flex items-center transition-colors duration-200"
                   >
-                    <ChevronRight className="w-0 h-3 group-hover:w-4 group-hover:mr-1 overflow-hidden transition-all duration-200" />
+                    <ChevronRight className="w-4 h-4 mr-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                     {link.label}
                   </NavLink>
                 </li>
@@ -112,40 +114,41 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold text-white mb-5 text-base">
+            <h4 className="font-black text-white mb-6 uppercase tracking-wider flex items-center gap-2">
+              <div className="w-1 h-5 bg-yellow-400" />
               {t('footer.contact', 'Liên hệ')}
             </h4>
             <ul className="space-y-4">
-              <li className="flex items-center gap-3 text-sm">
-                <div className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <MapPin className="w-3 h-3 text-cyan-400" />
+              <li className="flex items-start gap-3 text-sm">
+                <div className="w-8 h-8 bg-neutral-900 border border-neutral-700 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-4 h-4 text-yellow-400" />
                 </div>
-                <span className="text-slate-400 leading-relaxed">
+                <span className="text-neutral-400 leading-relaxed">
                   {t('footer.address', '7 Đ. D1, Long Thạnh Mỹ, Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam')}
                 </span>
               </li>
               <li className="flex items-center gap-3 text-sm">
-                <div className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-3 h-3 text-cyan-400" />
+                <div className="w-8 h-8 bg-neutral-900 border border-neutral-700 flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-yellow-400" />
                 </div>
-                <span className="text-slate-400">+84 123 456 789</span>
+                <span className="text-neutral-400">+84 123 456 789</span>
               </li>
               <li className="flex items-center gap-3 text-sm">
-                <div className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-3 h-3 text-cyan-400" />
+                <div className="w-8 h-8 bg-neutral-900 border border-neutral-700 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-yellow-400" />
                 </div>
-                <span className="text-slate-400">info@lssctc.com</span>
+                <span className="text-neutral-400">info@lssctc.com</span>
               </li>
             </ul>
 
             {/* Certifications */}
             <div className="mt-6">
-              <p className="text-xs text-slate-500 mb-2">{t('footer.certifiedBy', 'Chứng nhận bởi:')}</p>
+              <p className="text-xs text-neutral-500 mb-2 uppercase tracking-wider">{t('footer.certifiedBy', 'Chứng nhận bởi:')}</p>
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1.5 text-xs font-medium border border-slate-600 rounded text-slate-300 bg-slate-800/50">
+                <span className="px-3 py-1.5 text-xs font-bold border-2 border-neutral-700 text-neutral-300 uppercase tracking-wider">
                   ISO 9001:2015
                 </span>
-                <span className="px-3 py-1.5 text-xs font-medium border border-cyan-600/50 rounded text-cyan-400 bg-cyan-900/30">
+                <span className="px-3 py-1.5 text-xs font-bold bg-yellow-400 text-black uppercase tracking-wider">
                   OSHA
                 </span>
               </div>
@@ -155,17 +158,17 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="relative border-t border-slate-700/50">
+      <div className="border-t border-neutral-800">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="flex items-center gap-2 text-xs text-slate-500">
+            <div className="flex items-center gap-2 text-xs text-neutral-500 uppercase tracking-wider">
               <span>© {year} LSSCTC. {t('footer.allRightsReserved', 'All rights reserved.')}</span>
             </div>
-            <div className="flex items-center gap-6 text-xs text-slate-500">
-              <NavLink to="/privacy" className="hover:text-cyan-400 transition-colors">
+            <div className="flex items-center gap-6 text-xs text-neutral-500 uppercase tracking-wider">
+              <NavLink to="/privacy" className="hover:text-yellow-400 transition-colors">
                 {t('footer.privacyPolicy', 'Chính sách bảo mật')}
               </NavLink>
-              <NavLink to="/terms" className="hover:text-cyan-400 transition-colors">
+              <NavLink to="/terms" className="hover:text-yellow-400 transition-colors">
                 {t('footer.termsOfUse', 'Điều khoản sử dụng')}
               </NavLink>
             </div>

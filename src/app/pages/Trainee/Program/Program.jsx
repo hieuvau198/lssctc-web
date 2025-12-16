@@ -1,6 +1,6 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { Alert, Button, Pagination, Skeleton } from "antd";
-import { GraduationCap, Search, Sparkles } from "lucide-react";
+import { GraduationCap, Search, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -88,40 +88,56 @@ const Program = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-cyan-50/80 via-blue-50/50 to-white border-b border-slate-200/60 overflow-hidden">
-        {/* Decorative Blurs */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+    <div className="min-h-screen bg-white">
+      {/* Hero Section - Industrial Style */}
+      <section className="relative bg-black text-white py-16 overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="https://i.ibb.co/fGDt4tzT/hinh-anh-xe-cau-3-1024x683.jpg"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "/images/industrial-crane-construction-site.jpg";
+            }}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="absolute inset-0 bg-black/50" />
 
-        <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-10">
-          <PageNav nameMap={{ program: t('trainee.programs.title') }} />
+        <div className="relative max-w-7xl mx-auto px-6">
+          <PageNav
+            nameMap={{ program: t('trainee.programs.title') }}
+            className="mb-6 [&_a]:text-white/80 [&_a:hover]:text-yellow-400 [&_span]:text-white [&_svg]:text-white/60"
+          />
 
-          <div className="mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
             {/* Left Content */}
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-full border border-cyan-200/60 mb-4">
-                <Sparkles className="w-4 h-4 text-cyan-500" />
-                <span className="text-sm font-medium text-cyan-700">Chương trình đào tạo chuyên nghiệp</span>
-              </div>
-
-              <div className="text-4xl lg:text-5xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
-                  {t('trainee.programs.title')}
+              <div className="mb-4 flex items-center gap-4">
+                <span className="text-sm tracking-widest text-white uppercase font-bold" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                  LSSCTC ACADEMY
+                </span>
+                <span className="h-1 w-1 rounded-full bg-yellow-400" />
+                <span className="px-4 py-1 bg-yellow-400 text-black text-xs font-bold tracking-wider uppercase">
+                  Chương trình đào tạo
                 </span>
               </div>
 
-              <p className="text-lg text-slate-600 mb-6 leading-relaxed">
+              <h1 className="text-5xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-white drop-shadow-xl" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)' }}>
+                {t('trainee.programs.title')}
+              </h1>
+
+              <p className="text-xl text-white max-w-xl mb-8 leading-relaxed font-medium drop-shadow-lg" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
                 Khám phá các chương trình đào tạo toàn diện về vận hành cần cẩu, an toàn lao động và kỹ năng logistics chuyên nghiệp.
               </p>
             </div>
 
             {/* Right: Search Box */}
             <div className="w-full lg:w-auto lg:min-w-[400px]">
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-xl shadow-slate-200/50 p-6">
-                <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <Search className="w-5 h-5 text-cyan-500" />
+              <div className="bg-white border-4 border-black p-6">
+                <div className="h-2 bg-yellow-400 -mx-6 -mt-6 mb-6" />
+                <h3 className="font-black text-black mb-4 flex items-center gap-2 uppercase tracking-wider">
+                  <Search className="w-5 h-5 text-yellow-500" />
                   Tìm kiếm chương trình
                 </h3>
                 <form onSubmit={handleSearch} className="space-y-4">
@@ -138,93 +154,103 @@ const Program = () => {
                           setPageNumber(1);
                         }
                       }}
-                      className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all duration-300 text-slate-700 placeholder-slate-400"
+                      className="w-full px-4 py-3.5 bg-neutral-50 border-2 border-neutral-900 focus:outline-none focus:border-yellow-400 transition-all duration-300 text-neutral-900 placeholder-neutral-400"
                     />
                   </div>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    block
-                    size="large"
-                    icon={<SearchOutlined />}
-                    className="!rounded-xl !h-12 !font-semibold"
+                  <button
+                    type="submit"
+                    className="w-full h-12 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-black hover:text-yellow-400 transition-all flex items-center justify-center gap-2"
                   >
+                    <SearchOutlined />
                     Tìm kiếm
-                  </Button>
+                  </button>
                 </form>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Content Area */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-10">
-        {error ? (
-          <div className="max-w-md mx-auto">
-            <Alert message="Error" description={error} type="error" showIcon />
+      <section className="py-16 bg-neutral-50 border-y border-neutral-200">
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Section Header */}
+          <div className="mb-10">
+            <span className="text-sm tracking-widest text-neutral-500 uppercase font-bold block mb-2">
+              Danh sách
+            </span>
+            <h2 className="text-4xl font-black uppercase tracking-tight mb-2">
+              Tất cả chương trình
+            </h2>
+            <div className="h-1 w-24 bg-yellow-400" />
           </div>
-        ) : (
-          <>
-            {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {Array.from({ length: 8 }).map((_, idx) => (
-                  <div key={idx} className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-                    <div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
-                    <div className="w-full h-44 overflow-hidden">
-                      <Skeleton.Image active className="!w-full !h-44" />
-                    </div>
-                    <div className="p-5">
-                      <Skeleton active title={{ width: '70%' }} paragraph={{ rows: 2, width: ['100%', '60%'] }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : programs.length === 0 ? (
-              <div className="min-h-[400px] flex flex-col items-center justify-center">
-                <div className="w-32 h-32 bg-gradient-to-br from-cyan-100 to-blue-200 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                  <GraduationCap className="w-16 h-16 text-cyan-400" />
-                </div>
-                <p className="text-slate-700 text-xl font-semibold mb-2">{t('trainee.programs.noPrograms')}</p>
-                <p className="text-slate-500 text-sm">Không tìm thấy chương trình nào phù hợp với tìm kiếm của bạn</p>
-              </div>
-            ) : (
-              <>
+
+          {error ? (
+            <div className="max-w-md mx-auto">
+              <Alert message="Error" description={error} type="error" showIcon />
+            </div>
+          ) : (
+            <>
+              {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {programs.map((program) => (
-                    <ProgramCard
-                      key={program.id}
-                      program={program}
-                      onClick={() => {
-                        window.scrollTo({ top: 0 });
-                        navigate(`/program/${program.id}`);
-                      }}
-                    />
+                  {Array.from({ length: 8 }).map((_, idx) => (
+                    <div key={idx} className="bg-white border-2 border-neutral-900 overflow-hidden">
+                      <div className="h-2 bg-neutral-200" />
+                      <div className="w-full h-44 overflow-hidden">
+                        <Skeleton.Image active className="!w-full !h-44" />
+                      </div>
+                      <div className="p-5">
+                        <Skeleton active title={{ width: '70%' }} paragraph={{ rows: 2, width: ['100%', '60%'] }} />
+                      </div>
+                    </div>
                   ))}
                 </div>
-
-                {/* Pagination */}
-                <div className="mt-12 flex justify-center">
-                  <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl px-6 py-4 shadow-lg shadow-slate-200/50">
-                    <Pagination
-                      current={pageNumber}
-                      pageSize={pageSize}
-                      total={total}
-                      showSizeChanger
-                      showTotal={(total, range) => `${range[0]}-${range[1]} của ${total} chương trình`}
-                      onChange={(page, size) => {
-                        window.scrollTo({ top: 300 });
-                        setPageNumber(page);
-                        setPageSize(size);
-                      }}
-                    />
+              ) : programs.length === 0 ? (
+                <div className="min-h-[400px] flex flex-col items-center justify-center">
+                  <div className="w-32 h-32 bg-neutral-200 flex items-center justify-center mb-6">
+                    <GraduationCap className="w-16 h-16 text-neutral-400" />
                   </div>
+                  <p className="text-neutral-900 text-xl font-black uppercase mb-2">{t('trainee.programs.noPrograms')}</p>
+                  <p className="text-neutral-500 text-sm">Không tìm thấy chương trình nào phù hợp với tìm kiếm của bạn</p>
                 </div>
-              </>
-            )}
-          </>
-        )}
-      </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {programs.map((program) => (
+                      <ProgramCard
+                        key={program.id}
+                        program={program}
+                        onClick={() => {
+                          window.scrollTo({ top: 0 });
+                          navigate(`/program/${program.id}`);
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  <div className="mt-12 flex justify-center">
+                    <div className="bg-white border-2 border-neutral-900 px-6 py-4">
+                      <Pagination
+                        current={pageNumber}
+                        pageSize={pageSize}
+                        total={total}
+                        showSizeChanger
+                        showTotal={(total, range) => `${range[0]}-${range[1]} của ${total} chương trình`}
+                        onChange={(page, size) => {
+                          window.scrollTo({ top: 300 });
+                          setPageNumber(page);
+                          setPageSize(size);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      </section>
     </div>
   );
 };

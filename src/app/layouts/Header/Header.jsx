@@ -6,7 +6,7 @@ import Avt from "./partials/Avt";
 import { clearRememberedCredentials } from "../../libs/crypto";
 import { Button } from "antd";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
-import { Menu, X, GraduationCap, Home, BookOpen, Monitor, Info } from "lucide-react";
+import { Menu, X, Home, BookOpen, Monitor, Info } from "lucide-react";
 
 export default function Header() {
   const [hidden, setHidden] = useState(false);
@@ -62,12 +62,15 @@ export default function Header() {
         "fixed top-0 left-0 right-0 z-50",
         "transition-all duration-300",
         atTop
-          ? "bg-white/80 backdrop-blur-md border-b border-transparent"
-          : "bg-white/95 backdrop-blur-md shadow-lg shadow-slate-200/50 border-b border-slate-200/60",
+          ? "bg-white border-b border-transparent"
+          : "bg-white shadow-md border-b border-neutral-200",
         hidden ? "-translate-y-full" : "translate-y-0",
       ].join(" ")}
     >
-      <div className="max-w-7xl mx-auto px-2">
+      {/* Yellow accent bar */}
+      <div className="h-1 bg-yellow-400" />
+
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16 gap-4 relative">
           {/* Left cluster: hamburger + logo */}
           <div className="flex items-center gap-3">
@@ -76,7 +79,7 @@ export default function Header() {
               aria-label="Toggle navigation"
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((o) => !o)}
-              className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-200 text-slate-600 hover:text-cyan-600 hover:border-cyan-300 hover:bg-cyan-50 bg-white/80 backdrop-blur-sm transition-all duration-200"
+              className="md:hidden inline-flex items-center justify-center w-10 h-10 border-2 border-neutral-900 text-neutral-900 hover:bg-yellow-400 hover:border-yellow-400 transition-all duration-200"
             >
               {mobileOpen ? (
                 <X className="w-5 h-5" />
@@ -85,7 +88,7 @@ export default function Header() {
               )}
             </button>
             <NavLink to="/" className="flex items-center gap-2.5 shrink-0 group">
-              <span className="hidden md:inline font-bold text-lg bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent select-none">
+              <span className="font-black text-xl text-black uppercase tracking-wider">
                 LSSCTC
               </span>
             </NavLink>
@@ -99,10 +102,10 @@ export default function Header() {
                   <NavLink
                     to={item.to}
                     className={({ isActive }) => [
-                      "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center gap-2",
+                      "px-4 py-2 text-sm font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 border-b-2",
                       isActive
-                        ? "text-cyan-700 bg-cyan-50 border border-cyan-200"
-                        : "text-slate-600 hover:text-cyan-600 hover:bg-slate-50 border border-transparent"
+                        ? "border-yellow-400 text-black"
+                        : "border-transparent text-neutral-600 hover:text-black hover:border-neutral-300"
                     ].join(" ")}
                   >
                     <item.icon className="w-4 h-4" />
@@ -124,8 +127,7 @@ export default function Header() {
             ) : (
               <Button
                 onClick={() => navigate('/auth/login')}
-                type="primary"
-                className="shadow-lg shadow-cyan-200/50"
+                className="!bg-yellow-400 !text-black !border-yellow-400 !font-bold !uppercase !tracking-wider hover:!bg-black hover:!text-yellow-400 hover:!border-black !shadow-none"
               >
                 {t('common.signIn')}
               </Button>
@@ -137,7 +139,7 @@ export default function Header() {
           <div
             className={[
               "md:hidden absolute top-full left-0 right-0 origin-top overflow-hidden",
-              "bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-lg shadow-slate-200/50",
+              "bg-white border-b-2 border-neutral-900",
               "transition-all duration-300",
               mobileOpen
                 ? "opacity-100 pointer-events-auto translate-y-0"
@@ -151,10 +153,10 @@ export default function Header() {
                   onClick={() => setMobileOpen(false)}
                   to={item.to}
                   className={({ isActive }) => [
-                    "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
+                    "flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-l-4",
                     isActive
-                      ? "text-cyan-700 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200"
-                      : "text-slate-600 hover:text-cyan-600 hover:bg-slate-50 border border-transparent"
+                      ? "border-yellow-400 text-black bg-neutral-50"
+                      : "border-transparent text-neutral-600 hover:text-black hover:bg-neutral-50 hover:border-neutral-300"
                   ].join(" ")}
                 >
                   <item.icon className="w-5 h-5" />

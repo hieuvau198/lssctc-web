@@ -3,9 +3,29 @@ import { Card, Button, Tooltip, Tag } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemove }) {
+// Color presets for theming
+const colorPresets = {
+    default: {
+        indexBg: 'bg-blue-100',
+        indexText: 'text-blue-700',
+        tagColor: 'blue',
+    },
+    violet: {
+        indexBg: 'bg-violet-100',
+        indexText: 'text-violet-700',
+        tagColor: 'purple',
+    },
+    cyan: {
+        indexBg: 'bg-cyan-100',
+        indexText: 'text-cyan-700',
+        tagColor: 'cyan',
+    },
+};
+
+export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemove, color = 'default' }) {
     const { t } = useTranslation();
     const handleDelete = onDelete || onRemove;
+    const colorStyle = colorPresets[color] || colorPresets.default;
 
     return (
         <Card
@@ -15,7 +35,7 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
             title={
                 <div className="flex items-center gap-2">
                     {index !== undefined && (
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                        <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${colorStyle.indexBg} ${colorStyle.indexText} text-xs font-semibold`}>
                             {index + 1}
                         </span>
                     )}
@@ -60,7 +80,7 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
         >
             <div className="flex flex-col gap-1 flex-1">
                 <div className="text-xs text-slate-500">
-                    {t('common.code')}: <Tag color="blue" size="small">{task.taskCode}</Tag>
+                    {t('common.code')}: <Tag color={colorStyle.tagColor} size="small">{task.taskCode}</Tag>
                 </div>
                 <div className="flex-1">
                     <p className="text-xs text-slate-600 line-clamp-2">
