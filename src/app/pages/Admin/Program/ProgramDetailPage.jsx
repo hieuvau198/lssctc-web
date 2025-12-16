@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
-import { Button, App, Spin, Skeleton, Breadcrumb, Popconfirm, Card, Form } from "antd";
-import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
+import { Button, App, Skeleton, Popconfirm, Form, Tag } from "antd";
+import { EditOutlined, DeleteOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
 import { fetchProgramDetail, deleteProgram, updateProgramBasic } from "../../../apis/ProgramManager/ProgramManagerCourseApi";
 import ProgramDetailView from "./partials/ProgramDetailView";
 import ProgramEditForm from "./partials/ProgramEditForm";
@@ -88,70 +88,106 @@ const ProgramDetailPage = () => {
   if (!program) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-            <BackButton />
+    <div className="min-h-screen bg-white pb-10">
+      {/* Hero Background Section */}
+      <div className="relative w-full h-[300px] bg-slate-200 group">
+        {program.backgroundImageUrl ? (
+          <img 
+            src={program.backgroundImageUrl} 
+            alt="Background" 
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-slate-400">
+            No Background Image
+          </div>
+        )}
+        
+        {/* Overlay Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+        {/* Header Content on Banner */}
+        <div className="absolute bottom-0 left-0 w-full p-6 md:p-10 text-white flex flex-col md:flex-row justify-between items-end gap-4">
             <div>
-                <h1 className="text-2xl font-bold text-slate-800 m-0">
-                    {isEditing ? t('admin.programs.editProgram') : program.name}
+                <div className="flex items-center gap-3 mb-2">
+                    <BackButton className="text-white hover:text-slate-200" />
+                    <Tag color={program.isActive ? 'green' : 'red'} className="border-none">
+                        {program.isActive ? t('common.active') : t('common.inactive')}
+                    </Tag>
+                </div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white m-0 shadow-sm">
+                    {program.name}
                 </h1>
-                <div className="text-sm text-slate-500">
+                <div className="text-slate-300 text-sm mt-1 opacity-90">
                     ID: {program.id}
                 </div>
             </div>
-        </div>
-        
-        <div className="flex items-center gap-3">
-            {isEditing ? (
-                <>
-                     <Button 
-                        icon={<CloseOutlined />} 
-                        onClick={handleCancelEdit} 
-                        disabled={submitting}
-                    >
-                        {t('common.cancel')}
-                    </Button>
-                    <Button 
-                        type="primary" 
-                        icon={<SaveOutlined />} 
-                        onClick={() => form.submit()} 
-                        loading={submitting}
-                    >
-                        {t('common.save')}
-                    </Button>
-                </>
-            ) : (
-                <>
-                    <Button 
-                        icon={<EditOutlined />} 
-                        onClick={handleEdit}
-                    >
-                        {t('common.edit')}
-                    </Button>
-                    <Popconfirm
-                        title={t('admin.programs.deleteConfirmTitle')}
-                        description={t('admin.programs.deleteConfirmDesc')}
-                        onConfirm={handleDelete}
-                        okButtonProps={{ loading: deleting, danger: true }}
-                    >
-                        <Button danger icon={<DeleteOutlined />} loading={deleting}>
-                            {t('common.delete')}
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3">
+                {isEditing ? (
+                    <>
+                        <Button 
+                            ghost
+                            icon={<CloseOutlined />} 
+                            onClick={handleCancelEdit} 
+                            disabled={submitting}
+                            className="text-white border-white hover:text-red-400 hover:border-red-400"
+                        >
+                            {t('common.cancel')}
                         </Button>
-                    </Popconfirm>
-                </>
-            )}
+                        <Button 
+                            type="primary" 
+                            icon={<SaveOutlined />} 
+                            onClick={() => form.submit()} 
+                            loading={submitting}
+                        >
+                            {t('common.save')}
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <Button 
+                            ghost
+                            icon={<EditOutlined />} 
+                            onClick={handleEdit}
+                            className="text-white border-white hover:text-blue-400 hover:border-blue-400"
+                        >
+                            {t('common.edit')}
+                        </Button>
+                        <Popconfirm
+                            title={t('admin.programs.deleteConfirmTitle')}
+                            description={t('admin.programs.deleteConfirmDesc')}
+                            onConfirm={handleDelete}
+                            okButtonProps={{ loading: deleting, danger: true }}
+                        >
+                            <Button 
+                                danger 
+                                ghost 
+                                icon={<DeleteOutlined />} 
+                                loading={deleting}
+                                className="border-red-400 text-red-400 hover:bg-red-500 hover:text-white"
+                            >
+                                {t('common.delete')}
+                            </Button>
+                        </Popconfirm>
+                    </>
+                )}
+            </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border p-6 min-h-[500px]">
+      {/* Main Content Body - No border, no rounding */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
          {isEditing ? (
-            <ProgramEditForm 
-                form={form}
-                onFinish={handleUpdate}
-                onCancel={handleCancelEdit}
-                submitting={submitting}
-            />
+            <div className="max-w-4xl">
+                 <ProgramEditForm 
+                    form={form}
+                    onFinish={handleUpdate}
+                    onCancel={handleCancelEdit}
+                    submitting={submitting}
+                />
+            </div>
          ) : (
             <ProgramDetailView program={program} />
          )}

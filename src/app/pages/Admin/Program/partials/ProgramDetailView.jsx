@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { Tag, Divider, Empty, Skeleton, Image } from "antd";
+import { Divider, Empty, Skeleton } from "antd";
 import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
 import CourseCard from "./CourseCard";
 import AssignCourseModal from "./AssignCourseModal";
@@ -39,87 +39,83 @@ const ProgramDetailView = ({ program, loading }) => {
   const dateFormat = "YYYY-MM-DD HH:mm";
 
   return (
-    <div className="space-y-6">
-      {/* Basic Info */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-        <div className="md:col-span-1 space-y-4">
-          <div className="aspect-video rounded-lg overflow-hidden bg-slate-100 border h-64 md:h-auto shadow-sm">
+    <div className="space-y-8">
+      
+      {/* Top Section: Image & Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        {/* Main Image - Sharp corners */}
+        <div className="md:col-span-1">
+          <div className="aspect-video bg-slate-100 shadow-sm">
             <img
               src={program.imageUrl}
               alt={program.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover" // Removed rounded-lg
             />
           </div>
-          {/* Display Background Image if exists */}
-          {program.backgroundImageUrl && (
-             <div className="w-full h-24 rounded-lg overflow-hidden bg-slate-50 border relative shadow-sm">
-                <div className="absolute top-1 left-1 bg-black/50 text-white text-[10px] px-1 rounded z-10">Background</div>
-                <img src={program.backgroundImageUrl} alt="Background" className="w-full h-full object-cover" />
-             </div>
-          )}
         </div>
         
-        <div className="md:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-             <div className="flex items-center gap-2">
-                <h3 className="text-2xl font-bold text-slate-800">{program.name}</h3>
-                <Tag color={program.isActive ? 'green' : 'red'}>
-                {program.isActive ? t('common.active') : t('common.inactive')}
-                </Tag>
-             </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg border">
+        {/* Info & Description */}
+        <div className="md:col-span-2 space-y-6">
+          {/* Metadata Grid - No Border */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
              <div>
-                <div className="text-xs text-slate-500 font-medium uppercase">{t('admin.programs.totalCourses')}</div>
-                <div className="font-semibold text-lg">{program.totalCourses || 0}</div>
+                <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('admin.programs.totalCourses')}</div>
+                <div className="font-semibold text-2xl text-slate-700">{program.totalCourses || 0}</div>
              </div>
              {program.createdAt && (
                 <div>
-                    <div className="text-xs text-slate-500 font-medium uppercase">Created At</div>
-                    <div className="text-sm">{dayjs(program.createdAt).format(dateFormat)}</div>
+                    <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">Created At</div>
+                    <div className="text-sm font-medium text-slate-700 mt-1">{dayjs(program.createdAt).format(dateFormat)}</div>
                 </div>
              )}
              {program.updatedAt && (
                 <div>
-                    <div className="text-xs text-slate-500 font-medium uppercase">Updated At</div>
-                    <div className="text-sm">{dayjs(program.updatedAt).format(dateFormat)}</div>
+                    <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">Updated At</div>
+                    <div className="text-sm font-medium text-slate-700 mt-1">{dayjs(program.updatedAt).format(dateFormat)}</div>
                 </div>
              )}
           </div>
 
+          <Divider className="my-4" />
+
+          {/* Description - No Border */}
           <div>
-            <div className="text-sm font-medium text-slate-800 mb-1">{t('admin.programs.form.description')}</div>
-            <div className="text-slate-600 leading-relaxed whitespace-pre-line bg-white p-3 border rounded-md max-h-40 overflow-auto">
-              {program.description}
+            <h3 className="text-lg font-bold text-slate-800 mb-2">{t('admin.programs.form.description')}</h3>
+            <div className="text-slate-600 leading-relaxed whitespace-pre-line text-base">
+              {program.description || <span className="text-slate-400 italic">No description provided.</span>}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Courses */}
-      <div>
-        <Divider orientation="left">{t('admin.programs.courses')}</Divider>
-        <div className="ml-3 mb-4">
-          <AssignCourseModal program={program} onAssigned={() => {
-            // refresh courses after assign
-            setLoadingCourses(true);
-            fetchCoursesByProgram(program.id)
-              .then((data) => setCourses(data.items || []))
-              .catch(() => setCourses([]))
-              .finally(() => setLoadingCourses(false));
-          }} />
+      {/* Courses Section */}
+      <div className="pt-4">
+        <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-slate-800 m-0">{t('admin.programs.courses')}</h3>
+            <AssignCourseModal program={program} onAssigned={() => {
+                setLoadingCourses(true);
+                fetchCoursesByProgram(program.id)
+                .then((data) => setCourses(data.items || []))
+                .catch(() => setCourses([]))
+                .finally(() => setLoadingCourses(false));
+            }} />
         </div>
+
         {loadingCourses ? (
           <Skeleton active paragraph={{ rows: 3 }} />
         ) : courses && courses.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-auto pr-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (
-              <CourseCard key={course.id} course={course} />
+              <div key={course.id} className="bg-white hover:bg-slate-50 transition-colors group">
+                 <CourseCard course={course} embedded={true} />
+              </div>
             ))}
           </div>
         ) : (
-          <Empty description={t('admin.programs.noCoursesAssigned')} />
+          <div className="bg-slate-50 p-8 text-center text-slate-500">
+             {t('admin.programs.noCoursesAssigned')}
+          </div>
         )}
       </div>
     </div>
