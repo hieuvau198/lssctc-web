@@ -1,4 +1,4 @@
-import { BookOpen, GraduationCap } from 'lucide-react';
+import { BookOpen, GraduationCap, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const ProgramCard = ({ program, onClick }) => {
@@ -8,8 +8,11 @@ const ProgramCard = ({ program, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer bg-white/90 backdrop-blur-sm border border-slate-200/60 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-cyan-100/50 hover:border-cyan-200 transition-all duration-300 flex flex-col h-full"
+      className="group cursor-pointer bg-white border-2 border-neutral-900 hover:border-yellow-400 overflow-hidden transition-all duration-300 flex flex-col h-full"
     >
+      {/* Status indicator bar */}
+      <div className={`h-2 ${isActive ? 'bg-yellow-400' : 'bg-neutral-300'}`} />
+
       {/* Image Container */}
       <div className="relative h-40 overflow-hidden">
         {imageUrl ? (
@@ -20,19 +23,19 @@ const ProgramCard = ({ program, onClick }) => {
             loading="lazy"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-cyan-100 to-blue-200 flex items-center justify-center">
-            <GraduationCap className="w-16 h-16 text-cyan-400" />
+          <div className="h-full w-full bg-neutral-100 flex items-center justify-center">
+            <GraduationCap className="w-16 h-16 text-neutral-300" />
           </div>
         )}
 
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
         {/* Status Badge */}
         <div className="absolute top-3 right-3 z-10">
-          <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm shadow-sm ${isActive
-              ? 'bg-emerald-500/90 text-white'
-              : 'bg-slate-500/90 text-white'
+          <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider ${isActive
+            ? 'bg-yellow-400 text-black'
+            : 'bg-neutral-700 text-white'
             }`}>
             {isActive ? t('common.active') : t('common.inactive')}
           </span>
@@ -41,8 +44,8 @@ const ProgramCard = ({ program, onClick }) => {
         {/* Course count badge */}
         {totalCourses != null && (
           <div className="absolute bottom-3 left-3 z-10">
-            <span className="px-2.5 py-1 inline-flex items-center gap-1.5 rounded-lg text-xs font-medium bg-white/95 backdrop-blur-sm text-slate-700 shadow-sm">
-              <BookOpen className="w-3.5 h-3.5 text-cyan-500" />
+            <span className="px-3 py-1 inline-flex items-center gap-1.5 text-xs font-bold bg-white text-black uppercase tracking-wider">
+              <BookOpen className="w-3.5 h-3.5" />
               {totalCourses} {t('sidebar.courses')}
             </span>
           </div>
@@ -51,21 +54,19 @@ const ProgramCard = ({ program, onClick }) => {
 
       {/* Content */}
       <div className="flex-1 flex flex-col p-4">
-        <h3 className="font-semibold text-slate-900 line-clamp-2 min-h-[2.5rem] group-hover:text-cyan-700 transition-colors">
+        <h3 className="font-black text-neutral-900 line-clamp-2 min-h-[2.5rem] uppercase group-hover:text-yellow-600 transition-colors">
           {name}
         </h3>
 
         {description && (
-          <p className="text-xs text-slate-500 line-clamp-2 mt-2 flex-1">{description}</p>
+          <p className="text-xs text-neutral-500 line-clamp-2 mt-2 flex-1">{description}</p>
         )}
 
         {/* Bottom action hint */}
-        <div className="mt-3 pt-3 border-t border-slate-100">
-          <span className="text-xs font-medium text-cyan-600 group-hover:text-cyan-700 inline-flex items-center gap-1">
+        <div className="mt-3 pt-3 border-t border-neutral-200">
+          <span className="text-xs font-bold text-neutral-900 group-hover:text-yellow-600 inline-flex items-center gap-1 uppercase tracking-wider">
             {t('common.viewDetails', 'Xem chi tiết')}
-            <svg className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </span>
         </div>
       </div>

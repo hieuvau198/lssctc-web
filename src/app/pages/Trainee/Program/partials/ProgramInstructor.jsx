@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChevronRight } from 'lucide-react';
 
 const INSTRUCTORS = [
   {
@@ -26,27 +27,41 @@ const INSTRUCTORS = [
 
 export default function ProgramInstructor() {
   return (
-    <section className="py-10 bg-slate-50">
-      <div className="max-w-[1380px] mx-auto px-4">
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Program Instructors</h2>
-            <p className="text-slate-500 mt-1">Experienced professionals and mentors</p>
-          </div>
+    <section className="py-16 bg-neutral-50 border-y border-neutral-200">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Section Header */}
+        <div className="mb-10">
+          <span className="text-sm tracking-widest text-neutral-500 uppercase font-bold block mb-2">
+            Đội ngũ giảng viên
+          </span>
+          <h2 className="text-4xl font-black uppercase tracking-tight mb-2">
+            Program Instructors
+          </h2>
+          <div className="h-1 w-24 bg-yellow-400" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {INSTRUCTORS.map((i) => (
-            <article key={i.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-              <div className="flex items-center gap-4">
-                <img src={i.avatar} alt={i.name} className="w-14 h-14 rounded-full object-cover" loading="lazy" />
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900">{i.name}</h3>
-                  <p className="text-sm text-slate-600">{i.title}</p>
+            <article key={i.id} className="bg-white border-2 border-neutral-900 hover:border-yellow-400 transition-all group">
+              {/* Status bar */}
+              <div className="h-2 bg-neutral-100 group-hover:bg-yellow-400 transition-colors" />
+
+              <div className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 border-4 border-yellow-400 overflow-hidden flex-shrink-0">
+                    <img src={i.avatar} alt={i.name} className="w-full h-full object-cover" loading="lazy" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black uppercase text-neutral-900 group-hover:text-yellow-600 transition-colors">{i.name}</h3>
+                    <p className="text-sm text-neutral-500 uppercase tracking-wider font-semibold">{i.title}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="mt-4">
-                <button className="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-md border border-slate-300 hover:bg-slate-50">View profile</button>
+                <div className="mt-5">
+                  <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-wider border-2 border-neutral-900 hover:bg-yellow-400 hover:border-yellow-400 transition-all group/btn">
+                    View profile
+                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  </button>
+                </div>
               </div>
             </article>
           ))}
