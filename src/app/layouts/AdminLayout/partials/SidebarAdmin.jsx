@@ -46,12 +46,12 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
         <div className={`flex items-center h-16 border-b border-slate-200/60 ${collapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
           {collapsed ? (
             <Tooltip placement="right" title={t('sidebar.adminPanel')}>
-              <button
+              <div
                 onClick={onToggle}
-                className="flex items-center justify-center bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-bold rounded-xl size-10 text-lg shadow-lg shadow-cyan-200/50 hover:scale-105 transition-transform"
+                className="flex items-center cursor-pointer justify-center bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-bold rounded-xl size-10 text-lg shadow-lg shadow-cyan-200/50 hover:scale-105 transition-transform"
               >
                 A
-              </button>
+              </div>
             </Tooltip>
           ) : (
             <>

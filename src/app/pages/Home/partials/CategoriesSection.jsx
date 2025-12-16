@@ -17,15 +17,11 @@ export default function CategoriesSection() {
   return (
     <section id="categories" className="py-14 md:py-18 bg-white">
       <div className="max-w-[1380px] mx-auto px-5 sm:px-6 md:px-10">
-        <div className="flex items-baseline justify-between mb-8">
+        <div className="flex items-baseline justify-between mb-6">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">{t('home.categories.title')}</h2>
+            <span className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">{t('home.categories.title')}</span>
             <p className="text-sm text-slate-500 mt-1">{t('home.categories.subtitle', 'Khám phá các danh mục đào tạo')}</p>
           </div>
-          <a href="#" className="text-cyan-600 text-sm hover:text-cyan-700 font-medium flex items-center gap-1 group">
-            {t('home.categories.viewAll')}
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </a>
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
           {categories.map((c) => (

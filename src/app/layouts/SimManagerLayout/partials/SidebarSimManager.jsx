@@ -46,12 +46,12 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
         <div className={`flex items-center h-16 border-b border-slate-200/60 ${collapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
           {collapsed ? (
             <Tooltip placement="right" title={t('sidebar.simManagerPanel')}>
-              <button
+              <div
                 onClick={onToggle}
-                className="flex items-center justify-center bg-gradient-to-br from-violet-500 to-purple-600 text-white font-bold rounded-xl size-10 text-lg shadow-lg shadow-violet-200/50 hover:scale-105 transition-transform"
+                className="flex items-center cursor-pointer justify-center bg-gradient-to-br from-violet-500 to-purple-600 text-white font-bold rounded-xl size-10 text-lg shadow-lg shadow-violet-200/50 hover:scale-105 transition-transform"
               >
                 S
-              </button>
+              </div>
             </Tooltip>
           ) : (
             <>

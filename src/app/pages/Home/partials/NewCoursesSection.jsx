@@ -93,55 +93,55 @@ export default function NewCoursesSection() {
                 },
               ]}
             >
-            {courses.map((course) => (
-              <div key={course.id} className="px-3">
-                <div
-                  onClick={() => {
-                    try {
-                      if (window && window.top) {
-                        window.top.location.href = `/course/${course.id}`;
-                        return;
-                      }
-                    } catch (e) {}
-                    navigate(`/course/${course.id}`);
-                  }}
-                  className="cursor-pointer h-auto"
-                >
-                  <CourseCard
-                    course={{
-                      id: course.id,
-                      title: course.name || course.title,
-                      provider: 'LSSCTC Academy',
-                      level: course.levelName || course.level,
-                      duration: course.durationHours,
-                      thumbnail: course.imageUrl,
-                      tags: course.tags || course.keywords || [course.category].filter(Boolean),
-                      price: course.price,
+              {courses.map((course) => (
+                <div key={course.id} className="px-3 py-4">
+                  <div
+                    onClick={() => {
+                      try {
+                        if (window && window.top) {
+                          window.top.location.href = `/course/${course.id}`;
+                          return;
+                        }
+                      } catch (e) { }
+                      navigate(`/course/${course.id}`);
                     }}
-                  />
+                    className="cursor-pointer h-full"
+                  >
+                    <CourseCard
+                      course={{
+                        id: course.id,
+                        title: course.name || course.title,
+                        provider: 'LSSCTC Academy',
+                        level: course.levelName || course.level,
+                        duration: course.durationHours,
+                        thumbnail: course.imageUrl,
+                        tags: course.tags || course.keywords || [course.category].filter(Boolean),
+                        price: course.price,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </Carousel>
-          
-          {/* Navigation Buttons */}
-          <Button
-            icon={<LeftOutlined />}
-            onClick={() => carouselRef.current?.prev()}
-            className="!absolute !left-0 top-1/2 !-translate-y-1/2 !-translate-x-1/2 z-10 !bg-white hover:!bg-gray-50"
-            shape="circle"
-            size="large"
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
-          />
-          <Button
-            icon={<RightOutlined />}
-            onClick={() => carouselRef.current?.next()}
-            className="!absolute !right-0 top-1/2 !-translate-y-1/2 !translate-x-1/2 z-10 !bg-white hover:!bg-gray-50"
-            shape="circle"
-            size="large"
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
-          />
-        </div>
+              ))}
+            </Carousel>
+
+            {/* Navigation Buttons */}
+            <Button
+              icon={<LeftOutlined />}
+              onClick={() => carouselRef.current?.prev()}
+              className="!absolute !left-0 top-1/2 !-translate-y-1/2 !-translate-x-1/2 z-10 !bg-white hover:!bg-gray-50"
+              shape="circle"
+              size="large"
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+            />
+            <Button
+              icon={<RightOutlined />}
+              onClick={() => carouselRef.current?.next()}
+              className="!absolute !right-0 top-1/2 !-translate-y-1/2 !translate-x-1/2 z-10 !bg-white hover:!bg-gray-50"
+              shape="circle"
+              size="large"
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+            />
+          </div>
         )}
       </div>
     </section>

@@ -1098,6 +1098,21 @@
         "quiz": "Bài kiểm tra",
         "practice": "Thực hành",
         "activity": "Hoạt động"
+      },
+      "sessionManager": {
+        "title": "Quản lý phiên hoạt động",
+        "status": "Trạng thái hoạt động",
+        "timeWindow": "Khung thời gian",
+        "timeHelp": "Để trống nếu muốn truy cập không giới hạn thời gian khi Hoạt động",
+        "updateSuccess": "Cập nhật phiên thành công",
+        "traineeProgress": "Tiến độ Học viên",
+        "trainee": "Học viên",
+        "progressStatus": "Trạng thái",
+        "score": "Điểm",
+        "completionDate": "Ngày hoàn thành",
+        "inProgress": "Đang thực hiện",
+        "completed": "Hoàn thành",
+        "notStarted": "Chưa bắt đầu"
       }
     },
     "practices": {
@@ -1674,16 +1689,23 @@
   },
   "simManager": {
     "dashboard": {
-      "title": "Bảng điều khiển Quản lý Mô phỏng",
-      "subtitle": "Theo dõi mô phỏng và hoạt động thời gian thực",
-      "activeUsers": "Người dùng đang hoạt động",
-      "activeSimulations": "Mô phỏng đang hoạt động",
-      "totalSimulations": "Tổng số mô phỏng",
-      "avgSession": "Phiên trung bình (phút)",
-      "liveUsers": "Người dùng trực tuyến",
-      "quickActions": "Thao tác nhanh",
-      "newSimulation": "Mô phỏng mới",
-      "manageComponents": "Quản lý thành phần"
+      "title": "Bảng Điều Khiển Mô Phỏng",
+      "subtitle": "Tổng quan hoạt động mô phỏng và thực hành",
+      "totalPractices": "Tổng Thực Hành",
+      "completedPractices": "Đã Hoàn Thành",
+      "activePractices": "Đang Thực Hành",
+      "totalSimulators": "Tổng Thiết Bị",
+      "completionDistribution": "Phân Bố Hoàn Thành Thực Hành",
+      "durationDistribution": "Phân Bố Thời Lượng Thực Hành",
+      "completed": "Hoàn thành",
+      "notCompleted": "Chưa hoàn thành",
+      "total": "Tổng",
+      "fast": "Nhanh (< 15 phút)",
+      "moderate": "Trung bình (15-45 phút)",
+      "slow": "Chậm (> 45 phút)",
+      "createSimulation": "Tạo Mô Phỏng",
+      "manageComponents": "Quản Lý Thành Phần",
+      "settings": "Cài Đặt"
     },
     "activeSimulations": {
       "title": "Mô phỏng đang hoạt động",
@@ -2701,6 +2723,25 @@
         "editClass": "Chỉnh sửa lớp",
         "addTraineeTitle": "Thêm học viên vào lớp",
         "enrollSelected": "Đăng ký đã chọn ({{count}})"
+      },
+      "sessionManager": {
+        "title": "Quản lý phiên hoạt động",
+        "status": "Trạng thái hoạt động",
+        "timeWindow": "Khung thời gian",
+        "timeHelp": "Chọn thời gian bắt đầu và kết thúc phiên",
+        "save": "Lưu",
+        "inactive": "Không hoạt động",
+        "active": "Đang hoạt động",
+        "startTime": "Thời gian bắt đầu",
+        "endTime": "Thời gian kết thúc",
+        "traineeProgress": "Tiến độ Học viên",
+        "trainee": "Học viên",
+        "progressStatus": "Trạng thái",
+        "score": "Điểm",
+        "completionDate": "Ngày hoàn thành",
+        "inProgress": "Đang thực hiện",
+        "completed": "Hoàn thành",
+        "notStarted": "Chưa bắt đầu"
       }
     }
   }
