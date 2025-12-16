@@ -13,8 +13,8 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { createClass } from "../../../../apis/ProgramManager/ClassApi";
-import { fetchCourses, fetchPrograms } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
-import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
+import { fetchAvailablePrograms } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
+import { fetchAvailableCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
 
 const AddClassForm = ({
   open,
@@ -40,9 +40,9 @@ const AddClassForm = ({
   useEffect(() => {
     if (open) {
       setLoadingPrograms(true);
-      fetchPrograms({ pageNumber: 1, pageSize: 100 })
+      fetchAvailablePrograms()
         .then((data) => {
-          setPrograms(data.items || []);
+          setPrograms(data || []);
         })
         .catch((err) => {
           console.error('Failed to fetch programs:', err);
@@ -56,9 +56,9 @@ const AddClassForm = ({
       if (initialProgram) {
         setSelectedProgram(initialProgram);
         setLoadingCourses(true);
-        fetchCoursesByProgram(initialProgram)
-          .then((data) => setCourses(data.items || []))
-          .catch((err) => console.error('Failed to fetch courses by program:', err))
+        fetchAvailableCoursesByProgram(initialProgram)
+          .then((data) => setCourses(data || []))
+          .catch((err) => console.error('Failed to fetch courses:', err))
           .finally(() => setLoadingCourses(false));
       }
     }
@@ -74,12 +74,12 @@ const AddClassForm = ({
     }
 
     setLoadingCourses(true);
-    fetchCoursesByProgram(programId)
+    fetchAvailableCoursesByProgram(programId)
       .then((data) => {
-        setCourses(data.items || []);
+        setCourses(data || []);
       })
       .catch((err) => {
-        console.error('Failed to fetch courses by program:', err);
+        console.error('Failed to fetch courses:', err);
         setCourses([]);
       })
       .finally(() => setLoadingCourses(false));

@@ -14,7 +14,7 @@ import {
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   addCourse,
   deleteCourse,
@@ -37,6 +37,7 @@ const Courses = () => {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -177,19 +178,9 @@ const Courses = () => {
     setDrawerOpen(true);
   };
 
-  const openView = async (course) => {
-    setDrawerMode('view');
-    setCurrentCourse(course);
-    setDrawerOpen(true);
-    setDetailLoading(true);
-    try {
-      const detail = await fetchCourseDetail(course.id);
-      setCurrentCourse(detail);
-    } catch (err) {
-      message.error(err.message || t('admin.courses.loadDetailError'));
-    } finally {
-      setDetailLoading(false);
-    }
+  const openView = (course) => {
+    // Navigate to the detail page instead of opening drawer
+    navigate(`/admin/courses/${course.id}`);
   };
 
   const openEdit = async (course) => {
@@ -249,7 +240,6 @@ const Courses = () => {
       const res = await addCourse(values);
       message.success((res && res.message) || t('admin.courses.createSuccess'));
       // Refresh list
-      // Refresh list
       const [sortBy, sortDirection] = sortOrder ? sortOrder.split('_') : [undefined, undefined];
       const data = await fetchCourses({ pageNumber, pageSize, searchTerm, sortBy, sortDirection });
       setCourses(data.items || []);
@@ -272,7 +262,6 @@ const Courses = () => {
     try {
       const res = await updateCourse(currentCourse.id, values);
       message.success((res && res.message) || t('admin.courses.updateSuccess'));
-      // Refresh list
       // Refresh list
       const [sortBy, sortDirection] = sortOrder ? sortOrder.split('_') : [undefined, undefined];
       const data = await fetchCourses({ pageNumber, pageSize, searchTerm, sortBy, sortDirection });
@@ -347,7 +336,6 @@ const Courses = () => {
       </div>
 
       {/* Search and Controls */}
-      {/* Search and Controls */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
         <div className="flex flex-1 gap-2 w-full md:w-auto">
           <Input.Search
@@ -411,30 +399,12 @@ const Courses = () => {
               : currentCourse?.name || t('admin.courses.courseDetail')
         }
         extra={
-          drawerMode === 'view' && currentCourse ? (
-            <Space>
-              <Button onClick={switchToEdit}>{t('common.edit')}</Button>
-              <Popconfirm
-                title={t('admin.courses.deleteCourseTitle')}
-                description={t('admin.courses.deleteConfirm')}
-                onConfirm={() => handleDelete(currentCourse.id)}
-                okButtonProps={{ loading: deletingId === currentCourse.id }}
-              >
-                <Button danger loading={deletingId === currentCourse.id}>
-                  {t('common.delete')}
-                </Button>
-              </Popconfirm>
-            </Space>
-          ) : null
+          // Removed View controls since we now navigate to page
+          drawerMode === 'view' && currentCourse ? null : null
         }
       >
-        {drawerMode === 'view' && currentCourse && (
-          detailLoading ? (
-            <Skeleton active paragraph={{ rows: 8 }} />
-          ) : (
-            <CourseDetail embedded course={currentCourse} />
-          )
-        )}
+        {/* Removed drawerMode === 'view' logic since it's handled by page now */}
+        
         {drawerMode === 'create' && (
           <CreateCourse
             embedded
