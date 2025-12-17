@@ -62,7 +62,6 @@ export default function InstructorDashboard() {
 
   return (
     <div className="space-y-6 min-h-screen">
-      {/* Header - Industrial Style */}
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center">
           <LayoutDashboard className="w-6 h-6 text-black" />
@@ -77,7 +76,6 @@ export default function InstructorDashboard() {
         </div>
       </div>
 
-      {/* Overview Stats - Industrial Style */}
       {loading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
@@ -108,7 +106,6 @@ export default function InstructorDashboard() {
         </div>
       )}
 
-      {/* Charts Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         <ClassTraineeChart />
         <ClassStatusChart />
