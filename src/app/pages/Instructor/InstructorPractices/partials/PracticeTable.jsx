@@ -1,6 +1,6 @@
 import React from 'react';
-import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
-import { EyeOutlined } from '@ant-design/icons';
+import { Table, Pagination, Tooltip } from 'antd';
+import { Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const PracticeTable = ({
@@ -8,18 +8,36 @@ const PracticeTable = ({
   pageNumber = 1,
   pageSize = 10,
   total = 0,
-  onPageChange = () => {},
-  onView = () => {},
+  onPageChange = () => { },
+  onView = () => { },
 }) => {
   const { t } = useTranslation();
-  
+
+  // Difficulty badge styles
+  const getDifficultyStyle = (level) => {
+    switch (level) {
+      case 'Entry':
+        return 'bg-green-100 text-green-800 border-green-300';
+      case 'Intermediate':
+        return 'bg-orange-100 text-orange-800 border-orange-300';
+      case 'Advanced':
+        return 'bg-red-100 text-red-800 border-red-300';
+      default:
+        return 'bg-neutral-100 text-neutral-600 border-neutral-300';
+    }
+  };
+
   const tableColumns = [
     {
-      title: t('instructor.practices.table.index'),
+      title: '#',
       key: 'index',
       width: 64,
       align: 'center',
-      render: (_, __, idx) => (pageNumber - 1) * pageSize + idx + 1,
+      render: (_, __, idx) => (
+        <span className="font-bold text-neutral-500">
+          {(pageNumber - 1) * pageSize + idx + 1}
+        </span>
+      ),
       fixed: 'left',
     },
     {
@@ -27,6 +45,9 @@ const PracticeTable = ({
       dataIndex: 'practiceCode',
       key: 'practiceCode',
       width: 140,
+      render: (code) => (
+        <span className="font-mono text-yellow-600 font-bold">{code}</span>
+      ),
     },
     {
       title: t('instructor.practices.table.name'),
@@ -35,7 +56,7 @@ const PracticeTable = ({
       width: 260,
       render: (name, record) => (
         <div
-          className="font-medium text-blue-600 cursor-pointer hover:underline"
+          className="font-bold text-black cursor-pointer hover:text-yellow-600 transition-colors"
           onClick={() => onView(record)}
         >
           {name}
@@ -48,7 +69,9 @@ const PracticeTable = ({
       key: 'estimatedDurationMinutes',
       width: 130,
       align: 'center',
-      render: (v) => <span>{v}</span>,
+      render: (v) => (
+        <span className="font-medium text-neutral-700">{v}</span>
+      ),
     },
     {
       title: t('instructor.practices.table.difficulty'),
@@ -56,7 +79,11 @@ const PracticeTable = ({
       key: 'difficultyLevel',
       width: 140,
       align: 'center',
-      render: (level) => <Tag color={level === 'Entry' ? 'green' : level === 'Intermediate' ? 'orange' : 'red'}>{level || t('common.na')}</Tag>,
+      render: (level) => (
+        <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider border ${getDifficultyStyle(level)}`}>
+          {level || t('common.na')}
+        </span>
+      ),
     },
     {
       title: t('instructor.practices.table.maxAttempts'),
@@ -64,27 +91,64 @@ const PracticeTable = ({
       key: 'maxAttempts',
       width: 120,
       align: 'center',
-      render: (v) => <span>{v}</span>,
+      render: (v) => (
+        <span className="font-bold text-neutral-700">{v}</span>
+      ),
     },
     {
       title: t('instructor.practices.table.actions'),
       key: 'actions',
-      width: 120,
+      width: 100,
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
-        <Space size="small">
-          <Tooltip title={t('instructor.practices.table.viewDetails')}>
-            <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(record)} />
-          </Tooltip>
-        </Space>
+        <Tooltip title={t('instructor.practices.table.viewDetails')}>
+          <button
+            onClick={() => onView(record)}
+            className="w-9 h-9 bg-black border-2 border-black flex items-center justify-center hover:scale-105 transition-transform mx-auto"
+          >
+            <Eye className="w-4 h-4 text-yellow-400" />
+          </button>
+        </Tooltip>
       ),
     },
   ];
 
   return (
-    <div className="rounded-lg shadow overflow-hidden">
-      <div className="overflow-hidden min-h-[450px]">
+    <div className="bg-white border-2 border-black overflow-hidden">
+      <div className="h-1 bg-yellow-400" />
+
+      {/* Industrial Table Styles */}
+      <style>{`
+        .industrial-practice-table .ant-table {
+          border: none !important;
+        }
+        .industrial-practice-table .ant-table-thead > tr > th {
+          background: #fef08a !important;
+          border-bottom: 2px solid #000 !important;
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          font-size: 12px !important;
+          letter-spacing: 0.05em !important;
+          color: #000 !important;
+        }
+        .industrial-practice-table .ant-table-tbody > tr > td {
+          border-bottom: 1px solid #e5e5e5 !important;
+        }
+        .industrial-practice-table .ant-table-tbody > tr:hover > td {
+          background: #fef9c3 !important;
+        }
+        .industrial-practice-table .ant-pagination-item-active {
+          background: #facc15 !important;
+          border-color: #000 !important;
+        }
+        .industrial-practice-table .ant-pagination-item-active a {
+          color: #000 !important;
+          font-weight: 700 !important;
+        }
+      `}</style>
+
+      <div className="industrial-practice-table overflow-hidden min-h-[450px]">
         <Table
           columns={tableColumns}
           dataSource={practices}
@@ -95,7 +159,7 @@ const PracticeTable = ({
         />
       </div>
 
-      <div className="p-4 border-t border-gray-200 bg-white flex justify-center">
+      <div className="p-4 border-t-2 border-neutral-200 bg-white flex justify-center">
         <Pagination
           current={pageNumber}
           pageSize={pageSize}
@@ -103,7 +167,11 @@ const PracticeTable = ({
           onChange={onPageChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(total, range) => t('instructor.practices.table.pagination', { start: range[0], end: range[1], total })}
+          showTotal={(total, range) => (
+            <span className="text-sm font-medium text-neutral-600">
+              {range[0]}-{range[1]} / {total} {t('instructor.practices.title').toLowerCase()}
+            </span>
+          )}
         />
       </div>
     </div>
