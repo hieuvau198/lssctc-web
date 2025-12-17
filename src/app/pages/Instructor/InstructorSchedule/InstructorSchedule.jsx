@@ -1,15 +1,14 @@
-import { App, Spin } from 'antd';
+import { Spin } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { Calendar } from 'lucide-react';
 import { getInstructorWeeklySchedule } from '../../../apis/TimeSlot/TimeSlot';
 import { mockTimeSlots, weekDays } from '../../../mocks/instructorSchedule';
-import './InstructorSchedule.css';
 import ScheduleGrid from './partials/ScheduleGrid';
 import WeekNavigation from './partials/WeekNavigation';
 
 export default function InstructorSchedule() {
     const navigate = useNavigate();
-    const { message } = App.useApp();
 
     // State
     const [loading, setLoading] = useState(false);
@@ -19,7 +18,6 @@ export default function InstructorSchedule() {
     // Calculate Monday of current week (ISO-style: Monday is the first day)
     const getMondayOfWeek = (date = new Date()) => {
         const d = new Date(date);
-        // convert JS getDay() -> ISO day index where Monday=0, Sunday=6
         const isoDayIndex = (d.getDay() + 6) % 7;
         const monday = new Date(d);
         monday.setDate(d.getDate() - isoDayIndex);
@@ -36,9 +34,6 @@ export default function InstructorSchedule() {
             setError(null);
 
             try {
-                // The instructor weekly API accepts a single reference date `dateInWeek`.
-                // Use the Thursday of the currently selected week as the reference and
-                // format it in local timezone (YYYY-MM-DD) to avoid UTC offset issues.
                 const pad = (n) => String(n).padStart(2, '0');
                 const thursday = new Date(currentWeekStart);
                 thursday.setDate(currentWeekStart.getDate() + 3);
@@ -48,14 +43,13 @@ export default function InstructorSchedule() {
 
             } catch (err) {
                 setError(err.message || 'Failed to load schedule');
-                message.error('Không thể tải lịch học. Vui lòng thử lại.');
             } finally {
                 setLoading(false);
             }
         };
 
         fetchSchedule();
-    }, [currentWeekStart, message]);
+    }, [currentWeekStart]);
 
     // Get dates for the current week
     const weekDates = useMemo(() => {
@@ -110,7 +104,7 @@ export default function InstructorSchedule() {
                     return date.toISOString().split('T')[0] === itemDateStr;
                 });
 
-                if (!day) return; // item not in this week
+                if (!day) return;
 
                 const dayKey = day.key;
 
@@ -146,20 +140,16 @@ export default function InstructorSchedule() {
                 }
 
                 if (matchedSlotId && grid[matchedSlotId]) {
-                    // Keep API data as-is (do not translate). Provide some display fallbacks but preserve raw.
                     const mapped = {
                         ...item,
-                        // display helpers (no translation) - prefer exact API fields when present
                         classCode: item.classCode ?? item.name ?? item.className,
                         room: item.locationRoom ?? item.locationRoom ?? item.room ?? null,
                         raw: item,
                     };
 
-                    // put item into first free slot for that day
                     if (!grid[matchedSlotId][dayKey]) {
                         grid[matchedSlotId][dayKey] = mapped;
                     } else {
-                        // if already occupied, push into array (optional)
                         const existing = grid[matchedSlotId][dayKey];
                         if (Array.isArray(existing)) {
                             existing.push(mapped);
@@ -205,29 +195,29 @@ export default function InstructorSchedule() {
     // Show loading state
     if (loading) {
         return (
-            <div className="max-w-7xl mx-auto px-4 py-2">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 mb-6">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <span className="text-3xl">📅</span>
+            <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+                <div className="bg-black border-2 border-black p-6 mb-6">
+                    <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
+                    <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 bg-yellow-400 border-2 border-black flex items-center justify-center">
+                            <Calendar className="w-7 h-7 text-black" />
                         </div>
                         <div>
-                            <span className="text-3xl font-bold text-white">Lịch giảng dạy</span>
-                            <p className="text-orange-100 text-sm mt-1">Đang tải...</p>
+                            <span className="text-2xl font-black text-white uppercase tracking-tight">Teaching Schedule</span>
+                            <p className="text-yellow-400 text-sm mt-1 font-medium">Loading...</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white rounded-xl shadow-lg p-12 flex items-center justify-center">
-                    <Spin size="large" tip="Đang tải lịch học..." />
+                <div className="bg-white border-2 border-black p-12 flex items-center justify-center">
+                    <div className="h-1 bg-yellow-400 absolute top-0 left-0 right-0" />
+                    <Spin size="large" />
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-2">
-            {/* Modern Header with Gradient */}
-
+        <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
             {/* Navigation Card */}
             <WeekNavigation
                 currentWeekStart={currentWeekStart}
@@ -238,14 +228,12 @@ export default function InstructorSchedule() {
             />
 
             {/* Schedule Grid Card */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                <ScheduleGrid
-                    timeSlots={mockTimeSlots}
-                    weekDates={weekDates}
-                    scheduleGrid={scheduleGrid}
-                    onClassClick={handleClassClick}
-                />
-            </div>
+            <ScheduleGrid
+                timeSlots={mockTimeSlots}
+                weekDates={weekDates}
+                scheduleGrid={scheduleGrid}
+                onClassClick={handleClassClick}
+            />
         </div>
     );
 }
