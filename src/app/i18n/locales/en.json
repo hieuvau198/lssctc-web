@@ -2577,6 +2577,9 @@
         "validationFailed": "Validation failed",
         "preview": "Preview"
       },
+      "courseSections": "Course Sections",
+      "certificates": "Certificates",
+      "classList": "Class List",
       "filters": {
         "category": "Filter by Category",
         "level": "Filter by Level",

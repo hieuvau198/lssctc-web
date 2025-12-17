@@ -68,17 +68,14 @@ const CourseClassList = ({ courseId }) => {
         else if (s === 'completed') color = 'blue';
         else if (s === 'cancelled') color = 'red';
         else if (s === 'upcoming') color = 'orange';
-        
+
         return <Tag color={color}>{status || 'N/A'}</Tag>;
       }
     },
   ];
 
   return (
-    <Card 
-      title={<div className="flex items-center gap-2"><CalendarOutlined /> {t('admin.classes.title') || 'Classes'}</div>} 
-      className="mt-6 shadow-sm"
-    >
+    <div className="w-full">
       <Table
         dataSource={classes}
         columns={columns}
@@ -86,8 +83,24 @@ const CourseClassList = ({ courseId }) => {
         loading={loading}
         pagination={{ pageSize: 5 }}
         locale={{ emptyText: t('common.noData') || 'No classes found' }}
+        className="industrial-table"
+        rowClassName="hover:bg-yellow-50/50 transition-colors"
       />
-    </Card>
+      <style>{`
+        .industrial-table .ant-table-thead > tr > th {
+          background: #000 !important;
+          color: white !important;
+          border-radius: 0 !important;
+          text-transform: uppercase;
+          font-size: 11px;
+          letter-spacing: 0.05em;
+          padding: 12px 16px;
+        }
+        .industrial-table .ant-table-container {
+          border: 2px solid #f5f5f5;
+        }
+      `}</style>
+    </div>
   );
 };
 
