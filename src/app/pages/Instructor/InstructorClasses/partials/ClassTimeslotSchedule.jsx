@@ -1,14 +1,13 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Table, Tag, Spin, Empty, Tooltip, Button, Space, App } from 'antd';
-import { ClockCircleOutlined, EnvironmentOutlined, CalendarOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Table, Tooltip, Spin, Empty, App } from 'antd';
+import { Clock, MapPin, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getInstructorClassTimeslots } from '../../../../apis/TimeSlot/TimeSlot';
 import { mockTimeSlots, weekDays } from '../../../../mocks/instructorSchedule';
 
 /**
- * ClassTimeslotSchedule - Hiển thị lịch lớp học dạng lưới tuần
- * Dùng API GET /api/Timeslots/class/{classId}/instructor-view
+ * ClassTimeslotSchedule - Light Wire Theme
  */
 export default function ClassTimeslotSchedule({ classId, className }) {
     const { t, i18n } = useTranslation();
@@ -20,7 +19,6 @@ export default function ClassTimeslotSchedule({ classId, className }) {
     const [timeslots, setTimeslots] = useState([]);
     const [error, setError] = useState(null);
 
-    // Current week state
     const getMondayOfWeek = (date = new Date()) => {
         const dayOfWeek = date.getDay();
         const monday = new Date(date);
@@ -31,7 +29,6 @@ export default function ClassTimeslotSchedule({ classId, className }) {
 
     const [currentWeekStart, setCurrentWeekStart] = useState(() => getMondayOfWeek());
 
-    // Fetch timeslots for this class
     useEffect(() => {
         if (!classId) return;
 
@@ -52,7 +49,6 @@ export default function ClassTimeslotSchedule({ classId, className }) {
         fetchTimeslots();
     }, [classId, message]);
 
-    // Get dates for the current week
     const weekDates = useMemo(() => {
         return weekDays.map((day, index) => {
             const date = new Date(currentWeekStart);
@@ -67,11 +63,8 @@ export default function ClassTimeslotSchedule({ classId, className }) {
         });
     }, [currentWeekStart]);
 
-    // Build schedule grid from API data
     const scheduleGrid = useMemo(() => {
         const grid = {};
-
-        // Initialize empty grid
         mockTimeSlots.forEach(slot => {
             grid[slot.id] = {};
             weekDays.forEach(day => {
@@ -79,38 +72,33 @@ export default function ClassTimeslotSchedule({ classId, className }) {
             });
         });
 
-        // Helper: convert HH:MM -> minutes
         const timeToMinutes = (timeStr) => {
             const [h, m] = timeStr.split(':').map(Number);
             return h * 60 + m;
         };
 
-        // Helper: get minutes from ISO datetime
         const isoToMinutes = (iso) => {
             const d = new Date(iso);
             return d.getHours() * 60 + d.getMinutes();
         };
 
-        // Map each API item into grid
         timeslots.forEach(item => {
             try {
                 const itemDate = new Date(item.startTime);
                 const itemDateStr = itemDate.toISOString().split('T')[0];
 
-                // find day key in this week
                 const day = weekDays.find((d, idx) => {
                     const date = new Date(currentWeekStart);
                     date.setDate(currentWeekStart.getDate() + idx);
                     return date.toISOString().split('T')[0] === itemDateStr;
                 });
 
-                if (!day) return; // item not in this week
+                if (!day) return;
 
                 const dayKey = day.key;
                 const itemStartMin = isoToMinutes(item.startTime);
                 const itemEndMin = item.endTime ? isoToMinutes(item.endTime) : itemStartMin + 60;
 
-                // Find first slot that overlaps with the item's time range
                 let matchedSlotId = null;
                 for (const slot of mockTimeSlots) {
                     const slotStartMin = timeToMinutes(slot.startTime);
@@ -122,7 +110,6 @@ export default function ClassTimeslotSchedule({ classId, className }) {
                     }
                 }
 
-                // Fallback: match nearest slot by start time
                 if (!matchedSlotId) {
                     let best = null;
                     let bestDiff = Infinity;
@@ -138,7 +125,6 @@ export default function ClassTimeslotSchedule({ classId, className }) {
                 }
 
                 if (matchedSlotId && grid[matchedSlotId]) {
-                    // normalize mapped item fields for UI
                     const mapped = {
                         ...item,
                         classCode: item.classCode ?? item.name ?? item.className,
@@ -158,13 +144,11 @@ export default function ClassTimeslotSchedule({ classId, className }) {
         return grid;
     }, [timeslots, currentWeekStart]);
 
-    // Check if a date is today
     const isToday = (date) => {
         const today = new Date();
         return date.toDateString() === today.toDateString();
     };
 
-    // Navigation handlers
     const handlePreviousWeek = () => {
         const newStart = new Date(currentWeekStart);
         newStart.setDate(newStart.getDate() - 7);
@@ -181,7 +165,6 @@ export default function ClassTimeslotSchedule({ classId, className }) {
         setCurrentWeekStart(getMondayOfWeek());
     };
 
-    // Format week range for display
     const getWeekRangeText = () => {
         const endDate = new Date(currentWeekStart);
         endDate.setDate(endDate.getDate() + 6);
@@ -190,25 +173,24 @@ export default function ClassTimeslotSchedule({ classId, className }) {
         return `${startStr} - ${endStr}`;
     };
 
-    // Get status info
-    const getStatusInfo = (status) => {
+    // Status styling for Light Wire theme
+    const getStatusStyle = (status) => {
         const statusMap = {
-            'NotStarted': { color: 'default', label: 'Chưa bắt đầu' },
-            'Ongoing': { color: 'processing', label: 'Đang diễn ra' },
-            'Completed': { color: 'success', label: 'Hoàn thành' },
-            'Cancelled': { color: 'error', label: 'Đã hủy' },
+            'NotStarted': { bg: 'bg-neutral-100', text: 'text-neutral-600', border: 'border-neutral-300', label: 'Chưa bắt đầu' },
+            'Ongoing': { bg: 'bg-yellow-400', text: 'text-black', border: 'border-black', label: 'Đang diễn ra' },
+            'Completed': { bg: 'bg-black', text: 'text-yellow-400', border: 'border-black', label: 'Hoàn thành' },
+            'Cancelled': { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-400', label: 'Đã hủy' },
         };
-        return statusMap[status] || { color: 'default', label: status || '-' };
+        return statusMap[status] || { bg: 'bg-neutral-100', text: 'text-neutral-600', border: 'border-neutral-300', label: status || '-' };
     };
 
-    // Build columns for Table
     const columns = useMemo(() => {
         const cols = [
             {
                 title: (
-                    <div className="flex items-center gap-1">
-                        <ClockCircleOutlined className="text-gray-500" />
-                        <span className="text-xs font-medium">{t('instructor.schedule.slot') || 'Slot'}</span>
+                    <div className="flex items-center gap-2 py-2">
+                        <Clock className="w-4 h-4 text-yellow-600" />
+                        <span className="text-xs font-black uppercase">{t('instructor.schedule.slot') || 'Slot'}</span>
                     </div>
                 ),
                 dataIndex: 'slot',
@@ -216,9 +198,9 @@ export default function ClassTimeslotSchedule({ classId, className }) {
                 width: '100px',
                 fixed: 'left',
                 render: (slot) => (
-                    <div className="flex flex-col">
-                        <span className="font-medium text-gray-800 text-xs">{slot.name}</span>
-                        <span className="text-xs text-gray-500">
+                    <div className="flex flex-col p-2 bg-neutral-50">
+                        <span className="font-black text-black text-xs uppercase">{slot.name}</span>
+                        <span className="text-xs text-neutral-500 font-medium">
                             {slot.startTime} - {slot.endTime}
                         </span>
                     </div>
@@ -226,21 +208,21 @@ export default function ClassTimeslotSchedule({ classId, className }) {
             },
         ];
 
-        // Add columns for each day of week
         weekDates.forEach((day) => {
+            const isTodayColumn = isToday(day.date);
             cols.push({
                 title: (
-                    <div className="flex flex-col items-center">
-                        <span className={`text-xs font-medium ${isToday(day.date) ? 'text-blue-600' : 'text-gray-600'}`}>
+                    <div className={`flex flex-col items-center py-2 ${isTodayColumn ? 'bg-yellow-400' : ''}`}>
+                        <span className={`text-xs font-bold uppercase ${isTodayColumn ? 'text-black' : 'text-neutral-500'}`}>
                             {isVietnamese ? day.label : day.labelEn}
                         </span>
-                        <span className={`text-sm font-bold ${isToday(day.date) ? 'text-blue-600' : 'text-gray-800'}`}>
+                        <span className={`text-sm font-black ${isTodayColumn ? 'text-black' : 'text-neutral-800'}`}>
                             {day.dayNum}/{day.monthNum}
                         </span>
-                        {isToday(day.date) && (
-                            <Tag color="blue" className="text-xs">
-                                {t('instructor.schedule.today') || 'Hôm nay'}
-                            </Tag>
+                        {isTodayColumn && (
+                            <span className="px-2 py-0.5 bg-black text-yellow-400 text-xs font-bold uppercase mt-1">
+                                {t('instructor.schedule.today') || 'Today'}
+                            </span>
                         )}
                     </div>
                 ),
@@ -248,18 +230,17 @@ export default function ClassTimeslotSchedule({ classId, className }) {
                 key: day.key,
                 ellipsis: true,
                 align: 'center',
-                className: isToday(day.date) ? 'bg-blue-50' : '',
+                className: isTodayColumn ? 'bg-yellow-50' : '',
                 render: (scheduleItem, record) => {
                     if (!scheduleItem) {
                         return (
-                            <div className="h-12 flex items-center justify-center">
-                                <span className="text-gray-300">-</span>
+                            <div className="h-16 flex items-center justify-center">
+                                <span className="w-8 h-0.5 bg-neutral-200"></span>
                             </div>
                         );
                     }
-                    const statusInfo = getStatusInfo(scheduleItem.status);
+                    const statusStyle = getStatusStyle(scheduleItem.status);
 
-                    // Handle click to navigate to attendance page
                     const handleSlotClick = () => {
                         if (!scheduleItem.raw?.timeslotId && !scheduleItem.raw?.id) {
                             message.warning('Không tìm thấy thông tin buổi học.');
@@ -288,31 +269,31 @@ export default function ClassTimeslotSchedule({ classId, className }) {
                     return (
                         <Tooltip
                             title={
-                                <div>
-                                    <p><strong>{scheduleItem.name}</strong></p>
-                                    <p>{t('instructor.schedule.room') || 'Phòng'}: {scheduleItem.room || '-'}</p>
-                                    <p className="text-xs mt-1 text-blue-200">{t('attendance.clickToMark', 'Nhấn để điểm danh')}</p>
+                                <div className="p-1">
+                                    <p className="font-bold text-white">{scheduleItem.name}</p>
+                                    <p className="text-neutral-300">{t('instructor.schedule.room') || 'Room'}: {scheduleItem.room || '-'}</p>
+                                    <p className="text-xs mt-1 text-yellow-400">{t('attendance.clickToMark', 'Click to mark attendance')}</p>
                                 </div>
                             }
+                            color="#171717"
                         >
-                            <Card
-                                size="small"
-                                className="cursor-pointer hover:shadow-md hover:border-blue-400 transition-all"
+                            <div
                                 onClick={handleSlotClick}
+                                className="cursor-pointer p-2 border-2 border-neutral-200 hover:border-yellow-400 bg-white transition-all"
                             >
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="font-semibold text-blue-600 text-xs truncate">
+                                <div className="flex flex-col gap-1">
+                                    <span className="font-bold text-black text-xs truncate">
                                         {scheduleItem.name}
                                     </span>
-                                    <Tag color={statusInfo.color} className="w-fit text-xs">
-                                        {statusInfo.label}
-                                    </Tag>
-                                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                                        <EnvironmentOutlined style={{ fontSize: '10px' }} />
-                                        <span className="truncate">{scheduleItem.room}</span>
+                                    <span className={`px-1 py-0.5 text-xs font-bold uppercase border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} w-fit`}>
+                                        {statusStyle.label}
+                                    </span>
+                                    <div className="flex items-center gap-1 text-xs text-neutral-500">
+                                        <MapPin className="w-3 h-3 text-yellow-600" />
+                                        <span className="truncate">{scheduleItem.room || '-'}</span>
                                     </div>
                                 </div>
-                            </Card>
+                            </div>
                         </Tooltip>
                     );
                 },
@@ -322,7 +303,6 @@ export default function ClassTimeslotSchedule({ classId, className }) {
         return cols;
     }, [weekDates, isVietnamese, t, classId, className, message, navigate]);
 
-    // Build data source for Table
     const dataSource = useMemo(() => {
         return mockTimeSlots.map((slot) => {
             const row = {
@@ -338,52 +318,70 @@ export default function ClassTimeslotSchedule({ classId, className }) {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <Spin size="large" tip="Đang tải lịch lớp học..." />
+            <div className="bg-white border-2 border-black p-12 flex items-center justify-center">
+                <Spin size="large" />
             </div>
         );
     }
 
     if (error) {
         return (
-            <Card className="shadow-sm">
-                <Empty description={error} image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            </Card>
+            <div className="bg-white border-2 border-black p-6">
+                <div className="h-1 bg-red-500 -mx-6 -mt-6 mb-6" />
+                <Empty description={<span className="font-bold text-red-600 uppercase">{error}</span>} />
+            </div>
         );
     }
 
     return (
-        <div className="w-full">
+        <div className="bg-white border-2 border-black overflow-hidden">
+            <div className="h-1 bg-yellow-400" />
+
             {/* Header with week navigation */}
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <div className="p-4 border-b-2 border-neutral-200 flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
-                    <CalendarOutlined className="text-2xl text-blue-600" />
+                    <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
+                        <Calendar className="w-5 h-5 text-black" />
+                    </div>
                     <div className="flex flex-col">
-                        <span className="text-lg font-semibold text-gray-800">
-                            {t('attendance.classSchedule') || 'Lịch lớp học'}
+                        <span className="text-lg font-black text-black uppercase tracking-tight">
+                            {t('attendance.classSchedule') || 'Class Schedule'}
                         </span>
-                        <span className="text-gray-500 text-sm">
-                            {t('instructor.schedule.week') || 'Tuần'}: {getWeekRangeText()}
+                        <span className="text-neutral-500 text-sm font-medium">
+                            {t('instructor.schedule.week') || 'Week'}: {getWeekRangeText()}
                         </span>
                     </div>
                 </div>
 
-                <Space size="small">
-                    <Button icon={<LeftOutlined />} onClick={handlePreviousWeek} />
-                    <Button onClick={handleToday} type="primary">
-                        {t('instructor.schedule.today') || 'Hôm nay'}
-                    </Button>
-                    <Button icon={<RightOutlined />} onClick={handleNextWeek} />
-                </Space>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handlePreviousWeek}
+                        className="w-10 h-10 flex items-center justify-center bg-neutral-100 border-2 border-neutral-300 hover:border-yellow-400 transition-all"
+                    >
+                        <ChevronLeft className="w-5 h-5 text-neutral-600" />
+                    </button>
+                    <button
+                        onClick={handleToday}
+                        className="h-10 px-4 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
+                    >
+                        {t('instructor.schedule.today') || 'Today'}
+                    </button>
+                    <button
+                        onClick={handleNextWeek}
+                        className="w-10 h-10 flex items-center justify-center bg-neutral-100 border-2 border-neutral-300 hover:border-yellow-400 transition-all"
+                    >
+                        <ChevronRight className="w-5 h-5 text-neutral-600" />
+                    </button>
+                </div>
             </div>
 
             {/* Status Legend */}
-            <div className="mb-4 flex flex-wrap gap-2 items-center">
-                <span className="text-sm text-gray-600 font-medium">{t('instructor.schedule.legend') || 'Chú thích'}:</span>
-                <Tag color="default">Chưa bắt đầu</Tag>
-                <Tag color="processing">Đang diễn ra</Tag>
-                <Tag color="success">Hoàn thành</Tag>
-                <Tag color="error">Đã hủy</Tag>
+            <div className="p-4 border-b-2 border-neutral-100 flex flex-wrap gap-3 items-center bg-neutral-50">
+                <span className="text-sm text-neutral-600 font-bold uppercase">{t('instructor.schedule.legend') || 'Legend'}:</span>
+                <span className="px-2 py-1 text-xs font-bold uppercase bg-neutral-100 text-neutral-600 border border-neutral-300">Chưa bắt đầu</span>
+                <span className="px-2 py-1 text-xs font-bold uppercase bg-yellow-400 text-black border border-black">Đang diễn ra</span>
+                <span className="px-2 py-1 text-xs font-bold uppercase bg-black text-yellow-400 border border-black">Hoàn thành</span>
+                <span className="px-2 py-1 text-xs font-bold uppercase bg-red-100 text-red-700 border border-red-400">Đã hủy</span>
             </div>
 
             {/* Schedule Grid */}
@@ -394,13 +392,12 @@ export default function ClassTimeslotSchedule({ classId, className }) {
                 bordered
                 scroll={{ x: false }}
                 size="small"
-                className="schedule-table"
                 tableLayout="fixed"
+                className="[&_.ant-table-thead>tr>th]:bg-neutral-100 [&_.ant-table-thead>tr>th]:border-neutral-300 [&_.ant-table-tbody>tr>td]:border-neutral-200 [&_.ant-table-thead>tr>th]:p-0"
                 locale={{
                     emptyText: (
                         <Empty
-                            description="Chưa có lịch học nào"
-                            image={Empty.PRESENTED_IMAGE_SIMPLE}
+                            description={<span className="font-bold uppercase text-neutral-500">Chưa có lịch học nào</span>}
                         />
                     ),
                 }}

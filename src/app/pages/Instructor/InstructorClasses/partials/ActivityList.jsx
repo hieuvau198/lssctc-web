@@ -1,43 +1,45 @@
-import { Alert, List, Skeleton, Tag, Button, Drawer } from 'antd'; // <-- IMPORT Drawer
-import {
-  BookOutlined,
-  FileTextOutlined,
-  LaptopOutlined,
-  QuestionCircleOutlined,
-  SettingOutlined,
-} from '@ant-design/icons';
+import { Alert, List, Skeleton, Drawer } from 'antd';
+import { BookOpen, FileText, Monitor, HelpCircle, Settings } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getActivitiesBySectionId } from '../../../../apis/Instructor/InstructorSectionApi';
 import ManageMaterialModal from './Sections/ManageMaterialModal';
 import ManageQuizModal from './Sections/ManageQuizModal';
 import ManagePracticeModal from './Sections/ManagePracticeModal';
-import ActivityDetailView from './Sections/ActivityDetail/ActivityDetailView'; 
+import ActivityDetailView from './Sections/ActivityDetail/ActivityDetailView';
 
 const getActivityTypeDetails = (type, t) => {
   switch (type?.toLowerCase()) {
     case 'material':
       return {
-        icon: <BookOutlined />,
-        color: 'blue',
+        icon: <BookOpen className="w-5 h-5" />,
+        bgColor: 'bg-yellow-100',
+        borderColor: 'border-yellow-400',
+        iconColor: 'text-yellow-700',
         label: t('instructor.classes.addActivityModal.typeMaterial'),
       };
     case 'quiz':
       return {
-        icon: <QuestionCircleOutlined />,
-        color: 'green',
+        icon: <HelpCircle className="w-5 h-5" />,
+        bgColor: 'bg-yellow-400',
+        borderColor: 'border-black',
+        iconColor: 'text-black',
         label: t('instructor.classes.addActivityModal.typeQuiz'),
       };
     case 'practice':
       return {
-        icon: <LaptopOutlined />,
-        color: 'purple',
+        icon: <Monitor className="w-5 h-5" />,
+        bgColor: 'bg-black',
+        borderColor: 'border-black',
+        iconColor: 'text-yellow-400',
         label: t('instructor.classes.addActivityModal.typePractice'),
       };
     default:
       return {
-        icon: <FileTextOutlined />,
-        color: 'default',
+        icon: <FileText className="w-5 h-5" />,
+        bgColor: 'bg-neutral-100',
+        borderColor: 'border-neutral-300',
+        iconColor: 'text-neutral-600',
         label: type || t('instructor.classes.activities'),
       };
   }
@@ -50,12 +52,9 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
   const [error, setError] = useState(null);
 
   const [selectedActivity, setSelectedActivity] = useState(null);
-  // States for Modals
   const [isManageMaterialVisible, setIsManageMaterialVisible] = useState(false);
   const [isManageQuizVisible, setIsManageQuizVisible] = useState(false);
   const [isManagePracticeVisible, setIsManagePracticeVisible] = useState(false);
-
-  // --- ADDED: State for Detail Drawer ---
   const [isDetailDrawerVisible, setIsDetailDrawerVisible] = useState(false);
 
   const fetchActivities = async () => {
@@ -80,18 +79,16 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
     fetchActivities();
   }, [sectionId, refreshKey]);
 
-  // --- ADDED: Handlers for Detail Drawer ---
   const openDetailDrawer = (activity) => {
     setSelectedActivity(activity);
     setIsDetailDrawerVisible(true);
   };
-  
+
   const closeDetailDrawer = () => {
     setIsDetailDrawerVisible(false);
     setSelectedActivity(null);
   };
 
-  // --- Material Modal Handlers (modified to use one selectedActivity state) ---
   const openManageMaterial = (activity) => {
     setSelectedActivity(activity);
     setIsManageMaterialVisible(true);
@@ -99,14 +96,13 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
   const onMaterialModalUpdate = () => {
     setIsManageMaterialVisible(false);
     setSelectedActivity(null);
-    fetchActivities(); 
+    fetchActivities();
   };
   const onMaterialModalClose = () => {
     setIsManageMaterialVisible(false);
     setSelectedActivity(null);
   };
 
-  // --- Quiz Modal Handlers (modified) ---
   const openManageQuiz = (activity) => {
     setSelectedActivity(activity);
     setIsManageQuizVisible(true);
@@ -121,7 +117,6 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
     setSelectedActivity(null);
   };
 
-  // --- Practice Modal Handlers (modified) ---
   const openManagePractice = (activity) => {
     setSelectedActivity(activity);
     setIsManagePracticeVisible(true);
@@ -149,7 +144,7 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
   }
 
   if (activities.length === 0) {
-    return <div className="p-4 text-gray-500">{t('instructor.classes.activityList.noActivities')}</div>;
+    return <div className="p-4 text-neutral-500 font-medium">{t('instructor.classes.activityList.noActivities')}</div>;
   }
 
   return (
@@ -159,52 +154,66 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
         dataSource={activities}
         renderItem={(item) => {
           const typeDetails = getActivityTypeDetails(item.type, t);
-          const actions = [];
 
-          // --- MODIFIED: Add "Manage" buttons based on type ---
-          if (item.type?.toLowerCase() === 'material') {
-            actions.push(
-              <Button type="link" icon={<SettingOutlined />} onClick={(e) => { e.stopPropagation(); openManageMaterial(item); }}>
-                {t('instructor.classes.activityList.manageMaterial')}
-              </Button>
-            );
-          } else if (item.type?.toLowerCase() === 'quiz') {
-            actions.push(
-              <Button type="link" icon={<SettingOutlined />} onClick={(e) => { e.stopPropagation(); openManageQuiz(item); }}>
-                {t('instructor.classes.activityList.manageQuiz')}
-              </Button>
-            );
-          } else if (item.type?.toLowerCase() === 'practice') {
-            actions.push(
-              <Button type="link" icon={<SettingOutlined />} onClick={(e) => { e.stopPropagation(); openManagePractice(item); }}>
-                {t('instructor.classes.activityList.managePractice')}
-              </Button>
-            );
-          }
+          const getManageButton = () => {
+            const buttonClass = "px-3 py-1 text-xs font-bold uppercase border-2 border-black bg-white hover:bg-yellow-400 transition-all flex items-center gap-1";
+
+            if (item.type?.toLowerCase() === 'material') {
+              return (
+                <button
+                  className={buttonClass}
+                  onClick={(e) => { e.stopPropagation(); openManageMaterial(item); }}
+                >
+                  <Settings className="w-3 h-3" />
+                  {t('instructor.classes.activityList.manageMaterial')}
+                </button>
+              );
+            } else if (item.type?.toLowerCase() === 'quiz') {
+              return (
+                <button
+                  className={buttonClass}
+                  onClick={(e) => { e.stopPropagation(); openManageQuiz(item); }}
+                >
+                  <Settings className="w-3 h-3" />
+                  {t('instructor.classes.activityList.manageQuiz')}
+                </button>
+              );
+            } else if (item.type?.toLowerCase() === 'practice') {
+              return (
+                <button
+                  className={buttonClass}
+                  onClick={(e) => { e.stopPropagation(); openManagePractice(item); }}
+                >
+                  <Settings className="w-3 h-3" />
+                  {t('instructor.classes.activityList.managePractice')}
+                </button>
+              );
+            }
+            return null;
+          };
 
           return (
             <List.Item
-              actions={actions}
-              // --- MODIFIED: Make the item clickable to open the detail drawer ---
+              actions={[getManageButton()]}
               onClick={() => openDetailDrawer(item)}
-              className="hover:bg-gray-50 cursor-pointer"
+              className="hover:bg-yellow-50 cursor-pointer border-b border-neutral-100 transition-all"
             >
               <List.Item.Meta
                 avatar={
-                  <Tag color={typeDetails.color} className="flex items-center justify-center w-10 h-10 text-lg">
+                  <div className={`w-10 h-10 ${typeDetails.bgColor} ${typeDetails.iconColor} border-2 ${typeDetails.borderColor} flex items-center justify-center`}>
                     {typeDetails.icon}
-                  </Tag>
+                  </div>
                 }
                 title={
-                  <span className="font-medium text-gray-800">
+                  <span className="font-bold text-black">
                     {item.title}
                   </span>
                 }
                 description={
                   <div className="flex flex-col">
-                    <span>{item.description}</span>
-                    <span className="text-xs text-gray-500 mt-1">
-                      {typeDetails.label} • {item.duration} {t('instructor.classes.activityList.minutes')}
+                    <span className="text-neutral-600">{item.description}</span>
+                    <span className="text-xs text-neutral-500 mt-1 font-medium">
+                      <span className="uppercase">{typeDetails.label}</span> • {item.duration} {t('instructor.classes.activityList.minutes')}
                     </span>
                   </div>
                 }
@@ -214,13 +223,12 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
         }}
       />
 
-      {/* --- ADDED: Detail Drawer --- */}
       <Drawer
-        title={t('instructor.classes.activityList.activityDetails')}
+        title={<span className="font-black uppercase">{t('instructor.classes.activityList.activityDetails')}</span>}
         placement="right"
         width={720}
         onClose={closeDetailDrawer}
-        visible={isDetailDrawerVisible}
+        open={isDetailDrawerVisible}
         bodyStyle={{ paddingBottom: 80 }}
       >
         <ActivityDetailView
@@ -230,7 +238,6 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
         />
       </Drawer>
 
-      {/* --- All Modals (no structural changes) --- */}
       {selectedActivity && (
         <>
           <ManageMaterialModal
@@ -246,7 +253,7 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
             onClose={onQuizModalClose}
             onUpdate={onQuizModalUpdate}
           />
-          
+
           <ManagePracticeModal
             activity={selectedActivity}
             isVisible={isManagePracticeVisible}

@@ -1,5 +1,5 @@
-import { Alert, Collapse, Skeleton, Space, Typography, Button, Tooltip } from 'antd';
-import { ClockCircleOutlined, ReadOutlined, PlusOutlined } from '@ant-design/icons';
+import { Alert, Collapse, Skeleton, Tooltip } from 'antd';
+import { Clock, BookOpen, Plus, ChevronRight } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getSectionsByCourseId } from '../../../../apis/Instructor/InstructorSectionApi';
@@ -7,22 +7,21 @@ import ActivityList from './ActivityList';
 import AddActivityModal from './Sections/AddActivityModal';
 
 const { Panel } = Collapse;
-const { Text } = Typography;
 
 const SectionHeader = ({ title, duration, minutesText }) => (
   <div className="flex justify-between items-center w-full">
-    <div className="flex items-center gap-2">
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
-        <ReadOutlined className="text-blue-600" />
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+        <BookOpen className="w-4 h-4 text-black" />
       </div>
-      <Text strong className="text-base text-slate-800">
+      <span className="font-bold text-black uppercase tracking-tight">
         {title}
-      </Text>
+      </span>
     </div>
-    <Space size="small" className="text-sm text-slate-600 pr-2">
-      <ClockCircleOutlined className="text-slate-500" />
-      <span className="font-medium">{duration} {minutesText}</span>
-    </Space>
+    <div className="flex items-center gap-2 text-sm text-neutral-600 pr-2">
+      <Clock className="w-4 h-4 text-yellow-600" />
+      <span className="font-bold">{duration} {minutesText}</span>
+    </div>
   </div>
 );
 
@@ -86,25 +85,28 @@ const ClassSections = ({ courseId, classId }) => {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-lg border border-slate-200 p-4">
-            <Skeleton active paragraph={{ rows: 3 }} />
-          </div>
-        ))}
+      <div className="bg-white border-2 border-black p-6">
+        <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-6" />
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="border-2 border-neutral-200 p-4">
+              <Skeleton active paragraph={{ rows: 3 }} />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6">
-        <Alert 
-          message={t('instructor.classes.sections.errorLoading')} 
-          description={error} 
-          type="error" 
-          showIcon 
-          className="rounded-lg"
+      <div className="bg-white border-2 border-black p-6">
+        <div className="h-1 bg-red-500 -mx-6 -mt-6 mb-6" />
+        <Alert
+          message={t('instructor.classes.sections.errorLoading')}
+          description={error}
+          type="error"
+          showIcon
         />
       </div>
     );
@@ -112,11 +114,12 @@ const ClassSections = ({ courseId, classId }) => {
 
   if (sections.length === 0) {
     return (
-      <div className="p-6">
-        <div className="bg-slate-50 rounded-lg border border-slate-200 p-6 text-center">
-          <ReadOutlined className="text-4xl text-slate-400 mb-3" />
-          <p className="text-slate-600 font-medium mb-1">{t('instructor.classes.sections.noSections')}</p>
-          <p className="text-sm text-slate-500">{t('instructor.classes.sections.noSectionsDesc')}</p>
+      <div className="bg-white border-2 border-black p-6">
+        <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-6" />
+        <div className="bg-neutral-50 border-2 border-neutral-200 p-8 text-center">
+          <BookOpen className="w-12 h-12 text-neutral-400 mx-auto mb-3" />
+          <p className="text-neutral-800 font-bold uppercase mb-1">{t('instructor.classes.sections.noSections')}</p>
+          <p className="text-sm text-neutral-500">{t('instructor.classes.sections.noSectionsDesc')}</p>
         </div>
       </div>
     );
@@ -124,52 +127,55 @@ const ClassSections = ({ courseId, classId }) => {
 
   return (
     <>
-      <div className="p-6 space-y-3 max-h-[calc(100vh-180px)] overflow-y-auto">
-        <Collapse 
-          accordion 
-          bordered={false} 
-          className="bg-transparent"
-          expandIconPosition="end"
-        >
-          {sections.map((section, index) => (
-            <Panel
-              key={section.id}
-              header={
-                <SectionHeader
-                  title={section.title}
-                  duration={section.duration}
-                  minutesText={minutesText}
-                />
-              }
-              extra={
-                <Tooltip title={t('instructor.classes.sections.addActivity')}>
-                  <Button
-                    type="primary"
-                    size="small"
-                    shape="circle"
-                    icon={<PlusOutlined />}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openAddActivityModal(section.id);
-                    }}
-                    className="hover:scale-110 transition-transform"
+      <div className="bg-white border-2 border-black overflow-hidden">
+        <div className="h-1 bg-yellow-400" />
+        <div className="p-6 space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto">
+          <Collapse
+            accordion
+            bordered={false}
+            className="bg-transparent"
+            expandIconPosition="end"
+            expandIcon={({ isActive }) => (
+              <ChevronRight className={`w-5 h-5 text-neutral-500 transition-transform ${isActive ? 'rotate-90' : ''}`} />
+            )}
+          >
+            {sections.map((section, index) => (
+              <Panel
+                key={section.id}
+                header={
+                  <SectionHeader
+                    title={section.title}
+                    duration={section.duration}
+                    minutesText={minutesText}
                   />
-                </Tooltip>
-              }
-              className="mb-3 rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-shadow bg-white"
-              style={{ borderRadius: '12px' }}
-            >
-              <div className="bg-slate-50 -mx-6 -mt-4 px-6 py-3 mb-4 border-b border-slate-200">
-                <p className="text-slate-700 leading-relaxed">{section.description}</p>
-              </div>
-              <ActivityList
-                sectionId={section.id}
-                classId={classId}
-                refreshKey={activityRefreshKeys[section.id] || 0}
-              />
-            </Panel>
-          ))}
-        </Collapse>
+                }
+                extra={
+                  <Tooltip title={t('instructor.classes.sections.addActivity')}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openAddActivityModal(section.id);
+                      }}
+                      className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center hover:bg-yellow-500 transition-all"
+                    >
+                      <Plus className="w-4 h-4 text-black" />
+                    </button>
+                  </Tooltip>
+                }
+                className="mb-3 overflow-hidden border-2 border-neutral-200 hover:border-yellow-400 transition-all bg-white [&>.ant-collapse-header]:bg-neutral-50 [&>.ant-collapse-header]:border-b-2 [&>.ant-collapse-header]:border-neutral-200"
+              >
+                <div className="bg-neutral-50 -mx-4 -mt-4 px-4 py-3 mb-4 border-b-2 border-neutral-100">
+                  <p className="text-neutral-700 leading-relaxed">{section.description}</p>
+                </div>
+                <ActivityList
+                  sectionId={section.id}
+                  classId={classId}
+                  refreshKey={activityRefreshKeys[section.id] || 0}
+                />
+              </Panel>
+            ))}
+          </Collapse>
+        </div>
       </div>
 
       <AddActivityModal
