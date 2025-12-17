@@ -27,7 +27,7 @@ export default function PracticeDetail() {
   const [successMessage, setSuccessMessage] = useState("");
   const [modalType, setModalType] = useState(null); // 'success', 'error', or null
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Delete confirmation modal
-  
+
   // Task edit state
   const [editingTask, setEditingTask] = useState(null);
   const [taskForm, setTaskForm] = useState({});
@@ -152,7 +152,7 @@ export default function PracticeDetail() {
       })
       .catch((err) => {
         let errorMsg = t('simManager.practiceDetail.updateFailed');
-        
+
         // Handle new API error format: { success: false, error: { code, message, details } }
         if (err.response?.data?.error) {
           const error = err.response.data.error;
@@ -166,7 +166,7 @@ export default function PracticeDetail() {
         else if (err.response?.data?.errors) {
           const errors = err.response.data.errors;
           const errorMessages = [];
-          
+
           Object.values(errors).forEach((error) => {
             if (Array.isArray(error)) {
               errorMessages.push(...error);
@@ -174,7 +174,7 @@ export default function PracticeDetail() {
               errorMessages.push(error);
             }
           });
-          
+
           if (errorMessages.length > 0) {
             errorMsg = errorMessages[0];
           }
@@ -183,7 +183,7 @@ export default function PracticeDetail() {
         } else if (err.message) {
           errorMsg = err.message;
         }
-        
+
         setError(errorMsg);
         setModalType("error");
         setUpdating(false);
@@ -269,7 +269,7 @@ export default function PracticeDetail() {
       })
       .catch((err) => {
         let errorMsg = t('simManager.practiceDetail.taskUpdateFailed');
-        
+
         // Handle new API error format: { success: false, error: { code, message, details } }
         if (err.response?.data?.error) {
           const error = err.response.data.error;
@@ -283,7 +283,7 @@ export default function PracticeDetail() {
         else if (err.response?.data?.errors) {
           const errors = err.response.data.errors;
           const errorMessages = [];
-          
+
           Object.values(errors).forEach((error) => {
             if (Array.isArray(error)) {
               errorMessages.push(...error);
@@ -291,7 +291,7 @@ export default function PracticeDetail() {
               errorMessages.push(error);
             }
           });
-          
+
           if (errorMessages.length > 0) {
             errorMsg = errorMessages[0];
           }
@@ -300,7 +300,7 @@ export default function PracticeDetail() {
         } else if (err.message) {
           errorMsg = err.message;
         }
-        
+
         setError(errorMsg);
         setModalType("error");
         setUpdatingTask(false);
@@ -353,7 +353,7 @@ export default function PracticeDetail() {
       })
       .catch((err) => {
         let errorMsg = t('simManager.practiceDetail.taskCreateFailed');
-        
+
         // Handle new API error format: { success: false, error: { code, message, details } }
         if (err.response?.data?.error) {
           const error = err.response.data.error;
@@ -367,7 +367,7 @@ export default function PracticeDetail() {
         else if (err.response?.data?.errors) {
           const errors = err.response.data.errors;
           const errorMessages = [];
-          
+
           Object.values(errors).forEach((error) => {
             if (Array.isArray(error)) {
               errorMessages.push(...error);
@@ -375,7 +375,7 @@ export default function PracticeDetail() {
               errorMessages.push(error);
             }
           });
-          
+
           if (errorMessages.length > 0) {
             errorMsg = errorMessages[0];
           }
@@ -384,7 +384,7 @@ export default function PracticeDetail() {
         } else if (err.message) {
           errorMsg = err.message;
         }
-        
+
         setError(errorMsg);
         setModalType("error");
         setCreatingTask(false);
@@ -396,7 +396,7 @@ export default function PracticeDetail() {
     if (!deletingTaskId) return;
 
     setDeletingTaskId(null);
-    
+
     deleteTaskFromPractice(id, deletingTaskId)
       .then(() => {
         // Remove task from the list
@@ -409,7 +409,7 @@ export default function PracticeDetail() {
       })
       .catch((err) => {
         let errorMsg = t('simManager.practiceDetail.taskDeleteFailed');
-        
+
         // Handle new API error format
         if (err.response?.data?.error) {
           const error = err.response.data.error;
@@ -423,7 +423,7 @@ export default function PracticeDetail() {
         else if (err.response?.data?.errors) {
           const errors = err.response.data.errors;
           const errorMessages = [];
-          
+
           Object.values(errors).forEach((error) => {
             if (Array.isArray(error)) {
               errorMessages.push(...error);
@@ -431,7 +431,7 @@ export default function PracticeDetail() {
               errorMessages.push(error);
             }
           });
-          
+
           if (errorMessages.length > 0) {
             errorMsg = errorMessages[0];
           }
@@ -440,7 +440,7 @@ export default function PracticeDetail() {
         } else if (err.message) {
           errorMsg = err.message;
         }
-        
+
         setError(errorMsg);
         setModalType("error");
         setShowDeleteTaskConfirm(false);
@@ -500,7 +500,7 @@ export default function PracticeDetail() {
       })
       .catch((err) => {
         let errorMsg = t('simManager.practiceDetail.taskAddedFailed');
-        
+
         // Handle new API error format
         if (err.response?.data?.error) {
           const error = err.response.data.error;
@@ -514,7 +514,7 @@ export default function PracticeDetail() {
         else if (err.response?.data?.errors) {
           const errors = err.response.data.errors;
           const errorMessages = [];
-          
+
           Object.values(errors).forEach((error) => {
             if (Array.isArray(error)) {
               errorMessages.push(...error);
@@ -522,7 +522,7 @@ export default function PracticeDetail() {
               errorMessages.push(error);
             }
           });
-          
+
           if (errorMessages.length > 0) {
             errorMsg = errorMessages[0];
           }
@@ -531,7 +531,7 @@ export default function PracticeDetail() {
         } else if (err.message) {
           errorMsg = err.message;
         }
-        
+
         setError(errorMsg);
         setModalType("error");
       });
@@ -553,7 +553,7 @@ export default function PracticeDetail() {
       })
       .catch((err) => {
         let errorMsg = t('simManager.practiceDetail.taskDeleteFailed');
-        
+
         // Handle new API error format
         if (err.response?.data?.error) {
           const error = err.response.data.error;
@@ -567,7 +567,7 @@ export default function PracticeDetail() {
         else if (err.response?.data?.errors) {
           const errors = err.response.data.errors;
           const errorMessages = [];
-          
+
           Object.values(errors).forEach((error) => {
             if (Array.isArray(error)) {
               errorMessages.push(...error);
@@ -575,7 +575,7 @@ export default function PracticeDetail() {
               errorMessages.push(error);
             }
           });
-          
+
           if (errorMessages.length > 0) {
             errorMsg = errorMessages[0];
           }
@@ -584,7 +584,7 @@ export default function PracticeDetail() {
         } else if (err.message) {
           errorMsg = err.message;
         }
-        
+
         setError(errorMsg);
         setModalType("error");
       });
@@ -595,8 +595,8 @@ export default function PracticeDetail() {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">{t('simManager.practiceDetail.loadingTasks')}</p>
+          <div className="w-12 h-12 border-4 border-neutral-200 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-neutral-600">{t('simManager.practiceDetail.loadingTasks')}</p>
         </div>
       </div>
     );
@@ -624,9 +624,8 @@ export default function PracticeDetail() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className={`bg-white rounded-lg shadow-2xl p-8 max-w-md w-full transform transition-all ${
-          isSuccess ? 'border-t-4 border-green-500' : 'border-t-4 border-red-500'
-        }`}>
+        <div className={`bg-white rounded-lg shadow-2xl p-8 max-w-md w-full transform transition-all ${isSuccess ? 'border-t-4 border-green-500' : 'border-t-4 border-red-500'
+          }`}>
           {/* Icon */}
           <div className="flex justify-center mb-4">
             {isSuccess ? (
@@ -641,9 +640,8 @@ export default function PracticeDetail() {
           </div>
 
           {/* Title & Message */}
-          <h3 className={`text-lg font-bold text-center mb-2 ${
-            isSuccess ? 'text-green-800' : 'text-red-800'
-          }`}>
+          <h3 className={`text-lg font-bold text-center mb-2 ${isSuccess ? 'text-green-800' : 'text-red-800'
+            }`}>
             {isSuccess ? t('simManager.practiceDetail.success') : t('simManager.practiceDetail.error')}
           </h3>
           <p className="text-gray-700 text-center text-sm mb-6">
@@ -689,14 +687,14 @@ export default function PracticeDetail() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 font-medium shadow-sm"
+          className="inline-flex items-center gap-2 px-4 py-3 border-2 border-neutral-900 bg-white text-neutral-900 hover:bg-yellow-400 hover:border-yellow-400 transition-all font-bold uppercase tracking-wider"
         >
           <ArrowLeft className="h-4 w-4" />
           {t('simManager.practiceDetail.back')}
         </button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{form.practiceName}</h1>
-          <p className="text-gray-600 mt-1">{form.practiceCode}</p>
+          <h1 className="text-3xl font-black uppercase tracking-tight text-neutral-900">{form.practiceName}</h1>
+          <p className="text-neutral-500 mt-1 font-mono">{form.practiceCode}</p>
         </div>
       </div>
 
@@ -705,12 +703,13 @@ export default function PracticeDetail() {
         {/* Left Column - Form */}
         <div className="col-span-2 space-y-6">
           {/* Basic Information Card */}
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+          <div className="bg-white border-2 border-neutral-900 p-6">
+            <div className="h-2 bg-yellow-400 -m-6 mb-6"></div>
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <BookOpen className="h-5 w-5 text-blue-600" />
+              <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+                <BookOpen className="h-5 w-5 text-black" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">{t('simManager.practiceDetail.basicInfo')}</h2>
+              <h2 className="text-xl font-black uppercase tracking-wider text-neutral-900">{t('simManager.practiceDetail.basicInfo')}</h2>
             </div>
 
             <div className="space-y-4">
@@ -857,9 +856,9 @@ export default function PracticeDetail() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
+            <div className="flex gap-3 mt-6 pt-6 border-t-2 border-neutral-900">
               <button
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-yellow-400 text-black hover:bg-black hover:text-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-bold uppercase tracking-wider"
                 onClick={handleUpdate}
                 disabled={updating}
               >
@@ -867,7 +866,7 @@ export default function PracticeDetail() {
                 {updating ? t('simManager.practiceDetail.saving') : t('simManager.practiceDetail.save')}
               </button>
               <button
-                className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-300 rounded-lg hover:bg-red-100 hover:border-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all font-bold uppercase tracking-wider"
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={deleting}
               >
@@ -880,33 +879,35 @@ export default function PracticeDetail() {
 
         {/* Right Column - Info Card */}
         <div className="col-span-1">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200 p-6 sticky top-6">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">{t('simManager.practiceDetail.summary')}</h3>
-            
+          <div className="bg-black text-white border-4 border-black p-6 sticky top-6">
+            <div className="h-2 bg-yellow-400 -m-6 mb-6"></div>
+            <h3 className="text-lg font-black uppercase tracking-wider mb-4 flex items-center gap-3">
+              <div className="w-1 h-6 bg-yellow-400"></div>
+              {t('simManager.practiceDetail.summary')}
+            </h3>
+
             <div className="space-y-4">
               {/* Duration */}
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-200 rounded-lg">
-                  <Clock className="h-5 w-5 text-blue-700" />
+              <div className="flex items-center gap-3 p-3 bg-neutral-900 border border-neutral-800">
+                <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+                  <Clock className="h-5 w-5 text-black" />
                 </div>
                 <div>
-                  <p className="text-xs text-blue-600 font-medium">{t('simManager.practiceDetail.durationSummary')}</p>
-                  <p className="text-lg font-bold text-blue-900">{form.estimatedDurationMinutes} min</p>
+                  <p className="text-xs text-yellow-400 font-bold uppercase tracking-wider">{t('simManager.practiceDetail.durationSummary')}</p>
+                  <p className="text-xl font-black text-white">{form.estimatedDurationMinutes} min</p>
                 </div>
               </div>
 
               {/* Difficulty */}
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${
-                  form.difficultyLevel === 'Entry' ? 'bg-green-200' :
-                  form.difficultyLevel === 'Intermediate' ? 'bg-yellow-200' :
-                  'bg-red-200'
-                }`}>
-                  <Zap className={`h-5 w-5 ${
-                    form.difficultyLevel === 'Entry' ? 'text-green-700' :
-                    form.difficultyLevel === 'Intermediate' ? 'text-yellow-700' :
-                    'text-red-700'
-                  }`} />
+                <div className={`p-2 rounded-lg ${form.difficultyLevel === 'Entry' ? 'bg-green-200' :
+                    form.difficultyLevel === 'Intermediate' ? 'bg-yellow-200' :
+                      'bg-red-200'
+                  }`}>
+                  <Zap className={`h-5 w-5 ${form.difficultyLevel === 'Entry' ? 'text-green-700' :
+                      form.difficultyLevel === 'Intermediate' ? 'text-yellow-700' :
+                        'text-red-700'
+                    }`} />
                 </div>
                 <div>
                   <p className="text-xs text-gray-600 font-medium">{t('simManager.practiceDetail.difficultySummary')}</p>
@@ -999,7 +1000,7 @@ export default function PracticeDetail() {
                         {task.taskCode}
                       </span>
                     </div>
-                    
+
                     {task.taskDescription && (
                       <p className="text-sm text-gray-600 mb-2">{task.taskDescription}</p>
                     )}
@@ -1420,23 +1421,21 @@ export default function PracticeDetail() {
                     systemTasks.map((task) => {
                       const isAlreadyAdded = tasks.some(taskItem => taskItem.id === task.id);
                       const isSelected = selectedSystemTaskId === task.id;
-                      
+
                       return (
                         <div
                           key={task.id}
                           onClick={() => !isAlreadyAdded && setSelectedSystemTaskId(task.id)}
-                          className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
-                            isAlreadyAdded
+                          className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 ${isAlreadyAdded
                               ? "bg-gray-100 border-gray-300 opacity-50 cursor-not-allowed"
                               : isSelected
-                              ? "border-blue-500 bg-blue-50"
-                              : "border-gray-200 hover:border-blue-400 hover:bg-blue-50"
-                          }`}
+                                ? "border-blue-500 bg-blue-50"
+                                : "border-gray-200 hover:border-blue-400 hover:bg-blue-50"
+                            }`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className={`h-5 w-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                              isSelected ? "bg-blue-500 border-blue-500" : "border-gray-300"
-                            }`}>
+                            <div className={`h-5 w-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${isSelected ? "bg-blue-500 border-blue-500" : "border-gray-300"
+                              }`}>
                               {isSelected && <CheckCircle className="h-4 w-4 text-white" />}
                             </div>
                             <div className="flex-1 min-w-0">
