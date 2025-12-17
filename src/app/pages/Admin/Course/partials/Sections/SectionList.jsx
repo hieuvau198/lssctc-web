@@ -89,21 +89,20 @@ const SectionList = ({ courseId }) => {
   return (
     <div className="w-full">
       <div className="flex justify-end gap-3 mb-4">
-        <Button
-          icon={<UploadOutlined />}
+        <button
           onClick={() => setIsImportModalVisible(true)}
-          className="flex items-center gap-2 h-10 px-4 rounded-none border-2 border-neutral-300 hover:border-black hover:text-black transition-all font-semibold uppercase text-xs tracking-wider"
+          className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-neutral-300 text-neutral-700 hover:border-black hover:text-black hover:bg-neutral-50 transition-all font-bold uppercase text-xs tracking-wider"
         >
+          <UploadOutlined />
           {t('admin.courses.sections.importExcel')}
-        </Button>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
+        </button>
+        <button
           onClick={() => setIsAddModalVisible(true)}
-          className="flex items-center gap-2 h-10 px-4 rounded-none bg-yellow-400 border-2 border-yellow-400 text-black hover:bg-yellow-500 hover:border-yellow-500 transition-all font-bold uppercase text-xs tracking-wider shadow-sm"
+          className="flex items-center gap-2 h-10 px-6 bg-yellow-400 border-2 border-yellow-400 text-black hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all font-black uppercase text-xs tracking-wider"
         >
+          <PlusOutlined />
           {t('admin.courses.sections.addSection')}
-        </Button>
+        </button>
       </div>
 
       <Table

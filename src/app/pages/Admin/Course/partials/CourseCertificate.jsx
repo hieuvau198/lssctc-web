@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Button, Skeleton, message, Empty, Modal, Select, Tag, Space, Typography } from 'antd';
 import { SafetyCertificateOutlined, SwapOutlined, ThunderboltOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { X, Award } from 'lucide-react';
 import { fetchCertificateByCourse, fetchCertificateTemplates, assignCertificateToCourse, autoAssignCertificateToCourse } from '../../../../apis/ProgramManager/CertificateApi';
 
 const { Text, Title } = Typography;
@@ -111,13 +112,13 @@ const CourseCertificate = ({ courseId }) => {
             </div>
           </div>
 
-          <Button
+          <button
             onClick={handleOpenAssignModal}
-            className="h-10 px-4 rounded-none border-2 border-black text-black font-bold uppercase tracking-wider hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none"
-            icon={<SwapOutlined />}
+            className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-black text-black font-bold uppercase tracking-wider hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-username"
           >
+            <SwapOutlined />
             Change Template
-          </Button>
+          </button>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-neutral-300 bg-neutral-50 hover:bg-white hover:border-neutral-400 transition-all gap-4 text-center">
@@ -127,22 +128,21 @@ const CourseCertificate = ({ courseId }) => {
           <div>
             <h4 className="text-neutral-900 font-bold uppercase m-0">No Certificate Assigned</h4>
             <p className="text-neutral-500 text-sm mt-1 mb-4">Assign a certificate template to this course for automated issuance.</p>
-            <div className="flex gap-3 justify-center">
-              <Button
+            <div className="flex gap-4 justify-center">
+              <button
                 onClick={handleAutoAssign}
-                loading={assignLoading}
-                className="h-10 px-4 rounded-none border-2 border-neutral-300 text-neutral-600 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all"
-                icon={<ThunderboltOutlined />}
+                disabled={assignLoading}
+                className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-neutral-300 text-neutral-600 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all disabled:opacity-50"
               >
+                {assignLoading ? <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <ThunderboltOutlined />}
                 Auto Assign
-              </Button>
-              <Button
-                type="primary"
+              </button>
+              <button
                 onClick={handleOpenAssignModal}
-                className="h-10 px-4 rounded-none bg-yellow-400 border-2 border-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:text-black shadow-sm"
+                className="flex items-center gap-2 h-10 px-6 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all"
               >
                 Select Template
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -150,24 +150,67 @@ const CourseCertificate = ({ courseId }) => {
 
       {/* Assign Modal */}
       <Modal
-        title={<span className="font-bold uppercase">Assign Certificate Template</span>}
         open={isModalOpen}
-        onOk={handleAssign}
         onCancel={() => setIsModalOpen(false)}
-        confirmLoading={assignLoading}
-        okText="Assign"
+        footer={null}
+        closable={false}
         width={500}
+        styles={{
+          content: { padding: 0, borderRadius: 0 },
+          body: { padding: 0 },
+        }}
       >
-        <div className="py-6">
-          <Text className="block mb-2 font-medium">Select a template from the library:</Text>
+        {/* Industrial Header */}
+        <div className="bg-black p-4 flex items-center justify-between border-b-4 border-yellow-400">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+              <Award className="w-5 h-5 text-black" />
+            </div>
+            <div>
+              <h3 className="text-white font-black uppercase text-lg leading-none m-0">
+                Assign Certificate
+              </h3>
+              <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
+                Select template
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="text-neutral-400 hover:text-white transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="p-6">
+          <label className="block mb-2 font-bold uppercase text-xs tracking-wider text-neutral-500 font-sans">
+            Select a template from the library
+          </label>
+
+          <style>{`
+            .industrial-select .ant-select-selector {
+                border-radius: 0 !important;
+                border: 2px solid #e5e5e5 !important;
+                height: 40px !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+            .industrial-select .ant-select-selector:hover, 
+            .industrial-select.ant-select-focused .ant-select-selector {
+                border-color: #000 !important;
+            }
+          `}</style>
+
           <Select
-            className="w-full h-10"
+            className="w-full industrial-select"
             placeholder="Select a certificate template"
             loading={loadingTemplates}
             onChange={(value) => setSelectedTemplateId(value)}
             optionFilterProp="children"
             showSearch
             listHeight={200}
+            popupClassName="rounded-none border-2 border-black shadow-lg"
           >
             {templates.map(tpl => (
               <Option key={tpl.id} value={tpl.id}>
@@ -175,6 +218,24 @@ const CourseCertificate = ({ courseId }) => {
               </Option>
             ))}
           </Select>
+
+          {/* Footer Actions */}
+          <div className="flex justify-end gap-3 pt-6 mt-2">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="px-5 py-2.5 bg-white border-2 border-neutral-300 text-neutral-600 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all text-xs"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleAssign}
+              disabled={assignLoading}
+              className="px-5 py-2.5 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all text-xs flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {assignLoading && <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />}
+              Assign
+            </button>
+          </div>
         </div>
       </Modal>
     </div>
