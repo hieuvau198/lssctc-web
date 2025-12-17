@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Anchor, Shield, Truck, Wrench } from 'lucide-react';
+import { Anchor, Shield, Wrench } from 'lucide-react';
+import CraneEmbed from './CraneEmbed';
 
 export default function CraneSection() {
     const { t } = useTranslation();
@@ -24,7 +25,7 @@ export default function CraneSection() {
     ];
 
     return (
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-neutral-50">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     {/* Left - Description */}
@@ -48,7 +49,7 @@ export default function CraneSection() {
                             {features.map((feature, index) => {
                                 const IconComponent = feature.icon;
                                 return (
-                                    <div key={index} className="flex items-start gap-4 p-4 border-2 border-neutral-200 hover:border-yellow-400 transition-colors">
+                                    <div key={index} className="flex items-start gap-4 p-4 bg-white border-2 border-neutral-200 hover:border-yellow-400 transition-colors">
                                         <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center flex-shrink-0">
                                             <IconComponent className="w-6 h-6 text-black" />
                                         </div>
@@ -68,18 +69,26 @@ export default function CraneSection() {
 
                     {/* Right - Crane Embed */}
                     <div className="relative">
-                        <div className="border-4 border-yellow-400 bg-white overflow-hidden">
-                            {/* Crane 3D Embed - Sketchfab */}
-                            <div className="aspect-square w-full relative">
-                                <iframe
-                                    title="Tower Crane 3D Model"
-                                    src="https://sketchfab.com/models/e0f0b59f569e4e93a5eab75d1673cdd3/embed?autospin=1&autostart=1&preload=1&ui_theme=dark"
-                                    className="w-full h-full"
-                                    style={{ border: 'none' }}
-                                    allow="autoplay; fullscreen; xr-spatial-tracking"
-                                    allowFullScreen
-                                    loading="lazy"
-                                />
+                        <div className="border-4 border-yellow-400 bg-white overflow-hidden p-4">
+                            {/* Using the CraneEmbed component */}
+                            <CraneEmbed />
+
+                            {/* Label */}
+                            <div className="mt-4 pt-4 border-t-2 border-neutral-200">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="text-xs text-neutral-500 uppercase tracking-widest font-bold">
+                                            {t('home.craneSection.embedLabel', 'Mô hình 3D tương tác')}
+                                        </span>
+                                        <p className="text-sm text-neutral-700 font-semibold mt-1">
+                                            {t('home.craneSection.embedTitle', 'Khám phá thiết bị cẩu')}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                        <span className="text-xs text-green-600 font-bold uppercase">Live</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
