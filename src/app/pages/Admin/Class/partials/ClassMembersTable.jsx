@@ -1,5 +1,5 @@
-import { App, Avatar, Button, Divider, Empty, Pagination, Popconfirm, Skeleton, Space, Table, Tag, Tooltip } from "antd";
-import { Check, X } from "lucide-react";
+import { App, Avatar, Button, Divider, Empty, Pagination, Popconfirm, Skeleton, Space, Table, Tooltip } from "antd";
+import { Check, X, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { approveEnrollment, fetchClassTrainees, rejectEnrollment } from "../../../../apis/ProgramManager/ClassesApi";
@@ -7,6 +7,15 @@ import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import { getClassStatus } from "../../../../utils/classStatus";
 import { getEnrollmentStatus } from "../../../../utils/enrollmentStatus";
 import AddTraineeModal from "./AddTraineeModal";
+
+const getInitials = (name = '') => {
+    return name
+        .split(' ')
+        .filter(Boolean)
+        .map((n) => n[0]?.toUpperCase())
+        .slice(0, 2)
+        .join('');
+};
 
 const ClassMembersTable = ({ classItem }) => {
     const { t } = useTranslation();
@@ -53,33 +62,68 @@ const ClassMembersTable = ({ classItem }) => {
     }, [classItem?.id, page, pageSize]);
 
     const columns = [
-        { title: '#', dataIndex: 'idx', width: 60, align: 'center' },
+        {
+            title: '#',
+            dataIndex: 'idx',
+            width: 60,
+            align: 'center',
+            render: (v) => <span className="font-bold text-neutral-500">{v}</span>
+        },
         {
             title: t('common.avatar'),
             dataIndex: 'avatar',
             width: 80,
             align: 'center',
             render: (src, record) => (
-                <Avatar src={src} alt={record.fullName} style={{ backgroundColor: '#f3f4f6' }}>
-                    {!src && (record.fullName || '-').split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('')}
+                <Avatar
+                    src={src}
+                    alt={record.fullName}
+                    style={{ backgroundColor: '#facc15', color: '#000', fontWeight: 'bold' }}
+                >
+                    {!src && getInitials(record.fullName)}
                 </Avatar>
             ),
         },
-        { title: t('common.fullName'), dataIndex: 'fullName' },
-        { title: t('common.email'), dataIndex: 'email' },
-        { title: t('common.phone'), dataIndex: 'phoneNumber', width: 150 },
+        {
+            title: t('common.fullName'),
+            dataIndex: 'fullName',
+            render: (text) => <span className="font-bold text-black">{text}</span>
+        },
+        {
+            title: t('common.email'),
+            dataIndex: 'email',
+            render: (text) => <span className="text-neutral-600">{text}</span>
+        },
+        {
+            title: t('common.phone'),
+            dataIndex: 'phoneNumber',
+            width: 150,
+            render: (text) => <span className="font-medium">{text}</span>
+        },
         {
             title: t('admin.classes.columns.enrollDate'),
             dataIndex: 'enrollDate',
             width: 150,
-            render: (d) => <DayTimeFormat value={d} />,
+            render: (d) => <span className="text-neutral-600"><DayTimeFormat value={d} /></span>,
         },
         {
             title: t('common.status'),
             dataIndex: 'status',
             render: (s) => {
                 const st = getEnrollmentStatus(s);
-                return <Tag color={st.color}>{st.label}</Tag>;
+                const colorMap = {
+                    'green': 'bg-green-100 text-green-800 border-green-300',
+                    'blue': 'bg-blue-100 text-blue-800 border-blue-300',
+                    'orange': 'bg-orange-100 text-orange-800 border-orange-300',
+                    'red': 'bg-red-100 text-red-800 border-red-300',
+                    'default': 'bg-neutral-100 text-neutral-800 border-neutral-300',
+                };
+                const statusClass = colorMap[st.color] || colorMap.default;
+                return (
+                    <span className={`px-3 py-1 text-xs font-bold uppercase border ${statusClass}`}>
+                        {st.label}
+                    </span>
+                );
             },
             width: 110,
         },
@@ -92,7 +136,7 @@ const ClassMembersTable = ({ classItem }) => {
                 const st = getEnrollmentStatus(record.status);
                 // Only show actions for Pending status
                 if (st.key !== 'Pending') {
-                    return <span className="text-gray-400">-</span>;
+                    return <span className="text-neutral-400">-</span>;
                 }
                 const isApproving = actionLoading[record.enrollmentId] === 'approve';
                 const isRejecting = actionLoading[record.enrollmentId] === 'reject';
@@ -107,7 +151,7 @@ const ClassMembersTable = ({ classItem }) => {
                             cancelText={t('common.no')}
                             disabled={isLoading}
                         >
-                            <Tooltip title={t('admin.classes.buttons.approve')}>
+                            <Tooltip title={t('admin.classes.members.approve')}>
                                 <Button
                                     type="primary"
                                     size="small"
@@ -127,7 +171,7 @@ const ClassMembersTable = ({ classItem }) => {
                             okButtonProps={{ danger: true }}
                             disabled={isLoading}
                         >
-                            <Tooltip title={t('admin.classes.buttons.reject')}>
+                            <Tooltip title={t('admin.classes.members.reject')}>
                                 <Button
                                     danger
                                     size="small"
@@ -195,17 +239,42 @@ const ClassMembersTable = ({ classItem }) => {
 
     return (
         <div>
-            <Divider orientation="left">{t('admin.classes.detail.members')} ({totalCount})</Divider>
+            {/* Industrial Table Styles */}
+            <style>{`
+                .industrial-members-table .ant-table-thead > tr > th {
+                    background: #fef08a !important;
+                    border-bottom: 2px solid #000 !important;
+                    font-weight: 700 !important;
+                    text-transform: uppercase !important;
+                    font-size: 12px !important;
+                    letter-spacing: 0.05em !important;
+                    color: #000 !important;
+                }
+                .industrial-members-table .ant-table-thead > tr > th::before {
+                    display: none !important;
+                }
+                .industrial-members-table .ant-table-tbody > tr > td {
+                    border-bottom: 1px solid #e5e5e5 !important;
+                }
+                .industrial-members-table .ant-table-tbody > tr:hover > td {
+                    background: #fef9c3 !important;
+                }
+            `}</style>
+
+            <Divider orientation="left" className="!font-bold !uppercase !text-black !border-black">
+                {t('admin.classes.detail.members')} ({totalCount})
+            </Divider>
+
             {/* Add Trainee button - only show when class is Draft or Open */}
             {(() => {
                 const s = getClassStatus(classItem.status);
                 if (s.key === 'Draft' || s.key === 'Open') {
                     return (
                         <div className="ml-3 mb-4">
-                            <AddTraineeModal 
-                                classItem={classItem} 
-                                existingTraineeIds={trainees.map(t => t.traineeId || t.id)} 
-                                onAssigned={handleTraineeAdded} 
+                            <AddTraineeModal
+                                classItem={classItem}
+                                existingTraineeIds={trainees.map(t => t.traineeId || t.id)}
+                                onAssigned={handleTraineeAdded}
                             />
                         </div>
                     );
@@ -214,11 +283,20 @@ const ClassMembersTable = ({ classItem }) => {
             })()}
 
             {traineesLoading ? (
-                <Skeleton active paragraph={{ rows: 3 }} />
+                <div className="space-y-3">
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className="h-12 bg-neutral-100 animate-pulse" />
+                    ))}
+                </div>
             ) : members.length === 0 ? (
-                <Empty description={t('admin.classes.detail.noMembers')} />
+                <div className="py-12 flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mb-4">
+                        <Users className="w-8 h-8 text-neutral-400" />
+                    </div>
+                    <p className="text-neutral-800 font-bold uppercase">{t('admin.classes.detail.noMembers')}</p>
+                </div>
             ) : (
-                <div>
+                <div className="industrial-members-table">
                     {(() => {
                         const rows = members.map((it, idx) => ({
                             key: it.id || it.traineeId || idx,
@@ -245,7 +323,7 @@ const ClassMembersTable = ({ classItem }) => {
                                     scroll={{ y: 320 }}
                                 />
 
-                                <div className="p-4 bg-white flex justify-center">
+                                <div className="py-4 border-t-2 border-neutral-200 bg-white flex justify-center">
                                     <Pagination
                                         current={page}
                                         pageSize={pageSize}
@@ -253,7 +331,11 @@ const ClassMembersTable = ({ classItem }) => {
                                         onChange={(p, s) => { setPage(p); setPageSize(s); }}
                                         showSizeChanger
                                         pageSizeOptions={["10", "20", "35", "50"]}
-                                        showTotal={(total, range) => t('admin.classes.pagination.trainees', { start: range[0], end: range[1], total })}
+                                        showTotal={(total, range) => (
+                                            <span className="text-sm font-medium text-neutral-600">
+                                                {range[0]}-{range[1]} / {total}
+                                            </span>
+                                        )}
                                     />
                                 </div>
                             </>
@@ -266,3 +348,4 @@ const ClassMembersTable = ({ classItem }) => {
 };
 
 export default ClassMembersTable;
+

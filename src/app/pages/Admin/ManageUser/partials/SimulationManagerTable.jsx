@@ -1,9 +1,10 @@
-import { Avatar, Empty, Pagination, Table, Modal, Tooltip, message } from 'antd';
+import { Avatar, Empty, Modal, Tooltip, message } from 'antd';
 import { Settings, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import { getUserById } from '../../../../apis/Admin/AdminUser';
+import { IndustrialTable } from '../../../../components/Industrial';
 import DrawerEdit from './DrawerEdit';
 
 const getInitials = (name = '') => {
@@ -152,79 +153,38 @@ export default function SimulationManagerTable() {
     }
   }, [simManagerData, page, pageSize]);
 
+  const emptyContent = (
+    <div className="py-12 flex flex-col items-center justify-center">
+      <div className="w-16 h-16 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mb-4">
+        <Settings className="w-8 h-8 text-neutral-400" />
+      </div>
+      <p className="text-neutral-800 font-bold uppercase">{t('admin.users.noSimulationManagers')}</p>
+    </div>
+  );
+
   return (
     <div>
-      {/* Industrial Table Styles */}
-      <style>{`
-        .industrial-sim-table .ant-table {
-          border: none !important;
-        }
-        .industrial-sim-table .ant-table-thead > tr > th {
-          background: #fef08a !important;
-          border-bottom: 2px solid #000 !important;
-          font-weight: 700 !important;
-          text-transform: uppercase !important;
-          font-size: 12px !important;
-          letter-spacing: 0.05em !important;
-          color: #000 !important;
-        }
-        .industrial-sim-table .ant-table-tbody > tr > td {
-          border-bottom: 1px solid #e5e5e5 !important;
-        }
-        .industrial-sim-table .ant-table-tbody > tr:hover > td {
-          background: #fef9c3 !important;
-        }
-        .industrial-sim-table .ant-pagination-item-active {
-          background: #facc15 !important;
-          border-color: #000 !important;
-        }
-        .industrial-sim-table .ant-pagination-item-active a {
-          color: #000 !important;
-          font-weight: 700 !important;
-        }
-      `}</style>
-
-      <div className="industrial-sim-table min-h-[380px] overflow-auto">
-        {(!data.length && !loadingSimManagers) ? (
-          <div className="py-12 flex flex-col items-center justify-center">
-            <div className="w-16 h-16 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mb-4">
-              <Settings className="w-8 h-8 text-neutral-400" />
-            </div>
-            <p className="text-neutral-800 font-bold uppercase">{t('admin.users.noSimulationManagers')}</p>
-          </div>
-        ) : (
-          <Table
-            columns={COLUMNS}
-            dataSource={data}
-            pagination={false}
-            rowKey="key"
-            loading={loadingSimManagers}
-            scroll={{ y: 360 }}
-          />
-        )}
-      </div>
-
-      <div className="py-4 border-t-2 border-neutral-200 bg-white flex justify-center">
-        <Pagination
-          current={page}
-          pageSize={pageSize}
-          total={simManagerData?.totalCount || 0}
-          onChange={(p, ps) => {
+      <IndustrialTable
+        columns={COLUMNS}
+        dataSource={data}
+        rowKey="key"
+        loading={loadingSimManagers}
+        emptyContent={emptyContent}
+        scrollY={360}
+        pagination={{
+          current: page,
+          pageSize: pageSize,
+          total: simManagerData?.totalCount || 0,
+          onChange: (p, ps) => {
             if (ps !== pageSize) {
               setPageSize(ps);
             } else {
               setPage(p);
             }
-          }}
-          showSizeChanger
-          pageSizeOptions={["10", "20", "50"]}
-          showTotal={(total, range) => (
-            <span className="text-sm font-medium text-neutral-600">
-              {range[0]}-{range[1]} / {total} users
-            </span>
-          )}
-        />
-      </div>
+          },
+          label: 'users',
+        }}
+      />
 
       {/* Industrial Modal */}
       <Modal

@@ -1,17 +1,12 @@
 import {
-  Alert,
   App,
-  Button,
   Drawer,
   Empty,
   Form,
-  Input,
-  Popconfirm,
   Select,
-  Skeleton,
-  Space
+  Skeleton
 } from "antd";
-import { Plus } from "lucide-react";
+import { BookOpen, Plus, AlertCircle, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -30,7 +25,6 @@ import CourseList from "./partials/CourseList";
 import CreateCourse from "./partials/CreateCourse";
 import EditCourse from "./partials/EditCourse";
 
-const { Search } = Input;
 const { Option } = Select;
 
 const Courses = () => {
@@ -278,113 +272,165 @@ const Courses = () => {
     }
   };
 
-  if (loading)
+  // Loading State - Industrial Theme
+  if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header Skeleton */}
-        <div className="flex items-center justify-between mb-6">
-          <Skeleton.Button style={{ width: 200, height: 32 }} active />
+      <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+        <div className="bg-black border-2 border-black p-6 mb-6">
+          <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
+          <Skeleton.Button style={{ width: 300, height: 40 }} active className="bg-neutral-800" />
         </div>
+        <div className="bg-white border-2 border-black p-6">
+          <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
+          <Skeleton active paragraph={{ rows: 8 }} />
+        </div>
+      </div>
+    );
+  }
 
-        {/* Search and Controls Skeleton */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-          <Skeleton.Input style={{ width: 320, height: 40 }} active />
-          <div className="flex gap-2">
-            <Skeleton.Button style={{ width: 120, height: 40 }} active />
-            <Skeleton.Button style={{ width: 80, height: 40 }} active />
+  // Error State - Industrial Theme
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+        <div className="bg-white border-2 border-black p-6">
+          <div className="h-1 bg-red-500 -mx-6 -mt-6 mb-4" />
+          <div className="flex items-center gap-3 text-red-600">
+            <AlertCircle className="w-6 h-6" />
+            <span className="font-bold uppercase">{error}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      {/* Header - Industrial Theme */}
+      <div className="bg-black border-2 border-black p-5 mb-6">
+        <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-black" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+                {t('admin.courses.title')}
+              </h1>
+              <p className="text-yellow-400 text-sm mt-1 font-medium">
+                {total} {t('admin.courses.totalCourses') || 'courses'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={openCreate}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-400 text-black font-bold uppercase tracking-wider text-sm border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            {t('admin.courses.addCourse')}
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Card */}
+      <div className="bg-white border-2 border-black overflow-hidden">
+        <div className="h-1 bg-yellow-400" />
+
+        {/* Search Bar - Industrial Theme */}
+        <div className="px-6 py-4 bg-neutral-50 border-b-2 border-neutral-200">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            {/* Search Input */}
+            <div className="flex-1 w-full relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                <Search className="w-5 h-5 text-neutral-400" />
+              </div>
+              <input
+                type="text"
+                placeholder={t('admin.courses.searchPlaceholder') || "Search courses..."}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchValue)}
+                className="w-full h-12 pl-12 pr-24 bg-white border-2 border-neutral-300 focus:border-black focus:ring-0 font-medium text-black placeholder-neutral-400 transition-colors outline-none"
+              />
+              {searchValue && (
+                <button
+                  onClick={() => { setSearchValue(''); handleSearch(''); }}
+                  className="absolute inset-y-0 right-14 flex items-center pr-2 text-neutral-400 hover:text-black transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={() => handleSearch(searchValue)}
+                className="absolute inset-y-0 right-0 flex items-center px-5 bg-yellow-400 text-black font-bold uppercase text-sm border-l-2 border-black hover:bg-yellow-500 transition-colors"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Sort Filter */}
+            <Select
+              placeholder={t('admin.courses.sortBy') || "Sort by"}
+              value={sortOrder}
+              onChange={handleSortChange}
+              style={{ width: 180 }}
+              allowClear
+              className="industrial-select"
+              size="large"
+            >
+              <Option value="price_asc">{t('admin.courses.priceLowToHigh') || "Price: Low to High"}</Option>
+              <Option value="price_desc">{t('admin.courses.priceHighToLow') || "Price: High to Low"}</Option>
+            </Select>
+
+            {/* View Mode Toggle */}
+            <ViewModeToggle
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+            />
           </div>
         </div>
 
-        {/* Filters Skeleton */}
-        <div className="flex flex-wrap gap-4 mb-6">
-          <Skeleton.Input style={{ width: 150, height: 32 }} active />
-          <Skeleton.Input style={{ width: 120, height: 32 }} active />
-          <Skeleton.Input style={{ width: 100, height: 32 }} active />
-        </div>
+        {/* Industrial Select Styles */}
+        <style>{`
+          .industrial-select .ant-select-selector {
+            border: 2px solid #000 !important;
+            height: 48px !important;
+            border-radius: 0 !important;
+          }
+          .industrial-select .ant-select-selection-item,
+          .industrial-select .ant-select-selection-placeholder {
+            line-height: 44px !important;
+            font-weight: 500 !important;
+          }
+          .industrial-select:hover .ant-select-selector {
+            border-color: #000 !important;
+          }
+          .industrial-select.ant-select-focused .ant-select-selector {
+            border-color: #000 !important;
+            box-shadow: none !important;
+          }
+        `}</style>
 
-        {/* Content Skeleton - Table format */}
-        <div className="bg-white rounded-lg shadow p-6">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="flex items-center gap-4 p-4 border-b border-slate-100 last:border-b-0">
-              <Skeleton.Avatar size={48} shape="square" active />
-              <div className="flex-1">
-                <Skeleton.Input style={{ width: '60%', height: 20, marginBottom: 8 }} active />
-                <Skeleton.Input style={{ width: '40%', height: 16 }} active />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton.Button size="small" active />
-                <Skeleton.Button size="small" active />
-                <Skeleton.Button size="small" active />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  if (error)
-    return (
-      <div className="max-w-md mx-auto mt-10">
-        <Alert message="Error" description={error} type="error" showIcon />
-      </div>
-    );
-
-  return (
-    <div className="max-w-7xl mx-auto px-2 py-2">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-2xl">{t('admin.courses.title')}</span>
-      </div>
-
-      {/* Search and Controls */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <div className="flex flex-1 gap-2 w-full md:w-auto">
-          <Input.Search
-            placeholder={t('admin.courses.searchPlaceholder') || "Search courses..."}
-            allowClear
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onSearch={handleSearch}
-            className="w-full md:w-80"
-          />
-          <Select
-            placeholder={t('admin.courses.sortBy') || "Sort by"}
-            value={sortOrder}
-            onChange={handleSortChange}
-            style={{ width: 180 }}
-            allowClear
-          >
-            <Option value="price_asc">{t('admin.courses.priceLowToHigh') || "Price: Low to High"}</Option>
-            <Option value="price_desc">{t('admin.courses.priceHighToLow') || "Price: High to Low"}</Option>
-          </Select>
-        </div>
-        <div className="flex gap-2">
-          <Button type="primary" icon={<Plus className="w-4 h-4" />} onClick={openCreate}>
-            {t('admin.courses.addCourse')}
-          </Button>
-          <ViewModeToggle
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-          />
+        {/* Content Area */}
+        <div className="p-6">
+          {courses.length === 0 ? (
+            <Empty description={t('admin.courses.noCourses')} className="py-16" />
+          ) : (
+            <CourseList
+              courses={courses}
+              viewMode={viewMode}
+              pageNumber={pageNumber}
+              pageSize={pageSize}
+              total={total}
+              onPageChange={handlePageChange}
+              onSelect={openView}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+              deletingId={deletingId}
+            />
+          )}
         </div>
       </div>
-
-      {/* Content */}
-      {courses.length === 0 ? (
-        <Empty description={t('admin.courses.noCourses')} className="mt-16" />
-      ) : (
-        <CourseList
-          courses={courses}
-          viewMode={viewMode}
-          pageNumber={pageNumber}
-          pageSize={pageSize}
-          total={total}
-          onPageChange={handlePageChange}
-          onSelect={openView}
-          onEdit={openEdit}
-          onDelete={handleDelete}
-          deletingId={deletingId}
-        />
-      )}
 
       {/* Drawer */}
       <Drawer
@@ -404,7 +450,7 @@ const Courses = () => {
         }
       >
         {/* Removed drawerMode === 'view' logic since it's handled by page now */}
-        
+
         {drawerMode === 'create' && (
           <CreateCourse
             embedded

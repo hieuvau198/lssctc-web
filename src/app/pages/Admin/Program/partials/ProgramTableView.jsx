@@ -1,6 +1,8 @@
 import React from "react";
 import { useTranslation } from 'react-i18next';
-import { Table, Tag, Avatar } from "antd";
+import { Avatar } from "antd";
+import { ExternalLink, Layers } from "lucide-react";
+import { IndustrialTable } from "../../../../components/Industrial";
 import dayjs from "dayjs";
 
 const ProgramTableView = ({
@@ -9,10 +11,10 @@ const ProgramTableView = ({
   pageSize,
   total,
   onPageChange,
-  onView, // This will now handle navigation to the detail page
+  onView,
 }) => {
   const { t } = useTranslation();
-  
+
   const getInitials = (name = '') => {
     return name
       .split(' ')
@@ -23,7 +25,7 @@ const ProgramTableView = ({
   };
 
   const dateFormat = "YYYY-MM-DD HH:mm";
-  
+
   const tableColumns = [
     {
       title: "#",
@@ -31,7 +33,7 @@ const ProgramTableView = ({
       width: 60,
       align: "center",
       render: (_, __, index) => (
-        <span className="font-medium text-gray-600">
+        <span className="font-bold text-neutral-500">
           {(pageNumber - 1) * pageSize + index + 1}
         </span>
       ),
@@ -40,21 +42,20 @@ const ProgramTableView = ({
       title: t('admin.programs.table.image'),
       dataIndex: "imageUrl",
       key: "imageUrl",
-      width: 80,
+      width: 90,
       align: "center",
       render: (imageUrl, record) => (
-        <div className="flex justify-center">
-          <Avatar
-            src={imageUrl}
-            alt={record.name}
-            shape="square"
-            size={48}
-            className="cursor-pointer bg-slate-100"
-            onClick={() => onView(record)}
-          >
-            {!imageUrl && getInitials(record.name)}
-          </Avatar>
-        </div>
+        <Avatar
+          src={imageUrl}
+          alt={record.name}
+          shape="square"
+          size={48}
+          className="cursor-pointer border-2 border-neutral-200 hover:border-yellow-400 transition-colors"
+          onClick={() => onView(record)}
+          style={{ backgroundColor: '#facc15', color: '#000', fontWeight: 'bold' }}
+        >
+          {!imageUrl && getInitials(record.name)}
+        </Avatar>
       ),
     },
     {
@@ -62,68 +63,88 @@ const ProgramTableView = ({
       dataIndex: "name",
       key: "name",
       render: (name, record) => (
-        <div
-          className="font-medium text-blue-600 cursor-pointer hover:underline"
+        <span
           onClick={() => onView(record)}
+          className="font-bold text-black cursor-pointer hover:text-yellow-600 transition-colors flex items-center gap-2 group"
         >
           {name}
-        </div>
+          <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+        </span>
       ),
     },
     {
-        title: t('admin.programs.table.courses'),
-        dataIndex: "totalCourses",
-        key: "totalCourses",
-        width: 100,
-        align: "center",
-        render: (count) => <Tag>{count || 0}</Tag>,
+      title: t('admin.programs.table.courses'),
+      dataIndex: "totalCourses",
+      key: "totalCourses",
+      width: 100,
+      align: "center",
+      render: (count) => (
+        <span className="inline-flex items-center justify-center min-w-[32px] px-2 py-1 bg-neutral-100 text-black font-bold text-sm border-2 border-neutral-200">
+          {count || 0}
+        </span>
+      ),
     },
     {
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
       width: 160,
-      render: (date) => date ? <span className="text-gray-600 text-sm">{dayjs(date).format(dateFormat)}</span> : "-",
+      render: (date) => date ? (
+        <span className="text-neutral-600 text-sm font-medium">
+          {dayjs(date).format(dateFormat)}
+        </span>
+      ) : "-",
     },
     {
-        title: "Updated At",
-        dataIndex: "updatedAt",
-        key: "updatedAt",
-        width: 160,
-        render: (date) => date ? <span className="text-gray-600 text-sm">{dayjs(date).format(dateFormat)}</span> : "-",
+      title: "Updated At",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      width: 160,
+      render: (date) => date ? (
+        <span className="text-neutral-600 text-sm font-medium">
+          {dayjs(date).format(dateFormat)}
+        </span>
+      ) : "-",
     },
     {
       title: t('admin.programs.table.status'),
       dataIndex: "isActive",
       key: "isActive",
-      width: 100,
+      width: 120,
       render: (isActive) => (
-        <Tag color={isActive ? "green" : "red"}>
+        <span className={`px-3 py-1 text-xs font-bold uppercase border ${isActive
+          ? 'bg-green-100 text-green-800 border-green-300'
+          : 'bg-red-100 text-red-800 border-red-300'
+          }`}>
           {isActive ? t('common.active') : t('common.inactive')}
-        </Tag>
+        </span>
       ),
     },
   ];
 
-  return (
-    <div className="rounded-lg shadow overflow-hidden bg-white">
-        <Table
-          columns={tableColumns}
-          dataSource={programs}
-          rowKey="id"
-          pagination={{
-            current: pageNumber,
-            pageSize: pageSize,
-            total: total,
-            onChange: onPageChange,
-            showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50"],
-            showTotal: (total, range) => t('admin.programs.pagination', { start: range[0], end: range[1], total })
-          }}
-          size="middle"
-          scroll={{ x: 800 }}
-        />
+  const emptyContent = (
+    <div className="py-12 flex flex-col items-center justify-center">
+      <div className="w-16 h-16 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mb-4">
+        <Layers className="w-8 h-8 text-neutral-400" />
+      </div>
+      <p className="text-neutral-800 font-bold uppercase">{t('admin.programs.noPrograms')}</p>
     </div>
+  );
+
+  return (
+    <IndustrialTable
+      columns={tableColumns}
+      dataSource={programs}
+      rowKey="id"
+      emptyContent={emptyContent}
+      pagination={{
+        current: pageNumber,
+        pageSize: pageSize,
+        total: total,
+        onChange: onPageChange,
+        label: t('admin.programs.totalPrograms'),
+      }}
+    />
   );
 };
 

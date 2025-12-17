@@ -2448,6 +2448,8 @@
     },
     "programs": {
       "title": "Quản lý chương trình",
+      "totalPrograms": "chương trình",
+      "noDescription": "Chưa có mô tả",
       "createProgram": "Tạo chương trình",
       "addProgram": "Thêm chương trình",
       "editProgram": "Sửa chương trình",
@@ -2507,6 +2509,7 @@
     },
     "courses": {
       "title": "Quản lý khóa học",
+      "totalCourses": "khóa học",
       "searchPlaceholder": "Tìm kiếm khóa học...",
       "sortBy": "Sắp xếp theo",
       "priceLowToHigh": "Giá: Thấp đến Cao",
@@ -2611,6 +2614,8 @@
     },
     "classes": {
       "title": "Quản lý lớp học",
+      "totalClasses": "lớp học",
+      "noClasses": "Không tìm thấy lớp học nào",
       "createClass": "Tạo lớp học",
       "editClass": "Sửa lớp học",
       "editClassDetails": "Chỉnh sửa chi tiết lớp học",

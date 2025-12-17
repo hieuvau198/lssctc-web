@@ -2445,6 +2445,8 @@
     },
     "programs": {
       "title": "Program Management",
+      "totalPrograms": "programs",
+      "noDescription": "No description available",
       "createProgram": "Create Program",
       "addProgram": "Add Program",
       "editProgram": "Edit Program",
@@ -2505,6 +2507,7 @@
     },
     "courses": {
       "title": "Course Management",
+      "totalCourses": "courses",
       "searchPlaceholder": "Search courses...",
       "sortBy": "Sort by",
       "priceLowToHigh": "Price: Low to High",
@@ -2609,6 +2612,8 @@
     },
     "classes": {
       "title": "Class Management",
+      "totalClasses": "classes",
+      "noClasses": "No classes found",
       "createClass": "Create Class",
       "editClass": "Edit Class",
       "editClassDetails": "Edit Class Details",

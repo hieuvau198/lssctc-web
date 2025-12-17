@@ -1,5 +1,5 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { Alert, App, Button, Drawer, Empty, Form, Input, Skeleton, Select } from "antd";
+import { App, Drawer, Empty, Form, Select, Skeleton } from "antd";
+import { GraduationCap, Plus, AlertCircle, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -7,6 +7,7 @@ import { createClass, deleteClass, fetchClasses } from "../../../apis/ProgramMan
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 import ClassList from "./partials/ClassList";
 import AddClassForm from "./partials/AddClassForm";
+
 const { Option } = Select;
 
 const PMClasses = () => {
@@ -106,7 +107,6 @@ const PMClasses = () => {
       await deleteClass(id);
       message.success(t('admin.classes.deleteSuccess'));
       // Refresh list
-      // Refresh list
       const params = {
         pageNumber: page,
         pageSize,
@@ -145,7 +145,6 @@ const PMClasses = () => {
       await createClass(values);
       message.success(t('admin.classes.createSuccess'));
       // Refresh list
-      // Refresh list
       const params = {
         pageNumber: page,
         pageSize,
@@ -167,118 +166,181 @@ const PMClasses = () => {
     }
   };
 
-  if (loading)
+  // Loading State - Industrial Theme
+  if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <Skeleton.Button style={{ width: 200, height: 32 }} active />
+      <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+        <div className="bg-black border-2 border-black p-6 mb-6">
+          <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
+          <Skeleton.Button style={{ width: 300, height: 40 }} active className="bg-neutral-800" />
         </div>
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-          <Skeleton.Input style={{ width: 320, height: 40 }} active />
-          <div className="flex gap-2">
-            <Skeleton.Button style={{ width: 120, height: 40 }} active />
-            <Skeleton.Button style={{ width: 80, height: 40 }} active />
+        <div className="bg-white border-2 border-black p-6">
+          <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
+          <Skeleton active paragraph={{ rows: 8 }} />
+        </div>
+      </div>
+    );
+  }
+
+  // Error State - Industrial Theme
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+        <div className="bg-white border-2 border-black p-6">
+          <div className="h-1 bg-red-500 -mx-6 -mt-6 mb-4" />
+          <div className="flex items-center gap-3 text-red-600">
+            <AlertCircle className="w-6 h-6" />
+            <span className="font-bold uppercase">{error}</span>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="flex items-center gap-4 p-4 border-b border-slate-100 last:border-b-0">
-              <Skeleton.Avatar size={48} shape="square" active />
-              <div className="flex-1">
-                <Skeleton.Input style={{ width: '60%', height: 20, marginBottom: 8 }} active />
-                <Skeleton.Input style={{ width: '40%', height: 16 }} active />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton.Button size="small" active />
-                <Skeleton.Button size="small" active />
-                <Skeleton.Button size="small" active />
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     );
-
-  if (error)
-    return (
-      <div className="max-w-md mx-auto mt-10">
-        <Alert message="Error" description={error} type="error" showIcon />
-      </div>
-    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-2">
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl">{t('admin.classes.title')}</span>
+    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      {/* Header - Industrial Theme */}
+      <div className="bg-black border-2 border-black p-5 mb-6">
+        <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <GraduationCap className="w-6 h-6 text-black" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+                {t('admin.classes.title')}
+              </h1>
+              <p className="text-yellow-400 text-sm mt-1 font-medium">
+                {total} {t('admin.classes.totalClasses') || 'classes'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={openCreate}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-400 text-black font-bold uppercase tracking-wider text-sm border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            {t('admin.classes.addClass')}
+          </button>
+        </div>
       </div>
 
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-6">
-        <div className="flex flex-col md:flex-row gap-2 w-full xl:w-auto items-center flex-1">
-          {/* Search */}
-          <Input.Search
-            placeholder={t('admin.classes.searchPlaceholder') || "Search classes..."}
-            allowClear
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onSearch={handleSearch}
-            style={{ width: '100%', maxWidth: 600 }}
-            className="md:w-[600px]"
-          />
+      {/* Main Content Card */}
+      <div className="bg-white border-2 border-black overflow-hidden">
+        <div className="h-1 bg-yellow-400" />
 
-          {/* Filters */}
-          <div className="flex gap-2 w-full md:w-auto">
-            <Select
-              placeholder={t('admin.classes.filters.status') || "Status"}
-              allowClear
-              value={status}
-              onChange={handleStatusChange}
-              style={{ width: 150 }}
-            >
-              <Option value="Draft">{t('common.classStatus.Draft') || "Draft"}</Option>
-              <Option value="Open">{t('common.classStatus.Open') || "Open"}</Option>
-              <Option value="Inprogress">{t('common.classStatus.Inprogress') || "In Progress"}</Option>
-              <Option value="Completed">{t('common.classStatus.Completed') || "Completed"}</Option>
-              <Option value="Cancelled">{t('common.classStatus.Cancelled') || "Cancelled"}</Option>
-            </Select>
-            <Select
-              placeholder={t('admin.classes.filters.sortByDate') || "Sort Date"}
-              value={`${sortBy}_${sortDirection}`}
-              onChange={handleSortChange}
-              style={{ width: 280 }}
-            >
-              <Option value="startDate_desc">{t('admin.classes.filters.startDateNewest') || "Latest Start Date"}</Option>
-              <Option value="startDate_asc">{t('admin.classes.filters.startDateOldest') || "Earliest Start Date"}</Option>
-              <Option value="endDate_desc">{t('admin.classes.filters.endDateNewest') || "Latest End Date"}</Option>
-              <Option value="endDate_asc">{t('admin.classes.filters.endDateOldest') || "Earliest End Date"}</Option>
-            </Select>
+        {/* Search Bar - Industrial Theme */}
+        <div className="px-6 py-4 bg-neutral-50 border-b-2 border-neutral-200">
+          <div className="flex flex-col xl:flex-row gap-4 items-center">
+            {/* Search Input */}
+            <div className="flex-1 w-full relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                <Search className="w-5 h-5 text-neutral-400" />
+              </div>
+              <input
+                type="text"
+                placeholder={t('admin.classes.searchPlaceholder') || "Search classes..."}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchValue)}
+                className="w-full h-12 pl-12 pr-24 bg-white border-2 border-neutral-300 focus:border-black focus:ring-0 font-medium text-black placeholder-neutral-400 transition-colors outline-none"
+              />
+              {searchValue && (
+                <button
+                  onClick={() => { setSearchValue(''); handleSearch(''); }}
+                  className="absolute inset-y-0 right-14 flex items-center pr-2 text-neutral-400 hover:text-black transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={() => handleSearch(searchValue)}
+                className="absolute inset-y-0 right-0 flex items-center px-5 bg-yellow-400 text-black font-bold uppercase text-sm border-l-2 border-black hover:bg-yellow-500 transition-colors"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Filters */}
+            <div className="flex gap-2 flex-wrap">
+              <Select
+                placeholder={t('admin.classes.filters.status') || "Status"}
+                allowClear
+                value={status}
+                onChange={handleStatusChange}
+                className="industrial-select"
+                size="large"
+                style={{ width: 150 }}
+              >
+                <Option value="Draft">{t('common.classStatus.Draft') || "Draft"}</Option>
+                <Option value="Open">{t('common.classStatus.Open') || "Open"}</Option>
+                <Option value="Inprogress">{t('common.classStatus.Inprogress') || "In Progress"}</Option>
+                <Option value="Completed">{t('common.classStatus.Completed') || "Completed"}</Option>
+                <Option value="Cancelled">{t('common.classStatus.Cancelled') || "Cancelled"}</Option>
+              </Select>
+
+              <Select
+                placeholder={t('admin.classes.filters.sortByDate') || "Sort Date"}
+                value={`${sortBy}_${sortDirection}`}
+                onChange={handleSortChange}
+                className="industrial-select"
+                size="large"
+                style={{ width: 200 }}
+              >
+                <Option value="startDate_desc">{t('admin.classes.filters.startDateNewest') || "Latest Start Date"}</Option>
+                <Option value="startDate_asc">{t('admin.classes.filters.startDateOldest') || "Earliest Start Date"}</Option>
+                <Option value="endDate_desc">{t('admin.classes.filters.endDateNewest') || "Latest End Date"}</Option>
+                <Option value="endDate_asc">{t('admin.classes.filters.endDateOldest') || "Earliest End Date"}</Option>
+              </Select>
+
+              {/* View Mode Toggle */}
+              <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+            </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-2 w-full md:w-auto justify-end shrink-0">
-          <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-            {t('admin.classes.addClass')}
-          </Button>
-          <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+        {/* Industrial Select Styles */}
+        <style>{`
+          .industrial-select .ant-select-selector {
+            border: 2px solid #000 !important;
+            height: 48px !important;
+            border-radius: 0 !important;
+          }
+          .industrial-select .ant-select-selection-item,
+          .industrial-select .ant-select-selection-placeholder {
+            line-height: 44px !important;
+            font-weight: 500 !important;
+          }
+          .industrial-select:hover .ant-select-selector {
+            border-color: #000 !important;
+          }
+          .industrial-select.ant-select-focused .ant-select-selector {
+            border-color: #000 !important;
+            box-shadow: none !important;
+          }
+        `}</style>
+
+        {/* Content Area */}
+        <div className="p-6">
+          {classes.length === 0 ? (
+            <Empty description={t('admin.classes.noClasses')} className="py-16" />
+          ) : (
+            <ClassList
+              classes={classes}
+              viewMode={viewMode}
+              page={page}
+              pageSize={pageSize}
+              total={total}
+              onPageChange={handlePageChange}
+              onView={openView}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+              deletingId={deletingId}
+            />
+          )}
         </div>
       </div>
-
-      {classes.length === 0 ? (
-        <Empty description={t('admin.classes.noClasses')} className="mt-16" />
-      ) : (
-        <ClassList
-          classes={classes}
-          viewMode={viewMode}
-          page={page}
-          pageSize={pageSize}
-          total={total}
-          onPageChange={handlePageChange}
-          onView={openView}
-          onEdit={openEdit}
-          onDelete={handleDelete}
-          deletingId={deletingId}
-        />
-      )}
 
       {/* Drawer for Add Class */}
       <Drawer

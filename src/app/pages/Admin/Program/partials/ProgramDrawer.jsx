@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from 'react-i18next';
-import { Drawer, Space, Button, Popconfirm } from "antd";
+import { Drawer, Popconfirm } from "antd";
+import { X, Edit, Trash2 } from "lucide-react";
 import ProgramCreateForm from "./ProgramCreateForm";
 import ProgramEditForm from "./ProgramEditForm";
 import ProgramDetailView from "./ProgramDetailView";
@@ -19,10 +20,10 @@ const ProgramDrawer = ({
   onUpdate,
   onDelete,
   onSwitchToEdit,
-  onSwitchToView, // Add this prop
+  onSwitchToView,
 }) => {
   const { t } = useTranslation();
-  
+
   const getTitle = () => {
     switch (mode) {
       case 'create':
@@ -34,22 +35,40 @@ const ProgramDrawer = ({
     }
   };
 
-  const getExtra = () => {
+  const renderTitle = () => (
+    <div className="flex items-center gap-3">
+      <div className="w-2 h-8 bg-yellow-400" />
+      <span className="text-xl font-bold uppercase tracking-tight text-black">
+        {getTitle()}
+      </span>
+    </div>
+  );
+
+  const renderExtra = () => {
     if (mode === 'view' && currentProgram) {
       return (
-        <Space>
-          <Button onClick={onSwitchToEdit}>{t('common.edit')}</Button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onSwitchToEdit}
+            className="inline-flex items-center gap-2 px-3 py-2 bg-neutral-100 text-black font-bold uppercase text-xs tracking-wider border-2 border-black hover:bg-yellow-400 transition-colors"
+          >
+            <Edit className="w-4 h-4" />
+            {t('common.edit')}
+          </button>
           <Popconfirm
             title={t('admin.programs.deleteConfirmTitle')}
             description={t('admin.programs.deleteConfirmDesc')}
             onConfirm={() => onDelete(currentProgram.id)}
             okButtonProps={{ loading: deletingId === currentProgram.id }}
           >
-            <Button danger loading={deletingId === currentProgram.id}>
+            <button
+              className="inline-flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 font-bold uppercase text-xs tracking-wider border-2 border-red-300 hover:bg-red-100 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
               {t('common.delete')}
-            </Button>
+            </button>
           </Popconfirm>
-        </Space>
+        </div>
       );
     }
     return null;
@@ -92,9 +111,26 @@ const ProgramDrawer = ({
       open={open}
       onClose={onClose}
       width={720}
-      title={getTitle()}
-      extra={getExtra()}
+      title={renderTitle()}
+      extra={renderExtra()}
+      closeIcon={
+        <div className="w-8 h-8 flex items-center justify-center border-2 border-black hover:bg-yellow-400 transition-colors">
+          <X className="w-4 h-4" />
+        </div>
+      }
+      styles={{
+        header: {
+          borderBottom: '2px solid #000',
+          background: '#fafafa'
+        },
+        body: {
+          background: '#fff'
+        }
+      }}
     >
+      {/* Yellow accent bar */}
+      <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-6" />
+
       {renderContent()}
     </Drawer>
   );
