@@ -4,6 +4,8 @@ import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import InstructorCard from "./InstructorCard";
 import ClassMembersTable from "./ClassMembersTable";
 import ClassTimeslotManage from "./ClassTimeslotManage";
+import ClassCertificate from './ClassCertificate';
+import ClassCourseInfo from './ClassCourseInfo';
 import dayjs from "dayjs";
 
 const ClassDetailView = ({ classItem, loading }) => {
@@ -85,6 +87,17 @@ const ClassDetailView = ({ classItem, loading }) => {
             <ClassTimeslotManage classItem={classItem} />
         </div>
       </div>
+
+      {classItem?.courseId && (
+          <div >
+            <ClassCourseInfo courseId={classItem.courseId} />
+          </div>
+       )}
+
+      {/* Certificates Section */}
+      <div id="class-certificates">
+          <ClassCertificate classId={classItem?.id} />
+       </div>
     </div>
   );
 };
