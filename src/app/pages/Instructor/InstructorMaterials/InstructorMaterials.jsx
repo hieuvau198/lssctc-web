@@ -1,5 +1,5 @@
-import { Alert, Button, Card, Skeleton, Tabs } from 'antd';
-import { BookOpen, Video, Plus } from 'lucide-react';
+import { Skeleton, Alert, Empty } from 'antd';
+import { BookOpen, Video, Plus, AlertCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +47,7 @@ export default function InstructorMaterials() {
         if (!cancelled) setLoading(false);
       }
     };
-    
+
     // Load materials when:
     // 1. refreshKey changes (from add/edit success)
     // 2. When not in add/edit mode (after navigating back)
@@ -62,81 +62,122 @@ export default function InstructorMaterials() {
   const videos = materials.filter((m) => Number(m.typeId) === 1);
   const [viewMode, setViewMode] = useState('table');
 
-  // Remove page-level add/edit mode rendering; use drawers instead
+  // Tab configuration
+  const tabs = [
+    { key: 'docs', label: t('instructor.materials.docs'), icon: BookOpen, count: docs.length },
+    { key: 'videos', label: t('instructor.materials.videos'), icon: Video, count: videos.length },
+  ];
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+        <div className="bg-black border-2 border-black p-6 mb-6">
+          <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
+          <Skeleton.Button style={{ width: 300, height: 40 }} active className="bg-neutral-800" />
+        </div>
+        <div className="bg-white border-2 border-black p-6">
+          <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
+          <Skeleton active paragraph={{ rows: 8 }} />
+        </div>
+      </div>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+        <div className="bg-white border-2 border-black p-6">
+          <div className="h-1 bg-red-500 -mx-6 -mt-6 mb-4" />
+          <div className="flex items-center gap-3 text-red-600">
+            <AlertCircle className="w-6 h-6" />
+            <span className="font-bold uppercase">{error}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-2">
-      {/* Modern Header with Gradient */}
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-4 mb-4">
+    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      {/* Header - Black background with yellow accent (matching MY CLASSES) */}
+      <div className="bg-black border-2 border-black p-5 mb-6">
+        <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-black" />
             </div>
             <div>
-              <span className="text-2xl font-bold text-white">{t('instructor.materials.title')}</span>
-              <p className="text-indigo-100 text-sm mt-1">{docs.length + videos.length} {t('instructor.materials.totalMaterials')}</p>
+              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+                {t('instructor.materials.title')}
+              </h1>
+              <p className="text-yellow-400 text-sm mt-1 font-medium">
+                {docs.length + videos.length} {t('instructor.materials.totalMaterials')}
+              </p>
             </div>
           </div>
-          <Button 
-            size="large"
-            className="bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-md"
-            icon={<Plus className="w-5 h-5" />}
+          {/* Create Button */}
+          <button
             onClick={() => setCreateDrawerVisible(true)}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all"
           >
+            <Plus className="w-4 h-4" />
             {t('instructor.materials.createMaterial')}
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Tabs + Content (merged into single card) */}
-      <div className="bg-white rounded-xl shadow-lg py-2 px-6 border border-gray-200 mb-4">
-        <Tabs
-          activeKey={activeTab}
-          onChange={(key) => setActiveTab(key)}
-          type="line"
-          size="large"
-          className="mb-4"
-        >
-          <Tabs.TabPane
-            key="docs"
-            tab={(
-              <span className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
-                {t('instructor.materials.docs')} <span className="text-sm text-gray-500">({docs.length})</span>
-              </span>
-            )}
-          />
-          <Tabs.TabPane
-            key="videos"
-            tab={(
-              <span className="flex items-center gap-2">
-                <Video className="w-5 h-5" />
-                {t('instructor.materials.videos')} <span className="text-sm text-gray-500">({videos.length})</span>
-              </span>
-            )}
-          />
-        </Tabs>
+      {/* Main Content Card */}
+      <div className="bg-white border-2 border-black overflow-hidden">
+        <div className="h-1 bg-yellow-400" />
 
-        {/* Loading / Error / Content inside the same card */}
-        {loading ? (
-          <div>
-            <Skeleton active paragraph={{ rows: 6 }} />
+        {/* Tabs */}
+        <div className="border-b-2 border-neutral-200">
+          <div className="flex gap-0 overflow-x-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-6 py-4 font-bold uppercase tracking-wider text-sm border-b-4 transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === tab.key
+                    ? 'border-yellow-400 text-black bg-yellow-50'
+                    : 'border-transparent text-neutral-400 hover:text-black hover:border-neutral-300 hover:bg-neutral-50'
+                  }`}
+              >
+                <tab.icon className="w-5 h-5" />
+                {tab.label}
+                <span className={`ml-1 px-2 py-0.5 text-xs ${activeTab === tab.key
+                    ? 'bg-yellow-400 text-black'
+                    : 'bg-neutral-200 text-neutral-600'
+                  }`}>
+                  {tab.count}
+                </span>
+              </button>
+            ))}
           </div>
-        ) : error ? (
-          <div>
-            <Alert type="error" message={t('common.error')} description={error} />
-          </div>
-        ) : (
-          <div>
-            {activeTab === 'videos' ? (
-              <VideoMaterials materials={videos} viewMode={viewMode} onDelete={() => setRefreshKey(prev => prev + 1)} onEdit={(m) => { setEditingMaterial(m); setEditDrawerVisible(true); }} />
-            ) : (
-              <DocMaterials materials={docs} viewMode={viewMode} onDelete={() => setRefreshKey(prev => prev + 1)} onEdit={(m) => { setEditingMaterial(m); setEditDrawerVisible(true); }} />
-            )}
-          </div>
-        )}
+        </div>
+
+        {/* Content Area */}
+        <div className="p-6">
+          {activeTab === 'videos' ? (
+            <VideoMaterials
+              materials={videos}
+              viewMode={viewMode}
+              onDelete={() => setRefreshKey(prev => prev + 1)}
+              onEdit={(m) => { setEditingMaterial(m); setEditDrawerVisible(true); }}
+            />
+          ) : (
+            <DocMaterials
+              materials={docs}
+              viewMode={viewMode}
+              onDelete={() => setRefreshKey(prev => prev + 1)}
+              onEdit={(m) => { setEditingMaterial(m); setEditDrawerVisible(true); }}
+            />
+          )}
+        </div>
       </div>
+
       {/* Drawers for Add / Edit Material */}
       <AddMaterials
         open={createDrawerVisible}
