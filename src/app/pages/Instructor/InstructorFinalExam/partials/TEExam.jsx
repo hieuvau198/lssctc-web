@@ -1,7 +1,7 @@
-import { Table, Button, Tag, Space, Modal, Form, InputNumber, App, DatePicker, Select } from 'antd';
+import { Table, Modal, Form, InputNumber, App, DatePicker, Select } from 'antd';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PlusOutlined, EditOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Plus, Edit3, RefreshCw, FileText, Users } from 'lucide-react';
 import dayjs from 'dayjs';
 import InstructorFEApi from '../../../../apis/Instructor/InstructorFEApi';
 import InstructorQuizApi from '../../../../apis/Instructor/InstructorQuiz';
@@ -10,14 +10,14 @@ export default function TEExam({ classId }) {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
-  const [configs, setConfigs] = useState([]); 
-  
+  const [configs, setConfigs] = useState([]);
+
   // Modal States
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedConfig, setSelectedConfig] = useState(null);
   const [studentExams, setStudentExams] = useState([]);
-  
+
   // Data for Selects
   const [quizzes, setQuizzes] = useState([]);
 
@@ -42,7 +42,7 @@ export default function TEExam({ classId }) {
   // Load Quizzes for Dropdown
   const fetchQuizzes = async () => {
     try {
-      const res = await InstructorQuizApi.getQuizzes({ pageSize: 100 }); 
+      const res = await InstructorQuizApi.getQuizzes({ pageSize: 100 });
       setQuizzes(res.items || []);
     } catch (error) {
       console.error(error);
@@ -116,15 +116,15 @@ export default function TEExam({ classId }) {
       };
 
       if (selectedConfig) {
-         // Update Config
-         await InstructorFEApi.updateClassPartialConfig(payload);
-         message.success(t('instructor.finalExam.updateSuccess'));
+        // Update Config
+        await InstructorFEApi.updateClassPartialConfig(payload);
+        message.success(t('instructor.finalExam.updateSuccess'));
       } else {
-         // Create New
-         await InstructorFEApi.createClassPartial(payload);
-         message.success(t('instructor.finalExam.createSuccess'));
+        // Create New
+        await InstructorFEApi.createClassPartial(payload);
+        message.success(t('instructor.finalExam.createSuccess'));
       }
-      
+
       setCreateModalOpen(false);
       fetchConfig();
     } catch (err) {
@@ -135,167 +135,219 @@ export default function TEExam({ classId }) {
   // Main Table Columns (Config)
   const columns = [
     {
-      title: t('instructor.finalExam.examName'),
+      title: <span className="uppercase font-black text-xs">Exam Name</span>,
       key: 'name',
       render: (_, record) => (
-        <a onClick={() => handleView(record)} className="font-medium text-blue-600 hover:underline">
+        <button
+          onClick={() => handleView(record)}
+          className="font-bold text-black hover:text-yellow-600 uppercase flex items-center gap-2"
+        >
+          <FileText className="w-4 h-4" />
           {record.quizName || 'Theory Exam'}
-        </a>
+        </button>
       ),
     },
     {
-      title: t('instructor.finalExam.duration'),
+      title: <span className="uppercase font-black text-xs">Duration</span>,
       dataIndex: 'duration',
       align: 'center',
-      render: (val) => val ? `${val} min` : '-',
+      render: (val) => <span className="font-bold">{val ? `${val} min` : '-'}</span>,
     },
     {
-      title: 'Weight (%)',
+      title: <span className="uppercase font-black text-xs">Weight</span>,
       dataIndex: 'examWeight',
       align: 'center',
+      render: (val) => <span className="font-bold">{val}%</span>,
     },
     {
-      title: 'Start Time',
+      title: <span className="uppercase font-black text-xs">Start Time</span>,
       dataIndex: 'startTime',
-      render: (val) => val ? dayjs(val).format('YYYY-MM-DD HH:mm') : '-',
+      render: (val) => val ? <span className="text-neutral-600">{dayjs(val).format('YYYY-MM-DD HH:mm')}</span> : '-',
     },
     {
-      title: t('common.actions'),
+      title: <span className="uppercase font-black text-xs">Actions</span>,
       key: 'actions',
       width: 100,
       render: (_, record) => (
-        <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+        <button
+          onClick={() => handleEdit(record)}
+          className="w-8 h-8 border-2 border-black bg-white hover:bg-yellow-400 flex items-center justify-center transition-all"
+        >
+          <Edit3 className="w-4 h-4 text-black" />
+        </button>
       ),
     },
   ];
 
   // Student Detail Table Columns
   const studentColumns = [
-    { title: 'Trainee', dataIndex: 'traineeName' },
-    { title: 'Trainee Code', dataIndex: 'traineeCode' },
-    { 
-      title: 'Exam Code', 
+    {
+      title: <span className="uppercase font-black text-xs">Trainee</span>,
+      dataIndex: 'traineeName',
+      render: (val) => <span className="font-bold">{val}</span>
+    },
+    {
+      title: <span className="uppercase font-black text-xs">Trainee Code</span>,
+      dataIndex: 'traineeCode',
+      render: (val) => <span className="text-neutral-600 font-medium">{val}</span>
+    },
+    {
+      title: <span className="uppercase font-black text-xs">Exam Code</span>,
       dataIndex: 'examCode',
       render: (code, record) => {
         const partial = record.partials?.find(p => p.type === 'Theory');
-        // Only show code logic if TE exists for student
-        if (!partial) return '-'; 
-        
+        if (!partial) return '-';
+
         return (
           <div className="flex items-center gap-2">
-             <span className="font-mono font-bold text-blue-600">{record.examCode || '-'}</span>
-             {!record.examCode && (
-               <Button size="small" icon={<ReloadOutlined />} onClick={() => onGenerateCode(record.id)}>
-                 Gen
-               </Button>
-             )}
+            <span className="font-mono font-black text-yellow-600">{record.examCode || '-'}</span>
+            {!record.examCode && (
+              <button
+                onClick={() => onGenerateCode(record.id)}
+                className="px-2 py-1 bg-black text-yellow-400 font-bold uppercase text-xs border-2 border-black hover:bg-yellow-400 hover:text-black flex items-center gap-1 transition-all"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Gen
+              </button>
+            )}
           </div>
         );
       }
     },
-    { 
-      title: 'Score', 
+    {
+      title: <span className="uppercase font-black text-xs">Score</span>,
       key: 'score',
       render: (_, record) => {
         const partial = record.partials?.find(p => p.type === 'Theory');
-        return partial?.marks !== null && partial?.marks !== undefined ? partial.marks : '-';
+        return partial?.marks !== null && partial?.marks !== undefined ? (
+          <span className="px-3 py-1 bg-yellow-400 text-black font-black text-sm">{partial.marks}</span>
+        ) : '-';
       }
     },
     {
-      title: 'Result',
+      title: <span className="uppercase font-black text-xs">Result</span>,
       key: 'result',
       render: (_, r) => {
-         const p = r.partials?.find(p => p.type === 'Theory');
-         if (!p) return '-';
-         
-         // If status is NotYet, display Not Yet (Neutral)
-         if (p.status === 'NotYet') return <Tag color="default">Not Yet</Tag>;
+        const p = r.partials?.find(p => p.type === 'Theory');
+        if (!p) return '-';
 
-         if (p.isPass === true) return <Tag color="success">PASS</Tag>;
-         if (p.isPass === false) return <Tag color="error">FAIL</Tag>;
-         return '-';
+        if (p.status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">Not Yet</span>;
+
+        if (p.isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase">PASS</span>;
+        if (p.isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase">FAIL</span>;
+        return '-';
       }
     },
     {
-      title: 'Status',
+      title: <span className="uppercase font-black text-xs">Status</span>,
       key: 'status',
       render: (_, record) => {
-         const p = record.partials?.find(p => p.type === 'Theory');
-         let statusText = p?.status || 'Pending';
-         let color = 'default';
+        const p = record.partials?.find(p => p.type === 'Theory');
+        let statusText = p?.status || 'Pending';
+        let bgColor = 'bg-neutral-100 text-neutral-600';
 
-         if (p?.status === 'Approved') color = 'green';
-         else if (p?.status === 'Submitted') color = 'orange';
-         
-         // Format 'NotYet' -> 'Not Yet'
-         if (statusText === 'NotYet') statusText = 'Not Yet';
+        if (p?.status === 'Approved') bgColor = 'bg-yellow-400 text-black';
+        else if (p?.status === 'Submitted') bgColor = 'bg-neutral-800 text-yellow-400';
 
-         return <Tag color={color}>{statusText}</Tag>;
+        if (statusText === 'NotYet') statusText = 'NOT YET';
+
+        return <span className={`px-2 py-1 text-xs font-bold uppercase ${bgColor}`}>{statusText}</span>;
       }
     }
   ];
 
   return (
-    <div className="py-4">
-      <div className="mb-4 flex justify-between items-center">
-        <div>
-          <span className="text-lg font-semibold text-slate-800">{t('instructor.finalExam.teTitle')}</span>
+    <div className="py-6">
+      {/* Header */}
+      <div className="mb-6 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
+            <FileText className="w-5 h-5 text-black" />
+          </div>
+          <h2 className="text-xl font-black uppercase tracking-tight m-0">{t('instructor.finalExam.teTitle')}</h2>
         </div>
         {configs.length === 0 && (
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
+          <button
+            onClick={handleCreate}
+            className="h-10 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
+          >
+            <Plus className="w-4 h-4" />
             {t('instructor.finalExam.createExam')}
-            </Button>
+          </button>
         )}
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={configs}
-        rowKey={(r) => r.type}
-        loading={loading}
-        pagination={false}
-      />
+      {/* Config Table */}
+      <div className="bg-white border-2 border-black">
+        <div className="h-1 bg-yellow-400" />
+        <Table
+          columns={columns}
+          dataSource={configs}
+          rowKey={(r) => r.type}
+          loading={loading}
+          pagination={false}
+          className="[&_.ant-table-thead>tr>th]:bg-neutral-900 [&_.ant-table-thead>tr>th]:text-white [&_.ant-table-thead>tr>th]:border-black [&_.ant-table-tbody>tr>td]:border-neutral-200"
+        />
+      </div>
 
       {/* Create/Edit Modal */}
       <Modal
-        title={selectedConfig ? "Update Configuration" : "Create Theory Exam"}
+        title={
+          <div className="flex items-center gap-2 font-black uppercase">
+            <FileText className="w-5 h-5" />
+            {selectedConfig ? "Update Configuration" : "Create Theory Exam"}
+          </div>
+        }
         open={createModalOpen}
         onOk={handleSave}
         onCancel={() => setCreateModalOpen(false)}
+        okText="Save"
+        okButtonProps={{ className: 'bg-yellow-400 text-black font-bold uppercase border-2 border-black hover:bg-yellow-500' }}
       >
         <Form form={form} layout="vertical">
-           <Form.Item name="quizId" label="Select Quiz" rules={[{ required: true }]}>
-             <Select 
-                options={quizzes.map(q => ({ label: q.name, value: q.id }))} 
-                placeholder="Choose a quiz"
-             />
-           </Form.Item>
-           <Form.Item name="duration" label="Duration (minutes)" rules={[{ required: true }]}>
-             <InputNumber min={1} className="w-full" />
-           </Form.Item>
-           <Form.Item name="examWeight" label="Weight (%)" rules={[{ required: true }]}>
-             <InputNumber min={0} max={100} className="w-full" />
-           </Form.Item>
-           <Form.Item name="timeRange" label="Time Range">
-             <DatePicker.RangePicker showTime className="w-full" />
-           </Form.Item>
+          <Form.Item name="quizId" label={<span className="font-bold uppercase text-xs">Select Quiz</span>} rules={[{ required: true }]}>
+            <Select
+              options={quizzes.map(q => ({ label: q.name, value: q.id }))}
+              placeholder="Choose a quiz"
+            />
+          </Form.Item>
+          <div className="grid grid-cols-2 gap-4">
+            <Form.Item name="duration" label={<span className="font-bold uppercase text-xs">Duration (minutes)</span>} rules={[{ required: true }]}>
+              <InputNumber min={1} className="w-full" />
+            </Form.Item>
+            <Form.Item name="examWeight" label={<span className="font-bold uppercase text-xs">Weight (%)</span>} rules={[{ required: true }]}>
+              <InputNumber min={0} max={100} className="w-full" />
+            </Form.Item>
+          </div>
+          <Form.Item name="timeRange" label={<span className="font-bold uppercase text-xs">Time Range</span>}>
+            <DatePicker.RangePicker showTime className="w-full" />
+          </Form.Item>
         </Form>
       </Modal>
 
       {/* View Details Modal */}
       <Modal
-        title="Student Exam Codes & Status"
+        title={
+          <div className="flex items-center gap-2 font-black uppercase">
+            <Users className="w-5 h-5" />
+            Student Exam Codes & Status
+          </div>
+        }
         open={viewModalOpen}
         onCancel={() => setViewModalOpen(false)}
         footer={null}
-        width={800}
+        width={900}
       >
-        <Table 
-            dataSource={studentExams} 
-            columns={studentColumns} 
+        <div className="border-2 border-black">
+          <div className="h-1 bg-yellow-400" />
+          <Table
+            dataSource={studentExams}
+            columns={studentColumns}
             rowKey="id"
             loading={loading}
-        />
+            className="[&_.ant-table-thead>tr>th]:bg-neutral-900 [&_.ant-table-thead>tr>th]:text-white [&_.ant-table-thead>tr>th]:border-black [&_.ant-table-tbody>tr>td]:border-neutral-200"
+          />
+        </div>
       </Modal>
     </div>
   );

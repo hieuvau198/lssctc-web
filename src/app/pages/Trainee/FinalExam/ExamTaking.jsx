@@ -565,16 +565,17 @@ export default function ExamTaking() {
     if (!examData) return null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+        <div className="min-h-screen bg-neutral-100">
             {overlay.visible && (
-                <div className="fixed inset-0 z-[200100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className={`w-full max-w-2xl mx-4 bg-white rounded-xl shadow-2xl p-8 border border-blue-100`}>
-                        <h3 className="text-xl font-bold mb-4 text-slate-800">{overlay.type === 'final' ? t('exam.leaveWarningFinalTitle', 'Bài thi bị hủy') : t('exam.leaveWarningTitle', 'Cảnh báo')}</h3>
-                        <div className="mb-6 text-slate-600 leading-relaxed">{overlay.msg}</div>
+                <div className="fixed inset-0 z-[200100] flex items-center justify-center bg-black/60">
+                    <div className="w-full max-w-2xl mx-4 bg-white border-2 border-black p-8">
+                        <div className="h-1 bg-yellow-400 -mt-8 -mx-8 mb-6" />
+                        <h3 className="text-xl font-black mb-4 text-black uppercase">{overlay.type === 'final' ? t('exam.leaveWarningFinalTitle', 'Exam Cancelled') : t('exam.leaveWarningTitle', 'Warning')}</h3>
+                        <div className="mb-6 text-neutral-700 leading-relaxed">{overlay.msg}</div>
                         <div className="flex justify-end">
                             <button
                                 ref={overlayBtnRef}
-                                className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-medium shadow-lg shadow-blue-200 transition-all"
+                                className="px-6 py-2.5 bg-yellow-400 text-black font-bold uppercase border-2 border-black hover:scale-[1.02] transition-all"
                                 onClick={() => {
                                     setOverlay({ visible: false, type: null, msg: '' });
                                     if (overlay.type === 'final') {

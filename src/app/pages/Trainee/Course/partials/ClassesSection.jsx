@@ -162,7 +162,7 @@ export default function ClassesSection({ courseId }) {
                   type="button"
                   onClick={() => handleClassClick(cls)}
                   disabled={enrolling}
-                  className="w-full h-11 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-black hover:text-yellow-400 transition-all flex items-center justify-center gap-2 mt-auto disabled:opacity-50"
+                  className="w-full h-11 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:border-3 hover:border-black transition-all flex items-center justify-center gap-2 mt-auto disabled:opacity-50"
                 >
                   <CheckCircle className="w-4 h-4" />
                   {t('trainee.classes.enrollButton')}

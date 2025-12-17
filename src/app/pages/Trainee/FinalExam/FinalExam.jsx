@@ -98,20 +98,20 @@ export default function FinalExam() {
     switch (status) {
       case 'Submitted':
       case 'Completed':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-yellow-400 text-black border-2 border-black';
       case 'In Progress':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-black text-yellow-400 border-2 border-black';
       default:
-        return 'bg-slate-100 text-slate-600';
+        return 'bg-neutral-100 text-neutral-600 border-2 border-neutral-300';
     }
   };
 
   if (dataLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-cyan-200 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-500 font-medium">{t('common.loading', 'Đang tải...')}</p>
+          <div className="w-16 h-16 border-4 border-neutral-300 border-t-yellow-400 animate-spin mx-auto mb-4"></div>
+          <p className="text-neutral-600 font-bold uppercase tracking-wider">{t('common.loading', 'Đang tải...')}</p>
         </div>
       </div>
     );
@@ -119,21 +119,21 @@ export default function FinalExam() {
 
   if (error && !exam) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden">
-          <div className="h-1 bg-gradient-to-r from-rose-400 to-red-500" />
+      <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white border-2 border-black overflow-hidden">
+          <div className="h-1 bg-red-500" />
           <div className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-2xl flex items-center justify-center">
-              <AlertCircle className="w-8 h-8 text-red-500" />
+            <div className="w-16 h-16 mx-auto mb-4 border-2 border-black bg-red-100 flex items-center justify-center">
+              <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
-            <h2 className="text-xl font-bold text-slate-800 mb-2">{t('error.title', 'Có lỗi xảy ra')}</h2>
-            <p className="text-slate-500 mb-6">{error}</p>
+            <h2 className="text-xl font-black text-black uppercase mb-2">{t('error.title', 'Có lỗi xảy ra')}</h2>
+            <p className="text-neutral-600 mb-6">{error}</p>
             <button
               onClick={() => {
                 setError('');
                 fetchExamDetail();
               }}
-              className="flex items-center justify-center gap-2 mx-auto px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-cyan-200 hover:shadow-xl transition-all duration-300"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:scale-[1.02] transition-all"
             >
               <RefreshCcw className="w-4 h-4" />
               {t('common.retry', 'Thử lại')}
@@ -146,12 +146,12 @@ export default function FinalExam() {
 
   if (!exam) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 bg-amber-100 rounded-2xl flex items-center justify-center">
-            <AlertCircle className="w-8 h-8 text-amber-500" />
+          <div className="w-16 h-16 mx-auto mb-4 border-2 border-black bg-yellow-100 flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-yellow-600" />
           </div>
-          <p className="text-slate-600 font-medium">{t('exam.notFound', 'Exam not found')}</p>
+          <p className="text-black font-bold uppercase">{t('exam.notFound', 'Exam not found')}</p>
         </div>
       </div>
     );
@@ -160,7 +160,7 @@ export default function FinalExam() {
   const isCompleted = exam.status === 'Submitted' || exam.status === 'Completed';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-4">
+    <div className="min-h-screen bg-neutral-100 py-6">
       <div className="max-w-4xl mx-auto px-4">
         <PageNav
           items={[
@@ -169,93 +169,93 @@ export default function FinalExam() {
           ]}
         />
 
-        <div className="mt-4 space-y-6">
-          {/* Header Card */}
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-            <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 p-8 text-white text-center">
-              <div className="w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                <FileText className="w-10 h-10" />
+        <div className="mt-6 space-y-6">
+          {/* Header Card - Light Wire Theme */}
+          <div className="bg-white border-2 border-black overflow-hidden">
+            <div className="h-1 bg-yellow-400" />
+            <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 p-8 text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-white border-2 border-black flex items-center justify-center">
+                <FileText className="w-10 h-10 text-black" />
               </div>
-              <h1 className="text-3xl font-bold mb-2">
+              <h1 className="text-3xl font-black text-black uppercase tracking-tight mb-2">
                 {exam.quizName || exam.practiceName || `${exam.type} Exam`}
               </h1>
               {exam.description && (
-                <p className="text-white/80 max-w-xl mx-auto">{exam.description}</p>
+                <p className="text-black/70 max-w-xl mx-auto">{exam.description}</p>
               )}
             </div>
           </div>
 
-          {/* Info Grid */}
+          {/* Info Grid - Light Wire Theme */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-4 shadow-lg shadow-slate-200/50">
+            <div className="bg-white border-2 border-black p-4">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-cyan-600" />
+                <div className="w-10 h-10 border-2 border-black flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-black" />
                 </div>
               </div>
-              <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.duration', 'Duration')}</div>
-              <div className="text-xl font-bold text-slate-800">{exam.duration} {t('exam.minutes', 'phút')}</div>
+              <div className="text-xs text-neutral-500 uppercase font-bold tracking-wider">{t('exam.duration', 'Duration')}</div>
+              <div className="text-xl font-black text-black">{exam.duration} {t('exam.minutes', 'minutes')}</div>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-4 shadow-lg shadow-slate-200/50">
+            <div className="bg-white border-2 border-black p-4">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Trophy className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 border-2 border-black bg-yellow-400 flex items-center justify-center">
+                  <Trophy className="w-5 h-5 text-black" />
                 </div>
               </div>
-              <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.weight', 'Weight')}</div>
-              <div className="text-xl font-bold text-slate-800">{exam.examWeight}%</div>
+              <div className="text-xs text-neutral-500 uppercase font-bold tracking-wider">{t('exam.weight', 'Weight')}</div>
+              <div className="text-xl font-black text-black">{exam.examWeight}%</div>
             </div>
 
             {exam.marks !== null && exam.marks !== undefined && (
-              <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-4 shadow-lg shadow-slate-200/50">
+              <div className="bg-white border-2 border-black p-4">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <Award className="w-5 h-5 text-emerald-600" />
+                  <div className="w-10 h-10 border-2 border-black flex items-center justify-center">
+                    <Award className="w-5 h-5 text-black" />
                   </div>
                 </div>
-                <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.marks', 'Marks')}</div>
-                <div className="text-xl font-bold text-slate-800">{exam.marks}</div>
+                <div className="text-xs text-neutral-500 uppercase font-bold tracking-wider">{t('exam.marks', 'Marks')}</div>
+                <div className="text-xl font-black text-black">{exam.marks}</div>
               </div>
             )}
 
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-4 shadow-lg shadow-slate-200/50">
+            <div className="bg-white border-2 border-black p-4">
               <div className="flex items-center gap-3 mb-2">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isCompleted ? 'bg-emerald-100' : 'bg-slate-100'
-                  }`}>
-                  <CheckCircle className={`w-5 h-5 ${isCompleted ? 'text-emerald-600' : 'text-slate-500'}`} />
+                <div className={`w-10 h-10 border-2 border-black flex items-center justify-center ${isCompleted ? 'bg-yellow-400' : 'bg-white'}`}>
+                  <CheckCircle className="w-5 h-5 text-black" />
                 </div>
               </div>
-              <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.status', 'Status')}</div>
-              <span className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyle(exam.status)}`}>
-                {exam.status || 'Not Started'}
+              <div className="text-xs text-neutral-500 uppercase font-bold tracking-wider">{t('exam.status', 'Status')}</div>
+              <span className={`inline-block mt-1 px-3 py-1 text-xs font-bold uppercase ${getStatusStyle(exam.status)}`}>
+                {exam.status || 'NotYet'}
               </span>
             </div>
           </div>
 
           {/* Time Info */}
           {(exam.startTime || exam.completeTime) && (
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl p-5 shadow-lg shadow-slate-200/50">
+            <div className="bg-white border-2 border-black p-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {exam.startTime && (
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
-                      <Calendar className="w-5 h-5 text-cyan-600" />
+                    <div className="w-10 h-10 border-2 border-black flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-black" />
                     </div>
                     <div>
-                      <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.startTime', 'Start Time')}</div>
-                      <div className="text-slate-700 font-medium">{formatDate(exam.startTime)}</div>
+                      <div className="text-xs text-neutral-500 uppercase font-bold">{t('exam.startTime', 'Start Time')}</div>
+                      <div className="text-black font-bold">{formatDate(exam.startTime)}</div>
                     </div>
                   </div>
                 )}
                 {exam.completeTime && (
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-emerald-600" />
+                    <div className="w-10 h-10 border-2 border-black bg-yellow-400 flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-black" />
                     </div>
                     <div>
-                      <div className="text-xs text-slate-400 uppercase font-semibold">{t('exam.completeTime', 'Complete Time')}</div>
-                      <div className="text-slate-700 font-medium">{formatDate(exam.completeTime)}</div>
+                      <div className="text-xs text-neutral-500 uppercase font-bold">{t('exam.completeTime', 'Complete Time')}</div>
+                      <div className="text-black font-bold">{formatDate(exam.completeTime)}</div>
                     </div>
                   </div>
                 )}
@@ -265,67 +265,67 @@ export default function FinalExam() {
 
           {/* Completed Alert */}
           {isCompleted && (
-            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 flex items-center gap-4">
-              <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-emerald-600" />
+            <div className="bg-yellow-50 border-2 border-yellow-400 p-5 flex items-center gap-4">
+              <div className="w-12 h-12 border-2 border-black bg-yellow-400 flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h3 className="font-bold text-emerald-800">{t('exam.completedTitle', 'Bài thi đã hoàn thành')}</h3>
-                <p className="text-emerald-600 text-sm">{t('exam.completedDesc', 'Bạn đã hoàn thành bài thi này.')}</p>
+                <h3 className="font-black text-black uppercase">{t('exam.completedTitle', 'Bài thi đã hoàn thành')}</h3>
+                <p className="text-neutral-600 text-sm">{t('exam.completedDesc', 'Bạn đã hoàn thành bài thi này.')}</p>
               </div>
             </div>
           )}
 
           {/* Start Exam Form */}
           {!isCompleted && (
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-              <div className="bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-4">
-                <h3 className="text-white font-bold text-lg flex items-center gap-2">
+            <div className="bg-white border-2 border-black overflow-hidden">
+              <div className="bg-black px-6 py-4">
+                <h3 className="text-yellow-400 font-black text-lg flex items-center gap-2 uppercase tracking-wide">
                   <Lock className="w-5 h-5" />
-                  {t('exam.enterOpenCode', 'Nhập mã để bắt đầu')}
+                  {t('exam.enterOpenCode', 'Enter Open Code to Start')}
                 </h3>
               </div>
               <form onSubmit={handleStartExam} className="p-6">
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-slate-600 mb-2">
-                    {t('exam.openCode', 'Mã đề thi')}
+                  <label className="block text-sm font-bold text-black uppercase tracking-wider mb-2">
+                    {t('exam.openCode', 'Open Code')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Lock className="w-5 h-5 text-slate-400" />
+                      <Lock className="w-5 h-5 text-neutral-400" />
                     </div>
                     <input
                       type="text"
                       value={openCode}
                       onChange={(e) => setOpenCode(e.target.value)}
-                      placeholder={t('exam.openCodePlaceholder', 'Nhập mã đề thi')}
+                      placeholder={t('exam.openCodePlaceholder', 'Enter open code')}
                       disabled={loading}
-                      className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all duration-300 text-slate-700 placeholder-slate-400"
+                      className="w-full pl-12 pr-4 py-3.5 bg-neutral-50 border-2 border-neutral-300 focus:outline-none focus:border-yellow-400 transition-all text-black placeholder-neutral-400"
                     />
                   </div>
                 </div>
 
                 {error && (
-                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                    <span className="text-red-700 text-sm">{error}</span>
+                  <div className="mb-4 p-4 bg-red-50 border-2 border-red-400 flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                    <span className="text-red-700 text-sm font-medium">{error}</span>
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold text-lg rounded-xl shadow-lg shadow-cyan-200 hover:shadow-xl hover:shadow-cyan-300 transition-all duration-300 disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-yellow-400 text-black font-black text-lg uppercase tracking-wider border-2 border-black hover:scale-[1.01] hover:shadow-lg transition-all disabled:opacity-50"
                 >
                   {loading ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      {t('common.loading', 'Đang tải...')}
+                      <div className="w-5 h-5 border-2 border-black/30 border-t-black animate-spin" />
+                      {t('common.loading', 'Loading...')}
                     </>
                   ) : (
                     <>
                       <Play className="w-5 h-5" />
-                      {t('exam.startExam', 'Bắt đầu làm bài')}
+                      {t('exam.startExam', 'Start Exam')}
                     </>
                   )}
                 </button>
@@ -335,21 +335,21 @@ export default function FinalExam() {
 
           {/* Instructions */}
           {exam.instructions && exam.instructions.length > 0 && (
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-              <div className="bg-gradient-to-r from-amber-50 to-orange-50 px-6 py-4 border-b border-amber-100">
-                <h3 className="text-amber-800 font-bold flex items-center gap-2">
+            <div className="bg-white border-2 border-black overflow-hidden">
+              <div className="bg-yellow-50 border-b-2 border-black px-6 py-4">
+                <h3 className="text-black font-black flex items-center gap-2 uppercase tracking-wide">
                   <AlertCircle className="w-5 h-5" />
-                  {t('exam.instructions', 'Hướng dẫn')}
+                  {t('exam.instructions', 'Instructions')}
                 </h3>
               </div>
               <div className="p-6">
                 <ul className="space-y-3">
                   {exam.instructions.map((instruction, idx) => (
                     <li key={idx} className="flex items-start gap-3">
-                      <span className="w-6 h-6 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      <span className="w-6 h-6 bg-yellow-400 text-black border-2 border-black flex items-center justify-center text-sm font-black flex-shrink-0">
                         {idx + 1}
                       </span>
-                      <span className="text-slate-700 leading-relaxed">{instruction}</span>
+                      <span className="text-neutral-700 leading-relaxed">{instruction}</span>
                     </li>
                   ))}
                 </ul>
