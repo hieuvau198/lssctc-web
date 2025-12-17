@@ -1,5 +1,5 @@
 import { App, Avatar, Dropdown, Menu, Tooltip, Switch } from 'antd';
-import { FlaskConical, LayoutDashboard, MoreVertical, PanelLeft, PanelLeftClose, Sliders, Truck } from 'lucide-react';
+import { FlaskConical, LayoutDashboard, MoreVertical, PanelLeftClose, Sliders, Truck } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
@@ -27,14 +27,14 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
       {mobileOpen && (
         <div
           onClick={onMobileClose}
-          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
           aria-hidden
         />
       )}
 
       <aside
         className={[
-          'flex flex-col bg-white/90 backdrop-blur-md border-r border-slate-200/60 shadow-xl shadow-slate-200/50 z-50',
+          'flex flex-col bg-neutral-900 text-white z-50',
           'transition-all duration-300 ease-in-out',
           collapsed ? 'w-20' : 'w-64',
           'h-screen fixed md:sticky top-0 left-0',
@@ -42,13 +42,16 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
         ].join(' ')}
         aria-label="Sidebar navigation"
       >
+        {/* Yellow accent bar */}
+        <div className="h-1 bg-yellow-400" />
+
         {/* Header / Brand */}
-        <div className={`flex items-center h-16 border-b border-slate-200/60 ${collapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
+        <div className={`flex items-center h-16 border-b border-neutral-700 ${collapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
           {collapsed ? (
             <Tooltip placement="right" title={t('sidebar.simManagerPanel')}>
               <div
                 onClick={onToggle}
-                className="flex items-center cursor-pointer justify-center bg-gradient-to-br from-violet-500 to-purple-600 text-white font-bold rounded-xl size-10 text-lg shadow-lg shadow-violet-200/50 hover:scale-105 transition-transform"
+                className="flex items-center cursor-pointer justify-center bg-yellow-400 text-black font-black w-10 h-10 text-lg hover:scale-105 transition-transform"
               >
                 S
               </div>
@@ -56,28 +59,28 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
           ) : (
             <>
               <div className="flex items-center gap-3 overflow-hidden">
-                <div className="flex items-center justify-center bg-gradient-to-br from-violet-500 to-purple-600 text-white font-bold rounded-xl size-10 shrink-0 text-lg shadow-lg shadow-violet-200/50">
+                <div className="flex items-center justify-center bg-yellow-400 text-black font-black w-10 h-10 shrink-0 text-lg">
                   S
                 </div>
-                <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-purple-600 tracking-wide">
+                <span className="font-black text-white uppercase tracking-wider text-sm">
                   {t('sidebar.simManagerPanel')}
                 </span>
               </div>
               {/* Desktop collapse button */}
               <button
                 onClick={onToggle}
-                className="hidden md:inline-flex w-9 h-9 items-center justify-center rounded-xl border border-slate-200 hover:bg-violet-50 hover:border-violet-300 transition-all duration-200"
+                className="hidden md:inline-flex w-9 h-9 items-center justify-center border border-neutral-700 hover:bg-yellow-400 hover:text-black hover:border-yellow-400 transition-all duration-200"
                 aria-label={t('sidebar.collapseSidebar')}
               >
-                <PanelLeftClose className="w-4 h-4 text-slate-600" />
+                <PanelLeftClose className="w-4 h-4" />
               </button>
               {/* Mobile close button */}
               <button
                 onClick={onMobileToggle}
-                className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-xl border border-slate-200 hover:bg-violet-50 hover:border-violet-300 transition-all duration-200"
+                className="md:hidden inline-flex w-9 h-9 items-center justify-center border border-neutral-700 hover:bg-yellow-400 hover:text-black hover:border-yellow-400 transition-all duration-200"
                 aria-label={t('sidebar.closeNavigation')}
               >
-                <PanelLeftClose className="w-4 h-4 text-slate-600" />
+                <PanelLeftClose className="w-4 h-4" />
               </button>
             </>
           )}
@@ -85,18 +88,18 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
 
         {/* Nav Items */}
         <nav className="flex-1 overflow-y-auto py-4">
-          <ul className="space-y-1.5 px-3">
+          <ul className="space-y-1 px-3">
             {ITEMS.map((item) => (
               <li key={item.to}>
                 <NavLink
                   to={item.to}
                   onClick={onMobileClose}
                   className={({ isActive }) => [
-                    'group flex items-center rounded-xl py-2.5 text-sm font-medium transition-all duration-200',
+                    'group flex items-center py-2.5 text-sm font-semibold transition-all duration-200',
                     collapsed ? 'justify-center mx-1' : 'gap-3 px-3',
                     isActive
-                      ? 'bg-gradient-to-r from-violet-50 to-purple-50 text-violet-700 border border-violet-200 shadow-sm'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-violet-600 border border-transparent',
+                      ? 'bg-yellow-400 text-black'
+                      : 'text-neutral-300 hover:bg-neutral-800 hover:text-yellow-400',
                   ].join(' ')}
                   aria-label={collapsed ? item.label : undefined}
                 >
@@ -107,7 +110,7 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
                   ) : (
                     <>
                       <span className="text-lg flex-shrink-0">{item.icon}</span>
-                      <span className="truncate">{item.label}</span>
+                      <span className="truncate uppercase tracking-wider">{item.label}</span>
                     </>
                   )}
                 </NavLink>
@@ -118,7 +121,7 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
 
         {/* Footer - User info + actions */}
         <div className="mt-auto py-4 px-3">
-          <div className="pt-3 border-t border-slate-200/60">
+          <div className="pt-3 border-t border-neutral-700">
             {(() => {
               const store = useAuthStore();
               const token = getAuthToken();
@@ -177,15 +180,15 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
                   <Dropdown overlay={menu} placement="topCenter" trigger={["click"]}>
                     <div className="cursor-pointer">
                       <Tooltip placement="right" title={<div className="text-sm text-left"><div className="font-semibold">{fullName}</div><div className="text-xs text-gray-400">{role}</div></div>}>
-                        <div className="flex items-center justify-center p-2 rounded-xl hover:bg-violet-50 transition-colors">
+                        <div className="flex items-center justify-center p-2 hover:bg-neutral-800 transition-colors">
                           {(() => {
                             const persisted = sAvatarUrl.use();
                             const resolvedAvatar = avatarUrl || persisted;
                             if (avatarUrl && avatarUrl !== persisted) setAvatarUrl(avatarUrl);
                             return resolvedAvatar ? (
-                              <Avatar size={32} src={resolvedAvatar} className="ring-2 ring-violet-200" />
+                              <Avatar size={32} src={resolvedAvatar} className="border-2 border-yellow-400" />
                             ) : (
-                              <Avatar size={32} className="bg-gradient-to-br from-violet-500 to-purple-600 text-white font-semibold">{avatarContent}</Avatar>
+                              <Avatar size={32} className="bg-yellow-400 text-black font-bold">{avatarContent}</Avatar>
                             );
                           })()}
                         </div>
@@ -195,26 +198,26 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
                 </div>
               ) : (
                 <div className="w-full">
-                  <div className="bg-white/80 backdrop-blur-sm shadow-lg shadow-slate-200/50 ring-1 ring-slate-200/60 rounded-2xl w-full flex items-center justify-between px-3 py-2.5">
+                  <div className="bg-neutral-800 border border-neutral-700 w-full flex items-center justify-between px-3 py-2.5">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {(() => {
                         const persisted = sAvatarUrl.use();
                         const resolvedAvatar = avatarUrl || persisted;
                         if (avatarUrl && avatarUrl !== persisted) setAvatarUrl(avatarUrl);
                         return resolvedAvatar ? (
-                          <Avatar size={40} src={resolvedAvatar} className="ring-2 ring-violet-200" />
+                          <Avatar size={40} src={resolvedAvatar} className="border-2 border-yellow-400" />
                         ) : (
-                          <Avatar size={40} className="bg-gradient-to-br from-violet-500 to-purple-600 text-white font-semibold">{avatarContent}</Avatar>
+                          <Avatar size={40} className="bg-yellow-400 text-black font-bold">{avatarContent}</Avatar>
                         );
                       })()}
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-slate-800 truncate">{fullName}</div>
-                        <div className="text-xs text-slate-500 truncate">{role}</div>
+                        <div className="font-bold text-white truncate text-sm uppercase">{fullName}</div>
+                        <div className="text-xs text-neutral-400 truncate uppercase">{role}</div>
                       </div>
                     </div>
                     <Dropdown overlay={menu} placement="topRight" trigger={["click"]} arrow={{ pointAtCenter: true }}>
-                      <button className="p-2 rounded-xl hover:bg-violet-50 transition-colors" aria-label="user menu">
-                        <MoreVertical className="w-5 h-5 text-slate-500" />
+                      <button className="p-2 hover:bg-yellow-400 hover:text-black transition-colors" aria-label="user menu">
+                        <MoreVertical className="w-5 h-5" />
                       </button>
                     </Dropdown>
                   </div>

@@ -26,11 +26,11 @@ export default function EnrollmentTrend() {
 
   const series = [{ name: t('admin.dashboard.charts.totalEnrollments'), data: data.map(c => c.totalEnrollments) }];
   const options = {
-    chart: { id: 'popular-courses', toolbar: { show: false } },
-    plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%' } },
-    xaxis: { 
+    chart: { id: 'popular-courses', toolbar: { show: false }, fontFamily: 'inherit' },
+    plotOptions: { bar: { borderRadius: 0, horizontal: false, columnWidth: '60%' } },
+    xaxis: {
       categories: data.map(c => c.courseName),
-      labels: { 
+      labels: {
         rotate: -45,
         rotateAlways: true,
         style: { fontSize: '10px' },
@@ -38,15 +38,16 @@ export default function EnrollmentTrend() {
         maxHeight: 80
       }
     },
-    colors: ['#2563eb'],
+    colors: ['#fbbf24'],
     dataLabels: { enabled: false },
-    grid: { borderColor: '#eee' },
+    grid: { borderColor: '#e5e5e5', strokeDashArray: 4 },
     tooltip: { theme: 'light', y: { formatter: (val) => val + ' ' + t('admin.dashboard.charts.enrollments') } }
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col">
-      <h2 className="text-sm font-medium mb-2 text-gray-700">{t('admin.dashboard.charts.popularCourses')}</h2>
+    <div className="bg-white border-2 border-neutral-900 p-5 flex flex-col">
+      <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+      <h2 className="text-sm font-black uppercase tracking-wider mb-4 text-neutral-900">{t('admin.dashboard.charts.popularCourses')}</h2>
       {loading ? (
         <Skeleton active paragraph={{ rows: 4 }} />
       ) : (

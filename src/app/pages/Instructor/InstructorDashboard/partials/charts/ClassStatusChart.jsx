@@ -6,11 +6,11 @@ import { getClassStatusDistribution } from '../../../../../apis/Instructor/Instr
 import useAuthStore from '../../../../../store/authStore';
 
 const statusColors = {
-  'Draft': '#9ca3af',
-  'Open': '#3b82f6', 
-  'In-Progress': '#f59e0b',
-  'InProgress': '#f59e0b',
-  'Completed': '#10b981',
+  'Draft': '#a3a3a3',
+  'Open': '#fbbf24',
+  'In-Progress': '#171717',
+  'InProgress': '#171717',
+  'Completed': '#fbbf24',
   'Cancelled': '#ef4444'
 };
 
@@ -43,40 +43,41 @@ export default function ClassStatusChart() {
   const colors = rawLabels.map(label => statusColors[label] || '#6b7280');
 
   const options = {
-    chart: { 
+    chart: {
       type: 'donut',
       fontFamily: 'inherit'
     },
     labels: labels,
-    legend: { 
+    legend: {
       position: 'bottom',
       fontSize: '12px',
-      markers: { width: 10, height: 10, radius: 3 }
+      markers: { width: 10, height: 10, radius: 0 }
     },
-    dataLabels: { 
+    dataLabels: {
       enabled: true,
       dropShadow: { enabled: false },
-      style: { fontSize: '12px', fontWeight: 600 }
+      style: { fontSize: '12px', fontWeight: 700 }
     },
-    stroke: { width: 2, colors: ['#fff'] },
+    stroke: { width: 2, colors: ['#171717'] },
     colors: colors,
-    plotOptions: { 
-      pie: { 
-        donut: { 
+    plotOptions: {
+      pie: {
+        donut: {
           size: '60%',
           labels: {
             show: true,
-            name: { show: true, fontSize: '14px' },
-            value: { show: true, fontSize: '20px', fontWeight: 700 },
+            name: { show: true, fontSize: '14px', fontWeight: 700 },
+            value: { show: true, fontSize: '20px', fontWeight: 900 },
             total: {
               show: true,
               label: t('instructor.dashboard.totalClasses'),
               fontSize: '12px',
+              fontWeight: 700,
               formatter: (w) => w.globals.seriesTotals.reduce((a, b) => a + b, 0)
             }
           }
-        } 
-      } 
+        }
+      }
     },
     responsive: [{
       breakpoint: 480,
@@ -88,14 +89,15 @@ export default function ClassStatusChart() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col h-full">
-      <h2 className="text-sm font-semibold mb-4 text-gray-700">{t('instructor.dashboard.classStatusDistribution')}</h2>
+    <div className="bg-white border-2 border-neutral-900 p-5 flex flex-col h-full">
+      <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+      <h2 className="text-sm font-black uppercase tracking-wider mb-4 text-neutral-900">{t('instructor.dashboard.classStatusDistribution')}</h2>
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
           <Skeleton active paragraph={{ rows: 6 }} />
         </div>
       ) : data.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-gray-400">
+        <div className="flex-1 flex items-center justify-center text-neutral-400 uppercase tracking-wider font-semibold">
           {t('instructor.dashboard.noStatusData')}
         </div>
       ) : (

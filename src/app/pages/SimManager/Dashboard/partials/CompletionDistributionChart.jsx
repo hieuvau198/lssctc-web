@@ -32,30 +32,34 @@ export default function CompletionDistributionChart({
             stacked: true,
             toolbar: { show: false },
             animations: { easing: 'easeinout', speed: 400 },
+            fontFamily: 'inherit',
         },
         plotOptions: {
             bar: {
                 horizontal: false,
                 columnWidth: '55%',
-                borderRadius: 4,
+                borderRadius: 0,
             },
         },
-        colors: ['#8b5cf6', '#f97316'], // violet and orange
+        colors: ['#fbbf24', '#171717'],
         dataLabels: { enabled: false },
         stroke: { show: true, width: 2, colors: ['transparent'] },
         xaxis: {
             categories: months,
-            labels: { style: { colors: '#64748b', fontSize: '12px' } },
+            labels: { style: { colors: '#525252', fontSize: '12px' } },
         },
         yaxis: {
-            labels: { style: { colors: '#64748b' } },
+            labels: { style: { colors: '#525252' } },
         },
         fill: { opacity: 1 },
         legend: {
             position: 'top',
             horizontalAlign: 'right',
+            fontSize: '11px',
+            fontWeight: 700,
+            markers: { width: 10, height: 10, radius: 0 },
         },
-        grid: { borderColor: '#e2e8f0' },
+        grid: { borderColor: '#e5e5e5', strokeDashArray: 4 },
         tooltip: {
             theme: 'light',
             y: {
@@ -70,17 +74,17 @@ export default function CompletionDistributionChart({
         : [currentYear - 2, currentYear - 1, currentYear];
 
     return (
-        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50 h-full">
+        <div className="bg-white border-2 border-neutral-900 h-full">
+            <div className="h-1 bg-yellow-400" />
             <div className="p-5">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-slate-800">
+                    <h3 className="font-black text-neutral-900 uppercase tracking-wider text-sm">
                         {t('simManager.dashboard.completionDistribution') || 'Phân bố hoàn thành thực hành'}
                     </h3>
                     <Select
                         value={year || currentYear}
                         onChange={onYearChange}
                         size="small"
-                        className="!rounded-lg"
                         style={{ width: 100 }}
                         options={years.map(y => ({ value: y, label: y }))}
                     />
@@ -90,7 +94,7 @@ export default function CompletionDistributionChart({
                         {data.length > 0 ? (
                             <Chart options={options} series={series} type="bar" height={300} />
                         ) : (
-                            <div className="h-[300px] flex items-center justify-center text-slate-400">
+                            <div className="h-[300px] flex items-center justify-center text-neutral-400 uppercase tracking-wider font-semibold">
                                 {t('common.noData') || 'Không có dữ liệu'}
                             </div>
                         )}

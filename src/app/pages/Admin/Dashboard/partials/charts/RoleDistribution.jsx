@@ -26,18 +26,19 @@ export default function RoleDistribution() {
 
   const series = data.map(d => d.count);
   const options = {
-    chart: { type: 'donut' },
+    chart: { type: 'donut', fontFamily: 'inherit' },
     labels: data.map(d => d.statusName),
-    legend: { position: 'bottom' },
-    dataLabels: { dropShadow: { enabled: false } },
-    stroke: { width: 1 },
-    colors: ['#9ca3af','#3b82f6','#f59e0b','#10b981','#ef4444'],
+    legend: { position: 'bottom', fontSize: '11px' },
+    dataLabels: { dropShadow: { enabled: false }, style: { fontSize: '11px', fontWeight: 700 } },
+    stroke: { width: 2, colors: ['#171717'] },
+    colors: ['#a3a3a3', '#fbbf24', '#f59e0b', '#171717', '#ef4444'],
     plotOptions: { pie: { donut: { size: '62%' } } },
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col">
-      <h2 className="text-sm font-medium mb-2 text-gray-700">{t('admin.dashboard.charts.classStatusDistribution')}</h2>
+    <div className="bg-white border-2 border-neutral-900 p-5 flex flex-col">
+      <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+      <h2 className="text-sm font-black uppercase tracking-wider mb-4 text-neutral-900">{t('admin.dashboard.charts.classStatusDistribution')}</h2>
       {loading ? (
         <Skeleton active paragraph={{ rows: 4 }} />
       ) : (

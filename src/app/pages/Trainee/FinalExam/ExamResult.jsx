@@ -9,7 +9,6 @@ export default function ExamResult() {
     const location = useLocation();
     const { examData, resultData, score: navScore, isPass: navIsPass } = location.state || {};
 
-    // Determine the final score and pass status to display
     let displayScore = 0;
     let isPassed = false;
 
@@ -37,27 +36,24 @@ export default function ExamResult() {
     const examName = examData?.quizName || examData?.practiceName || examData?.name || t('exam.finalExam', 'Final Exam');
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-8">
-            <div className="max-w-2xl mx-auto px-4">
-                <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50">
+        <div className="min-h-screen bg-neutral-50 py-12">
+            <div className="max-w-2xl mx-auto px-6">
+                <div className="bg-white border-4 border-neutral-900 overflow-hidden">
                     {/* Header */}
-                    <div className={`p-8 text-center text-white ${isPassed
-                            ? 'bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500'
-                            : 'bg-gradient-to-br from-rose-500 via-red-500 to-orange-500'
-                        }`}>
-                        <div className="w-24 h-24 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg bg-white/20">
+                    <div className={`p-8 text-center text-white ${isPassed ? 'bg-yellow-400' : 'bg-red-500'}`}>
+                        <div className={`w-24 h-24 mx-auto mb-4 flex items-center justify-center border-4 ${isPassed ? 'border-black bg-white' : 'border-white bg-red-600'}`}>
                             {isPassed ? (
-                                <Trophy className="w-12 h-12 text-white" />
+                                <Trophy className="w-12 h-12 text-black" />
                             ) : (
                                 <XCircle className="w-12 h-12 text-white" />
                             )}
                         </div>
-                        <h1 className="text-3xl font-bold mb-2">
+                        <h1 className={`text-3xl font-black uppercase tracking-wide ${isPassed ? 'text-black' : 'text-white'}`}>
                             {isPassed
                                 ? t('exam.congratulations', 'Xin chúc mừng!')
                                 : t('exam.failed', 'Chưa đạt')}
                         </h1>
-                        <p className="text-white/90 text-lg">
+                        <p className={`text-lg mt-2 ${isPassed ? 'text-black/80' : 'text-white/90'}`}>
                             {isPassed
                                 ? t('exam.passedMessage', 'Bạn đã hoàn thành bài thi xuất sắc!')
                                 : t('exam.failedMessage', 'Rất tiếc, bạn chưa đạt lần này. Hãy tiếp tục học và thử lại!')}
@@ -67,84 +63,62 @@ export default function ExamResult() {
                     {/* Score Display */}
                     <div className="p-8">
                         <div className="text-center mb-8">
-                            <div className="relative w-40 h-40 mx-auto">
-                                {/* Background Circle */}
-                                <svg className="w-full h-full transform -rotate-90">
-                                    <circle
-                                        cx="80"
-                                        cy="80"
-                                        r="70"
-                                        stroke="currentColor"
-                                        strokeWidth="12"
-                                        fill="none"
-                                        className="text-slate-100"
-                                    />
-                                    <circle
-                                        cx="80"
-                                        cy="80"
-                                        r="70"
-                                        stroke="url(#scoreGradient)"
-                                        strokeWidth="12"
-                                        fill="none"
-                                        strokeLinecap="round"
-                                        strokeDasharray={`${(displayScore / 10) * 440} 440`}
-                                    />
-                                    <defs>
-                                        <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                            <stop offset="0%" stopColor={isPassed ? "#10b981" : "#ef4444"} />
-                                            <stop offset="100%" stopColor={isPassed ? "#06b6d4" : "#f97316"} />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                                {/* Score Text */}
-                                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className={`text-4xl font-bold ${isPassed ? 'text-emerald-600' : 'text-red-600'}`}>
+                            <div className={`inline-flex items-center justify-center w-40 h-40 border-4 border-neutral-900 mb-4 ${isPassed ? 'bg-yellow-50' : 'bg-red-50'}`}>
+                                <div>
+                                    <span className={`text-5xl font-black ${isPassed ? 'text-neutral-900' : 'text-red-600'}`}>
                                         {displayScore}
                                     </span>
-                                    <span className="text-sm text-slate-500 font-medium">/ 10 {t('exam.points', 'điểm')}</span>
+                                    <span className="text-lg text-neutral-500 block font-bold">/ 10 {t('exam.points', 'điểm')}</span>
+                                </div>
+                            </div>
+
+                            {/* Progress Bar */}
+                            <div className="max-w-xs mx-auto">
+                                <div className="w-full h-4 border-2 border-neutral-900 bg-white">
+                                    <div
+                                        className={`h-full transition-all duration-500 ${isPassed ? 'bg-yellow-400' : 'bg-red-500'}`}
+                                        style={{ width: `${(displayScore / 10) * 100}%` }}
+                                    />
                                 </div>
                             </div>
                         </div>
 
                         {/* Exam Details */}
                         <div className="space-y-3 mb-8">
-                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl">
+                            <div className="flex items-center justify-between p-4 bg-neutral-50 border-2 border-neutral-200">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
-                                        <FileText className="w-5 h-5 text-cyan-600" />
+                                    <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+                                        <FileText className="w-5 h-5 text-black" />
                                     </div>
-                                    <span className="text-slate-600 font-medium">{t('exam.examName', 'Tên bài thi')}</span>
+                                    <span className="text-neutral-600 font-bold uppercase text-sm">{t('exam.examName', 'Tên bài thi')}</span>
                                 </div>
-                                <span className="font-bold text-slate-800">{examName}</span>
+                                <span className="font-black text-neutral-900">{examName}</span>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl">
+                            <div className="flex items-center justify-between p-4 bg-neutral-50 border-2 border-neutral-200">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                        <Award className="w-5 h-5 text-blue-600" />
+                                    <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+                                        <Award className="w-5 h-5 text-black" />
                                     </div>
-                                    <span className="text-slate-600 font-medium">{t('exam.yourScore', 'Điểm của bạn')}</span>
+                                    <span className="text-neutral-600 font-bold uppercase text-sm">{t('exam.yourScore', 'Điểm của bạn')}</span>
                                 </div>
-                                <span className={`px-4 py-1.5 rounded-full text-sm font-bold ${isPassed ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
-                                    }`}>
+                                <span className={`px-4 py-1.5 text-sm font-black uppercase ${isPassed ? 'bg-yellow-400 text-black' : 'bg-red-500 text-white'}`}>
                                     {displayScore} / 10
                                 </span>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl">
+                            <div className="flex items-center justify-between p-4 bg-neutral-50 border-2 border-neutral-200">
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isPassed ? 'bg-emerald-100' : 'bg-red-100'
-                                        }`}>
+                                    <div className={`w-10 h-10 flex items-center justify-center ${isPassed ? 'bg-yellow-400' : 'bg-red-500'}`}>
                                         {isPassed ? (
-                                            <CheckCircle className="w-5 h-5 text-emerald-600" />
+                                            <CheckCircle className="w-5 h-5 text-black" />
                                         ) : (
-                                            <XCircle className="w-5 h-5 text-red-600" />
+                                            <XCircle className="w-5 h-5 text-white" />
                                         )}
                                     </div>
-                                    <span className="text-slate-600 font-medium">{t('exam.status', 'Trạng thái')}</span>
+                                    <span className="text-neutral-600 font-bold uppercase text-sm">{t('exam.status', 'Trạng thái')}</span>
                                 </div>
-                                <span className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase ${isPassed ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
-                                    }`}>
+                                <span className={`px-4 py-1.5 text-sm font-black uppercase ${isPassed ? 'bg-yellow-400 text-black' : 'bg-red-500 text-white'}`}>
                                     {isPassed ? t('exam.passed', 'ĐẠT') : t('exam.notPassed', 'CHƯA ĐẠT')}
                                 </span>
                             </div>
@@ -154,7 +128,7 @@ export default function ExamResult() {
                         <div className="flex gap-4">
                             <a
                                 href="/"
-                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-cyan-200 hover:shadow-xl hover:shadow-cyan-300 transition-all duration-300"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-black hover:text-yellow-400 transition-all"
                             >
                                 <Home className="w-5 h-5" />
                                 {t('common.home', 'Trang chủ')}
@@ -162,7 +136,7 @@ export default function ExamResult() {
                             {!isPassed && examData?.id && (
                                 <button
                                     onClick={() => navigate(`/final-exam/${examData.id}`)}
-                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-all duration-300"
+                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white text-neutral-900 font-bold uppercase tracking-wider border-2 border-neutral-900 hover:bg-neutral-100 transition-all"
                                 >
                                     <RefreshCcw className="w-5 h-5" />
                                     {t('exam.tryAgain', 'Thử lại')}

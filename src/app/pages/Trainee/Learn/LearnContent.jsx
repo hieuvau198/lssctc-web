@@ -12,7 +12,7 @@ import {
   markSectionMaterialAsCompleted,
   markSectionMaterialAsNotCompleted,
   getActivityRecordsByClassAndSection,
-  getMaterialsByActivityRecordId, // [UPDATED] Import hàm API mới
+  getMaterialsByActivityRecordId,
   submitActivity,
 } from "../../../apis/Trainee/TraineeLearningApi";
 import {
@@ -46,7 +46,7 @@ export default function LearnContent() {
   const [activityRecord, setActivityRecord] = useState(null);
   const [materialsList, setMaterialsList] = useState([]);
 
-  // [UPDATED] State mới để lưu trạng thái Session
+  // State mới để lưu trạng thái Session
   const [sessionStatus, setSessionStatus] = useState(null);
 
   const [sectionQuiz, setSectionQuiz] = useState(null);
@@ -82,7 +82,7 @@ export default function LearnContent() {
       setLoading(true);
       setError(null);
       setMaterialsList([]);
-      setSessionStatus(null); // [UPDATED] Reset session status
+      setSessionStatus(null);
       setSectionQuiz(null);
       setSectionPractice(null);
       setActivityRecord(null);
@@ -111,24 +111,20 @@ export default function LearnContent() {
         throw new Error(`Failed to load activity record: ${e.message}`);
       }
 
-      const activityType = matchedRecord.activityType; // "Material", "Quiz", "Practice"
+      const activityType = matchedRecord.activityType;
 
       // 2. Load content based on type
       if (activityType === 'Material') {
-        // [UPDATED] Sử dụng API mới nhận activityRecordId để lấy cả material và session status
         try {
           const { materials, sessionStatus } = await getMaterialsByActivityRecordId(matchedRecord.activityRecordId);
           setMaterialsList(materials || []);
-          setSessionStatus(sessionStatus); // Lưu trạng thái session
+          setSessionStatus(sessionStatus);
         } catch (matError) {
           console.error("Error loading materials with session:", matError);
           throw new Error("Failed to verify session status or load materials.");
         }
 
       } else if (activityType === 'Quiz') {
-        // [OLD CODE] const quizData = await getQuizByActivityIdForTrainee(activityId);
-
-        // [NEW CODE] Gọi API mới
         const response = await getQuizByActivityRecordId(matchedRecord.activityRecordId);
         const quizData = response.quiz;
         const sessionStatus = response.sessionStatus;
@@ -146,7 +142,7 @@ export default function LearnContent() {
         };
 
         setSectionQuiz(combinedQuizData);
-        setSessionStatus(sessionStatus); // [NEW] Lưu trạng thái session cho Quiz
+        setSessionStatus(sessionStatus);
       } else if (activityType === 'Practice') {
         const practiceData = await getPracticeByActivityRecordId(matchedRecord.activityRecordId);
         const combinedPracticeData = {
@@ -202,9 +198,8 @@ export default function LearnContent() {
   const handleMarkAsComplete = async () => {
     if (!activityRecord || activityRecord.activityType !== 'Material') return;
 
-    // [UPDATED] Kiểm tra logic session trước khi cho phép gọi API (Client-side validation)
     if (sessionStatus && !sessionStatus.isOpen) {
-      alert(t('trainee.learn.sessionNotOpenAlert')); // Cần đảm bảo có key translation này hoặc dùng text cứng
+      alert(t('trainee.learn.sessionNotOpenAlert'));
       return;
     }
 
@@ -229,39 +224,45 @@ export default function LearnContent() {
     alert("Unmarking is not supported at this time.");
   };
 
-  // --- PHẦN RENDER ---
+  // --- PHẦN RENDER - Industrial Loading State ---
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <div className="w-12 h-12 border-4 border-cyan-200 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-slate-600">{t('trainee.learn.loadingContent')}</p>
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent animate-spin mb-4" />
+        <p className="text-neutral-500 uppercase tracking-wider font-semibold">{t('trainee.learn.loadingContent')}</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-xl font-semibold text-red-600 mb-2">{t('common.error')}</h2>
-        <p className="text-slate-600">{error}</p>
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="w-16 h-16 bg-red-500 flex items-center justify-center mb-4">
+          <span className="text-white text-2xl font-black">!</span>
+        </div>
+        <h2 className="text-xl font-black text-red-600 uppercase mb-2">{t('common.error')}</h2>
+        <p className="text-neutral-600">{error}</p>
       </div>
     );
   }
 
   if (!activityRecord) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-xl font-semibold text-slate-900 mb-2">
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="w-16 h-16 bg-neutral-200 flex items-center justify-center mb-4">
+          <span className="text-neutral-500 text-2xl font-black">?</span>
+        </div>
+        <h2 className="text-xl font-black text-neutral-900 uppercase mb-2">
           {t('trainee.learn.contentNotFound')}
         </h2>
-        <p className="text-slate-600">
+        <p className="text-neutral-600">
           {t('trainee.learn.contentNotFoundDesc')}
         </p>
       </div>
     );
   }
 
-  // [NEW] Kiểm tra và khóa nội dung nếu session chưa mở
+  // Kiểm tra và khóa nội dung nếu session chưa mở
   const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
 
   if (!isSessionOpen) {
@@ -282,7 +283,6 @@ export default function LearnContent() {
         <div className="space-y-6">
           {materialsList.length > 0 ? (
             materialsList.map((material) => {
-              // Logic detect type giữ nguyên
               const url = (material.materialUrl || '').toLowerCase();
               const isDocumentByUrl = url.endsWith('.pdf') || url.endsWith('.doc') || url.endsWith('.docx') || url.endsWith('.txt');
               const isVideoByUrl = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.endsWith('.avi') || url.includes('youtube.com') || url.includes('vimeo.com');
@@ -300,7 +300,7 @@ export default function LearnContent() {
                     documentUrl={material.materialUrl}
                     onMarkAsComplete={handleMarkAsComplete}
                     onMarkAsNotComplete={handleMarkAsNotComplete}
-                    sessionStatus={sessionStatus} // [UPDATED] Truyền session status xuống
+                    sessionStatus={sessionStatus}
                   />
                 );
               } else if (isVideo) {
@@ -312,7 +312,7 @@ export default function LearnContent() {
                     videoUrl={material.materialUrl}
                     onMarkAsComplete={handleMarkAsComplete}
                     onMarkAsNotComplete={handleMarkAsNotComplete}
-                    sessionStatus={sessionStatus} // [UPDATED] Truyền session status xuống
+                    sessionStatus={sessionStatus}
                   />
                 );
               }
@@ -323,11 +323,14 @@ export default function LearnContent() {
               );
             })
           ) : (
-            <div className="text-center py-12">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-16 h-16 bg-neutral-200 flex items-center justify-center mb-4">
+                <span className="text-neutral-500 text-2xl font-black">?</span>
+              </div>
+              <h2 className="text-xl font-black text-neutral-900 uppercase mb-2">
                 {t('trainee.learn.noMaterials')}
               </h2>
-              <p className="text-slate-600">
+              <p className="text-neutral-600">
                 {t('trainee.learn.noMaterialsDesc')}
               </p>
             </div>
@@ -346,7 +349,7 @@ export default function LearnContent() {
             partition={quizPartition}
             onReload={fetchPartitionData}
             onSubmitAttempt={handleQuizSubmit}
-            sessionStatus={sessionStatus} // [NEW] Truyền prop này xuống
+            sessionStatus={sessionStatus}
           />
         )
       );
@@ -366,11 +369,14 @@ export default function LearnContent() {
 
     default:
       return (
-        <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-slate-900 mb-2">
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-16 h-16 bg-neutral-200 flex items-center justify-center mb-4">
+            <span className="text-neutral-500 text-2xl font-black">?</span>
+          </div>
+          <h2 className="text-xl font-black text-neutral-900 uppercase mb-2">
             {t('trainee.learn.unsupportedType')}
           </h2>
-          <p className="text-slate-600">
+          <p className="text-neutral-600">
             {t('trainee.learn.unsupportedTypeDesc', { type: activityRecord.activityType })}
           </p>
         </div>

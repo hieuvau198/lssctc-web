@@ -1,10 +1,10 @@
 // src/app/pages/Trainee/Learn/partials/QuizAttempt/QuizAttempt.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Button, Checkbox, Radio, Space, Alert, Spin, Tag, Progress } from 'antd';
+import { Checkbox, Radio, Space, Spin } from 'antd';
 import { Clock, AlertTriangle, Send, CheckCircle2 } from 'lucide-react';
 
-// Child component for a single question
+// Child component for a single question - Industrial theme
 const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange, totalQuestions }) => {
   const questionId = question.id;
 
@@ -20,31 +20,31 @@ const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange, tota
   const isAnswered = currentValue.length > 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50/30 flex items-center justify-between">
+    <div className="bg-white border-2 border-neutral-900 overflow-hidden">
+      <div className={`h-2 ${isAnswered ? 'bg-yellow-400' : 'bg-neutral-200'}`} />
+      <div className="px-6 py-4 border-b-2 border-neutral-200 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
-            isAnswered 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-slate-200 text-slate-600'
-          }`}>
+          <div className={`w-10 h-10 flex items-center justify-center text-sm font-black ${isAnswered
+              ? 'bg-yellow-400 text-black'
+              : 'bg-neutral-200 text-neutral-600'
+            }`}>
             {questionIndex + 1}
           </div>
           <div>
-            <h3 className="font-semibold text-slate-900">{question.name}</h3>
+            <h3 className="font-black text-neutral-900 uppercase">{question.name}</h3>
             {question.isMultipleAnswers && (
-              <span className="text-xs text-slate-500">Select all that apply</span>
+              <span className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Select all that apply</span>
             )}
           </div>
         </div>
-        <Tag color={isAnswered ? 'blue' : 'default'} className="text-xs">
+        <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider ${isAnswered ? 'bg-yellow-400 text-black' : 'bg-neutral-100 text-neutral-500'}`}>
           {isAnswered ? 'Answered' : 'Unanswered'}
-        </Tag>
+        </span>
       </div>
 
       <div className="p-6">
         {question.description && (
-          <p className="text-slate-600 mb-4">{question.description}</p>
+          <p className="text-neutral-600 mb-4">{question.description}</p>
         )}
 
         {question.isMultipleAnswers ? (
@@ -55,16 +55,15 @@ const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange, tota
           >
             <Space direction="vertical" className="w-full">
               {question.options.map((opt) => (
-                <div 
-                  key={opt.id} 
-                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                    currentValue.includes(opt.id)
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'
-                  }`}
+                <div
+                  key={opt.id}
+                  className={`p-4 border-2 transition-all cursor-pointer ${currentValue.includes(opt.id)
+                      ? 'border-yellow-400 bg-yellow-50'
+                      : 'border-neutral-200 hover:border-yellow-400'
+                    }`}
                 >
                   <Checkbox value={opt.id} className="w-full">
-                    <span className="text-slate-700">{opt.name}</span>
+                    <span className="text-neutral-700 font-medium">{opt.name}</span>
                   </Checkbox>
                 </div>
               ))}
@@ -78,16 +77,15 @@ const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange, tota
           >
             <Space direction="vertical" className="w-full">
               {question.options.map((opt) => (
-                <div 
-                  key={opt.id} 
-                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                    currentValue[0] === opt.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'
-                  }`}
+                <div
+                  key={opt.id}
+                  className={`p-4 border-2 transition-all cursor-pointer ${currentValue[0] === opt.id
+                      ? 'border-yellow-400 bg-yellow-50'
+                      : 'border-neutral-200 hover:border-yellow-400'
+                    }`}
                 >
                   <Radio value={opt.id} className="w-full">
-                    <span className="text-slate-700">{opt.name}</span>
+                    <span className="text-neutral-700 font-medium">{opt.name}</span>
                   </Radio>
                 </div>
               ))}
@@ -119,7 +117,7 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
       }
       return;
     }
-    
+
     if (!isTimerRunning) {
       return;
     }
@@ -145,7 +143,7 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
       [questionId]: optionIds,
     }));
   };
-  
+
   const handleSubmit = () => {
     console.log('[QuizAttempt] handleSubmit triggered.');
     setIsTimerRunning(false);
@@ -167,62 +165,58 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
   return (
     <Spin spinning={isSubmitting} tip="Submitting your answers...">
       <div className="space-y-6">
-        {/* Sticky Header */}
-        <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-4">
+        {/* Sticky Header - Industrial */}
+        <div className="sticky top-0 z-20 bg-white border-2 border-neutral-900 p-4">
+          <div className="h-1 bg-yellow-400 -mx-4 -mt-4 mb-4" />
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">{quizName}</h2>
+              <h2 className="text-lg font-black text-neutral-900 uppercase">{quizName}</h2>
               <div className="flex items-center gap-4 mt-1">
-                <span className="text-sm text-slate-500">
+                <span className="text-sm text-neutral-500 font-semibold uppercase tracking-wider">
                   {answeredCount}/{questions.length} answered
                 </span>
-                <Progress 
-                  percent={progressPercent} 
-                  size="small" 
-                  showInfo={false}
-                  strokeColor={{ from: '#3b82f6', to: '#6366f1' }}
-                  className="w-24"
-                />
+                <div className="w-24 h-2 border-2 border-neutral-900 bg-white">
+                  <div
+                    className="h-full bg-yellow-400 transition-all"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
               {/* Timer */}
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl font-mono text-lg font-bold ${
-                isCriticalTime 
-                  ? 'bg-red-100 text-red-600 animate-pulse' 
-                  : isLowTime 
-                    ? 'bg-amber-100 text-amber-600'
-                    : 'bg-blue-100 text-blue-600'
-              }`}>
+              <div className={`flex items-center gap-2 px-4 py-2 font-mono text-lg font-black border-2 ${isCriticalTime
+                  ? 'border-red-500 bg-red-50 text-red-600 animate-pulse'
+                  : isLowTime
+                    ? 'border-yellow-400 bg-yellow-50 text-yellow-700'
+                    : 'border-neutral-900 bg-white text-neutral-900'
+                }`}>
                 <Clock className="w-5 h-5" />
                 {formatTime(timeLeft)}
               </div>
 
               {/* Submit Button */}
-              <Button 
-                type="primary" 
-                size="large"
-                icon={<Send className="w-4 h-4" />}
+              <button
                 onClick={() => handleSubmit(false)}
-                loading={isSubmitting}
-                className="shadow-lg shadow-blue-200"
+                disabled={isSubmitting}
+                className="flex items-center gap-2 px-6 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-black hover:text-yellow-400 transition-all disabled:opacity-50"
               >
+                <Send className="w-4 h-4" />
                 Submit
-              </Button>
+              </button>
             </div>
           </div>
         </div>
 
         {/* Time Warning */}
         {isLowTime && (
-          <Alert
-            message={isCriticalTime ? "Less than 1 minute remaining!" : "Less than 5 minutes remaining!"}
-            type={isCriticalTime ? "error" : "warning"}
-            showIcon
-            icon={<AlertTriangle className="w-5 h-5" />}
-            className="rounded-xl"
-          />
+          <div className={`flex items-center gap-3 p-4 border-2 ${isCriticalTime ? 'border-red-500 bg-red-50' : 'border-yellow-400 bg-yellow-50'}`}>
+            <AlertTriangle className={`w-5 h-5 ${isCriticalTime ? 'text-red-500' : 'text-yellow-600'}`} />
+            <span className={`font-bold uppercase ${isCriticalTime ? 'text-red-700' : 'text-yellow-700'}`}>
+              {isCriticalTime ? "Less than 1 minute remaining!" : "Less than 5 minutes remaining!"}
+            </span>
+          </div>
         )}
 
         {/* Questions */}
@@ -240,28 +234,28 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
         </div>
 
         {/* Bottom Submit */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 text-center">
+        <div className="bg-white border-2 border-neutral-900 p-6 text-center">
+          <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-6" />
           <div className="mb-4">
-            <div className="flex items-center justify-center gap-2 text-slate-600 mb-2">
+            <div className="flex items-center justify-center gap-2 text-neutral-600 mb-2">
               <CheckCircle2 className="w-5 h-5" />
-              <span>{answeredCount} of {questions.length} questions answered</span>
+              <span className="font-semibold uppercase tracking-wider">{answeredCount} of {questions.length} questions answered</span>
             </div>
-            <Progress 
-              percent={progressPercent} 
-              strokeColor={{ from: '#3b82f6', to: '#6366f1' }}
-              className="max-w-md mx-auto"
-            />
+            <div className="max-w-md mx-auto h-3 border-2 border-neutral-900 bg-white">
+              <div
+                className="h-full bg-yellow-400 transition-all"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
-          <Button 
-            type="primary" 
-            size="large"
-            icon={<Send className="w-4 h-4" />}
+          <button
             onClick={() => handleSubmit(false)}
-            loading={isSubmitting}
-            className="px-8 shadow-lg shadow-blue-200"
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-black hover:text-yellow-400 transition-all disabled:opacity-50"
           >
+            <Send className="w-4 h-4" />
             Submit Quiz
-          </Button>
+          </button>
         </div>
       </div>
     </Spin>

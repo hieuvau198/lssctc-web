@@ -348,7 +348,9 @@
     "updating": "Updating...",
     "updatePassword": "Update password",
     "afterUpdatingNote": "After updating you will be redirected to sign in.",
-    "verifyAccount": "Verify your account"
+    "verifyAccount": "Verify your account",
+    "enterVerificationCode": "Enter the 6-digit code we sent to {{email}}",
+    "verifyCode": "Verify code"
   },
   "sectionLayout": {
     "congratulations": "Congratulations!",

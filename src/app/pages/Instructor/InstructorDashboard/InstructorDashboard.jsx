@@ -10,32 +10,28 @@ import { getInstructorSummary } from '../../../apis/Instructor/InstructorDashboa
 import useAuthStore from '../../../store/authStore';
 
 const getStatConfig = (t) => [
-  { 
-    key: 'trainees', 
-    label: t('instructor.dashboard.totalTrainees'), 
-    dataKey: 'totalTrainees', 
-    color: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+  {
+    key: 'trainees',
+    label: t('instructor.dashboard.totalTrainees'),
+    dataKey: 'totalTrainees',
     icon: Users
   },
-  { 
-    key: 'classes', 
-    label: t('instructor.dashboard.totalClasses'), 
-    dataKey: 'totalClasses', 
-    color: 'bg-blue-50 text-blue-600 border-blue-100',
+  {
+    key: 'classes',
+    label: t('instructor.dashboard.totalClasses'),
+    dataKey: 'totalClasses',
     icon: BookOpen
   },
-  { 
-    key: 'materials', 
-    label: t('instructor.dashboard.totalMaterials'), 
-    dataKey: 'totalMaterials', 
-    color: 'bg-amber-50 text-amber-600 border-amber-100',
+  {
+    key: 'materials',
+    label: t('instructor.dashboard.totalMaterials'),
+    dataKey: 'totalMaterials',
     icon: FileText
   },
-  { 
-    key: 'quizzes', 
-    label: t('instructor.dashboard.totalQuizzes'), 
-    dataKey: 'totalQuizzes', 
-    color: 'bg-purple-50 text-purple-600 border-purple-100',
+  {
+    key: 'quizzes',
+    label: t('instructor.dashboard.totalQuizzes'),
+    dataKey: 'totalQuizzes',
     icon: HelpCircle
   },
 ];
@@ -50,7 +46,7 @@ export default function InstructorDashboard() {
   useEffect(() => {
     const fetchSummary = async () => {
       if (!instructorId) return;
-      
+
       try {
         setLoading(true);
         const data = await getInstructorSummary(instructorId);
@@ -65,40 +61,44 @@ export default function InstructorDashboard() {
   }, [instructorId]);
 
   return (
-    <div className="p-4 space-y-6 min-h-screen">
-      {/* Header */}
-      <div className="flex items-center gap-x-3">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
-          <LayoutDashboard className="w-5 h-5 text-white" />
+    <div className="space-y-6 min-h-screen">
+      {/* Header - Industrial Style */}
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center">
+          <LayoutDashboard className="w-6 h-6 text-black" />
         </div>
         <div>
-          <span className="text-2xl font-bold text-gray-900">{t('instructor.dashboard.title')}</span>
-          <p className="text-sm text-gray-500">{t('instructor.dashboard.subtitle')}</p>
+          <span className="text-2xl font-black text-neutral-900 uppercase tracking-tight">
+            {t('instructor.dashboard.title')}
+          </span>
+          <p className="text-sm text-neutral-500 uppercase tracking-wider">
+            {t('instructor.dashboard.subtitle')}
+          </p>
         </div>
       </div>
 
-      {/* Overview Stats */}
+      {/* Overview Stats - Industrial Style */}
       {loading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+            <div key={i} className="bg-white border-2 border-neutral-900 p-5">
               <Skeleton active paragraph={{ rows: 1 }} />
             </div>
           ))}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {statConfig.map(s => {
+          {statConfig.map((s, index) => {
             const Icon = s.icon;
             return (
-              <div key={s.key} className="relative overflow-hidden bg-white rounded-xl border border-gray-200 shadow-sm p-5 group hover:shadow-md transition-shadow">
-                <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-40 blur-2xl pointer-events-none transition group-hover:scale-110 ${s.color}`} />
-                <div className="flex items-start justify-between relative z-10">
+              <div key={s.key} className="bg-white border-2 border-neutral-900 hover:border-yellow-400 p-5 transition-colors group">
+                <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+                <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <p className="text-xs uppercase tracking-wide text-gray-500 font-medium">{s.label}</p>
-                    <p className="text-3xl font-bold text-gray-800">{summary?.[s.dataKey] ?? 0}</p>
+                    <p className="text-xs uppercase tracking-wider text-neutral-500 font-bold">{s.label}</p>
+                    <p className="text-3xl font-black text-neutral-900">{summary?.[s.dataKey] ?? 0}</p>
                   </div>
-                  <div className={`h-11 w-11 inline-flex items-center justify-center rounded-xl border shadow-sm bg-white ${s.color}`}>
+                  <div className="h-10 w-10 inline-flex items-center justify-center bg-yellow-400 text-black">
                     <Icon className="w-5 h-5" />
                   </div>
                 </div>
@@ -110,16 +110,9 @@ export default function InstructorDashboard() {
 
       {/* Charts Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Trainees by Class - Bar Chart */}
         <ClassTraineeChart />
-
-        {/* Class Status Distribution - Donut Chart */}
         <ClassStatusChart />
-
-        {/* Yearly Completions - Area Chart */}
         <YearlyCompletionChart />
-
-        {/* Grade Distribution - Pie Chart */}
         <GradeDistributionChart />
       </div>
     </div>
