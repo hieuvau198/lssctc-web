@@ -4,6 +4,7 @@ import { fetchCourseDetail } from "../../../../apis/ProgramManager/CourseApi";
 import { Skeleton, Alert, Divider } from "antd";
 import SectionList from './Sections/SectionList';
 import CourseClassList from './CourseClassList';
+import CourseCertificate from './CourseCertificate';
 import dayjs from "dayjs";
 
 const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) => {
@@ -96,13 +97,16 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
         </div>
       </div>
 
-      {/* BOTTOM PART: Sections & Classes */}
+      {/* BOTTOM PART: Sections, Certificates & Classes */}
       <div className="w-full space-y-12">
           {/* Sections List */}
           <div>
-             {/* Note: Ensure SectionList also follows the flat style if needed, 
-                 or wrap it here to control its container styling */}
              <SectionList courseId={course.id} />
+          </div>
+
+          {/* New Certificate Component */}
+          <div>
+             <CourseCertificate courseId={course.id} />
           </div>
 
           {/* Class List */}
