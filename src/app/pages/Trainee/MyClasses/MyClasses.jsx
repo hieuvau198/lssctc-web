@@ -140,7 +140,7 @@ export default function MyClasses() {
           {/* Loading State */}
           {loading && (
             <div className="min-h-[400px] flex flex-col items-center justify-center">
-              <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent animate-spin mb-4" />
+              <div className="w-12 h-12 border-4 border-neutral-200 border-t-yellow-400 rounded-full animate-spin mb-4" />
               <p className="text-neutral-500 uppercase tracking-wider font-semibold">{t('common.loading')}</p>
             </div>
           )}
