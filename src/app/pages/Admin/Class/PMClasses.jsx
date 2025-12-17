@@ -342,21 +342,56 @@ const PMClasses = () => {
         </div>
       </div>
 
-      {/* Drawer for Add Class */}
+      {/* Industrial Drawer for Add Class */}
       <Drawer
         open={drawerOpen}
         onClose={closeDrawer}
         width={720}
-        title={t('admin.classes.createClass')}
+        title={null}
+        closable={false}
         destroyOnClose
+        styles={{
+          header: { display: 'none' },
+          body: { padding: 0 },
+        }}
       >
-        <AddClassForm
-          embedded
-          open={drawerOpen}
-          onCancel={closeDrawer}
-          onCreate={handleCreate}
-          confirmLoading={submitting}
-        />
+        {/* Custom Industrial Header */}
+        <div className="sticky top-0 z-10">
+          <div className="h-1.5 bg-yellow-400" />
+          <div className="bg-black px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center shadow-lg">
+                <GraduationCap className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black uppercase tracking-wider text-white m-0">
+                  {t('admin.classes.createClass')}
+                </h3>
+                <p className="text-neutral-400 text-xs m-0 mt-1">
+                  {t('admin.classes.form.subtitle') || 'Fill in the class details'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={closeDrawer}
+              className="w-10 h-10 flex items-center justify-center border-2 border-white/50 hover:bg-yellow-400 hover:border-yellow-400 transition-all group"
+            >
+              <X className="w-5 h-5 text-white group-hover:text-black" />
+            </button>
+          </div>
+          <div className="h-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400" />
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <AddClassForm
+            embedded
+            open={drawerOpen}
+            onCancel={closeDrawer}
+            onCreate={handleCreate}
+            confirmLoading={submitting}
+          />
+        </div>
       </Drawer>
     </div>
   );

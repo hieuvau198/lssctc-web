@@ -2694,7 +2694,11 @@
         "description": "Description",
         "descriptionPlaceholder": "Enter class description",
         "noCourses": "No courses available. Please select a program first.",
-        "selectProgramFirst": "Please select a program first"
+        "selectProgramFirst": "Please select a program first",
+        "subtitle": "Fill in the class details",
+        "basicInfo": "Basic Information",
+        "programCourse": "Program & Course",
+        "schedule": "Schedule"
       },
       "placeholders": {
         "className": "Enter class name",

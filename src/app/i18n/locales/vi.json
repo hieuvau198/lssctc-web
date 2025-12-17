@@ -2696,7 +2696,11 @@
         "description": "Mô tả",
         "descriptionPlaceholder": "Nhập mô tả lớp học",
         "noCourses": "Không có khóa học nào. Vui lòng chọn chương trình trước.",
-        "selectProgramFirst": "Vui lòng chọn chương trình trước"
+        "selectProgramFirst": "Vui lòng chọn chương trình trước",
+        "subtitle": "Điền thông tin chi tiết lớp học",
+        "basicInfo": "Thông tin cơ bản",
+        "programCourse": "Chương trình & Khóa học",
+        "schedule": "Lịch trình"
       },
       "placeholders": {
         "className": "Nhập tên lớp học",
