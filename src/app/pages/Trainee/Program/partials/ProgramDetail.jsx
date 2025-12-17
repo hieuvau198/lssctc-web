@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { fetchProgramDetail, fetchCoursesByProgram } from "../../../../apis/Trainee/TraineeProgramApi";
-import { Skeleton, Alert, Empty } from "antd";
+import { Alert, Empty } from "antd";
 import { BookOpen, GraduationCap, Info, CheckCircle, ChevronRight, Clock, Users } from "lucide-react";
 import CourseCard from '../../../../components/CourseCard/CourseCard';
 import { useNavigate, useParams } from "react-router";
@@ -36,22 +36,12 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-white">
-        <div className="bg-black py-16">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="mb-4"><Skeleton.Button active size="small" style={{ width: 240 }} /></div>
-            <div className="flex flex-col lg:flex-row gap-10 items-stretch">
-              <div className="flex-1 min-w-0">
-                <Skeleton.Input active className="!w-3/4 !h-12 mb-6" />
-                <Skeleton active paragraph={{ rows: 4 }} className="max-w-2xl" />
-              </div>
-              <div className="w-full lg:w-96 flex-shrink-0">
-                <div className="h-72 w-full overflow-hidden bg-neutral-800">
-                  <Skeleton.Image active className="!w-full !h-full" />
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="w-full min-h-screen bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-neutral-200 border-t-yellow-400 rounded-full animate-spin" />
+          <p className="text-neutral-500 uppercase tracking-wider font-semibold text-sm">
+            {t('common.loading', 'Đang tải...')}
+          </p>
         </div>
       </div>
     );
@@ -143,10 +133,6 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
                 )}
               </div>
 
-              {/* Description */}
-              <p className="text-lg text-white max-w-2xl leading-relaxed font-medium drop-shadow-lg" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
-                {program.description || t('trainee.programDetail.noDescription', 'Chưa có mô tả')}
-              </p>
             </div>
 
             {/* Right image panel */}
@@ -168,6 +154,26 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Description Section - Industrial Style */}
+      <section className="py-10 bg-neutral-50 border-y border-neutral-200">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-6">
+            <span className="text-sm tracking-widest text-neutral-500 uppercase font-bold block mb-2">
+              {t('trainee.programDetail.description', 'Mô tả')}
+            </span>
+            <h2 className="text-2xl font-black uppercase tracking-tight">
+              {t('trainee.programDetail.programInfo', 'Thông tin chương trình')}
+            </h2>
+            <div className="h-1 w-16 bg-yellow-400 mt-2" />
+          </div>
+          <div className="bg-white border-2 border-neutral-900 p-6">
+            <p className="whitespace-pre-line text-neutral-600 leading-relaxed">
+              {program.description || t('trainee.programDetail.noDescription', 'Chưa có mô tả chi tiết cho chương trình này.')}
+            </p>
           </div>
         </div>
       </section>
