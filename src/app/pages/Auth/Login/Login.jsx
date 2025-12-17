@@ -144,16 +144,13 @@ export default function Login() {
       {/* Industrial Header */}
       <header className="bg-black text-white">
         <div className="h-1 bg-yellow-400" />
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="mx-auto px-12 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 group">
               <span className="text-xl font-black uppercase tracking-wider text-white group-hover:text-yellow-400 transition-colors">
                 LSSCTC
               </span>
             </Link>
-            <span className="text-sm font-bold uppercase tracking-widest text-yellow-400">
-              {t('auth.signIn')}
-            </span>
           </div>
         </div>
       </header>
@@ -259,7 +256,7 @@ export default function Login() {
                     <button
                       type="button"
                       onClick={() => setShowForgot(true)}
-                      className="text-sm font-semibold text-neutral-600 hover:text-yellow-600 transition-colors"
+                      className="text-sm font-semibold text-neutral-600 hover:text-yellow-400 cursor-pointer transition-colors"
                     >
                       {t('auth.forgotPassword')}
                     </button>
@@ -268,7 +265,7 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-12 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-black hover:text-yellow-400 transition-all disabled:opacity-50"
+                    className="w-full h-12 bg-yellow-400 text-black font-bold cursor-pointer uppercase tracking-wider hover:border-black hover:border-3 transition-all disabled:opacity-50"
                   >
                     {loading ? t('auth.signingIn') : t('auth.signIn')}
                   </button>
@@ -298,7 +295,7 @@ export default function Login() {
               <div>
                 <button
                   onClick={() => { setShowForgot(false); setForgotStep(1); }}
-                  className="mb-6 flex items-center gap-2 text-neutral-600 hover:text-yellow-600 transition-colors font-semibold"
+                  className="mb-6 flex items-center gap-2 cursor-pointer text-neutral-600 hover:text-yellow-600 transition-colors font-semibold"
                 >
                   <ArrowLeftOutlined />
                   <span>{t('common.back')}</span>
@@ -339,7 +336,7 @@ export default function Login() {
                       <button
                         type="submit"
                         disabled={sending}
-                        className="w-full h-12 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-black hover:text-yellow-400 transition-all disabled:opacity-50"
+                        className="w-full h-12 bg-yellow-400 text-black font-bold cursor-pointer uppercase tracking-wider hover:border-black hover:border-3 transition-all disabled:opacity-50"
                       >
                         {t('auth.sendVerificationCode')}
                       </button>
@@ -395,7 +392,7 @@ export default function Login() {
                       <button
                         type="submit"
                         disabled={sending}
-                        className="w-full h-12 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-black hover:text-yellow-400 transition-all disabled:opacity-50"
+                        className="w-full h-12 bg-yellow-400 text-black font-bold cursor-pointer mb-4 uppercase tracking-wider hover:border-yellow-400 hover:border-3 transition-all disabled:opacity-50"
                       >
                         {t('auth.resetPassword')}
                       </button>
@@ -403,7 +400,7 @@ export default function Login() {
                       <button
                         type="button"
                         onClick={() => setForgotStep(1)}
-                        className="w-full h-12 border-2 border-neutral-900 text-neutral-900 font-bold uppercase tracking-wider hover:bg-neutral-100 transition-all flex items-center justify-center gap-2"
+                        className="w-full h-12 border-2 border-neutral-900 text-neutral-900 font-bold uppercase tracking-wider hover:text-yellow-400 hover:bg-neutral-100 transition-all flex items-center justify-center gap-2"
                       >
                         <ArrowLeftOutlined />
                         {t('common.back')}

@@ -14,18 +14,21 @@ export default function DurationDistributionChart({ data = [], loading = false }
         chart: {
             type: 'donut',
             animations: { easing: 'easeinout', speed: 400 },
+            fontFamily: 'inherit',
         },
         labels,
-        colors: ['#8b5cf6', '#a855f7', '#c084fc', '#d8b4fe', '#10b981', '#f59e0b'],
+        colors: ['#fbbf24', '#171717', '#a3a3a3', '#737373', '#404040', '#262626'],
         dataLabels: {
             enabled: true,
             formatter: (val) => `${val.toFixed(1)}%`,
-            style: { fontSize: '12px', fontWeight: 600 },
+            style: { fontSize: '12px', fontWeight: 700 },
         },
         legend: {
             position: 'bottom',
             horizontalAlign: 'center',
-            fontSize: '13px',
+            fontSize: '11px',
+            fontWeight: 700,
+            markers: { width: 10, height: 10, radius: 0 },
         },
         plotOptions: {
             pie: {
@@ -33,19 +36,20 @@ export default function DurationDistributionChart({ data = [], loading = false }
                     size: '60%',
                     labels: {
                         show: true,
-                        name: { show: true, fontSize: '14px', color: '#64748b' },
-                        value: { show: true, fontSize: '24px', fontWeight: 700, color: '#8b5cf6' },
+                        name: { show: true, fontSize: '14px', fontWeight: 700, color: '#171717' },
+                        value: { show: true, fontSize: '24px', fontWeight: 900, color: '#171717' },
                         total: {
                             show: true,
                             label: t('simManager.dashboard.total') || 'Tổng',
                             fontSize: '14px',
-                            color: '#64748b',
+                            fontWeight: 700,
+                            color: '#525252',
                         },
                     },
                 },
             },
         },
-        stroke: { show: true, width: 2, colors: ['#fff'] },
+        stroke: { show: true, width: 2, colors: ['#171717'] },
         tooltip: {
             theme: 'light',
             y: {
@@ -55,9 +59,10 @@ export default function DurationDistributionChart({ data = [], loading = false }
     };
 
     return (
-        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50 h-full">
+        <div className="bg-white border-2 border-neutral-900 h-full">
+            <div className="h-1 bg-yellow-400" />
             <div className="p-5">
-                <h3 className="font-bold text-slate-800 mb-4">
+                <h3 className="font-black text-neutral-900 uppercase tracking-wider text-sm mb-4">
                     {t('simManager.dashboard.durationDistribution') || 'Phân bố thời lượng thực hành'}
                 </h3>
                 <Spin spinning={loading}>
@@ -65,7 +70,7 @@ export default function DurationDistributionChart({ data = [], loading = false }
                         {data.length > 0 ? (
                             <Chart options={options} series={values} type="donut" height={300} />
                         ) : (
-                            <div className="h-[300px] flex items-center justify-center text-slate-400">
+                            <div className="h-[300px] flex items-center justify-center text-neutral-400 uppercase tracking-wider font-semibold">
                                 {t('common.noData') || 'Không có dữ liệu'}
                             </div>
                         )}

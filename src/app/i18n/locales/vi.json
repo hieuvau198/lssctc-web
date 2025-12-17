@@ -349,7 +349,11 @@
     "updating": "Đang cập nhật...",
     "updatePassword": "Cập nhật mật khẩu",
     "afterUpdatingNote": "Sau khi cập nhật, bạn sẽ được chuyển hướng để đăng nhập.",
-    "verifyAccount": "Xác minh tài khoản"
+    "verifyAccount": "Xác minh tài khoản",
+    "enterVerificationCode": "Nhập mã xác minh",
+    "verifyCode": "Mã xác minh",
+    "didntGetCode": "Không nhận được mã?",
+    "resend": "Gửi lại"
   },
   "sectionLayout": {
     "congratulations": "Chúc mừng!",

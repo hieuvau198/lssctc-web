@@ -10,7 +10,6 @@ export default function Overview() {
   const { t } = useTranslation();
   return (
     <div className="space-y-6">
-      <span className="text-2xl">{t('admin.dashboard.title')}</span>
       <SystemStats />
       <div className="grid gap-6 md:grid-cols-2">
         <EnrollmentTrend />

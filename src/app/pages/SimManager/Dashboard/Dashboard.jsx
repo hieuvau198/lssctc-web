@@ -1,8 +1,9 @@
 // src\app\pages\SimManager\Dashboard\Dashboard.jsx
 
-import { Typography, message } from 'antd';
+import { message } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LayoutDashboard } from 'lucide-react';
 import {
   getMonthlyCompletionDistribution,
   getPracticeDurationDistribution,
@@ -11,8 +12,6 @@ import {
 import CompletionDistributionChart from './partials/CompletionDistributionChart';
 import DurationDistributionChart from './partials/DurationDistributionChart';
 import StatsOverview from './partials/StatsOverview';
-
-const { Title } = Typography;
 
 export default function SimDashboard() {
   const { t } = useTranslation();
@@ -96,31 +95,20 @@ export default function SimDashboard() {
     fetchDuration();
   }, [t]);
 
-  const handleCreate = () => {
-    // TODO: navigate to create simulation page
-    console.log('navigate to create simulation');
-  };
-  const handleManageComponents = () => {
-    // TODO: navigate to components settings
-    console.log('navigate to components');
-  };
-  const handleSettings = () => {
-    // TODO: navigate to settings
-    console.log('navigate to settings');
-  };
-
   return (
-    <div className="max-w-[1380px] mx-auto px-4 py-4 space-y-4">
-      <div className="bg-white/20 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-        <div className="p-6">
-          <div className="flex items-center gap-4">
-            <div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                {t('simManager.dashboard.title')}
-              </span>
-              <p className="text-slate-500 text-sm mt-0.5">{t('simManager.dashboard.subtitle')}</p>
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Header - Industrial Style */}
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center">
+          <LayoutDashboard className="w-6 h-6 text-black" />
+        </div>
+        <div>
+          <span className="text-2xl font-black text-neutral-900 uppercase tracking-tight">
+            {t('simManager.dashboard.title')}
+          </span>
+          <p className="text-sm text-neutral-500 uppercase tracking-wider">
+            {t('simManager.dashboard.subtitle')}
+          </p>
         </div>
       </div>
 
@@ -132,7 +120,7 @@ export default function SimDashboard() {
         loading={loadingStats}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <CompletionDistributionChart
             data={completionData}
@@ -151,4 +139,3 @@ export default function SimDashboard() {
     </div>
   );
 }
-

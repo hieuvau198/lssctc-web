@@ -26,11 +26,11 @@ export default function UpcomingSessions() {
 
   const series = [{ name: t('admin.dashboard.charts.enrolledCourses'), data: data.map(item => item.enrolledCourseCount) }];
   const options = {
-    chart: { id: 'active-trainees', toolbar: { show: false } },
-    plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%' } },
-    xaxis: { 
+    chart: { id: 'active-trainees', toolbar: { show: false }, fontFamily: 'inherit' },
+    plotOptions: { bar: { borderRadius: 0, horizontal: false, columnWidth: '60%' } },
+    xaxis: {
       categories: data.map(item => item.traineeName),
-      labels: { 
+      labels: {
         rotate: -45,
         rotateAlways: true,
         style: { fontSize: '10px' },
@@ -38,15 +38,16 @@ export default function UpcomingSessions() {
         maxHeight: 80
       }
     },
-    colors: ['#10b981'],
+    colors: ['#171717'],
     dataLabels: { enabled: false },
-    grid: { borderColor: '#eee' },
+    grid: { borderColor: '#e5e5e5', strokeDashArray: 4 },
     tooltip: { theme: 'light', y: { formatter: (val) => val + ' ' + t('admin.dashboard.charts.courses') } }
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col">
-      <h2 className="text-sm font-medium mb-2 text-gray-700">{t('admin.dashboard.charts.mostActiveTrainees')}</h2>
+    <div className="bg-white border-2 border-neutral-900 p-5 flex flex-col">
+      <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+      <h2 className="text-sm font-black uppercase tracking-wider mb-4 text-neutral-900">{t('admin.dashboard.charts.mostActiveTrainees')}</h2>
       {loading ? (
         <Skeleton active paragraph={{ rows: 4 }} />
       ) : (

@@ -44,56 +44,55 @@ export default function YearlyCompletionChart() {
     t('instructor.dashboard.months.nov'),
     t('instructor.dashboard.months.dec')
   ];
-  
-  // Map data to months (assuming API returns monthly data)
+
   const chartData = months.map((month, index) => {
     const monthData = data.find(d => d.month === index + 1);
     return monthData?.completedCount || monthData?.count || 0;
   });
 
-  const series = [{ 
-    name: t('instructor.dashboard.completions'), 
-    data: chartData 
+  const series = [{
+    name: t('instructor.dashboard.completions'),
+    data: chartData
   }];
 
   const options = {
-    chart: { 
-      id: 'yearly-completions', 
+    chart: {
+      id: 'yearly-completions',
       toolbar: { show: false },
       fontFamily: 'inherit'
     },
-    stroke: { 
-      curve: 'smooth', 
-      width: 3 
+    stroke: {
+      curve: 'smooth',
+      width: 3
     },
-    xaxis: { 
+    xaxis: {
       categories: months,
       labels: { style: { fontSize: '11px' } }
     },
     yaxis: {
-      title: { text: t('instructor.dashboard.completions'), style: { fontSize: '12px', fontWeight: 500 } },
+      title: { text: t('instructor.dashboard.completions'), style: { fontSize: '12px', fontWeight: 700 } },
       min: 0
     },
-    colors: ['#10b981'],
+    colors: ['#fbbf24'],
     dataLabels: { enabled: false },
-    fill: { 
-      type: 'gradient', 
-      gradient: { 
-        shadeIntensity: 1, 
-        opacityFrom: 0.4, 
-        opacityTo: 0.05, 
-        stops: [0, 90, 100] 
-      } 
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.4,
+        opacityTo: 0.05,
+        stops: [0, 90, 100]
+      }
     },
-    grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
-    tooltip: { 
-      theme: 'light', 
-      y: { formatter: (val) => t('instructor.dashboard.completedCount', { count: val }) } 
+    grid: { borderColor: '#e5e5e5', strokeDashArray: 4 },
+    tooltip: {
+      theme: 'light',
+      y: { formatter: (val) => t('instructor.dashboard.completedCount', { count: val }) }
     },
     markers: {
       size: 4,
-      colors: ['#10b981'],
-      strokeColors: '#fff',
+      colors: ['#fbbf24'],
+      strokeColors: '#171717',
       strokeWidth: 2,
       hover: { size: 6 }
     }
@@ -102,9 +101,10 @@ export default function YearlyCompletionChart() {
   const years = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col h-full">
+    <div className="bg-white border-2 border-neutral-900 p-5 flex flex-col h-full">
+      <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-gray-700">{t('instructor.dashboard.yearlyCourseCompletions')}</h2>
+        <h2 className="text-sm font-black uppercase tracking-wider text-neutral-900">{t('instructor.dashboard.yearlyCourseCompletions')}</h2>
         <Select
           size="small"
           value={year}

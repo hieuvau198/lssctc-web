@@ -29,13 +29,13 @@ export default function CourseCompletion() {
 
   const series = [{ name: t('admin.dashboard.charts.completions'), data: data.map(d => d.completedCount) }];
   const options = {
-    chart: { id: 'completion-trends', toolbar: { show: false } },
+    chart: { id: 'completion-trends', toolbar: { show: false }, fontFamily: 'inherit' },
     stroke: { curve: 'smooth', width: 3 },
     xaxis: { categories: data.map(d => `day ${d.day}`) },
-    colors: ['#10b981'],
+    colors: ['#fbbf24'],
     dataLabels: { enabled: false },
     fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05, stops: [0, 90, 100] } },
-    grid: { borderColor: '#eee' },
+    grid: { borderColor: '#e5e5e5', strokeDashArray: 4 },
     tooltip: { theme: 'light', y: { formatter: (val) => val + ' ' + t('admin.dashboard.charts.completed') } }
   };
 
@@ -49,9 +49,10 @@ export default function CourseCompletion() {
   const years = Array.from({ length: 5 }, (_, i) => currentDate.getFullYear() - 2 + i);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-sm font-medium text-gray-700">{t('admin.dashboard.charts.dailyCourseCompletions')}</h2>
+    <div className="bg-white border-2 border-neutral-900 p-5 flex flex-col">
+      <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-black uppercase tracking-wider text-neutral-900">{t('admin.dashboard.charts.dailyCourseCompletions')}</h2>
         <div className="flex gap-2">
           <Select
             size="small"
