@@ -176,33 +176,77 @@ export default function ClassTimeslotManage({ classItem }) {
                     border: 2px solid #000;
                     border-radius: 0;
                 }
-                .industrial-modal .ant-modal-content {
-                    border: 2px solid #000 !important;
-                    border-radius: 0 !important;
-                    padding: 0;
+                
+                /* Improved Rounded Modal Styles */
+                .rounded-modal .ant-modal-content {
+                    border-radius: 16px !important;
+                    padding: 0 !important; /* Full bleed */
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+                    overflow: hidden;
                 }
-                .industrial-modal .ant-modal-header {
-                    border-bottom: 2px solid #000;
-                    margin-bottom: 0;
-                    padding: 16px 24px;
-                    background: #facc15;
+                .rounded-modal .ant-modal-header {
+                    background: #facc15 !important;
+                    padding: 24px 24px 20px !important;
+                    border-bottom: 1px solid #eab308;
+                    border-radius: 0 !important; /* Managed by content overflow */
+                    margin-bottom: 0 !important;
                 }
-                .industrial-modal .ant-modal-title {
-                    font-weight: 800;
+                .rounded-modal .ant-modal-title {
+                    font-weight: 800 !important;
+                    font-size: 18px !important;
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
+                    color: #000 !important;
                 }
-                .industrial-input .ant-input,
-                .industrial-input .ant-picker, 
-                .industrial-input .ant-input-textarea {
-                    border-radius: 0;
-                    border: 2px solid #e5e5e5;
+                .rounded-modal .ant-modal-body {
+                    padding: 32px 32px 24px !important;
                 }
-                .industrial-input .ant-input:focus,
-                .industrial-input .ant-picker-focused,
-                .industrial-input .ant-input-textarea:focus {
+                .rounded-modal .ant-modal-footer {
+                    margin: 0 !important;
+                    padding: 16px 32px 24px !important;
+                    border-top: 1px solid #f1f5f9;
+                    background: #fafaf9;
+                }
+                .rounded-modal .ant-modal-close {
+                    top: 24px;
+                    right: 24px;
+                    color: rgba(0,0,0,0.5);
+                }
+                .rounded-modal .ant-modal-close:hover {
+                    color: #000;
+                    background: rgba(255,255,255,0.2);
+                    border-radius: 50%;
+                }
+                
+                /* Input Styles */
+                .rounded-modal .ant-form-item-label > label {
+                    font-size: 11px !important;
+                    font-weight: 700 !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.05em !important;
+                    color: #64748b !important;
+                }
+                .rounded-modal .ant-input, 
+                .rounded-modal .ant-picker,
+                .rounded-modal .ant-input-textarea {
+                    border-radius: 8px !important;
+                    background-color: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    padding: 8px 12px;
+                    transition: all 0.2s;
+                }
+                .rounded-modal .ant-input:hover, 
+                .rounded-modal .ant-picker:hover,
+                .rounded-modal .ant-input-textarea:hover {
+                    background-color: #fff;
+                    border-color: #cbd5e1;
+                }
+                .rounded-modal .ant-input:focus, 
+                .rounded-modal .ant-picker-focused,
+                .rounded-modal .ant-input-textarea:focus {
+                    background-color: #fff;
                     border-color: #facc15 !important;
-                    box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2);
+                    box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.15) !important;
                 }
             `}</style>
 
@@ -217,7 +261,7 @@ export default function ClassTimeslotManage({ classItem }) {
                     type="primary"
                     icon={<Plus size={16} strokeWidth={3} />}
                     onClick={() => handleOpenModal(null)}
-                    className="bg-yellow-400 text-black border-2 border-black font-bold h-10 px-6 rounded-none hover:bg-yellow-500 hover:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                    className="bg-yellow-400 text-black border border-yellow-500 font-bold h-10 px-6 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all"
                 >
                     {t('class.timeslot.add')}
                 </Button>
@@ -239,35 +283,46 @@ export default function ClassTimeslotManage({ classItem }) {
                 onCancel={() => setModalVisible(false)}
                 onOk={() => form.submit()}
                 confirmLoading={submitting}
-                width={600}
-                className="industrial-modal"
+                width={650}
+                className="rounded-modal"
+                centered
                 okButtonProps={{
-                    className: "bg-black text-white rounded-none border-none font-bold hover:bg-slate-800 h-9 px-6"
+                    className: "bg-black text-white rounded-lg border-none font-bold hover:bg-slate-800 h-10 px-8 shadow-sm transition-all"
                 }}
                 cancelButtonProps={{
-                    className: "rounded-none border-2 border-slate-300 text-slate-600 font-bold hover:border-black hover:text-black h-9 px-6"
+                    className: "rounded-lg border-slate-200 text-slate-600 font-bold hover:border-slate-300 hover:text-slate-800 hover:bg-slate-50 h-10 px-6 transition-all"
                 }}
+                maskStyle={{ backdropFilter: 'blur(2px)', background: 'rgba(0,0,0,0.6)' }}
             >
-                <div className="p-6">
-                    <Form form={form} layout="vertical" onFinish={handleSave} className="industrial-input">
+                <div className="mt-2">
+                    <Form form={form} layout="vertical" onFinish={handleSave}>
                         <Form.Item
-                            label={<span className="font-bold uppercase text-xs tracking-wider">{t('class.timeslot.slotName')}</span>}
+                            label={t('class.timeslot.slotName')}
                             name="name"
                             rules={[{ required: true, message: t('class.timeslot.pleaseEnterName') }]}
+                            className="mb-5"
                         >
-                            <Input placeholder={t('class.timeslot.slotNamePlaceholder')} />
+                            <Input placeholder="e.g. Session 1: Safety Introduction" className="h-11 font-medium text-slate-700" />
                         </Form.Item>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-5">
                             <Form.Item
-                                label={<span className="font-bold uppercase text-xs tracking-wider">{t('class.timeslot.startTime')}</span>}
+                                label={t('class.timeslot.startTime')}
                                 name="startTime"
                                 rules={[{ required: true, message: t('class.timeslot.required') }]}
+                                className="mb-5"
                             >
-                                <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: '100%' }} />
+                                <DatePicker
+                                    showTime={{ format: 'HH:mm' }}
+                                    format="YYYY-MM-DD HH:mm"
+                                    style={{ width: '100%' }}
+                                    className="h-11 w-full font-medium"
+                                    placeholder="Select start time"
+                                    popupClassName="rounded-lg"
+                                />
                             </Form.Item>
                             <Form.Item
-                                label={<span className="font-bold uppercase text-xs tracking-wider">{t('class.timeslot.endTime')}</span>}
+                                label={t('class.timeslot.endTime')}
                                 name="endTime"
                                 dependencies={['startTime']}
                                 rules={[
@@ -281,34 +336,49 @@ export default function ClassTimeslotManage({ classItem }) {
                                         },
                                     }),
                                 ]}
+                                className="mb-5"
                             >
-                                <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: '100%' }} />
+                                <DatePicker
+                                    showTime={{ format: 'HH:mm' }}
+                                    format="YYYY-MM-DD HH:mm"
+                                    style={{ width: '100%' }}
+                                    className="h-11 w-full font-medium"
+                                    placeholder="Select end time"
+                                    popupClassName="rounded-lg"
+                                />
                             </Form.Item>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-5">
                             <Form.Item
-                                label={<span className="font-bold uppercase text-xs tracking-wider">{t('class.timeslot.building')}</span>}
+                                label={t('class.timeslot.building')}
                                 name="locationBuilding"
                                 rules={[{ required: true, message: t('class.timeslot.required') }]}
+                                className="mb-5"
                             >
-                                <Input placeholder={t('class.timeslot.buildingPlaceholder')} />
+                                <Input placeholder="e.g. Building A" className="h-11 font-medium" />
                             </Form.Item>
                             <Form.Item
-                                label={<span className="font-bold uppercase text-xs tracking-wider">{t('class.timeslot.room')}</span>}
+                                label={t('class.timeslot.room')}
                                 name="locationRoom"
                                 rules={[{ required: true, message: t('class.timeslot.required') }]}
+                                className="mb-5"
                             >
-                                <Input placeholder={t('class.timeslot.roomPlaceholder')} />
+                                <Input placeholder="e.g. Room 101" className="h-11 font-medium" />
                             </Form.Item>
                         </div>
 
                         <Form.Item
-                            label={<span className="font-bold uppercase text-xs tracking-wider">{t('class.timeslot.locationDetail')}</span>}
+                            label={t('class.timeslot.locationDetail')}
                             name="locationDetail"
                             rules={[{ required: true, message: t('class.timeslot.required') }]}
+                            className="mb-0"
                         >
-                            <Input.TextArea rows={2} placeholder={t('class.timeslot.locationDetailPlaceholder')} />
+                            <Input.TextArea
+                                rows={4}
+                                placeholder="Detailed navigation instructions or notes..."
+                                className="font-medium resize-none leading-relaxed"
+                            />
                         </Form.Item>
                     </Form>
                 </div>
