@@ -285,7 +285,7 @@ export default function MyClassDetail() {
       </section>
 
       {/* Tabs Navigation */}
-      <section className="bg-white border-b border-neutral-200 sticky top-0 z-10">
+      <section className="bg-white border-b border-neutral-200 sticky top-17 z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-0 overflow-x-auto">
             {[

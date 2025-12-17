@@ -1,5 +1,6 @@
 import React from 'react';
 import HomeBanner from './partials/HomeBanner';
+import CraneSection from './partials/CraneSection';
 import CategoriesSection from './partials/CategoriesSection';
 import MainCoursesSection from './partials/MainCoursesSection';
 import NewCoursesSection from './partials/NewCoursesSection';
@@ -11,6 +12,7 @@ export default function Home() {
   return (
     <>
       <HomeBanner />
+      <CraneSection />
       <CategoriesSection />
       <MainCoursesSection />
       <NewCoursesSection />
