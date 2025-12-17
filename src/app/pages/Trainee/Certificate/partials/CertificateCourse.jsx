@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Button, Divider, Skeleton, message } from 'antd';
-import { Award, Download, ExternalLink, ArrowLeft, Calendar, GraduationCap, FileText, Sparkles } from 'lucide-react';
+import { Divider, Skeleton, message } from 'antd';
+import { Award, Download, ExternalLink, ChevronLeft, Calendar, GraduationCap, FileText } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageNav from '../../../../components/PageNav/PageNav';
 import { getTraineeCertificateById } from '../../../../apis/Trainee/TraineeCertificateApi';
@@ -47,11 +47,11 @@ export default function CertificateCourse() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
-				<div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-8">
+			<div className="min-h-screen bg-white">
+				<div className="max-w-7xl mx-auto px-6 py-8">
 					<PageNav items={[{ title: 'Certificates', href: '/certificate' }, { title: 'Loading...' }]} />
 					<div className="mt-6">
-						<div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-lg p-8">
+						<div className="bg-white border-2 border-neutral-900 p-8">
 							<Skeleton active paragraph={{ rows: 8 }} />
 						</div>
 					</div>
@@ -70,49 +70,64 @@ export default function CertificateCourse() {
 	const expireDateText = expireDate?.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
-			{/* Hero Section */}
-			<div className="relative bg-gradient-to-br from-cyan-50/80 via-blue-50/50 to-white border-b border-slate-200/60 overflow-hidden">
-				{/* Decorative Blurs */}
-				<div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-				<div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+		<div className="min-h-screen bg-white">
+			{/* Hero Section - Industrial Style */}
+			<section className="relative bg-black text-white py-12 overflow-hidden">
+				<div className="absolute inset-0">
+					<img
+						src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=2070&auto=format&fit=crop"
+						onError={(e) => {
+							e.target.onerror = null;
+							e.target.src = "/images/crane-background.jpg";
+						}}
+						alt=""
+						className="w-full h-full object-cover"
+					/>
+				</div>
+				<div className="absolute inset-0 bg-black/60" />
 
-				<div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-8">
-					<PageNav items={[{ title: 'Certificates', href: '/certificate' }, { title: cert.courseName || 'Certificate' }]} />
+				<div className="relative max-w-7xl mx-auto px-6">
+					<PageNav
+						items={[{ title: 'Certificates', href: '/certificate' }, { title: cert.courseName || 'Certificate' }]}
+						className="mb-6 [&_a]:text-white/80 [&_a:hover]:text-yellow-400 [&_span]:text-white [&_svg]:text-white/60"
+					/>
 
-					<div className="mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 						{/* Left Content */}
 						<div className="flex-1">
-							<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-full border border-cyan-200/60 mb-4">
-								<Sparkles className="w-4 h-4 text-cyan-500" />
-								<span className="text-sm font-medium text-cyan-700">Chứng chỉ hoàn thành</span>
+							<div className="mb-4 flex items-center gap-4">
+								<span className="text-sm tracking-widest text-white uppercase font-bold" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+									LSSCTC ACADEMY
+								</span>
+								<span className="h-1 w-1 rounded-full bg-yellow-400" />
+								<span className="px-4 py-1 bg-yellow-400 text-black text-xs font-bold tracking-wider uppercase">
+									Chứng chỉ
+								</span>
 							</div>
 
-							<h1 className="text-3xl lg:text-4xl font-bold mb-3">
-								<span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
-									{cert.courseName || cert.course || 'Certificate'}
-								</span>
+							<h1 className="text-3xl lg:text-4xl font-black uppercase tracking-tight mb-3 text-white drop-shadow-xl" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)' }}>
+								{cert.courseName || cert.course || 'Certificate'}
 							</h1>
 
-							<p className="text-slate-500 font-mono text-sm mb-4">
+							<p className="text-sm font-bold tracking-widest text-white/80 uppercase mb-4">
 								{cert.certificateCode || cert.certificateId || 'N/A'}
 							</p>
 
 							{/* Meta info */}
-							<div className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
-								<div className="flex items-center gap-2">
-									<GraduationCap className="w-4 h-4 text-cyan-500" />
+							<div className="flex flex-wrap items-center gap-4 text-sm text-white">
+								<div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-2">
+									<GraduationCap className="w-4 h-4 text-yellow-400" />
 									<span>{cert.traineeName || cert.learnerName || 'N/A'}</span>
 								</div>
 								{issueDate && (
-									<div className="flex items-center gap-2">
-										<Calendar className="w-4 h-4 text-cyan-500" />
+									<div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-2">
+										<Calendar className="w-4 h-4 text-yellow-400" />
 										<span>Cấp ngày: {issueDateText}</span>
 									</div>
 								)}
 								{expireDate && (
-									<div className="flex items-center gap-2">
-										<Calendar className="w-4 h-4 text-amber-500" />
+									<div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-2">
+										<Calendar className="w-4 h-4 text-amber-400" />
 										<span>Hết hạn: {expireDateText}</span>
 									</div>
 								)}
@@ -121,134 +136,134 @@ export default function CertificateCourse() {
 
 						{/* Right: Action Buttons */}
 						<div className="flex items-center gap-3">
-							<Button
-								icon={<ArrowLeft className="w-4 h-4" />}
+							<button
 								onClick={() => navigate('/certificate')}
-								className="!h-10 !px-4 !rounded-xl !border-slate-200 hover:!border-cyan-400 hover:!text-cyan-600"
+								className="h-12 px-6 border-2 border-white text-white font-bold uppercase tracking-wider hover:bg-yellow-400 hover:text-black hover:border-yellow-400 transition-all flex items-center gap-2"
 							>
+								<ChevronLeft className="w-5 h-5" />
 								Quay lại
-							</Button>
+							</button>
 							{cert.pdfUrl && (
-								<Button
-									icon={<ExternalLink className="w-4 h-4" />}
+								<button
 									onClick={() => window.open(cert.pdfUrl, '_blank')}
-									className="!h-10 !px-4 !rounded-xl !border-slate-200 hover:!border-cyan-400 hover:!text-cyan-600"
+									className="h-12 px-6 border-2 border-white text-white font-bold uppercase tracking-wider hover:bg-yellow-400 hover:text-black hover:border-yellow-400 transition-all flex items-center gap-2"
 								>
+									<ExternalLink className="w-5 h-5" />
 									Mở tab mới
-								</Button>
+								</button>
 							)}
-							<Button
-								type="primary"
-								icon={<Download className="w-4 h-4" />}
+							<button
 								onClick={downloadPdf}
-								className="!h-10 !px-5 !rounded-xl !bg-gradient-to-r !from-cyan-500 !to-blue-600 !border-none hover:!opacity-90"
+								className="h-12 px-6 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2"
 							>
-								Tải xuống PDF
-							</Button>
+								<Download className="w-5 h-5" />
+								Tải PDF
+							</button>
 						</div>
 					</div>
 				</div>
-			</div>
+			</section>
 
 			{/* Content Area */}
-			<div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-8">
-				<div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-xl overflow-hidden">
-					{cert.pdfUrl ? (
-						<div className="p-4">
-							<iframe
-								src={cert.pdfUrl}
-								className="w-full h-[800px] border-0 rounded-xl shadow-inner"
-								title="Certificate PDF"
-							/>
-						</div>
-					) : (
-						<div className="relative">
-							{/* Decorative background */}
-							<div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-50 rounded-full blur-3xl" />
-							<div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-50 rounded-full blur-3xl" />
+			<section className="py-10 bg-neutral-50 border-y border-neutral-200">
+				<div className="max-w-7xl mx-auto px-6">
+					<div className="bg-white border-4 border-neutral-900 overflow-hidden">
+						{cert.pdfUrl ? (
+							<div className="p-4">
+								<iframe
+									src={cert.pdfUrl}
+									className="w-full h-[800px] border-0"
+									title="Certificate PDF"
+								/>
+							</div>
+						) : (
+							<div className="relative">
+								{/* Certificate Display */}
+								<div className="p-10 print-area">
+									<div className="border-4 border-neutral-900 p-10 bg-white">
+										{/* Yellow accent */}
+										<div className="h-2 bg-yellow-400 -mx-10 -mt-10 mb-8" />
 
-							<div className="relative p-10 print-area">
-								<div className="border-2 border-slate-200 rounded-3xl p-10 bg-gradient-to-br from-white via-white to-cyan-50/30">
-									{/* Header */}
-									<div className="flex flex-col items-center justify-center gap-4 mb-8 text-center">
-										<div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
-											<Award className="w-10 h-10 text-white" />
-										</div>
-										<h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-											Certificate of Completion
-										</h2>
-									</div>
-
-									<p className="text-center text-slate-500 mb-8 text-lg">This is to certify that</p>
-
-									{/* Content */}
-									<div className="text-center space-y-6">
-										<div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
-											{cert.traineeName || cert.learnerName || 'N/A'}
-										</div>
-
-										<p className="text-slate-600 text-lg">has successfully completed</p>
-
-										<div className="text-2xl sm:text-3xl font-semibold text-slate-800">
-											{cert.courseName || cert.course || 'N/A'}
-										</div>
-
-										<div className="flex justify-center items-center gap-4 text-slate-600 flex-wrap">
-											{issueDateText && (
-												<span className="px-4 py-2 bg-slate-100 rounded-full">
-													on <span className="font-medium text-slate-800">{issueDateText}</span>
-												</span>
-											)}
-											{expireDateText && (
-												<span className="px-4 py-2 bg-amber-50 rounded-full text-amber-700">
-													valid until <span className="font-medium">{expireDateText}</span>
-												</span>
-											)}
-										</div>
-
-										{cert.grade != null && (
-											<div className="pt-4">
-												<span className="text-slate-500">Score: </span>
-												<span className="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
-													{cert.grade}
-												</span>
-												<span className="text-slate-400 ml-1">/ 100</span>
+										{/* Header */}
+										<div className="flex flex-col items-center justify-center gap-4 mb-8 text-center">
+											<div className="w-20 h-20 bg-yellow-400 flex items-center justify-center">
+												<Award className="w-10 h-10 text-black" />
 											</div>
-										)}
-									</div>
-
-									<Divider className="!my-10" />
-
-									{/* Footer */}
-									<div className="flex items-end justify-between">
-										<div className="text-sm text-slate-600">
-											<div className="flex items-center gap-2 mb-1">
-												<FileText className="w-4 h-4 text-cyan-500" />
-												<span>Certificate ID</span>
-											</div>
-											<div className="font-semibold text-slate-800 font-mono">
-												{cert.certificateCode || cert.certificateId || 'N/A'}
-											</div>
+											<h2 className="text-3xl sm:text-4xl font-black uppercase tracking-wider text-neutral-900">
+												Certificate of Completion
+											</h2>
 										</div>
-										<div className="text-center">
-											<div className="h-12" />
-											<div className="border-t-2 border-slate-300 pt-2 px-8">
-												<div className="text-sm font-medium text-slate-700">
-													{cert.issuerName || 'Training Director'}
+
+										<p className="text-center text-neutral-500 mb-8 text-lg uppercase tracking-wider">This is to certify that</p>
+
+										{/* Content */}
+										<div className="text-center space-y-6">
+											<div className="text-3xl sm:text-4xl font-black uppercase text-neutral-900">
+												{cert.traineeName || cert.learnerName || 'N/A'}
+											</div>
+
+											<p className="text-neutral-600 text-lg uppercase tracking-wider">has successfully completed</p>
+
+											<div className="text-2xl sm:text-3xl font-black uppercase text-neutral-800">
+												{cert.courseName || cert.course || 'N/A'}
+											</div>
+
+											<div className="flex justify-center items-center gap-4 flex-wrap">
+												{issueDateText && (
+													<span className="px-4 py-2 bg-yellow-400 text-black font-bold uppercase tracking-wider text-sm">
+														{issueDateText}
+													</span>
+												)}
+												{expireDateText && (
+													<span className="px-4 py-2 bg-neutral-200 text-neutral-700 font-bold uppercase tracking-wider text-sm">
+														valid until {expireDateText}
+													</span>
+												)}
+											</div>
+
+											{cert.grade != null && (
+												<div className="pt-4">
+													<span className="text-neutral-500 uppercase tracking-wider">Score: </span>
+													<span className="text-4xl font-black text-neutral-900">
+														{cert.grade}
+													</span>
+													<span className="text-neutral-400 ml-1">/100</span>
 												</div>
-												<div className="text-xs text-slate-500">
-													{cert.issuerTitle || 'Authorized Signatory'}
+											)}
+										</div>
+
+										<Divider className="!my-10 !border-neutral-300" />
+
+										{/* Footer */}
+										<div className="flex items-end justify-between">
+											<div className="text-sm text-neutral-600">
+												<div className="flex items-center gap-2 mb-1">
+													<FileText className="w-4 h-4 text-yellow-500" />
+													<span className="uppercase tracking-wider font-semibold">Certificate ID</span>
+												</div>
+												<div className="font-black text-neutral-900 font-mono">
+													{cert.certificateCode || cert.certificateId || 'N/A'}
+												</div>
+											</div>
+											<div className="text-center">
+												<div className="h-12" />
+												<div className="border-t-4 border-neutral-900 pt-2 px-8">
+													<div className="text-sm font-black uppercase text-neutral-900">
+														{cert.issuerName || 'Training Director'}
+													</div>
+													<div className="text-xs text-neutral-500 uppercase tracking-wider">
+														{cert.issuerTitle || 'Authorized Signatory'}
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					)}
+						)}
+					</div>
 				</div>
-			</div>
+			</section>
 		</div>
 	);
 }
-

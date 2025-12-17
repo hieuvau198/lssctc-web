@@ -1,16 +1,8 @@
 import React from 'react';
 import { Skeleton } from 'antd';
 import { Link, useLocation } from 'react-router';
-import { Home } from 'lucide-react';
+import { Home, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '../ui/breadcrumb';
 
 function toTitle(seg) {
   if (!seg) return '';
@@ -66,32 +58,33 @@ export default function PageNav({ items, className = '', rootHref = '/', rootLab
   if (!builtItems) return <Skeleton active />;
 
   return (
-    <div className={['py-2', className].join(' ').trim()}>
-      <Breadcrumb>
-        <BreadcrumbList>
-          {builtItems.map((item, idx) => (
-            <React.Fragment key={item.key}>
-              <BreadcrumbItem>
-                {item.isLast ? (
-                  <BreadcrumbPage>{item.title}</BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink asChild>
-                    <Link
-                      to={item.href}
-                      className="inline-flex items-center gap-1.5"
-                      title={item.title}
-                    >
-                      {item.isRoot && <Home className="w-4 h-4" />}
-                      <span className="text-sm font-medium text-slate-600 group-hover:text-cyan-600 transition-colors">{item.title}</span>
-                    </Link>
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-              {idx < builtItems.length - 1 && <BreadcrumbSeparator />}
-            </React.Fragment>
-          ))}
-        </BreadcrumbList>
-      </Breadcrumb>
-    </div>
+    <nav className={['py-2', className].join(' ').trim()} aria-label="Breadcrumb">
+      <ol className="flex items-center gap-1 flex-wrap">
+        {builtItems.map((item, idx) => (
+          <React.Fragment key={item.key}>
+            <li className="flex items-center">
+              {item.isLast ? (
+                <span className="text-sm font-bold uppercase tracking-wider text-neutral-900">
+                  {item.title}
+                </span>
+              ) : (
+                <Link
+                  to={item.href}
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-neutral-500 hover:text-yellow-600 transition-colors"
+                >
+                  {item.isRoot && <Home className="w-4 h-4" />}
+                  <span>{item.title}</span>
+                </Link>
+              )}
+            </li>
+            {idx < builtItems.length - 1 && (
+              <li className="flex items-center text-neutral-300" aria-hidden>
+                <ChevronRight className="w-4 h-4" />
+              </li>
+            )}
+          </React.Fragment>
+        ))}
+      </ol>
+    </nav>
   );
 }
