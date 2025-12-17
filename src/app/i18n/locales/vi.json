@@ -2488,7 +2488,14 @@
         "imagePreview": "Xem trước hình ảnh",
         "description": "Mô tả",
         "descriptionRequired": "Vui lòng nhập mô tả",
-        "descriptionPlaceholder": "Nhập mô tả chương trình"
+        "descriptionPlaceholder": "Nhập mô tả chương trình",
+        "subtitle": "Điền thông tin chi tiết chương trình",
+        "editSubtitle": "Cập nhật thông tin chương trình",
+        "viewSubtitle": "Chi tiết chương trình",
+        "basicInfo": "Thông tin cơ bản",
+        "images": "Hình ảnh chương trình",
+        "backgroundPreview": "Xem trước ảnh nền",
+        "backgroundImageUrl": "URL ảnh nền"
       },
       "assignCourse": {
         "title": "Gán khóa học vào chương trình",

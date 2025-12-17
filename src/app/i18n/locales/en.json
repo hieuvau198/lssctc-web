@@ -2486,7 +2486,14 @@
         "imagePreview": "Image Preview",
         "description": "Description",
         "descriptionRequired": "Please enter description",
-        "descriptionPlaceholder": "Enter program description"
+        "descriptionPlaceholder": "Enter program description",
+        "subtitle": "Fill in the program details",
+        "editSubtitle": "Update program information",
+        "viewSubtitle": "Program details",
+        "basicInfo": "Basic Information",
+        "images": "Program Images",
+        "backgroundPreview": "Background Preview",
+        "backgroundImageUrl": "Background Image URL"
       },
       "assignCourse": {
         "title": "Assign Courses to Program",
