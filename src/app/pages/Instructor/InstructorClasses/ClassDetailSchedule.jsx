@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Alert, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { AlertCircle } from 'lucide-react';
 import { getInstructorClassById } from '../../../apis/Instructor/InstructorApi';
 import ClassTimeslotSchedule from './partials/ClassTimeslotSchedule';
 
@@ -35,7 +36,8 @@ export default function ClassDetailSchedule() {
 
   if (loading) {
     return (
-      <div className="p-4">
+      <div className="bg-white border-2 border-black p-6">
+        <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-6" />
         <Skeleton active paragraph={{ rows: 6 }} />
       </div>
     );
@@ -43,21 +45,24 @@ export default function ClassDetailSchedule() {
 
   if (error) {
     return (
-      <div className="p-4">
-        <Alert message="Error" description={error} type="error" showIcon />
+      <div className="bg-white border-2 border-black p-6">
+        <div className="h-1 bg-red-500 -mx-6 -mt-6 mb-6" />
+        <div className="flex items-center gap-3 text-red-600">
+          <AlertCircle className="w-6 h-6" />
+          <span className="font-bold uppercase">{error}</span>
+        </div>
       </div>
     );
   }
 
   if (!classDetail) {
     return (
-      <div className="p-4">
-        <Alert
-          message={t('common.error')}
-          description={t('instructor.classes.classDetail')}
-          type="warning"
-          showIcon
-        />
+      <div className="bg-white border-2 border-black p-6">
+        <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-6" />
+        <div className="flex items-center gap-3 text-yellow-600">
+          <AlertCircle className="w-6 h-6" />
+          <span className="font-bold uppercase">{t('instructor.classes.classDetail')}</span>
+        </div>
       </div>
     );
   }
