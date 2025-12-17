@@ -8,7 +8,6 @@ import {
   Modal,
   Popconfirm,
   Select,
-  Space,
 } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
@@ -21,20 +20,17 @@ import {
 import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi";
 import { fetchPrograms } from "../../../../apis/ProgramManager/ProgramManagerCourseApi";
 import { getClassStatus } from "../../../../utils/classStatus";
+import {
+  Save,
+  X,
+  Trash2,
+  Calendar,
+  Users,
+  Layers,
+  FileText,
+  Image as ImageIcon
+} from "lucide-react";
 
-/**
- * @param {Object} props
- * @param {boolean} props.open
- * @param {Function} props.onClose
- * @param {Function} props.onCancel
- * @param {Function} props.onUpdate
- * @param {boolean} props.confirmLoading
- * @param {boolean} props.embedded
- * @param {Object} props.classItem
- * @param {Function} props.onUpdated
- * @param {Function} props.onDeleted
- * @param {boolean} props.showDelete
- */
 const EditDeleteClassForm = ({
   open,
   onClose,
@@ -83,7 +79,7 @@ const EditDeleteClassForm = ({
         classCode: values.classCode,
         programId: values.programId,
         courseId: values.courseId,
-        backgroundImageUrl: values.backgroundImageUrl, // Added field
+        backgroundImageUrl: values.backgroundImageUrl,
       });
       onUpdated?.();
       onClose();
@@ -124,7 +120,7 @@ const EditDeleteClassForm = ({
         programId: classItem?.programId || null,
         courseId:
           classItem?.programCourseId || classItem?.courseId || classItem?.course?.id || classItem?.programCourse?.id || null,
-        backgroundImageUrl: classItem?.backgroundImageUrl || "", // Initialize field
+        backgroundImageUrl: classItem?.backgroundImageUrl || "",
       });
     }
   }, [classItem, form]);
@@ -172,17 +168,76 @@ const EditDeleteClassForm = ({
       .finally(() => setLoadingCourses(false));
   };
 
+  // Section Header Component
+  const SectionHeader = ({ icon: Icon, title }) => (
+    <div className="flex items-center gap-2 mb-4 pb-2 border-b-2 border-neutral-200">
+      <div className="w-8 h-8 bg-yellow-400 flex items-center justify-center border-2 border-black">
+        <Icon className="w-4 h-4 text-black" />
+      </div>
+      <span className="font-bold text-sm uppercase tracking-wider text-black">{title}</span>
+    </div>
+  );
+
   const formContent = (
     <>
+      {/* Industrial Form Styles */}
+      <style>{`
+        .industrial-form .ant-form-item-label > label {
+          font-weight: 600 !important;
+          color: #171717 !important;
+          font-size: 11px !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.05em !important;
+        }
+        .industrial-form .ant-input,
+        .industrial-form .ant-input-number,
+        .industrial-form .ant-picker,
+        .industrial-form .ant-select-selector {
+          border-radius: 0 !important;
+          border-width: 2px !important;
+          border-color: #d4d4d4 !important;
+          transition: all 0.3s ease !important;
+        }
+        .industrial-form .ant-input:hover,
+        .industrial-form .ant-input-number:hover,
+        .industrial-form .ant-picker:hover,
+        .industrial-form .ant-select-selector:hover {
+          border-color: #000 !important;
+        }
+        .industrial-form .ant-input:focus,
+        .industrial-form .ant-input-focused,
+        .industrial-form .ant-input-number-focused,
+        .industrial-form .ant-picker-focused,
+        .industrial-form .ant-select-focused .ant-select-selector {
+          border-color: #facc15 !important;
+          box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2) !important;
+        }
+        /* Buttons container in modal */
+        .industrial-footer {
+          display: flex;
+          justify-content: flex-end;
+          gap: 12px;
+          margin-top: 24px;
+          padding-top: 16px;
+          border-top: 2px solid #e5e5e5;
+        }
+      `}</style>
+
       {error && (
-        <Alert type="error" message={error} showIcon className="mb-2" />
+        <Alert type="error" message={error} showIcon className="mb-4 border-2 border-red-200 bg-red-50 text-red-800 rounded-none" />
       )}
+
       <Form
         form={form}
         layout="vertical"
         onFinish={handleFinish}
-        className={embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2" : undefined}
+        className={`industrial-form ${embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2" : ""}`}
       >
+        {/* Basic Info */}
+        <div className={embedded ? "md:col-span-2" : ""}>
+          <SectionHeader icon={FileText} title={t('admin.classes.form.basicInfo') || "Basic Information"} />
+        </div>
+
         <Form.Item
           label={t('admin.classes.form.className')}
           name="name"
@@ -191,15 +246,19 @@ const EditDeleteClassForm = ({
         >
           <Input placeholder={t('admin.classes.placeholders.className')} allowClear showCount maxLength={120} />
         </Form.Item>
-        
-        {/* Class Code - Disabled */}
+
         <Form.Item
           label={t('admin.classes.form.classCode')}
           name="classCode"
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <Input disabled placeholder={t('admin.classes.placeholders.classCode')} />
+          <Input disabled placeholder={t('admin.classes.placeholders.classCode')} className="bg-neutral-100" />
         </Form.Item>
+
+        {/* Program & Course */}
+        <div className={embedded ? "md:col-span-2 mt-2" : "mt-2"}>
+          <SectionHeader icon={Layers} title={t('admin.classes.form.programAndCourse') || "Program & Course"} />
+        </div>
 
         <Form.Item
           label={t('admin.classes.form.program')}
@@ -214,7 +273,7 @@ const EditDeleteClassForm = ({
             allowClear
             optionFilterProp="children"
             onChange={handleProgramChange}
-            disabled={!isDraft} // Prevent changing structure if not draft
+            disabled={!isDraft}
             filterOption={(input, option) =>
               option?.children?.toLowerCase().includes(input.toLowerCase())
             }
@@ -236,7 +295,7 @@ const EditDeleteClassForm = ({
           <Select
             placeholder={t('admin.classes.placeholders.selectCourse')}
             loading={loadingCourses}
-            disabled={!selectedProgram || !isDraft} // Prevent changing structure if not draft
+            disabled={!selectedProgram || !isDraft}
             showSearch
             allowClear
             optionFilterProp="children"
@@ -252,7 +311,11 @@ const EditDeleteClassForm = ({
           </Select>
         </Form.Item>
 
-        {/* Start Date - Disabled unless Draft */}
+        {/* Schedule & Capacity */}
+        <div className={embedded ? "md:col-span-2 mt-2" : "mt-2"}>
+          <SectionHeader icon={Calendar} title={t('admin.classes.form.scheduleAndCapacity') || "Schedule & Capacity"} />
+        </div>
+
         <Form.Item
           label={t('admin.classes.form.startDate')}
           name="startDate"
@@ -261,8 +324,7 @@ const EditDeleteClassForm = ({
         >
           <DatePicker className="w-full" disabled={!isDraft} />
         </Form.Item>
-        
-        {/* End Date - Disabled unless Draft */}
+
         <Form.Item
           label={t('admin.classes.form.endDate')}
           name="endDate"
@@ -282,7 +344,6 @@ const EditDeleteClassForm = ({
           <DatePicker className="w-full" disabled={!isDraft} />
         </Form.Item>
 
-        {/* Capacity - Disabled unless Draft */}
         <Form.Item
           label={t('admin.classes.form.capacity')}
           name="capacity"
@@ -296,54 +357,73 @@ const EditDeleteClassForm = ({
           ]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <InputNumber min={1} className="w-full" disabled={!isDraft} />
+          <InputNumber min={1} className="w-full" disabled={!isDraft} prefix={<Users className="w-4 h-4 text-neutral-400 mr-1" />} />
         </Form.Item>
 
-        {/* Background Image URL - New Field */}
+        {/* Visuals */}
+        <div className={embedded ? "md:col-span-2 mt-2" : "mt-2"}>
+          <SectionHeader icon={ImageIcon} title="Visuals" />
+        </div>
+
         <Form.Item
           label="Background Image URL"
           name="backgroundImageUrl"
           className={embedded ? "md:col-span-2" : undefined}
         >
-          <Input placeholder="Enter image URL" allowClear />
+          <Input placeholder="Enter image URL" allowClear prefix={<ImageIcon className="w-4 h-4 text-neutral-400" />} />
         </Form.Item>
 
         <Form.Item label={t('admin.classes.form.description')} name="description" className={embedded ? "md:col-span-2" : undefined}>
-          <Input.TextArea rows={3} placeholder={t('admin.classes.placeholders.description')} showCount maxLength={500} allowClear />
+          <Input.TextArea rows={4} placeholder={t('admin.classes.placeholders.description')} showCount maxLength={500} allowClear />
         </Form.Item>
+
+        {/* Actions */}
         <Form.Item className={embedded ? 'md:col-span-2' : undefined}>
-          <Space className="flex justify-end">
-            <Button onClick={() => {
-              if (onCancel) return onCancel();
-              if (onClose) return onClose();
-              navigate(-1);
-            }}>{t('common.cancel')}</Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={embedded ? confirmLoading : saving}
+          <div className="industrial-footer">
+            <button
+              type="button"
+              onClick={() => {
+                if (onCancel) return onCancel();
+                if (onClose) return onClose();
+                navigate(-1);
+              }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-neutral-700 font-semibold text-sm border-2 border-neutral-300 hover:border-black hover:bg-neutral-50 transition-all uppercase tracking-wider h-10"
             >
+              <X className="w-4 h-4" />
+              {t('common.cancel')}
+            </button>
+            <button
+              type="submit"
+              disabled={embedded ? confirmLoading : saving}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-yellow-400 text-black font-bold text-sm border-2 border-black hover:bg-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg uppercase tracking-wider h-10"
+            >
+              <Save className="w-4 h-4" />
               {t('admin.classes.buttons.updateClass')}
-            </Button>
-          </Space>
+            </button>
+          </div>
         </Form.Item>
       </Form>
-      
+
       {!embedded && showDelete && (
-        <div className="mt-4">
-          {deleteError && (
-            <Alert type="error" message={deleteError} showIcon className="mb-2" />
-          )}
-          <Popconfirm
-            title={t('admin.classes.popconfirm.deleteClass')}
-            onConfirm={handleDelete}
-            okText={t('common.yes')}
-            cancelText={t('common.no')}
-          >
-            <Button danger loading={deleting} block>
-              {t('admin.classes.buttons.deleteClass')}
-            </Button>
-          </Popconfirm>
+        <div className="mt-8 pt-6 border-t border-neutral-200">
+          <div className="bg-red-50 border-2 border-red-100 p-4">
+            <h4 className="text-red-800 font-bold uppercase tracking-wide text-xs mb-2">Danger Zone</h4>
+            <p className="text-red-600 text-sm mb-4">Deleting this class is irreversible. Please be certain.</p>
+            {deleteError && (
+              <Alert type="error" message={deleteError} showIcon className="mb-2" />
+            )}
+            <Popconfirm
+              title={t('admin.classes.popconfirm.deleteClass')}
+              onConfirm={handleDelete}
+              okText={t('common.yes')}
+              cancelText={t('common.no')}
+            >
+              <button className="inline-flex items-center gap-2 px-4 py-2 bg-white text-red-600 font-bold text-sm border-2 border-red-200 hover:border-red-600 hover:bg-red-50 transition-all uppercase tracking-wider">
+                <Trash2 className="w-4 h-4" />
+                {t('admin.classes.buttons.deleteClass')}
+              </button>
+            </Popconfirm>
+          </div>
         </div>
       )}
     </>
@@ -356,12 +436,34 @@ const EditDeleteClassForm = ({
   return (
     <Modal
       open={open}
-      title={t('admin.classes.modal.editClass')}
+      title={null}
       onCancel={onClose}
       footer={null}
       destroyOnClose
+      width={700}
+      className="industrial-modal"
+      styles={{
+        content: {
+          borderRadius: 0,
+          border: '2px solid #000',
+          padding: 0,
+          overflow: 'hidden'
+        }
+      }}
     >
-      {formContent}
+      {/* Modal Header */}
+      <div className="bg-black py-4 px-6 flex items-center justify-between">
+        <h3 className="text-white font-bold uppercase tracking-wider text-lg m-0 flex items-center gap-2">
+          <Layers className="w-5 h-5 text-yellow-400" />
+          {t('admin.classes.modal.editClass')}
+        </h3>
+        <button onClick={onClose} className="text-neutral-400 hover:text-white transition-colors">
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+      <div className="p-6 max-h-[80vh] overflow-y-auto">
+        {formContent}
+      </div>
     </Modal>
   );
 };

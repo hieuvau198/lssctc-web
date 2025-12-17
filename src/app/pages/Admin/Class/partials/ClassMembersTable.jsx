@@ -120,12 +120,12 @@ const ClassMembersTable = ({ classItem }) => {
                 };
                 const statusClass = colorMap[st.color] || colorMap.default;
                 return (
-                    <span className={`px-3 py-1 text-xs font-bold uppercase border ${statusClass}`}>
+                    <span className={`px-3 py-1 text-xs font-bold uppercase border whitespace-nowrap ${statusClass}`}>
                         {st.label}
                     </span>
                 );
             },
-            width: 110,
+            width: 140,
         },
         {
             title: t('common.action'),

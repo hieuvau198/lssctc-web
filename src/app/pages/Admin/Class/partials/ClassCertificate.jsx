@@ -1,19 +1,15 @@
-// src/app/pages/Admin/Class/partials/ClassCertificate.jsx
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Table, Tag, Skeleton, Empty, Typography, Button, Tooltip, Badge } from 'antd';
-import { 
-  SafetyCertificateOutlined, 
-  UserOutlined, 
-  DownloadOutlined, 
-  EyeOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined
-} from '@ant-design/icons';
+import { Table, Skeleton, Button } from 'antd';
+import {
+  FileBadge,
+  User,
+  Eye,
+  Award,
+  Calendar
+} from 'lucide-react';
 import dayjs from 'dayjs';
 import { fetchCertificateByClass, fetchTraineeCertificatesByClass } from '../../../../apis/ProgramManager/ClassCertificateApi';
-
-const { Title, Text, Paragraph } = Typography;
 
 const ClassCertificate = ({ classId }) => {
   const { t } = useTranslation();
@@ -49,46 +45,51 @@ const ClassCertificate = ({ classId }) => {
   // Columns for the Trainee List Table
   const columns = [
     {
-      title: 'Trainee',
+      title: 'TRAINEE',
       dataIndex: 'traineeName',
       key: 'traineeName',
       render: (text, record) => (
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
-             <UserOutlined />
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 border border-black bg-neutral-100 flex items-center justify-center text-neutral-600">
+            <User size={16} />
           </div>
           <div className="flex flex-col">
-            <span className="font-medium text-slate-700">{text}</span>
-            <span className="text-xs text-slate-400">{record.traineeCode}</span>
+            <span className="font-bold text-slate-800 uppercase text-xs">{text}</span>
+            <span className="text-[10px] text-slate-500 font-mono">{record.traineeCode}</span>
           </div>
         </div>
       ),
     },
     {
-      title: 'Issue Date',
+      title: 'ISSUE DATE',
       dataIndex: 'issuedDate',
       key: 'issuedDate',
-      render: (date) => date ? dayjs(date).format('DD-MM-YYYY') : '-',
+      render: (date) => date ? (
+        <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
+          <Calendar size={14} className="text-yellow-600" />
+          {dayjs(date).format('YYYY-MM-DD')}
+        </div>
+      ) : '-',
     },
     {
-      title: 'Code',
+      title: 'CERT CODE',
       dataIndex: 'certificateCode',
       key: 'certificateCode',
+      render: (text) => <span className="font-mono text-xs font-bold text-slate-700 bg-yellow-100 px-1 border border-yellow-200">{text}</span>
     },
     {
-      title: 'Action',
+      title: '',
       key: 'action',
       width: 100,
       render: (_, record) => (
-        <Tooltip title="View Certificate">
-           <Button 
-             type="link" 
-             icon={<EyeOutlined />} 
-             disabled={!record.pdfUrl}
-             href={record.pdfUrl}
-             target="_blank"
-           />
-        </Tooltip>
+        <Button
+          type="text"
+          icon={<Eye size={18} />}
+          disabled={!record.pdfUrl}
+          href={record.pdfUrl}
+          target="_blank"
+          className="text-slate-400 hover:text-black hover:bg-yellow-400 rounded-none w-8 h-8 flex items-center justify-center p-0 transition-all border border-transparent hover:border-black"
+        />
       ),
     },
   ];
@@ -97,81 +98,114 @@ const ClassCertificate = ({ classId }) => {
 
   if (!template) {
     return (
-      <Card className="mt-6 shadow-sm border-slate-200">
-        <Empty 
-          description={<span className="text-slate-500">No certificate template assigned to this course yet.</span>} 
-        />
-      </Card>
+      <div className="mt-12">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
+            <FileBadge size={18} strokeWidth={2.5} />
+          </div>
+          <h3 className="text-xl font-bold uppercase tracking-wide text-slate-900 m-0">Class Certificates</h3>
+        </div>
+        <div className="border-2 border-dashed border-slate-300 bg-slate-50 p-8 flex flex-col items-center justify-center text-center">
+          <div className="w-16 h-16 bg-white border-2 border-slate-200 flex items-center justify-center rounded-full mb-4">
+            <FileBadge size={32} className="text-slate-300" />
+          </div>
+          <p className="text-slate-500 font-medium">No certificate template assigned to this course yet.</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="mt-8">
-      <div className="flex items-center gap-2 mb-4">
-         <SafetyCertificateOutlined className="text-xl text-orange-600" />
-         <h3 className="text-lg font-bold text-slate-800 m-0">Class Certificates</h3>
+    <div className="mt-12">
+      <style>{`
+         .cert-table .ant-table-thead > tr > th {
+            background: #fff;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 12px 16px;
+         }
+         .cert-table .ant-table-tbody > tr > td {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 12px 16px;
+         }
+         .cert-table .ant-table-row:hover > td {
+            background: #fffbeb !important;
+         }
+      `}</style>
+
+      <div className="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
+        <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
+          <Award size={18} strokeWidth={2.5} />
+        </div>
+        <h3 className="text-xl font-bold uppercase tracking-wide text-slate-900 m-0">Class Certificates</h3>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        
+
         {/* LEFT COLUMN: Certificate Origin (Template Info) */}
         <div className="lg:col-span-1">
-          <Card 
-            title="Certificate Origin" 
-            className="shadow-sm border-slate-200 h-full"
-            headStyle={{ backgroundColor: '#f8fafc', fontSize: '14px', fontWeight: 600 }}
-          >
-            <div className="flex flex-col gap-4">
-                
+          <div className="border-2 border-black bg-neutral-900 text-white p-6 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-400 rounded-full blur-2xl opacity-10 -mr-10 -mt-10 pointer-events-none"></div>
 
-                {/* Details */}
-                <div className="space-y-3">
-                   <div>
-                      <Paragraph className="m-0 font-medium text-slate-700">{template.name}</Paragraph>
-                   </div>
-                   
-                   <div>
-                      <Text type="secondary" className="text-xs uppercase font-bold tracking-wider">Course</Text>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Badge status="processing" />
-                        <Text className="text-slate-700">{template.courseName || "Current Course"}</Text>
-                      </div>
-                   </div>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4 border-b border-neutral-700 pb-2">Certificate Template</h4>
 
-                   <div className="pt-2 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
-                      <span>Created: {dayjs(template.createdAt).format('YYYY-MM-DD')}</span>
-                   </div>
-                </div>
+            <div className="text-2xl font-bold text-white mb-2 leading-tight">
+              {template.name}
             </div>
-          </Card>
+
+            <div className="mt-6 space-y-4">
+              <div>
+                <div className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold mb-1">Source Course</div>
+                <div className="flex items-center gap-2 text-yellow-400 font-bold">
+                  <BookOpenIcon className="w-4 h-4" />
+                  {template.courseName || "Current Course"}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-neutral-800 text-xs text-neutral-500 font-mono">
+                ID: {template.id} <br />
+                Created: {dayjs(template.createdAt).format('YYYY-MM-DD')}
+              </div>
+            </div>
+
+            <div className="absolute bottom-2 right-2 opacity-5">
+              <FileBadge size={120} />
+            </div>
+          </div>
         </div>
 
         {/* RIGHT COLUMN: Trainee Certificates List */}
         <div className="lg:col-span-2">
-          <Card 
-            title={
-                <div className="flex justify-between items-center">
-                    <span>Issued Certificates</span>
-                    <Badge count={traineeCerts.length} overflowCount={999} style={{ backgroundColor: '#e2e8f0', color: '#475569' }} />
-                </div>
-            }
-            className="shadow-sm border-slate-200 h-full"
-            headStyle={{ backgroundColor: '#f8fafc', fontSize: '14px', fontWeight: 600 }}
-            bodyStyle={{ padding: 0 }}
-          >
-            <Table 
-              dataSource={traineeCerts} 
-              columns={columns} 
+          <div className="border-2 border-slate-200 bg-white">
+            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <span className="font-bold text-slate-700 uppercase text-xs tracking-wider">Issued Certificates</span>
+              <span className="px-2 py-0.5 bg-black text-white text-xs font-bold rounded-full">
+                {traineeCerts.length}
+              </span>
+            </div>
+            <Table
+              dataSource={traineeCerts}
+              columns={columns}
               rowKey="id"
               pagination={{ pageSize: 5 }}
-              locale={{ emptyText: <div className="py-8 text-slate-400">No certificates issued yet.</div> }}
+              locale={{ emptyText: <div className="py-8 text-slate-400 text-center italic">No certificates issued yet.</div> }}
+              className="cert-table"
             />
-          </Card>
+          </div>
         </div>
 
       </div>
     </div>
   );
 };
+
+// Helper for icon since I missed importing BookOpen in the main import destructuring (avoid conflict if any)
+const BookOpenIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
+)
 
 export default ClassCertificate;

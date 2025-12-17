@@ -1,17 +1,17 @@
-// src/app/pages/Admin/Class/partials/ClassCourseInfo.jsx
 import React, { useEffect, useState } from 'react';
-import { Card, Skeleton, Tag, Typography, Divider, Button, Tooltip } from 'antd';
-import { 
-  ReadOutlined, 
-  BarcodeOutlined, 
-  ClockCircleOutlined, 
-  AppstoreOutlined, 
-  ArrowRightOutlined 
-} from '@ant-design/icons';
+import { Skeleton, Typography } from 'antd';
+import {
+  ArrowRight,
+  BookOpen,
+  Clock,
+  Layers,
+  BarChart,
+  Grid
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { fetchCourseDetail } from '../../../../apis/ProgramManager/CourseApi';
 
-const { Title, Text, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 const ClassCourseInfo = ({ courseId }) => {
   const navigate = useNavigate();
@@ -27,96 +27,111 @@ const ClassCourseInfo = ({ courseId }) => {
   const loadCourse = async () => {
     setLoading(true);
     try {
-      // Assuming fetchCourseDetail returns the full course object
       const data = await fetchCourseDetail(courseId);
       setCourse(data);
     } catch (error) {
-      console.error("Failed to load parent course info", error);
+      //   console.error("Failed to load parent course info", error);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <Card className="shadow-sm mb-6"><Skeleton active avatar paragraph={{ rows: 3 }} /></Card>;
+  if (loading) return (
+    <div className="mt-8 border-2 border-neutral-100 p-6 bg-white">
+      <Skeleton active paragraph={{ rows: 3 }} />
+    </div>
+  );
+
   if (!course) return null;
 
   return (
-    <Card 
-      className=""
-      title={
-        <div className="flex items-center gap-2 text-slate-700">
-          <ReadOutlined className="text-blue-600" />
-          <span>Parent Course</span>
+    <div className="mt-12">
+      {/* Header */}
+      <div className="flex justify-between items-end mb-4 border-b-2 border-slate-200 pb-2">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
+            <BookOpen size={18} strokeWidth={2.5} />
+          </div>
+          <span className="text-xl font-bold uppercase tracking-wide text-slate-900">Parent Course</span>
         </div>
-      }
-      extra={
-        <Button 
-          type="link" 
-          size="small" 
+        <button
           onClick={() => navigate(`/admin/courses/${course.id}`)}
-          className="flex items-center gap-1"
+          className="group flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-500 hover:text-black transition-colors"
         >
-          View Course <ArrowRightOutlined />
-        </Button>
-      }
-    >
-      <div className="flex flex-col md:flex-row gap-6">
-        
-        {/* Left: Course Image */}
-        <div className="w-full md:w-48 shrink-0">
-          <div className="aspect-video rounded-lg overflow-hidden border border-slate-100 bg-slate-50 relative group">
-            <img 
-              src={course.imageUrl || '/placeholder-course.jpg'} 
+          View Full Details
+          <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+        </button>
+      </div>
+
+      {/* Course Card */}
+      <div className="bg-white border-2 border-slate-200 hover:border-black transition-all duration-300">
+        <div className="flex flex-col md:flex-row">
+          {/* Left: Course Image */}
+          <div className="w-full md:w-64 h-48 md:h-auto shrink-0 relative bg-neutral-100 border-b-2 md:border-b-0 md:border-r-2 border-slate-200">
+            <img
+              src={course.imageUrl || '/placeholder-course.jpg'}
               alt={course.name}
               className="w-full h-full object-cover"
-              onError={(e) => {e.target.src = "https://placehold.co/600x400?text=No+Image"}}
+              onError={(e) => { e.target.src = "https://placehold.co/600x400?text=No+Image" }}
             />
-            <div className="absolute top-2 right-2">
-                <Tag color={course.isActive ? "green" : "red"}>
-                    {course.isActive ? "Active" : "Inactive"}
-                </Tag>
+            <div className="absolute top-2 left-2">
+              <span className={`px-2 py-1 text-xs font-bold uppercase tracking-wider border-2 ${course.isActive
+                  ? 'bg-green-100 text-green-700 border-green-700'
+                  : 'bg-red-100 text-red-700 border-red-700'
+                }`}>
+                {course.isActive ? "Active" : "Inactive"}
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* Right: Course Details */}
-        <div className="flex-1 flex flex-col justify-center">
-          <div className="mb-2">
-            <Text type="secondary" className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                {course.code}
-            </Text>
-            <Title level={4} className="mt-0 mb-2 text-slate-800 leading-tight">
-              {course.name}
-            </Title>
-          </div>
-
-          <div className="flex flex-wrap gap-y-2 gap-x-6 text-sm text-slate-600 mb-3">
-            <div className="flex items-center gap-1.5">
-               <AppstoreOutlined className="text-slate-400"/>
-               <span>Category: <strong>{course.category || 'General'}</strong></span>
+          {/* Right: Course Details */}
+          <div className="flex-1 p-6 flex flex-col justify-center">
+            <div className="mb-4">
+              <span className="inline-block px-2 py-0.5 bg-yellow-400 text-black text-xs font-bold uppercase tracking-wider mb-2 border border-black">
+                {course.code || 'NO CODE'}
+              </span>
+              <h3 className="text-2xl font-bold text-slate-900 leading-tight uppercase">
+                {course.name}
+              </h3>
             </div>
-            <div className="flex items-center gap-1.5">
-               <ClockCircleOutlined className="text-slate-400"/>
-               <span>Duration: <strong>{course.durationHours ? `${course.durationHours} hrs` : 'N/A'}</strong></span>
-            </div>
-            {course.level && (
-                 <div className="flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200">
-                        {course.level}
-                    </span>
-                 </div>
-            )}
-          </div>
 
-          <Paragraph 
-            ellipsis={{ rows: 2, expandable: true, symbol: 'more' }} 
-            className="text-slate-500 mb-0 max-w-2xl"
-          >
-            {course.description || "No description available for this course."}
-          </Paragraph>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-t border-b border-slate-100 mb-4">
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center gap-1">
+                  <Grid size={12} /> Category
+                </div>
+                <div className="font-semibold text-slate-700">{course.category || 'General'}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center gap-1">
+                  <Clock size={12} /> Duration
+                </div>
+                <div className="font-semibold text-slate-700">{course.durationHours ? `${course.durationHours} hrs` : '-'}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center gap-1">
+                  <BarChart size={12} /> Level
+                </div>
+                <div className="font-semibold text-slate-700">{course.level || '-'}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center gap-1">
+                  <Layers size={12} /> Version
+                </div>
+                <div className="font-semibold text-slate-700">v{course.version || '1.0'}</div>
+              </div>
+            </div>
+
+            <Paragraph
+              ellipsis={{ rows: 2, expandable: true, symbol: 'more' }}
+              className="text-slate-600 mb-0 font-medium leading-relaxed"
+            >
+              {course.description || "No description available for this course."}
+            </Paragraph>
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 
