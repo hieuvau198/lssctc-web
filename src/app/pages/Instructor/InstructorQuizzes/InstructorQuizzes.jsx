@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Skeleton, Pagination, Alert, Button, Tooltip, Popconfirm, Space, Tag, App } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
+import { Table, Skeleton, Pagination, Tooltip, Popconfirm, App, Tag } from 'antd';
+import { Eye, Pencil, Trash2, FileSpreadsheet, Plus, HelpCircle, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { getQuizzes, deleteQuiz, getQuizDetail } from '../../../apis/Instructor/InstructorQuiz';
 import QuizFilters from './partials/QuizFilters';
 import ImportQuizModal from './partials/ImportQuizModal';
 import CreateQuizDrawer from './partials/CreateQuizDrawer';
-import { FileSpreadsheet } from 'lucide-react';
 
 export default function InstructorQuizzes() {
   const navigate = useNavigate();
@@ -48,7 +47,6 @@ export default function InstructorQuizzes() {
   const handleSearch = (value) => {
     setSearchTerm(value);
     setPage(1);
-    // TODO: Implement backend search when API supports it
     load(1, pageSize);
   };
 
@@ -72,7 +70,7 @@ export default function InstructorQuizzes() {
     try {
       await deleteQuiz(record.id);
       message.success(t('instructor.quizzes.messages.deleteSuccess', { name: record.name }));
-      load(); // Reload list
+      load();
     } catch (e) {
       console.error('Failed to delete quiz:', e);
       message.error(e?.message || t('instructor.quizzes.messages.deleteFailed'));
@@ -91,21 +89,25 @@ export default function InstructorQuizzes() {
 
   const columns = [
     {
-      title: t('instructor.quizzes.table.index'),
+      title: '#',
       key: 'index',
       width: 64,
       align: 'center',
-      render: (_, __, idx) => (page - 1) * pageSize + idx + 1,
+      render: (_, __, idx) => (
+        <span className="font-bold text-neutral-500">
+          {(page - 1) * pageSize + idx + 1}
+        </span>
+      ),
       fixed: 'left',
     },
     {
       title: t('instructor.quizzes.table.name'),
       dataIndex: 'name',
       key: 'name',
-      width: 260,
+      width: 280,
       render: (text, record) => (
         <div
-          className="font-medium text-blue-600 cursor-pointer hover:underline"
+          className="font-bold text-black cursor-pointer hover:text-yellow-600 transition-colors"
           onClick={() => handleView(record)}
         >
           {text}
@@ -118,7 +120,7 @@ export default function InstructorQuizzes() {
       key: 'timelimitMinute',
       width: 120,
       align: 'center',
-      render: (v) => <span>{v}</span>
+      render: (v) => <span className="font-medium">{v}</span>
     },
     {
       title: t('instructor.quizzes.table.passScore'),
@@ -126,7 +128,11 @@ export default function InstructorQuizzes() {
       key: 'passScoreCriteria',
       width: 120,
       align: 'center',
-      render: (v) => <Tag color="blue">{v} {t('instructor.quizzes.detail.pts')}</Tag>
+      render: (v) => (
+        <span className="px-3 py-1 bg-yellow-100 text-yellow-800 border border-yellow-300 text-xs font-bold">
+          {v} {t('instructor.quizzes.detail.pts')}
+        </span>
+      )
     },
     {
       title: t('instructor.quizzes.table.totalScore'),
@@ -134,31 +140,31 @@ export default function InstructorQuizzes() {
       key: 'totalScore',
       width: 120,
       align: 'center',
-      render: (v) => <span>{v} {t('instructor.quizzes.detail.pts')}</span>
+      render: (v) => <span className="font-bold">{v} {t('instructor.quizzes.detail.pts')}</span>
     },
     {
       title: t('instructor.quizzes.table.actions'),
       key: 'actions',
-      width: 120,
+      width: 140,
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
-        <Space size="small">
+        <div className="flex gap-2 justify-center">
           <Tooltip title={t('instructor.quizzes.tooltip.viewDetails')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<EyeOutlined />}
+            <button
               onClick={() => handleView(record)}
-            />
+              className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:scale-105 transition-transform"
+            >
+              <Eye className="w-4 h-4 text-yellow-400" />
+            </button>
           </Tooltip>
           <Tooltip title={t('instructor.quizzes.tooltip.editQuiz')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
+            <button
               onClick={() => handleEdit(record)}
-            />
+              className="w-8 h-8 bg-white border-2 border-black flex items-center justify-center hover:bg-neutral-100 hover:scale-105 transition-all"
+            >
+              <Pencil className="w-4 h-4 text-black" />
+            </button>
           </Tooltip>
           <Tooltip title={t('instructor.quizzes.tooltip.deleteQuiz')}>
             <Popconfirm
@@ -169,77 +175,84 @@ export default function InstructorQuizzes() {
               cancelText={t('instructor.quizzes.deleteConfirm.no')}
               okButtonProps={{ danger: true }}
             >
-              <Button
-                type="text"
-                size="small"
-                icon={<DeleteOutlined />}
-                danger
-              />
+              <button className="w-8 h-8 bg-red-500 border-2 border-red-600 flex items-center justify-center hover:bg-red-600 hover:scale-105 transition-all">
+                <Trash2 className="w-4 h-4 text-white" />
+              </button>
             </Popconfirm>
           </Tooltip>
-        </Space>
+        </div>
       ),
     },
   ];
 
+  // Loading State
   if (loading) return (
-    <div className="max-w-7xl mx-auto px-4 py-2">
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 mb-6">
-        <Skeleton.Button style={{ width: 300, height: 40 }} active className="bg-white/20" />
+    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      <div className="bg-black border-2 border-black p-6 mb-6">
+        <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
+        <Skeleton.Button style={{ width: 300, height: 40 }} active className="bg-neutral-800" />
       </div>
-      <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="bg-white border-2 border-black p-6">
+        <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
         <Skeleton active paragraph={{ rows: 8 }} />
       </div>
     </div>
   );
 
+  // Error State
   if (error) return (
-    <div className="max-w-7xl mx-auto px-4 py-2">
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <Alert type="error" message={t('common.error')} description={error} />
+    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      <div className="bg-white border-2 border-black p-6">
+        <div className="h-1 bg-red-500 -mx-6 -mt-6 mb-4" />
+        <div className="flex items-center gap-3 text-red-600">
+          <AlertCircle className="w-6 h-6" />
+          <span className="font-bold uppercase">{error}</span>
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-2">
-      {/* Modern Header with Gradient */}
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-4 mb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center">
-              <span className="text-3xl">📝</span>
+    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      {/* Header - Industrial Theme */}
+      <div className="bg-black border-2 border-black p-5 mb-6">
+        <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <HelpCircle className="w-6 h-6 text-black" />
             </div>
             <div>
-              <span className="text-2xl font-bold text-white">{t('instructor.quizzes.title')}</span>
-              <p className="text-blue-100 text-sm mt-1">
+              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+                {t('instructor.quizzes.title')}
+              </h1>
+              <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {t('instructor.quizzes.table.pagination', { start: (page - 1) * pageSize + 1, end: Math.min(page * pageSize, total), total })}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              size="large"
-              className="bg-white/10 hover:bg-white/20 border-white/30 text-white"
-              icon={<FileSpreadsheet className="w-5 h-5" />}
+            <button
               onClick={() => setImportModalVisible(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black font-bold uppercase tracking-wider text-sm border-2 border-black hover:bg-neutral-100 hover:scale-[1.02] transition-all"
             >
+              <FileSpreadsheet className="w-4 h-4" />
               {t('instructor.quizzes.importExcel')}
-            </Button>
-            <Button
-              size="large"
-              className="bg-white/10 hover:bg-white/20 border-white/30 text-white"
-              icon={<PlusOutlined />}
+            </button>
+            <button
               onClick={() => setCreateDrawerVisible(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-400 text-black font-bold uppercase tracking-wider text-sm border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all"
             >
+              <Plus className="w-4 h-4" />
               {t('instructor.quizzes.createQuiz')}
-            </Button>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-md p-4 mb-4">
+      <div className="bg-white border-2 border-black p-4 mb-6">
+        <div className="h-1 bg-yellow-400 -mx-4 -mt-4 mb-4" />
         <QuizFilters
           searchValue={searchValue}
           setSearchValue={setSearchValue}
@@ -248,39 +261,68 @@ export default function InstructorQuizzes() {
       </div>
 
       {/* Table Card */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-        <div className="overflow-hidden min-h-[360px]">
+      <div className="bg-white border-2 border-black overflow-hidden">
+        <div className="h-1 bg-yellow-400" />
+
+        {/* Industrial Table Styles */}
+        <style>{`
+          .industrial-quiz-table .ant-table {
+            border: none !important;
+          }
+          .industrial-quiz-table .ant-table-thead > tr > th {
+            background: #fef08a !important;
+            border-bottom: 2px solid #000 !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            font-size: 12px !important;
+            letter-spacing: 0.05em !important;
+            color: #000 !important;
+          }
+          .industrial-quiz-table .ant-table-tbody > tr > td {
+            border-bottom: 1px solid #e5e5e5 !important;
+          }
+          .industrial-quiz-table .ant-table-tbody > tr:hover > td {
+            background: #fef9c3 !important;
+          }
+          .industrial-quiz-table .ant-pagination-item-active {
+            background: #facc15 !important;
+            border-color: #000 !important;
+          }
+          .industrial-quiz-table .ant-pagination-item-active a {
+            color: #000 !important;
+            font-weight: 700 !important;
+          }
+        `}</style>
+
+        <div className="industrial-quiz-table overflow-hidden min-h-[400px]">
           <Table
             columns={columns}
             dataSource={quizzes}
             rowKey="id"
             pagination={false}
-            scroll={{ y: 360 }}
+            scroll={{ y: 400 }}
             size="middle"
             locale={{
               emptyText: (
-                <div className="py-12">
-                  <div className="text-center">
-                    <div className="text-6xl mb-4">📝</div>
-                    <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                      {t('instructor.quizzes.noQuestions')}
-                    </h3>
-                    <p className="text-gray-500 mb-4">{t('instructor.quizzes.createQuiz')}</p>
-                    <Button
-                      type="primary"
-                      icon={<PlusOutlined />}
-                      onClick={() => setCreateDrawerVisible(true)}
-                    >
-                      {t('instructor.quizzes.createQuiz')}
-                    </Button>
+                <div className="py-12 flex flex-col items-center justify-center">
+                  <div className="w-16 h-16 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mb-4">
+                    <HelpCircle className="w-8 h-8 text-neutral-400" />
                   </div>
+                  <p className="text-neutral-800 font-bold uppercase mb-2">{t('instructor.quizzes.noQuestions')}</p>
+                  <button
+                    onClick={() => setCreateDrawerVisible(true)}
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black font-bold uppercase tracking-wider text-sm border-2 border-black hover:bg-yellow-500 transition-all"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t('instructor.quizzes.createQuiz')}
+                  </button>
                 </div>
               )
             }}
           />
         </div>
 
-        <div className="p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50 flex justify-center">
+        <div className="p-4 border-t-2 border-neutral-200 flex justify-center">
           <Pagination
             current={page}
             pageSize={pageSize}
@@ -288,7 +330,11 @@ export default function InstructorQuizzes() {
             onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }}
             showSizeChanger
             pageSizeOptions={["10", "20", "50"]}
-            showTotal={(total, r) => t('instructor.quizzes.table.pagination', { start: r[0], end: r[1], total })}
+            showTotal={(total, r) => (
+              <span className="text-sm font-medium text-neutral-600">
+                {r[0]}-{r[1]} / {total} {t('instructor.quizzes.title').toLowerCase()}
+              </span>
+            )}
           />
         </div>
       </div>

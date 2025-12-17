@@ -3,15 +3,11 @@ import {
   Drawer,
   Form,
   Input,
-  Button,
   InputNumber,
   Checkbox,
-  Divider,
-  Card,
-  Space,
   App,
 } from 'antd';
-import { Plus, Trash2, X, Save } from 'lucide-react';
+import { Plus, Trash2, X, Save, HelpCircle, FileText, Target, Star, List } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { createQuizWithQuestions, updateQuizWithQuestions } from '../../../../apis/Instructor/InstructorQuiz';
 
@@ -37,7 +33,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     if (open) {
       setScoreErrors({});
       if (mode === 'edit' && initialData) {
-        // Populate form and questions from initialData
         form.setFieldsValue({
           name: initialData.name,
           description: initialData.description,
@@ -45,7 +40,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           timelimitMinute: initialData.timelimitMinute,
         });
 
-        // Map questions from API format to internal format
         const mappedQuestions = (initialData.questions || []).map((q, qIdx) => ({
           id: q.id || qIdx + 1,
           name: q.name || '',
@@ -60,7 +54,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           })),
         }));
 
-        // If no questions present, ensure at least one
         setQuestions(mappedQuestions.length ? mappedQuestions : [
           {
             id: 1,
@@ -87,12 +80,10 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     }
   }, [open, form, initialData, mode]);
 
-  // Calculate total score
   const totalScore = questions.reduce((sum, q) => sum + (q.questionScore || 0), 0);
   const remainingScore = 10 - totalScore;
   const isScoreValid = Math.abs(totalScore - 10) < 0.01;
 
-  // Validate question score
   const validateQuestionScore = (qIdx, score) => {
     if (!score || score <= 0) return null;
     const scoreStr = score.toString();
@@ -103,14 +94,12 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     return null;
   };
 
-  // Calculate option score
   const getOptionScore = (qIdx, isOptionCorrect) => {
     const q = questions[qIdx];
     if (!q.questionScore || !isOptionCorrect) return 0;
     return q.questionScore;
   };
 
-  // Show error modal
   const showErrorModal = (title, errorMessage) => {
     modal.error({
       title,
@@ -120,7 +109,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     });
   };
 
-  // Add new question
   const addQuestion = () => {
     const newId = Math.max(...questions.map((q) => q.id || 0)) + 1;
     setQuestions([
@@ -136,7 +124,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     ]);
   };
 
-  // Remove question
   const removeQuestion = (qIdx) => {
     if (questions.length === 1) {
       message.warning(t('instructor.quizzes.questions.atLeastOneQuestion'));
@@ -145,13 +132,11 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     const newQuestions = questions.filter((_, idx) => idx !== qIdx);
     setQuestions(newQuestions);
 
-    // Clean up score errors
     const newErrors = { ...scoreErrors };
     delete newErrors[qIdx];
     setScoreErrors(newErrors);
   };
 
-  // Update question field
   const updateQuestion = (qIdx, field, value) => {
     const newQuestions = [...questions];
     newQuestions[qIdx][field] = value;
@@ -164,7 +149,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     setQuestions(newQuestions);
   };
 
-  // Add option to question
   const addOption = (qIdx) => {
     const newQuestions = [...questions];
     const newId = Math.max(...(newQuestions[qIdx].options || []).map((o) => o.id || 0)) + 1;
@@ -177,7 +161,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     setQuestions(newQuestions);
   };
 
-  // Remove option from question
   const removeOption = (qIdx, oIdx) => {
     const newQuestions = [...questions];
     if (newQuestions[qIdx].options.length === 1) {
@@ -188,11 +171,9 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     setQuestions(newQuestions);
   };
 
-  // Update option field
   const updateOption = (qIdx, oIdx, field, value) => {
     const newQuestions = [...questions];
 
-    // If marking as correct, uncheck others (single choice)
     if (field === 'isCorrect' && value === true) {
       newQuestions[qIdx].options = newQuestions[qIdx].options.map((opt, idx) => ({
         ...opt,
@@ -205,10 +186,8 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     setQuestions(newQuestions);
   };
 
-  // Handle form submit - Call API POST /api/Quizzes/with-questions or PUT /Quizzes/{id}/with-questions for edit
   const onFinish = async (values) => {
     try {
-      // Validate questions
       if (!questions || questions.length === 0) {
         showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.atLeastOneQuestion'));
         return;
@@ -225,7 +204,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           return;
         }
 
-        // Check decimal places
         const scoreStr = q.questionScore.toString();
         const decimalPart = scoreStr.split('.')[1];
         if (decimalPart && decimalPart.length > 2) {
@@ -238,7 +216,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           return;
         }
 
-        // Validate correct answers
         const correctAnswers = q.options.filter((opt) => opt.isCorrect).length;
         if (correctAnswers === 0) {
           showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.atLeastOneCorrect', { name: q.name }));
@@ -249,7 +226,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           return;
         }
 
-        // Validate option texts
         for (let opt of q.options) {
           if (!opt.name.trim()) {
             showErrorModal(t('instructor.quizzes.validation.title'), t('instructor.quizzes.validation.emptyOption', { name: q.name }));
@@ -258,7 +234,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         }
       }
 
-      // Validate total score
       if (!isScoreValid) {
         showErrorModal(
           t('instructor.quizzes.validation.title'),
@@ -269,7 +244,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
 
       setSubmitting(true);
 
-      // Build payload for POST /api/Quizzes/with-questions
       const payload = {
         name: values.name.trim(),
         description: values.description?.trim() || '',
@@ -290,7 +264,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         })),
       };
 
-      // Call API depending on mode
       let response;
       if (mode === 'edit' && quizId) {
         response = await updateQuizWithQuestions(quizId, payload);
@@ -336,27 +309,54 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
 
   return (
     <Drawer
-      title={t('instructor.quizzes.drawer.createTitle')}
+      title={
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
+            <HelpCircle className="w-5 h-5 text-black" />
+          </div>
+          <span className="font-black text-black uppercase tracking-tight">
+            {mode === 'edit' ? t('instructor.quizzes.drawer.editTitle') : t('instructor.quizzes.drawer.createTitle')}
+          </span>
+        </div>
+      }
       placement="right"
-      width={720}
+      width={800}
       open={open}
       onClose={onClose}
       destroyOnClose
       maskClosable={false}
+      styles={{
+        header: {
+          borderBottom: '2px solid #000',
+          padding: '16px 24px',
+        },
+        body: {
+          padding: 24,
+          background: '#f5f5f5',
+        },
+      }}
       extra={
-        <Space>
-          <Button onClick={onClose} icon={<X className="w-4 h-4" />}>
-            {t('instructor.quizzes.drawer.cancel')}
-          </Button>
-          <Button
-            type="primary"
-            loading={submitting}
-            onClick={() => form.submit()}
-            icon={<Save className="w-4 h-4" />}
+        <div className="flex gap-2">
+          <button
+            onClick={onClose}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-all"
           >
-            {t('instructor.quizzes.drawer.create')}
-          </Button>
-        </Space>
+            <X className="w-4 h-4" />
+            {t('instructor.quizzes.drawer.cancel')}
+          </button>
+          <button
+            onClick={() => form.submit()}
+            disabled={submitting}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all disabled:opacity-50"
+          >
+            {submitting ? (
+              <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            {mode === 'edit' ? t('instructor.quizzes.drawer.save') : t('instructor.quizzes.drawer.create')}
+          </button>
+        </div>
       }
     >
       <Form
@@ -368,160 +368,173 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           timelimitMinute: 20,
         }}
       >
-        {/* Quiz Information */}
-        <div className="grid grid-cols-2 gap-4">
-          <Form.Item
-            label={t('instructor.quizzes.form.quizName')}
-            name="name"
-            rules={[{ required: true, message: t('instructor.quizzes.form.quizNameRequired') }]}
-            className="col-span-2"
-          >
-            <Input placeholder={t('instructor.quizzes.form.quizNamePlaceholder')} />
-          </Form.Item>
-
-          <Form.Item
-            label={t('instructor.quizzes.form.passScore')}
-            name="passScoreCriteria"
-            rules={[{ required: true, message: t('common.required') }]}
-          >
-            <InputNumber min={1} max={10} className="w-full" />
-          </Form.Item>
-
-          <Form.Item
-            label={t('instructor.quizzes.form.timeLimit')}
-            name="timelimitMinute"
-            rules={[{ required: true, message: t('common.required') }]}
-          >
-            <InputNumber min={1} max={180} className="w-full" />
-          </Form.Item>
-
-          <Form.Item label={t('instructor.quizzes.form.description')} name="description" className="col-span-2">
-            <Input.TextArea rows={2} placeholder={t('instructor.quizzes.form.descriptionPlaceholder')} />
-          </Form.Item>
-        </div>
-
-        <Divider>{t('instructor.quizzes.questions.title')}</Divider>
-
-        {/* Score Summary - Modern Progress Design */}
-        <div className="mb-4 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-5 shadow-md">
-          {/* Progress Bar */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-semibold text-gray-700">
-                {t('instructor.quizzes.scoreSummary.totalQuizScore')}
-              </span>
-              <span className={`text-lg font-bold ${isScoreValid ? 'text-green-600' : 'text-red-600'}`}>
-                {totalScore.toFixed(2)} / 10
-              </span>
-            </div>
-            <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className={`absolute h-full rounded-full transition-all duration-300 ${
-                  isScoreValid 
-                    ? 'bg-gradient-to-r from-green-400 to-green-600' 
-                    : totalScore > 10 
-                      ? 'bg-gradient-to-r from-red-400 to-red-600'
-                      : 'bg-gradient-to-r from-blue-400 to-blue-600'
-                }`}
-                style={{ width: `${Math.min((totalScore / 10) * 100, 100)}%` }}
-              />
-            </div>
+        {/* Quiz Information Card */}
+        <div className="bg-white border-2 border-black mb-6">
+          <div className="h-1 bg-yellow-400" />
+          <div className="px-4 py-3 border-b-2 border-neutral-200 bg-neutral-50">
+            <span className="font-bold uppercase text-sm tracking-wider">Quiz Information</span>
           </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-4 gap-3 text-center">
-            <div className="bg-white rounded-lg p-3 shadow-sm border border-blue-100">
-              <p className="text-xs text-gray-600 mb-1">📝 {t('instructor.quizzes.scoreSummary.questions')}</p>
-              <p className="text-xl font-bold text-blue-600">{questions.length}</p>
-            </div>
-            <div className="bg-white rounded-lg p-3 shadow-sm border border-green-100">
-              <p className="text-xs text-gray-600 mb-1">⭐ {t('instructor.quizzes.scoreSummary.totalScore')}</p>
-              <p className="text-xl font-bold text-green-600">{totalScore.toFixed(2)}</p>
-            </div>
-            <div className="bg-white rounded-lg p-3 shadow-sm border border-purple-100">
-              <p className="text-xs text-gray-600 mb-1">📊 {t('instructor.quizzes.scoreSummary.perQuestionAvg')}</p>
-              <p className="text-xl font-bold text-purple-600">
-                {questions.length > 0 ? (totalScore / questions.length).toFixed(2) : '0'}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
-              <p className="text-xs text-gray-600 mb-1">🎯 {t('instructor.quizzes.scoreSummary.remainingScore')}</p>
-              <p
-                className="text-xl font-bold"
-                style={{ color: isScoreValid ? '#22c55e' : '#ef4444' }}
+          <div className="p-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Form.Item
+                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.quizName')}</span>}
+                name="name"
+                rules={[{ required: true, message: t('instructor.quizzes.form.quizNameRequired') }]}
+                className="col-span-1"
               >
-                {remainingScore.toFixed(2)}
-              </p>
-            </div>
-          </div>
+                <Input placeholder={t('instructor.quizzes.form.quizNamePlaceholder')} className="border-2 border-black h-10" />
+              </Form.Item>
 
-          {/* Status Message */}
-          <div className={`mt-4 p-3 rounded-lg text-center text-sm font-medium ${
-            isScoreValid 
-              ? 'bg-green-100 text-green-800 border border-green-200' 
-              : 'bg-red-100 text-red-800 border border-red-200'
-          }`}>
-            {isScoreValid ? (
-              <span>✅ {t('instructor.quizzes.scoreSummary.mustEqual10')}</span>
-            ) : (
-              <span>⚠️ {t('instructor.quizzes.scoreSummary.mustEqual10Info')}</span>
-            )}
+              <Form.Item
+                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.scoreSummary.totalScore')}</span>}
+                className="col-span-1"
+              >
+                <div className="h-10 bg-neutral-100 border-2 border-neutral-300 flex items-center px-3 font-bold text-neutral-500">
+                  {totalScore.toFixed(2)}
+                </div>
+              </Form.Item>
+
+              <Form.Item
+                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.passScore')}</span>}
+                name="passScoreCriteria"
+                rules={[{ required: true, message: t('common.required') }]}
+              >
+                <InputNumber min={1} max={10} className="w-full h-10 border-2 border-black" />
+              </Form.Item>
+
+              <Form.Item
+                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.timeLimit')}</span>}
+                name="timelimitMinute"
+                rules={[{ required: true, message: t('common.required') }]}
+              >
+                <InputNumber min={1} max={180} className="w-full h-10 border-2 border-black" />
+              </Form.Item>
+
+              <Form.Item
+                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.description')}</span>}
+                name="description"
+                className="col-span-2"
+              >
+                <Input.TextArea rows={2} placeholder={t('instructor.quizzes.form.descriptionPlaceholder')} className="border-2 border-black" />
+              </Form.Item>
+            </div>
           </div>
         </div>
 
-        {/* Questions List - Modern Card Design */}
+        {/* Score Summary Card - Industrial Theme */}
+        <div className="bg-white border-2 border-black mb-6">
+          <div className="h-1 bg-yellow-400" />
+          <div className="px-4 py-3 border-b-2 border-neutral-200 bg-neutral-50">
+            <span className="font-bold uppercase text-sm tracking-wider">{t('instructor.quizzes.questions.title')}</span>
+          </div>
+          <div className="p-4">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-4 gap-3 mb-4">
+              <div className="border-2 border-black p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold uppercase text-neutral-500">{t('instructor.quizzes.scoreSummary.questions')}</span>
+                  <div className="w-8 h-8 bg-yellow-400 border border-black flex items-center justify-center">
+                    <FileText className="w-4 h-4" />
+                  </div>
+                </div>
+                <p className="text-2xl font-black text-black">{questions.length}</p>
+              </div>
+              <div className="border-2 border-black p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold uppercase text-neutral-500">{t('instructor.quizzes.scoreSummary.totalScore')}</span>
+                  <div className="w-8 h-8 bg-black flex items-center justify-center">
+                    <Star className="w-4 h-4 text-yellow-400" />
+                  </div>
+                </div>
+                <p className={`text-2xl font-black ${isScoreValid ? 'text-green-600' : 'text-red-600'}`}>{totalScore.toFixed(2)}</p>
+              </div>
+              <div className="border-2 border-black p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold uppercase text-neutral-500">{t('instructor.quizzes.scoreSummary.perQuestionAvg')}</span>
+                  <div className="w-8 h-8 bg-yellow-400 border border-black flex items-center justify-center">
+                    <Target className="w-4 h-4" />
+                  </div>
+                </div>
+                <p className="text-2xl font-black text-black">
+                  {questions.length > 0 ? (totalScore / questions.length).toFixed(2) : '0'}
+                </p>
+              </div>
+              <div className="border-2 border-black p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold uppercase text-neutral-500">{t('instructor.quizzes.scoreSummary.remainingScore')}</span>
+                  <div className="w-8 h-8 bg-black flex items-center justify-center">
+                    <List className="w-4 h-4 text-yellow-400" />
+                  </div>
+                </div>
+                <p className={`text-2xl font-black ${isScoreValid ? 'text-green-600' : 'text-red-600'}`}>
+                  {remainingScore.toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            {/* Status Message */}
+            <div className={`p-3 text-center text-sm font-bold uppercase border-2 ${isScoreValid
+                ? 'bg-green-100 text-green-800 border-green-500'
+                : 'bg-red-100 text-red-800 border-red-500'
+              }`}>
+              {isScoreValid ? (
+                <span>✓ {t('instructor.quizzes.scoreSummary.mustEqual10')}</span>
+              ) : (
+                <span>! {t('instructor.quizzes.scoreSummary.mustEqual10Info')}</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Questions List - Industrial Theme */}
         <div className="space-y-4">
           {questions.map((question, qIdx) => (
-            <Card
-              key={question.id}
-              size="small"
-              title={
-                <div className="flex items-center gap-2">
-                  <span className="bg-blue-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs font-bold">
+            <div key={question.id} className="bg-white border-2 border-black">
+              <div className="h-1 bg-yellow-400" />
+
+              {/* Question Header */}
+              <div className="px-4 py-3 border-b-2 border-neutral-200 bg-neutral-50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 bg-black text-yellow-400 flex items-center justify-center font-black text-sm">
                     {qIdx + 1}
                   </span>
-                  <span className="text-sm font-semibold text-gray-800">
+                  <span className="font-bold uppercase text-sm">
                     {t('instructor.quizzes.questions.question')} {qIdx + 1}
                   </span>
-                  <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold ml-auto">
+                  <span className="px-3 py-1 bg-yellow-400 text-black text-xs font-bold border border-black">
                     {question.questionScore || 0} {t('instructor.quizzes.questions.pts')}
                   </span>
                 </div>
-              }
-              extra={
-                <Button
-                  type="text"
-                  danger
-                  size="small"
-                  icon={<Trash2 className="w-4 h-4" />}
+                <button
+                  type="button"
                   onClick={() => removeQuestion(qIdx)}
-                  className="hover:bg-red-50"
-                />
-              }
-              className="shadow-md hover:shadow-lg transition-shadow border-l-4 border-blue-400"
-            >
-              <div className="space-y-3">
+                  className="w-8 h-8 bg-red-500 border-2 border-red-600 flex items-center justify-center hover:bg-red-600 transition-colors text-white"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="p-4 space-y-4">
                 {/* Question text and score */}
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   <div className="col-span-2">
-                    <label className="block text-xs font-medium mb-1">{t('instructor.quizzes.questions.questionText')} *</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider mb-1">{t('instructor.quizzes.questions.questionText')} *</label>
                     <Input
                       value={question.name}
                       onChange={(e) => updateQuestion(qIdx, 'name', e.target.value)}
                       placeholder={t('instructor.quizzes.questions.enterQuestion')}
-                      size="small"
+                      className="border-2 border-black h-10"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium mb-1">{t('instructor.quizzes.questions.score')} *</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider mb-1">{t('instructor.quizzes.questions.score')} *</label>
                     <InputNumber
-                      className="w-full"
+                      className="w-full h-10 border-2 border-black"
                       value={question.questionScore}
                       onChange={(value) => updateQuestion(qIdx, 'questionScore', value)}
                       min={0.1}
                       max={10}
                       step={0.1}
-                      size="small"
                       status={scoreErrors[qIdx] ? 'error' : ''}
                     />
                     {scoreErrors[qIdx] && (
@@ -532,28 +545,28 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
 
                 {/* Description */}
                 <div>
-                  <label className="block text-xs font-medium mb-1">{t('instructor.quizzes.questions.description')}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-1">{t('instructor.quizzes.questions.description')}</label>
                   <Input.TextArea
                     rows={1}
                     value={question.description}
                     onChange={(e) => updateQuestion(qIdx, 'description', e.target.value)}
                     placeholder={t('instructor.quizzes.questions.descriptionPlaceholder')}
-                    size="small"
+                    className="border-2 border-black"
                   />
                 </div>
 
                 {/* Options */}
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="text-xs font-medium">{t('instructor.quizzes.options.title')}</label>
-                    <Button
-                      type="dashed"
-                      size="small"
-                      icon={<Plus className="w-3 h-3" />}
+                  <div className="flex justify-between items-center mb-3">
+                    <label className="text-xs font-bold uppercase tracking-wider">{t('instructor.quizzes.options.title')}</label>
+                    <button
+                      type="button"
                       onClick={() => addOption(qIdx)}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-white text-black font-bold text-xs uppercase border-2 border-black hover:bg-neutral-100 transition-colors"
                     >
+                      <Plus className="w-3 h-3" />
                       {t('common.add')}
-                    </Button>
+                    </button>
                   </div>
 
                   <div className="space-y-3">
@@ -562,33 +575,29 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                       return (
                         <div
                           key={option.id}
-                          className={`p-3 rounded-lg border-2 transition-all ${
-                            option.isCorrect 
-                              ? 'bg-green-50 border-green-300 shadow-sm' 
-                              : 'bg-white border-gray-200 hover:border-gray-300'
-                          }`}
+                          className={`p-3 border-2 transition-all ${option.isCorrect
+                              ? 'bg-green-50 border-green-500'
+                              : 'bg-white border-neutral-300 hover:border-black'
+                            }`}
                         >
                           <div className="flex gap-2 items-center mb-2">
-                            <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                              option.isCorrect ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700'
-                            }`}>
+                            <span className={`flex-shrink-0 w-7 h-7 flex items-center justify-center text-xs font-black ${option.isCorrect ? 'bg-green-500 text-white' : 'bg-neutral-200 text-black'
+                              }`}>
                               {String.fromCharCode(65 + oIdx)}
                             </span>
                             <Input
                               value={option.name}
                               onChange={(e) => updateOption(qIdx, oIdx, 'name', e.target.value)}
                               placeholder={`${t('instructor.quizzes.options.option')} ${oIdx + 1}`}
-                              size="small"
-                              className="flex-1"
+                              className="flex-1 border-2 border-neutral-300 focus:border-black h-9"
                             />
-                            <Button
-                              type="text"
-                              danger
-                              size="small"
-                              icon={<Trash2 className="w-4 h-4" />}
+                            <button
+                              type="button"
                               onClick={() => removeOption(qIdx, oIdx)}
-                              className="hover:bg-red-50"
-                            />
+                              className="w-8 h-8 bg-red-500 border border-red-600 flex items-center justify-center hover:bg-red-600 transition-colors text-white"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </div>
                           <div className="flex justify-between items-center mb-2">
                             <Checkbox
@@ -596,15 +605,9 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                               onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
                               className="font-medium"
                             >
-                              <span className="text-xs">{option.isCorrect ? '✓ ' : ''}{t('instructor.quizzes.options.correctAnswer')}</span>
+                              <span className="text-xs font-bold uppercase">{option.isCorrect ? '✓ ' : ''}{t('instructor.quizzes.options.correctAnswer')}</span>
                             </Checkbox>
-                            <span
-                              className="text-xs px-3 py-1 rounded-full font-semibold shadow-sm"
-                              style={{
-                                backgroundColor: option.isCorrect ? '#d4edda' : '#e9ecef',
-                                color: option.isCorrect ? '#155724' : '#6c757d',
-                              }}
-                            >
+                            <span className={`text-xs px-3 py-1 font-bold ${option.isCorrect ? 'bg-green-500 text-white' : 'bg-neutral-200 text-neutral-600'}`}>
                               {optionScore.toFixed(1)} {t('instructor.quizzes.questions.pts')}
                             </span>
                           </div>
@@ -613,8 +616,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                             value={option.explanation}
                             onChange={(e) => updateOption(qIdx, oIdx, 'explanation', e.target.value)}
                             placeholder={t('instructor.quizzes.options.explanationPlaceholder')}
-                            size="small"
-                            className="mt-2"
+                            className="border-2 border-neutral-300 focus:border-black"
                           />
                         </div>
                       );
@@ -622,20 +624,19 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
         {/* Add Question Button */}
-        <Button
-          type="dashed"
-          block
-          icon={<Plus className="w-4 h-4" />}
+        <button
+          type="button"
           onClick={addQuestion}
-          className="mt-4"
+          className="mt-4 w-full py-3 border-2 border-dashed border-black bg-white text-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:border-yellow-400 transition-all flex items-center justify-center gap-2"
         >
+          <Plus className="w-5 h-5" />
           {t('instructor.quizzes.questions.addQuestion')}
-        </Button>
+        </button>
       </Form>
     </Drawer>
   );
