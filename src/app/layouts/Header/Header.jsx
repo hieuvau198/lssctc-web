@@ -1,18 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import { NavLink, useNavigate } from "react-router";
-import Cookies from 'js-cookie';
-import { useTranslation } from 'react-i18next';
-import Avt from "./partials/Avt";
-import { clearRememberedCredentials } from "../../libs/crypto";
 import { Button } from "antd";
+import Cookies from 'js-cookie';
+import { BookOpen, Home, Info, Menu, Monitor, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
+import { NavLink, useNavigate } from "react-router";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
-import { Menu, X, Home, BookOpen, Monitor, Info } from "lucide-react";
+import { clearRememberedCredentials } from "../../libs/crypto";
+import Avt from "./partials/Avt";
 
 export default function Header() {
-  const [hidden, setHidden] = useState(false);
   const [atTop, setAtTop] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const lastScroll = useRef(0);
   const [hasToken, setHasToken] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -21,12 +19,6 @@ export default function Header() {
     const onScroll = () => {
       const y = window.scrollY;
       setAtTop(y < 8);
-      if (y > lastScroll.current && y > 80) {
-        setHidden(true);
-      } else {
-        setHidden(false);
-      }
-      lastScroll.current = y;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -50,10 +42,10 @@ export default function Header() {
   }, []);
 
   const navItems = [
-    { to: "/", label: t('common.home'), icon: Home },
-    { to: "/program", label: t('header.programs'), icon: BookOpen },
-    { to: "/simulator", label: t('header.simulator'), icon: Monitor },
-    { to: "/about", label: t('header.about'), icon: Info },
+    { to: "/", label: t('common.home') },
+    { to: "/program", label: t('header.programs') },
+    { to: "/simulator", label: t('header.simulator') },
+    { to: "/about", label: t('header.about') },
   ];
 
   return (
@@ -63,8 +55,7 @@ export default function Header() {
         "transition-all duration-300",
         atTop
           ? "bg-white border-b border-transparent"
-          : "bg-white shadow-md border-b border-neutral-200",
-        hidden ? "-translate-y-full" : "translate-y-0",
+          : "bg-white border-b border-neutral-200",
       ].join(" ")}
     >
       {/* Yellow accent bar */}
@@ -95,7 +86,7 @@ export default function Header() {
           </div>
 
           {/* Center Nav */}
-          <nav className="hidden md:flex items-center justify-center flex-1">
+          <nav className="hidden md:flex items-center justify-center flex-1 pt-2">
             <ul className="flex items-center gap-1">
               {navItems.map((item) => (
                 <li key={item.to}>
@@ -108,8 +99,7 @@ export default function Header() {
                         : "border-transparent text-neutral-600 hover:text-black hover:border-neutral-300"
                     ].join(" ")}
                   >
-                    <item.icon className="w-4 h-4" />
-                    {item.label}
+                    <span>{item.label}</span>
                   </NavLink>
                 </li>
               ))}
@@ -159,7 +149,6 @@ export default function Header() {
                       : "border-transparent text-neutral-600 hover:text-black hover:bg-neutral-50 hover:border-neutral-300"
                   ].join(" ")}
                 >
-                  <item.icon className="w-5 h-5" />
                   {item.label}
                 </NavLink>
               ))}

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ChevronUp } from 'lucide-react';
 
 export default function ScrollTop({ threshold = 240, containerSelector, bottom = 24, right = 24 }) {
   const [visible, setVisible] = useState(false);
@@ -46,21 +47,9 @@ export default function ScrollTop({ threshold = 240, containerSelector, bottom =
       aria-label="Scroll to top"
       onClick={scrollToTop}
       style={{ bottom, right }}
-      className="fixed z-40 h-12 w-12 rounded-full bg-blue-500 text-white shadow-lg shadow-blue-600/30 flex items-center justify-center hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors group"
+      className="fixed z-40 h-12 w-12 bg-yellow-400 text-black border-2 border-black flex items-center justify-center hover:text-yellow-400 focus:outline-none transition-all group"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        className="h-6 w-6 pointer-events-none transition-transform group-hover:-translate-y-0.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M5 12l7-7 7 7" />
-        <path d="M12 19V5" />
-      </svg>
+      <ChevronUp className="w-6 h-6 group-hover:-translate-y-0.5 transition-transform" />
     </button>
   );
 }

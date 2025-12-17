@@ -3,94 +3,80 @@ import { Card, Button, Tooltip, Tag } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-// Color presets for theming
-const colorPresets = {
-    default: {
-        indexBg: 'bg-blue-100',
-        indexText: 'text-blue-700',
-        tagColor: 'blue',
-    },
-    violet: {
-        indexBg: 'bg-violet-100',
-        indexText: 'text-violet-700',
-        tagColor: 'purple',
-    },
-    cyan: {
-        indexBg: 'bg-cyan-100',
-        indexText: 'text-cyan-700',
-        tagColor: 'cyan',
-    },
-};
-
-export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemove, color = 'default' }) {
+export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemove }) {
     const { t } = useTranslation();
     const handleDelete = onDelete || onRemove;
-    const colorStyle = colorPresets[color] || colorPresets.default;
 
     return (
-        <Card
-            size="small"
-            className="hover:shadow-md transition-shadow flex flex-col"
-            bodyStyle={{ flex: 1, display: 'flex', flexDirection: 'column' }}
-            title={
-                <div className="flex items-center gap-2">
-                    {index !== undefined && (
-                        <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${colorStyle.indexBg} ${colorStyle.indexText} text-xs font-semibold`}>
-                            {index + 1}
+        <div className="bg-white border-2 border-neutral-900 hover:border-yellow-400 transition-all group">
+            {/* Status bar */}
+            <div className="h-1.5 bg-neutral-100 group-hover:bg-yellow-400 transition-colors" />
+
+            <div className="p-4">
+                {/* Header */}
+                <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {index !== undefined && (
+                            <span className="inline-flex items-center justify-center w-8 h-8 bg-yellow-400 text-black text-sm font-black flex-shrink-0">
+                                {index + 1}
+                            </span>
+                        )}
+                        <span className="text-sm font-black uppercase truncate text-neutral-900 group-hover:text-yellow-600 transition-colors">
+                            {task.taskName}
                         </span>
-                    )}
-                    <span className="text-sm font-medium truncate">{task.taskName}</span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-1 flex-shrink-0">
+                        {onView && (
+                            <Tooltip title={t('common.view')}>
+                                <button
+                                    type="button"
+                                    onClick={() => onView(task)}
+                                    className="w-8 h-8 border border-neutral-300 hover:bg-yellow-400 hover:border-yellow-400 flex items-center justify-center transition-all"
+                                >
+                                    <EyeOutlined className="text-sm" />
+                                </button>
+                            </Tooltip>
+                        )}
+                        {onEdit && (
+                            <Tooltip title={t('common.edit')}>
+                                <button
+                                    type="button"
+                                    onClick={() => onEdit(task)}
+                                    className="w-8 h-8 border border-neutral-300 hover:bg-yellow-400 hover:border-yellow-400 flex items-center justify-center transition-all"
+                                >
+                                    <EditOutlined className="text-sm" />
+                                </button>
+                            </Tooltip>
+                        )}
+                        {(onDelete || onRemove) && (
+                            <Tooltip title={onRemove ? t('common.remove') : t('common.delete')}>
+                                <button
+                                    type="button"
+                                    onClick={() => handleDelete(onRemove ? task.id : task)}
+                                    className="w-8 h-8 border border-red-300 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 flex items-center justify-center transition-all"
+                                >
+                                    <DeleteOutlined className="text-sm" />
+                                </button>
+                            </Tooltip>
+                        )}
+                    </div>
                 </div>
-            }
-            extra={
-                <div className="flex gap-1">
-                    {onView && (
-                        <Tooltip title={t('common.view')}>
-                            <Button
-                                type="text"
-                                size="small"
-                                icon={<EyeOutlined />}
-                                onClick={() => onView(task)}
-                            />
-                        </Tooltip>
-                    )}
-                    {onEdit && (
-                        <Tooltip title={t('common.edit')}>
-                            <Button
-                                type="text"
-                                size="small"
-                                icon={<EditOutlined />}
-                                onClick={() => onEdit(task)}
-                            />
-                        </Tooltip>
-                    )}
-                    {(onDelete || onRemove) && (
-                        <Tooltip title={onRemove ? t('common.remove') : t('common.delete')}>
-                            <Button
-                                type="text"
-                                size="small"
-                                danger
-                                icon={<DeleteOutlined />}
-                                onClick={() => handleDelete(onRemove ? task.id : task)}
-                            />
-                        </Tooltip>
-                    )}
-                </div>
-            }
-        >
-            <div className="flex flex-col gap-1 flex-1">
-                <div className="text-xs text-slate-500">
-                    {t('common.code')}: <Tag color={colorStyle.tagColor} size="small">{task.taskCode}</Tag>
-                </div>
-                <div className="flex-1">
-                    <p className="text-xs text-slate-600 line-clamp-2">
+
+                {/* Content */}
+                <div className="space-y-3">
+                    <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">
+                        {t('common.code')}: <span className="px-2 py-0.5 bg-neutral-100 text-neutral-700 font-bold">{task.taskCode}</span>
+                    </div>
+                    <p className="text-xs text-neutral-600 line-clamp-2">
                         {task.taskDescription || t('common.na')}
                     </p>
-                </div>
-                <div className="text-xs bg-green-50 border border-green-200 rounded p-1 text-green-800 my-auto">
-                    <strong>{t('common.expected')}:</strong> <span className="line-clamp-2">{task.expectedResult || t('common.na')}</span>
+                    <div className="text-xs bg-yellow-50 border-l-4 border-yellow-400 p-2 text-neutral-700">
+                        <strong className="uppercase">{t('common.expected')}:</strong> <span className="line-clamp-2">{task.expectedResult || t('common.na')}</span>
+                    </div>
                 </div>
             </div>
-        </Card>
+        </div>
     );
 }
