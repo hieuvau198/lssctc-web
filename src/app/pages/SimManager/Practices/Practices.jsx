@@ -1,6 +1,6 @@
 // src\app\pages\SimManager\Practices\Practices.jsx
 import React, { useEffect, useState } from 'react';
-import { Empty, Skeleton, Button, App, Modal } from 'antd';
+import { Empty, App, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { FlaskConical } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -71,43 +71,43 @@ export default function Practices() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <Skeleton active paragraph={{ rows: 8 }} />
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-neutral-200 border-t-yellow-400 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-[1380px] mx-auto px-4 py-2 space-y-4">
-      {/* Header with Violet Gradient */}
-      <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-200/50">
-                <FlaskConical className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                  {t('simManager.practices.title')}
-                </span>
-              </div>
-            </div>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('./create')}
-              className="!bg-gradient-to-r !from-violet-500 !to-purple-600 !border-0 hover:!from-violet-600 hover:!to-purple-700"
-            >
-              {t('simManager.practices.createPractice')}
-            </Button>
+    <div className="space-y-6">
+      {/* Header - Industrial Style */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center">
+            <FlaskConical className="w-6 h-6 text-black" />
           </div>
+          <div>
+            <span className="text-2xl font-black uppercase tracking-tight text-neutral-900">
+              {t('simManager.practices.title')}
+            </span>
+            <p className="text-sm text-neutral-500">
+              {t('simManager.practices.subtitle', 'Manage simulation practices')}
+            </p>
+          </div>
+        </div>
+        <div
+          onClick={() => navigate('./create')}
+          className="h-12 px-6 bg-yellow-400 text-black font-bold uppercase tracking-wider cursor-pointer hover:bg-black hover:text-yellow-400 transition-all flex items-center gap-2"
+        >
+          <PlusOutlined />
+          {t('simManager.practices.createPractice')}
         </div>
       </div>
 
       {/* Content */}
       {practices.length === 0 ? (
-        <Empty description={t('simManager.practices.noPractices')} />
+        <div className="border-2 border-neutral-200 bg-white p-12">
+          <Empty description={t('simManager.practices.noPractices')} />
+        </div>
       ) : (
         <PracticeTable
           data={practices}
