@@ -1,7 +1,8 @@
-import { Avatar, Empty, Pagination, Table, Tag, Modal, Descriptions, Spin, App } from 'antd';
+import { Avatar, Empty, Pagination, Table, Modal, Descriptions, Spin, App } from 'antd';
+import { Users } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { getUserById } from '../../../../apis/Admin/AdminUser';
 
 const getInitials = (name = '') => {
@@ -16,7 +17,6 @@ const getInitials = (name = '') => {
 export default function TraineeTable() {
   const { t } = useTranslation();
   const { message } = App.useApp();
-  const [searchParams, setSearchParams] = useSearchParams();
   const {
     traineeData,
     loadingTrainees,
@@ -47,13 +47,24 @@ export default function TraineeTable() {
   };
 
   const COLUMNS = [
-    { title: '#', dataIndex: 'idx', width: 60, align: 'center' },
+    {
+      title: '#',
+      dataIndex: 'idx',
+      width: 60,
+      align: 'center',
+      render: (v) => <span className="font-bold text-neutral-500">{v}</span>
+    },
     {
       title: t('admin.users.table.avatar'),
       dataIndex: 'avatar',
-      width: 80,
+      width: 90,
       render: (src, record) => (
-        <Avatar src={src} alt={record.fullName} style={{ backgroundColor: '#f3f4f6' }}>
+        <Avatar
+          src={src}
+          alt={record.fullName}
+          size={40}
+          style={{ backgroundColor: '#facc15', color: '#000', fontWeight: 'bold' }}
+        >
           {!src && getInitials(record.fullName)}
         </Avatar>
       ),
@@ -62,21 +73,35 @@ export default function TraineeTable() {
       title: t('admin.users.table.fullName'),
       dataIndex: 'fullName',
       render: (text, record) => (
-        <a
+        <span
           onClick={() => handleViewUser(record.key)}
-          className="text-primary hover:underline font-medium cursor-pointer"
+          className="font-bold text-black cursor-pointer hover:text-yellow-600 transition-colors"
         >
           {text}
-        </a>
+        </span>
       )
     },
-    { title: t('admin.users.table.email'), dataIndex: 'email' },
-    { title: t('admin.users.table.phone'), dataIndex: 'phoneNumber', width: 160 },
+    {
+      title: t('admin.users.table.email'),
+      dataIndex: 'email',
+      render: (text) => <span className="text-neutral-600">{text}</span>
+    },
+    {
+      title: t('admin.users.table.phone'),
+      dataIndex: 'phoneNumber',
+      width: 160,
+      render: (text) => <span className="font-medium">{text}</span>
+    },
     {
       title: t('admin.users.table.status'),
       dataIndex: 'status',
       render: (s) => (
-        <Tag color={s === 'active' ? 'green' : 'red'}>{s === 'active' ? t('common.active') : t('common.inactive')}</Tag>
+        <span className={`px-3 py-1 text-xs font-bold uppercase border ${s === 'active'
+          ? 'bg-green-100 text-green-800 border-green-300'
+          : 'bg-red-100 text-red-800 border-red-300'
+          }`}>
+          {s === 'active' ? t('common.active') : t('common.inactive')}
+        </span>
       ),
       width: 120,
     },
@@ -101,9 +126,44 @@ export default function TraineeTable() {
 
   return (
     <div>
-      <div className="min-h-[380px] overflow-auto">
+      {/* Industrial Table Styles */}
+      <style>{`
+        .industrial-user-table .ant-table {
+          border: none !important;
+        }
+        .industrial-user-table .ant-table-thead > tr > th {
+          background: #fef08a !important;
+          border-bottom: 2px solid #000 !important;
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          font-size: 12px !important;
+          letter-spacing: 0.05em !important;
+          color: #000 !important;
+        }
+        .industrial-user-table .ant-table-tbody > tr > td {
+          border-bottom: 1px solid #e5e5e5 !important;
+        }
+        .industrial-user-table .ant-table-tbody > tr:hover > td {
+          background: #fef9c3 !important;
+        }
+        .industrial-user-table .ant-pagination-item-active {
+          background: #facc15 !important;
+          border-color: #000 !important;
+        }
+        .industrial-user-table .ant-pagination-item-active a {
+          color: #000 !important;
+          font-weight: 700 !important;
+        }
+      `}</style>
+
+      <div className="industrial-user-table min-h-[380px] overflow-auto">
         {(!data.length && !loadingTrainees) ? (
-          <Empty description={t('admin.users.noTrainees')} />
+          <div className="py-12 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-neutral-400" />
+            </div>
+            <p className="text-neutral-800 font-bold uppercase">{t('admin.users.noTrainees')}</p>
+          </div>
         ) : (
           <Table
             columns={COLUMNS}
@@ -115,7 +175,8 @@ export default function TraineeTable() {
           />
         )}
       </div>
-      <div className="py-3 border-t border-t-slate-300 bg-white flex justify-center">
+
+      <div className="py-4 border-t-2 border-neutral-200 bg-white flex justify-center">
         <Pagination
           current={page}
           pageSize={pageSize}
@@ -129,12 +190,24 @@ export default function TraineeTable() {
           }}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(total, range) => t('admin.users.pagination', { start: range[0], end: range[1], total })}
+          showTotal={(total, range) => (
+            <span className="text-sm font-medium text-neutral-600">
+              {range[0]}-{range[1]} / {total} users
+            </span>
+          )}
         />
       </div>
 
+      {/* Industrial Modal */}
       <Modal
-        title={t('admin.users.traineeDetail') || "Trainee Detail"}
+        title={
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <Users className="w-4 h-4 text-black" />
+            </div>
+            <span className="font-bold uppercase">{t('admin.users.traineeDetail') || "Trainee Detail"}</span>
+          </div>
+        }
         open={isViewModalOpen}
         onCancel={() => setIsViewModalOpen(false)}
         footer={null}
@@ -142,34 +215,44 @@ export default function TraineeTable() {
       >
         {viewLoading ? (
           <div className="flex justify-center py-10">
-            <Spin size="large" />
+            <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : viewingUser ? (
           <div className="flex flex-col gap-6">
-            <div className="flex items-center gap-4 border-b pb-4">
+            <div className="flex items-center gap-4 border-b-2 border-black pb-4">
               <Avatar
                 size={80}
                 src={viewingUser.avatarUrl}
-                style={{ backgroundColor: '#f3f4f6' }}
+                style={{ backgroundColor: '#facc15', color: '#000', fontWeight: 'bold' }}
               >
                 {getInitials(viewingUser.fullName)}
               </Avatar>
               <div>
-                <h3 className="text-xl font-bold m-0">{viewingUser.fullName}</h3>
-                <div className="text-gray-500">{viewingUser.email}</div>
-                <Tag color={viewingUser.isActive ? 'green' : 'red'} className="mt-2">
+                <h3 className="text-xl font-black uppercase m-0">{viewingUser.fullName}</h3>
+                <div className="text-neutral-500">{viewingUser.email}</div>
+                <span className={`inline-block mt-2 px-3 py-1 text-xs font-bold uppercase border ${viewingUser.isActive
+                  ? 'bg-green-100 text-green-800 border-green-300'
+                  : 'bg-red-100 text-red-800 border-red-300'
+                  }`}>
                   {viewingUser.isActive ? t('common.active') : t('common.inactive')}
-                </Tag>
+                </span>
               </div>
             </div>
 
-            <Descriptions column={1} bordered>
-              <Descriptions.Item label={t('admin.users.table.fullName')}>{viewingUser.fullName}</Descriptions.Item>
-              <Descriptions.Item label={t('admin.users.table.email')}>{viewingUser.email}</Descriptions.Item>
-              <Descriptions.Item label={t('admin.users.table.phone')}>{viewingUser.phoneNumber || '-'}</Descriptions.Item>
-              <Descriptions.Item label="Role">{viewingUser.role}</Descriptions.Item>
-              <Descriptions.Item label="Username">{viewingUser.username}</Descriptions.Item>
-            </Descriptions>
+            <div className="space-y-3">
+              {[
+                { label: t('admin.users.table.fullName'), value: viewingUser.fullName },
+                { label: t('admin.users.table.email'), value: viewingUser.email },
+                { label: t('admin.users.table.phone'), value: viewingUser.phoneNumber || '-' },
+                { label: 'Role', value: viewingUser.role },
+                { label: 'Username', value: viewingUser.username },
+              ].map((item, idx) => (
+                <div key={idx} className="border-2 border-neutral-200 p-3">
+                  <p className="text-xs font-bold uppercase text-neutral-500 mb-1">{item.label}</p>
+                  <p className="font-medium text-black">{item.value}</p>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <Empty description="No Data" />
