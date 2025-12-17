@@ -88,10 +88,10 @@ export default function AddInstructor({ classItem, onAssigned }) {
       {!editing ? (
         <div className="flex justify-end mb-4">
           <Button
-            type="primary"
-            icon={<Plus size={20} />}
+            icon={<Plus size={16} strokeWidth={2.5} />}
             onClick={() => { setEditing(true); setError(null); }}
-            size="middle"
+            className="bg-yellow-400 text-black border border-yellow-500 font-bold h-9 px-4 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all flex items-center gap-2"
+            style={{ backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
           >
             {t('admin.classes.buttons.assignInstructor')}
           </Button>

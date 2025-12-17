@@ -157,10 +157,10 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
         <>
             <div className="flex justify-end">
                 <Button
-                    type="primary"
                     icon={<Plus size={16} strokeWidth={2.5} />}
                     onClick={handleOpen}
                     className="bg-yellow-400 text-black border border-yellow-500 font-bold h-9 px-4 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all flex items-center gap-2"
+                    style={{ backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
                 >
                     {t('admin.classes.buttons.addTrainee')}
                 </Button>
@@ -188,6 +188,17 @@ const AddTraineeModal = ({ classItem, existingTraineeIds = [], onAssigned }) => 
                 }
                 .trainee-table .ant-table-body {
                    scrollbar-width: thin;
+                }
+                /* Force Button Style Overrides */
+                .ant-btn.bg-yellow-400 {
+                    background-color: #facc15 !important;
+                    color: #000 !important;
+                    border-color: #eab308 !important;
+                }
+                .ant-btn.bg-yellow-400:hover {
+                    background-color: #fbbf24 !important;
+                    color: #000 !important;
+                    border-color: #d97706 !important;
                 }
             `}</style>
 

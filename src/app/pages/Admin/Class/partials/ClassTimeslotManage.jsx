@@ -248,6 +248,17 @@ export default function ClassTimeslotManage({ classItem }) {
                     border-color: #facc15 !important;
                     box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.15) !important;
                 }
+                /* Force Button Style Overrides */
+                .ant-btn.bg-yellow-400 {
+                    background-color: #facc15 !important;
+                    color: #000 !important;
+                    border-color: #eab308 !important;
+                }
+                .ant-btn.bg-yellow-400:hover {
+                    background-color: #fbbf24 !important;
+                    color: #000 !important;
+                    border-color: #d97706 !important;
+                }
             `}</style>
 
             <div className="flex justify-between items-end mb-4 border-b-2 border-slate-200 pb-2">
@@ -258,10 +269,10 @@ export default function ClassTimeslotManage({ classItem }) {
                     <span className="text-xl font-bold uppercase tracking-wide text-slate-900">{t('class.timeslot.title')}</span>
                 </div>
                 <Button
-                    type="primary"
                     icon={<Plus size={16} strokeWidth={3} />}
                     onClick={() => handleOpenModal(null)}
                     className="bg-yellow-400 text-black border border-yellow-500 font-bold h-10 px-6 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all"
+                    style={{ backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
                 >
                     {t('class.timeslot.add')}
                 </Button>
