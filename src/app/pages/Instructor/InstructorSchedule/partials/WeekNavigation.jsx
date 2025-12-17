@@ -1,17 +1,11 @@
-import { Button, DatePicker } from 'antd';
-import { LeftOutlined, RightOutlined, CalendarOutlined } from '@ant-design/icons';
+import { DatePicker } from 'antd';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import '../InstructorSchedule.css';
 import dayjs from 'dayjs';
 
 /**
- * WeekNavigation - Component điều hướng tuần
- * Thiết kế hiện đại với glassmorphism và cyan-blue gradient
- * @param {Date} currentWeekStart - Ngày bắt đầu tuần hiện tại
- * @param {Function} onPreviousWeek - Handler chuyển tuần trước
- * @param {Function} onNextWeek - Handler chuyển tuần sau
- * @param {Function} onToday - Handler về hôm nay
- * @param {Function} onWeekChange - Handler thay đổi tuần (từ DatePicker)
+ * WeekNavigation - Light Wire Theme
+ * Industrial design with yellow/black accents
  */
 export default function WeekNavigation({
   currentWeekStart,
@@ -36,7 +30,6 @@ export default function WeekNavigation({
 
   const handleDateChange = (date) => {
     if (date && onWeekChange) {
-      // Calculate Monday of selected week
       const selectedDate = date.toDate();
       const dayOfWeek = selectedDate.getDay();
       const monday = new Date(selectedDate);
@@ -47,25 +40,23 @@ export default function WeekNavigation({
   };
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 rounded-2xl shadow-xl p-5 mb-6">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
-      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-cyan-400/20 rounded-full blur-xl"></div>
+    <div className="bg-black border-2 border-black p-5 mb-6">
+      {/* Yellow accent bar */}
+      <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
 
-      <div className="relative flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         {/* Left side - Title and week info */}
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-white/15 text-white backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg border border-white/20">
-            <CalendarOutlined color="white" className="text-2xl" />
+          <div className="w-14 h-14 bg-yellow-400 border-2 border-black flex items-center justify-center">
+            <Calendar className="w-7 h-7 text-black" />
           </div>
           {!compact && (
             <div className="flex flex-col">
-              <span className="text-2xl font-bold text-white tracking-tight">
+              <span className="text-2xl font-black text-white uppercase tracking-tight">
                 {t('instructor.schedule.title')}
               </span>
               <div className="flex items-center gap-2 mt-1">
-                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white/90 font-medium border border-white/20">
+                <span className="px-3 py-1 bg-yellow-400 text-black text-sm font-bold uppercase">
                   {t('instructor.schedule.week')}: {getWeekRangeText()}
                 </span>
               </div>
@@ -76,29 +67,28 @@ export default function WeekNavigation({
         {/* Right side - Navigation controls */}
         <div className={`flex items-center gap-2 ${compact ? 'ml-auto' : ''}`}>
           {/* Previous week button */}
-          <Button
-            icon={<div className='text-white'><LeftOutlined /></div>}
+          <button
             onClick={onPreviousWeek}
-            type="text"
-            className="w-10 h-10 flex items-center justify-center bg-white/15 backdrop-blur-md hover:bg-white/50 border border-white/20 rounded-xl transition-all duration-200 shadow-md"
-          />
+            className="w-10 h-10 flex items-center justify-center bg-neutral-800 border-2 border-neutral-700 hover:bg-yellow-400 hover:border-black hover:text-black text-white transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
 
           {/* Today button */}
-          <Button
+          <button
             onClick={onToday}
-            type="default"
-            className="h-10 px-5 bg-white text-cyan-600 font-semibold hover:bg-cyan-50 border-none rounded-xl shadow-md transition-all duration-200 hover:shadow-lg"
+            className="h-10 px-5 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
           >
             {t('instructor.schedule.today')}
-          </Button>
+          </button>
 
           {/* Next week button */}
-          <Button
-            icon={<div className='text-white'><RightOutlined /></div>}
+          <button
             onClick={onNextWeek}
-            type="text"
-            className="w-10 h-10 flex items-center justify-center bg-white/15 backdrop-blur-md hover:bg-white/50 border border-white/20 rounded-xl transition-all duration-200 shadow-md"
-          />
+            className="w-10 h-10 flex items-center justify-center bg-neutral-800 border-2 border-neutral-700 hover:bg-yellow-400 hover:border-black hover:text-black text-white transition-all"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
 
           {/* Date picker */}
           <DatePicker
@@ -107,8 +97,7 @@ export default function WeekNavigation({
             onChange={handleDateChange}
             format="wo - YYYY"
             allowClear={false}
-            className="week-picker-modern h-10 bg-white/15 backdrop-blur-md border border-white/20 rounded-xl hover:bg-white/50 transition-all duration-200"
-            popupClassName="schedule-datepicker-popup"
+            className="h-10 bg-neutral-800 border-2 border-neutral-700 hover:border-yellow-400 transition-all [&_.ant-picker-input>input]:text-white [&_.ant-picker-suffix]:text-yellow-400"
           />
         </div>
       </div>

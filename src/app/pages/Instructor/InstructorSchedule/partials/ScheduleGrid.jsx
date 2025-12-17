@@ -1,17 +1,12 @@
 import { useMemo } from 'react';
-import { Table, Tag } from 'antd';
-import { ClockCircleOutlined } from '@ant-design/icons';
+import { Table } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ClassSlotCard from './ClassSlotCard';
 import { weekDays } from '../../../../mocks/instructorSchedule';
 
 /**
- * ScheduleGrid - Component hiển thị lưới lịch học
- * Thiết kế hiện đại với glassmorphism và gradient accents
- * @param {Array} timeSlots - Danh sách các slot thời gian
- * @param {Array} weekDates - Danh sách các ngày trong tuần
- * @param {Object} scheduleGrid - Dữ liệu lịch học theo grid
- * @param {Function} onClassClick - Handler khi click vào lớp học
+ * ScheduleGrid - Light Wire Theme
+ * Industrial design with yellow/black accents
  */
 export default function ScheduleGrid({ timeSlots, weekDates, scheduleGrid, onClassClick }) {
   const { t, i18n } = useTranslation();
@@ -28,8 +23,8 @@ export default function ScheduleGrid({ timeSlots, weekDates, scheduleGrid, onCla
     const cols = [
       {
         title: (
-          <div className="flex items-center justify-center gap-2 py-1">
-            <span className="text-xl font-semibold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+          <div className="flex items-center justify-center py-2">
+            <span className="text-sm font-black uppercase tracking-wider text-black">
               {t('instructor.schedule.slot')}
             </span>
           </div>
@@ -39,13 +34,11 @@ export default function ScheduleGrid({ timeSlots, weekDates, scheduleGrid, onCla
         width: '110px',
         fixed: 'left',
         render: (slot) => (
-          <div className="flex flex-col items-center justify-center p-1">
-            <span className="font-bold text-gray-800 text-sm">{slot.name}</span>
-            <div className="flex items-center gap-1 mt-0.5">
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                {slot.startTime} - {slot.endTime}
-              </span>
-            </div>
+          <div className="flex flex-col items-center justify-center p-2 bg-neutral-50">
+            <span className="font-black text-black text-sm uppercase">{slot.name}</span>
+            <span className="text-xs text-neutral-500 font-medium mt-1">
+              {slot.startTime} - {slot.endTime}
+            </span>
           </div>
         ),
       },
@@ -56,24 +49,24 @@ export default function ScheduleGrid({ timeSlots, weekDates, scheduleGrid, onCla
       const isTodayColumn = isToday(day.date);
       cols.push({
         title: (
-          <div className={`flex flex-col items-center py-2 px-1 rounded-xl transition-all ${isTodayColumn
-              ? 'bg-gradient-to-br from-cyan-50 to-blue-50 border border-cyan-200/50'
-              : ''
+          <div className={`flex flex-col items-center py-2 px-1 ${isTodayColumn
+            ? 'bg-yellow-400'
+            : 'bg-white'
             }`}>
-            <span className={`text-xs font-semibold ${isTodayColumn
-                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent'
-                : 'text-gray-500'
+            <span className={`text-xs font-bold uppercase ${isTodayColumn
+              ? 'text-black'
+              : 'text-neutral-500'
               }`}>
               {isVietnamese ? day.label : day.labelEn}
             </span>
-            <span className={`text-lg font-bold mt-0.5 ${isTodayColumn
-                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent'
-                : 'text-gray-800'
+            <span className={`text-lg font-black mt-0.5 ${isTodayColumn
+              ? 'text-black'
+              : 'text-neutral-800'
               }`}>
               {day.dayNum}/{day.monthNum}
             </span>
             {isTodayColumn && (
-              <span className="mt-1 px-2 py-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xs font-medium rounded-full shadow-sm">
+              <span className="mt-1 px-2 py-0.5 bg-black text-yellow-400 text-xs font-bold uppercase">
                 {t('instructor.schedule.today')}
               </span>
             )}
@@ -83,17 +76,17 @@ export default function ScheduleGrid({ timeSlots, weekDates, scheduleGrid, onCla
         key: day.key,
         ellipsis: true,
         align: 'center',
-        className: isTodayColumn ? 'today-column' : '',
+        className: isTodayColumn ? 'bg-yellow-50' : '',
         render: (scheduleItem, record) => {
           if (!scheduleItem) {
             return (
-              <div className="slot-empty flex items-center justify-center">
-                <span className="w-8 h-0.5 bg-gray-200 rounded-full"></span>
+              <div className="flex items-center justify-center py-4">
+                <span className="w-8 h-0.5 bg-neutral-200"></span>
               </div>
             );
           }
           return (
-            <div className="slot-occupied">
+            <div className="p-1">
               <ClassSlotCard
                 scheduleItem={scheduleItem}
                 slot={record.slot}
@@ -125,7 +118,8 @@ export default function ScheduleGrid({ timeSlots, weekDates, scheduleGrid, onCla
   }, [timeSlots, scheduleGrid]);
 
   return (
-    <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/40 shadow-xl overflow-hidden">
+    <div className="bg-white border-2 border-black overflow-hidden">
+      <div className="h-1 bg-yellow-400" />
       <Table
         columns={columns}
         dataSource={dataSource}
@@ -133,8 +127,8 @@ export default function ScheduleGrid({ timeSlots, weekDates, scheduleGrid, onCla
         bordered
         scroll={{ x: false }}
         size="small"
-        className="schedule-table-modern"
         tableLayout="fixed"
+        className="[&_.ant-table-thead>tr>th]:bg-neutral-100 [&_.ant-table-thead>tr>th]:border-neutral-300 [&_.ant-table-tbody>tr>td]:border-neutral-200 [&_.ant-table-thead>tr>th]:p-0"
       />
     </div>
   );

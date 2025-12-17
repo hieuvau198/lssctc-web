@@ -1,6 +1,6 @@
 import React from 'react';
-import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
-import { EyeOutlined } from '@ant-design/icons';
+import { Table, Pagination, Tooltip } from 'antd';
+import { Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import getClassStatus from '../../../../utils/classStatus';
 
@@ -9,66 +9,78 @@ const ClassTable = ({
   pageNumber = 1,
   pageSize = 10,
   total = 0,
-  onPageChange = () => {},
-  onView = () => {},
+  onPageChange = () => { },
+  onView = () => { },
 }) => {
   const { t } = useTranslation();
-  
+
+  // Status color mapping for Light Wire theme
+  const getStatusStyle = (status) => {
+    const statusMap = {
+      'Draft': 'bg-neutral-100 text-neutral-600 border-neutral-300',
+      'Open': 'bg-yellow-100 text-yellow-700 border-yellow-400',
+      'Inprogress': 'bg-yellow-400 text-black border-black',
+      'Completed': 'bg-black text-yellow-400 border-black',
+      'Cancelled': 'bg-red-100 text-red-700 border-red-400',
+    };
+    return statusMap[status] || 'bg-neutral-100 text-neutral-600 border-neutral-300';
+  };
 
   const tableColumns = [
     {
-      title: t('instructor.classes.table.index'),
+      title: <span className="font-black uppercase text-xs">#</span>,
       key: 'index',
       width: 64,
       align: 'center',
-      render: (_, __, idx) => (pageNumber - 1) * pageSize + idx + 1,
+      render: (_, __, idx) => <span className="font-bold text-neutral-600">{(pageNumber - 1) * pageSize + idx + 1}</span>,
       fixed: 'left',
     },
     {
-      title: t('instructor.classes.table.classCode'),
+      title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.classCode')}</span>,
       dataIndex: 'classCode',
       key: 'classCode',
-      width: 80,
+      width: 100,
       fixed: 'left',
+      render: (code) => <span className="font-mono font-bold text-yellow-600">{code}</span>,
     },
     {
-      title: t('instructor.classes.table.name'),
+      title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.name')}</span>,
       dataIndex: 'name',
       key: 'name',
       width: 260,
       render: (name, record) => (
-        <div
-          className="font-medium text-blue-600 cursor-pointer hover:underline"
+        <button
+          className="font-bold text-black hover:text-yellow-600 text-left transition-colors"
           onClick={() => onView(record)}
         >
           {name || record.className || t('common.na')}
-        </div>
+        </button>
       ),
     },
     {
-      title: t('instructor.classes.table.startDate'),
+      title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.startDate')}</span>,
       dataIndex: 'startDate',
       key: 'startDate',
       width: 120,
-      render: (date) => date ? new Date(date).toLocaleDateString() : '-',
+      render: (date) => <span className="text-neutral-600 font-medium">{date ? new Date(date).toLocaleDateString() : '-'}</span>,
     },
     {
-      title: t('instructor.classes.table.endDate'),
+      title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.endDate')}</span>,
       dataIndex: 'endDate',
       key: 'endDate',
       width: 120,
-      render: (date) => date ? new Date(date).toLocaleDateString() : '-',
+      render: (date) => <span className="text-neutral-600 font-medium">{date ? new Date(date).toLocaleDateString() : '-'}</span>,
     },
     {
-      title: t('instructor.classes.table.trainees'),
+      title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.trainees')}</span>,
       dataIndex: 'traineeCount',
       key: 'traineeCount',
       width: 100,
       align: 'center',
-      render: (count) => <span>{count ?? 0}</span>,
+      render: (count) => <span className="font-black text-black">{count ?? 0}</span>,
     },
     {
-      title: t('instructor.classes.table.status'),
+      title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.status')}</span>,
       dataIndex: 'status',
       key: 'status',
       width: 120,
@@ -76,31 +88,35 @@ const ClassTable = ({
       render: (status) => {
         const s = getClassStatus(status);
         return (
-          <Tag color={s.color}>
+          <span className={`px-2 py-1 text-xs font-bold uppercase border ${getStatusStyle(status)}`}>
             {s.label || t('common.na')}
-          </Tag>
+          </span>
         );
       },
     },
     {
-      title: t('instructor.classes.table.actions'),
+      title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.actions')}</span>,
       key: 'actions',
-      width: 120,
+      width: 100,
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
-        <Space size="small">
-          <Tooltip title={t('instructor.classes.table.viewDetails')}>
-            <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(record)} />
-          </Tooltip>
-        </Space>
+        <Tooltip title={t('instructor.classes.table.viewDetails')}>
+          <button
+            onClick={() => onView(record)}
+            className="w-8 h-8 border-2 border-black bg-white hover:bg-yellow-400 flex items-center justify-center transition-all mx-auto"
+          >
+            <Eye className="w-4 h-4 text-black" />
+          </button>
+        </Tooltip>
       ),
     },
   ];
 
   return (
-    <div className="rounded-lg shadow overflow-hidden ">
-      <div className="overflow-hidden min-h-[450px] border border-gray-200">
+    <div className="bg-white border-2 border-black overflow-hidden">
+      <div className="h-1 bg-yellow-400" />
+      <div className="min-h-[450px]">
         <Table
           columns={tableColumns}
           dataSource={classes}
@@ -108,10 +124,11 @@ const ClassTable = ({
           pagination={false}
           scroll={{ y: 450 }}
           size="middle"
+          className="[&_.ant-table-thead>tr>th]:bg-neutral-900 [&_.ant-table-thead>tr>th]:text-white [&_.ant-table-thead>tr>th]:border-neutral-700 [&_.ant-table-tbody>tr>td]:border-neutral-200"
         />
       </div>
 
-      <div className="p-4 border-t border-gray-200 bg-white flex justify-center">
+      <div className="p-4 border-t-2 border-black bg-neutral-50 flex justify-center">
         <Pagination
           current={pageNumber}
           pageSize={pageSize}
@@ -119,7 +136,7 @@ const ClassTable = ({
           onChange={onPageChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => `${r[0]}-${r[1]} / ${t}`}
+          showTotal={(t, r) => <span className="font-bold text-neutral-600">{r[0]}-{r[1]} / {t}</span>}
         />
       </div>
     </div>
