@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, App, Empty, Spin, Table, Tag, Pagination } from 'antd';
-import { Plus } from 'lucide-react';
+import { Modal, App, Empty, Table, Pagination } from 'antd';
+import { Plus, X, BookOpen, Layers } from 'lucide-react';
 import { addCourseToProgram } from '../../../../apis/ProgramManager/ProgramManagerCourseApi';
 import { fetchCoursesPaged, fetchCoursesByProgram } from '../../../../apis/ProgramManager/CourseApi';
 
@@ -113,13 +113,18 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
         }
     };
 
-    // Table columns
+    // Table columns with Industrial styling
     const columns = [
         {
             title: t('admin.programs.assignCourse.columns.courseName'),
             dataIndex: 'name',
             key: 'name',
             ellipsis: true,
+            render: (name) => (
+                <span className="font-semibold text-black hover:text-yellow-600 transition-colors cursor-pointer">
+                    {name}
+                </span>
+            ),
         },
         {
             title: t('admin.programs.assignCourse.columns.description'),
@@ -127,7 +132,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
             key: 'description',
             ellipsis: true,
             width: 280,
-            render: (desc) => desc || '-',
+            render: (desc) => <span className="text-neutral-600">{desc || '-'}</span>,
         },
         {
             title: t('common.status'),
@@ -136,9 +141,12 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
             width: 100,
             align: 'center',
             render: (isActive) => (
-                <Tag color={isActive ? 'green' : 'red'}>
+                <span className={`px-2 py-1 text-xs font-bold uppercase border ${isActive
+                        ? 'bg-green-100 text-green-800 border-green-300'
+                        : 'bg-red-100 text-red-800 border-red-300'
+                    }`}>
                     {isActive ? t('common.active') : t('common.inactive')}
-                </Tag>
+                </span>
             ),
         },
     ];
@@ -153,49 +161,186 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
 
     if (!program) return null;
 
+    // Custom Modal Title
+    const modalTitle = (
+        <div className="flex items-center gap-3 pb-3 border-b-2 border-yellow-400 -mx-6 px-6 -mt-1">
+            <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+                <Layers className="w-5 h-5 text-black" />
+            </div>
+            <div>
+                <h3 className="text-lg font-bold uppercase tracking-wider m-0">
+                    {t('admin.programs.assignCourse.modalTitle')}
+                </h3>
+                <p className="text-xs text-neutral-500 m-0">{program.name}</p>
+            </div>
+        </div>
+    );
+
+    // Custom Footer
+    const modalFooter = (
+        <div className="flex items-center justify-between pt-4 border-t-2 border-neutral-200 -mx-6 px-6 -mb-2">
+            <span className="text-sm text-neutral-500">
+                {selectedCourseIds.length > 0 && (
+                    <span className="font-semibold text-yellow-600">
+                        {selectedCourseIds.length} course(s) selected
+                    </span>
+                )}
+            </span>
+            <div className="flex items-center gap-3">
+                <button
+                    onClick={handleClose}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white text-neutral-700 font-medium text-sm border border-neutral-300 hover:bg-neutral-50 hover:border-neutral-400 transition-all"
+                >
+                    <X className="w-4 h-4" />
+                    {t('common.cancel')}
+                </button>
+                <button
+                    onClick={handleAssign}
+                    disabled={selectedCourseIds.length === 0 || assignLoading}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black font-semibold text-sm border border-yellow-500 hover:bg-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg"
+                >
+                    {assignLoading ? (
+                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        <Plus className="w-4 h-4" />
+                    )}
+                    {t('admin.programs.assignCourse.assignSelected', { count: selectedCourseIds.length })}
+                </button>
+            </div>
+        </div>
+    );
+
     return (
         <>
+            {/* Industrial Modal Styles */}
+            <style>{`
+                .industrial-assign-modal .ant-modal-content {
+                    border-radius: 0 !important;
+                    border: 2px solid #000 !important;
+                }
+                .industrial-assign-modal .ant-modal-header {
+                    border-radius: 0 !important;
+                    border-bottom: none !important;
+                    padding-bottom: 0 !important;
+                }
+                .industrial-assign-modal .ant-modal-close {
+                    top: 16px !important;
+                    right: 16px !important;
+                }
+                .industrial-assign-modal .ant-modal-close-x {
+                    width: 32px !important;
+                    height: 32px !important;
+                    line-height: 32px !important;
+                    border: 2px solid #000 !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                }
+                .industrial-assign-modal .ant-modal-close-x:hover {
+                    background: #fef08a !important;
+                }
+                .industrial-assign-modal .ant-modal-footer {
+                    border-top: none !important;
+                    padding-top: 0 !important;
+                }
+                
+                /* Table Industrial Styles */
+                .industrial-assign-table .ant-table-thead > tr > th {
+                    background: #fef08a !important;
+                    border-bottom: 2px solid #000 !important;
+                    font-weight: 700 !important;
+                    text-transform: uppercase !important;
+                    font-size: 11px !important;
+                    letter-spacing: 0.05em !important;
+                    color: #000 !important;
+                    padding: 12px 16px !important;
+                }
+                .industrial-assign-table .ant-table-thead > tr > th::before {
+                    display: none !important;
+                }
+                .industrial-assign-table .ant-table-tbody > tr > td {
+                    border-bottom: 1px solid #e5e5e5 !important;
+                    padding: 12px 16px !important;
+                    transition: all 0.2s ease !important;
+                }
+                .industrial-assign-table .ant-table-tbody > tr:hover > td {
+                    background: #fef9c3 !important;
+                }
+                .industrial-assign-table .ant-table-tbody > tr.ant-table-row-selected > td {
+                    background: #fef08a !important;
+                }
+                .industrial-assign-table .ant-checkbox-inner {
+                    border-radius: 0 !important;
+                    border: 2px solid #000 !important;
+                }
+                .industrial-assign-table .ant-checkbox-checked .ant-checkbox-inner {
+                    background-color: #facc15 !important;
+                    border-color: #000 !important;
+                }
+                .industrial-assign-table .ant-checkbox-checked .ant-checkbox-inner::after {
+                    border-color: #000 !important;
+                }
+                
+                /* Pagination Industrial Styles */
+                .industrial-pagination .ant-pagination-item {
+                    border: 1px solid #d4d4d4 !important;
+                    border-radius: 0 !important;
+                }
+                .industrial-pagination .ant-pagination-item:hover {
+                    border-color: #000 !important;
+                }
+                .industrial-pagination .ant-pagination-item-active {
+                    background: #facc15 !important;
+                    border-color: #000 !important;
+                    border-width: 2px !important;
+                }
+                .industrial-pagination .ant-pagination-item-active a {
+                    color: #000 !important;
+                    font-weight: 700 !important;
+                }
+                .industrial-pagination .ant-pagination-prev button,
+                .industrial-pagination .ant-pagination-next button {
+                    border: 1px solid #d4d4d4 !important;
+                    border-radius: 0 !important;
+                }
+            `}</style>
+
             <div className="flex justify-end mb-4">
                 <button
                     onClick={handleOpen}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black font-semibold text-sm border border-yellow-500 hover:bg-yellow-500 transition-all hover:shadow-lg"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black font-semibold text-sm border border-yellow-500 hover:bg-yellow-500 transition-all hover:shadow-lg hover:scale-[1.02]"
                 >
                     <Plus size={16} />
                     {t('admin.programs.assignCourse.button')}
                 </button>
             </div>
+
             <Modal
-                title={t('admin.programs.assignCourse.modalTitle')}
+                title={modalTitle}
                 open={isModalVisible}
                 onCancel={handleClose}
                 width={900}
                 centered
-                footer={[
-                    <Button key="cancel" onClick={handleClose}>
-                        {t('common.cancel')}
-                    </Button>,
-                    <Button
-                        key="assign"
-                        type="primary"
-                        icon={<Plus size={16} />}
-                        loading={assignLoading}
-                        disabled={selectedCourseIds.length === 0}
-                        onClick={handleAssign}
-                    >
-                        {t('admin.programs.assignCourse.assignSelected', { count: selectedCourseIds.length })}
-                    </Button>,
-                ]}
+                footer={modalFooter}
+                className="industrial-assign-modal"
+                closeIcon={<X className="w-4 h-4" />}
             >
                 {loading ? (
-                    <div className="flex justify-center items-center h-[500px] py-8">
-                        <Spin size="large" />
+                    <div className="flex flex-col justify-center items-center h-[500px] py-8">
+                        <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4" />
+                        <p className="text-neutral-500 font-medium">Loading courses...</p>
                     </div>
                 ) : allCourses.length === 0 ? (
-                    <Empty description={t('admin.programs.assignCourse.noAvailable')} />
+                    <div className="h-[500px] flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mb-4">
+                            <BookOpen className="w-10 h-10 text-neutral-400" />
+                        </div>
+                        <p className="text-neutral-600 font-bold uppercase">{t('admin.programs.assignCourse.noAvailable')}</p>
+                    </div>
                 ) : (
                     <div className="flex flex-col h-[500px]">
                         {/* Table with fixed height, scrollable */}
-                        <div className="flex-1 overflow-hidden">
+                        <div className="flex-1 overflow-hidden industrial-assign-table">
                             <Table
                                 rowSelection={rowSelection}
                                 columns={columns}
@@ -203,17 +348,21 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
                                 rowKey="id"
                                 size="small"
                                 pagination={false}
-                                scroll={{ y: 400 }}
+                                scroll={{ y: 380 }}
                             />
                         </div>
                         {/* Pagination fixed at bottom */}
-                        <div className="border-t border-t-gray-400 pt-3 mt-3 flex justify-center">
+                        <div className="border-t-2 border-neutral-200 pt-4 mt-4 flex justify-center industrial-pagination">
                             <Pagination
                                 current={currentPage}
                                 pageSize={pageSize}
                                 total={totalCount}
                                 onChange={handlePageChange}
-                                showTotal={(total) => t('admin.programs.assignCourse.total', { total })}
+                                showTotal={(total) => (
+                                    <span className="text-sm font-medium text-neutral-600">
+                                        Total <span className="font-bold text-black">{total}</span> courses
+                                    </span>
+                                )}
                             />
                         </div>
                     </div>
