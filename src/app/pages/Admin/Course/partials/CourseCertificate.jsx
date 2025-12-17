@@ -168,7 +168,7 @@ const CourseCertificate = ({ courseId }) => {
             </div>
             <div>
               <h3 className="text-white font-black uppercase text-lg leading-none m-0">
-                Assign Certificate
+                ASSIGN CERTIFICATE TEMPLATE
               </h3>
               <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
                 Select template
