@@ -268,7 +268,7 @@ export default function PEExam({ classId }) {
       render: (_, record) => (
         <button
           onClick={() => handleOpenGrading(record)}
-          className="px-4 py-2 bg-black text-yellow-400 font-bold uppercase text-xs border-2 border-black hover:bg-yellow-400 hover:text-black transition-all"
+          className="px-4 py-2 bg-yellow-400 text-black font-bold uppercase text-xs border-2 border-black hover:bg-yellow-500 transition-all"
         >
           Grade
         </button>
