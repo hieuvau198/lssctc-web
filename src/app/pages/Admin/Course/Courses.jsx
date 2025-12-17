@@ -432,54 +432,83 @@ const Courses = () => {
         </div>
       </div>
 
-      {/* Drawer */}
+      {/* Industrial Drawer */}
       <Drawer
         open={drawerOpen}
         onClose={closeDrawer}
         width={720}
-        title={
-          drawerMode === 'create'
-            ? t('admin.courses.createCourse')
-            : drawerMode === 'edit'
-              ? t('admin.courses.editCourse')
-              : currentCourse?.name || t('admin.courses.courseDetail')
-        }
-        extra={
-          // Removed View controls since we now navigate to page
-          drawerMode === 'view' && currentCourse ? null : null
-        }
+        title={null}
+        closable={false}
+        styles={{
+          header: { display: 'none' },
+          body: { padding: 0 },
+        }}
       >
-        {/* Removed drawerMode === 'view' logic since it's handled by page now */}
+        {/* Custom Industrial Header */}
+        <div className="sticky top-0 z-10">
+          <div className="h-1.5 bg-yellow-400" />
+          <div className="bg-black px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center shadow-lg">
+                <BookOpen className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black uppercase tracking-wider text-white m-0">
+                  {drawerMode === 'create'
+                    ? t('admin.courses.createCourse')
+                    : drawerMode === 'edit'
+                      ? t('admin.courses.editCourse')
+                      : currentCourse?.name || t('admin.courses.courseDetail')}
+                </h3>
+                <p className="text-neutral-400 text-xs m-0 mt-1">
+                  {drawerMode === 'create'
+                    ? t('admin.courses.createCourseSubtitle')
+                    : t('admin.courses.editCourseSubtitle')}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={closeDrawer}
+              className="w-10 h-10 flex items-center justify-center border-2 border-white/50 hover:bg-yellow-400 hover:border-yellow-400 transition-all group"
+            >
+              <X className="w-5 h-5 text-white group-hover:text-black" />
+            </button>
+          </div>
+          <div className="h-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400" />
+        </div>
 
-        {drawerMode === 'create' && (
-          <CreateCourse
-            embedded
-            open
-            onCancel={closeDrawer}
-            onCreate={handleCreate}
-            confirmLoading={submitting}
-            categories={categories}
-            levels={levels}
-          />
-        )}
-        {drawerMode === 'edit' && (
-          detailLoading ? (
-            <Skeleton active paragraph={{ rows: 6 }} />
-          ) : (
-            currentCourse && (
-              <EditCourse
-                embedded
-                open
-                course={currentCourse}
-                onCancel={switchToView}
-                onUpdate={handleUpdate}
-                confirmLoading={submitting}
-                categories={categories}
-                levels={levels}
-              />
+        {/* Content */}
+        <div className="p-6">
+          {drawerMode === 'create' && (
+            <CreateCourse
+              embedded
+              open
+              onCancel={closeDrawer}
+              onCreate={handleCreate}
+              confirmLoading={submitting}
+              categories={categories}
+              levels={levels}
+            />
+          )}
+          {drawerMode === 'edit' && (
+            detailLoading ? (
+              <Skeleton active paragraph={{ rows: 6 }} />
+            ) : (
+              currentCourse && (
+                <EditCourse
+                  embedded
+                  open
+                  course={currentCourse}
+                  onCancel={switchToView}
+                  onUpdate={handleUpdate}
+                  confirmLoading={submitting}
+                  categories={categories}
+                  levels={levels}
+                />
+              )
             )
-          )
-        )}
+          )}
+        </div>
       </Drawer>
     </div>
   );

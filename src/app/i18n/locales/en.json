@@ -2513,6 +2513,8 @@
       "priceLowToHigh": "Price: Low to High",
       "priceHighToLow": "Price: High to Low",
       "createCourse": "Create Course",
+      "createCourseSubtitle": "Fill in the course details",
+      "editCourseSubtitle": "Update course information",
       "addCourse": "Add Course",
       "editCourse": "Edit Course",
       "deleteCourseTitle": "Delete Course",

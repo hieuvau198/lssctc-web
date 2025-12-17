@@ -2515,6 +2515,8 @@
       "priceLowToHigh": "Giá: Thấp đến Cao",
       "priceHighToLow": "Giá: Cao đến Thấp",
       "createCourse": "Tạo khóa học",
+      "createCourseSubtitle": "Điền thông tin chi tiết khóa học",
+      "editCourseSubtitle": "Cập nhật thông tin khóa học",
       "addCourse": "Thêm khóa học",
       "editCourse": "Sửa khóa học",
       "deleteCourseTitle": "Xóa khóa học",
