@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Empty, Skeleton, message } from 'antd';
-import { Award, Calendar, GraduationCap, Sparkles } from 'lucide-react';
+import { Award, Calendar, GraduationCap, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PageNav from '../../../components/PageNav/PageNav';
@@ -52,13 +52,13 @@ export default function CertificateView() {
 	}, [traineeIdFromStore, authState.name]);
 
 	const getStatusColor = (expireDate) => {
-		if (!expireDate) return { bg: 'from-blue-50 to-cyan-50', text: 'text-blue-600', border: 'border-blue-200', dot: 'bg-blue-500' };
+		if (!expireDate) return { bg: 'bg-yellow-400', text: 'text-black' };
 		const exp = new Date(expireDate);
 		const now = new Date();
-		if (exp < now) return { bg: 'from-red-50 to-rose-50', text: 'text-red-600', border: 'border-red-200', dot: 'bg-red-500' };
+		if (exp < now) return { bg: 'bg-red-500', text: 'text-white' };
 		const daysLeft = Math.floor((exp - now) / (1000 * 60 * 60 * 24));
-		if (daysLeft < 90) return { bg: 'from-amber-50 to-orange-50', text: 'text-amber-600', border: 'border-amber-200', dot: 'bg-amber-500' };
-		return { bg: 'from-emerald-50 to-green-50', text: 'text-emerald-600', border: 'border-emerald-200', dot: 'bg-emerald-500' };
+		if (daysLeft < 90) return { bg: 'bg-amber-500', text: 'text-white' };
+		return { bg: 'bg-yellow-400', text: 'text-black' };
 	};
 
 	const getStatusText = (expireDate) => {
@@ -72,166 +72,191 @@ export default function CertificateView() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
-			{/* Hero Section */}
-			<div className="relative bg-gradient-to-br from-cyan-50/80 via-blue-50/50 to-white border-b border-slate-200/60 overflow-hidden">
-				{/* Decorative Blurs */}
-				<div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-				<div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+		<div className="min-h-screen bg-white">
+			{/* Hero Section - Industrial Style */}
+			<section className="relative bg-black text-white py-12 overflow-hidden">
+				<div className="absolute inset-0">
+					<img
+						src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=2070&auto=format&fit=crop"
+						onError={(e) => {
+							e.target.onerror = null;
+							e.target.src = "/images/crane-background.jpg";
+						}}
+						alt=""
+						className="w-full h-full object-cover"
+					/>
+				</div>
+				<div className="absolute inset-0 bg-black/60" />
 
-				<div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-10">
-					<PageNav nameMap={{ certificate: t('trainee.certificate.title') }} />
+				<div className="relative max-w-7xl mx-auto px-6">
+					<PageNav
+						nameMap={{ certificate: t('trainee.certificate.title') }}
+						className="mb-6 [&_a]:text-white/80 [&_a:hover]:text-yellow-400 [&_span]:text-white [&_svg]:text-white/60"
+					/>
 
-					<div className="mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
 						{/* Left Content */}
 						<div className="max-w-2xl">
-							<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-full border border-cyan-200/60 mb-4">
-								<Sparkles className="w-4 h-4 text-cyan-500" />
-								<span className="text-sm font-medium text-cyan-700">Thành tựu của bạn</span>
-							</div>
-
-							<div className="text-4xl lg:text-5xl font-bold mb-4">
-								<span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
-									{t('trainee.certificate.title')}
+							<div className="mb-4 flex items-center gap-4">
+								<span className="text-sm tracking-widest text-white uppercase font-bold" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+									LSSCTC ACADEMY
+								</span>
+								<span className="h-1 w-1 rounded-full bg-yellow-400" />
+								<span className="px-4 py-1 bg-yellow-400 text-black text-xs font-bold tracking-wider uppercase">
+									Thành tựu
 								</span>
 							</div>
 
-							<p className="text-lg text-slate-600 mb-6 leading-relaxed">
+							<h1 className="text-4xl lg:text-5xl font-black uppercase tracking-tight mb-4 text-white drop-shadow-xl" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)' }}>
+								{t('trainee.certificate.title')}
+							</h1>
+
+							<p className="text-lg text-white max-w-xl mb-6 leading-relaxed font-medium drop-shadow-lg" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
 								Xem và quản lý các chứng chỉ bạn đã đạt được trong quá trình đào tạo.
 							</p>
 
 							{/* Stats */}
-							<div className="flex items-center gap-6">
-								<div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200/60 shadow-sm">
-									<Award className="w-5 h-5 text-cyan-500" />
-									<span className="font-semibold text-slate-800">{certificates.length}</span>
-									<span className="text-slate-500 text-sm">chứng chỉ</span>
+							<div className="flex items-center gap-3">
+								<div className="flex items-center gap-3 bg-black/50 backdrop-blur-sm px-4 py-3">
+									<div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+										<Award className="w-5 h-5 text-black" />
+									</div>
+									<div>
+										<div className="text-2xl font-black text-white">{certificates.length}</div>
+										<div className="text-xs text-yellow-400 uppercase tracking-wider font-semibold">Chứng chỉ</div>
+									</div>
 								</div>
 							</div>
 						</div>
 
 						{/* Right: Icon Display */}
 						<div className="hidden lg:flex items-center justify-center">
-							<div className="relative">
-								<div className="w-32 h-32 bg-gradient-to-br from-cyan-100 to-blue-200 rounded-3xl flex items-center justify-center shadow-xl shadow-cyan-200/50 border border-white/60">
-									<Award className="w-16 h-16 text-cyan-600" />
-								</div>
-								<div className="absolute -bottom-2 -right-2 w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-									<Sparkles className="w-6 h-6 text-white" />
-								</div>
+							<div className="w-32 h-32 bg-yellow-400 flex items-center justify-center">
+								<Award className="w-16 h-16 text-black" />
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
+			</section>
 
 			{/* Content Area */}
-			<div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-10">
-				{loading ? (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-						{Array.from({ length: 8 }).map((_, idx) => (
-							<div key={idx} className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-								<div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
-								<div className="w-full h-44 overflow-hidden">
-									<Skeleton.Image active className="!w-full !h-44" />
-								</div>
-								<div className="p-5">
-									<Skeleton active title={{ width: '70%' }} paragraph={{ rows: 2, width: ['100%', '60%'] }} />
-								</div>
-							</div>
-						))}
+			<section className="py-12 bg-neutral-50 border-y border-neutral-200">
+				<div className="max-w-7xl mx-auto px-6">
+					{/* Section Header */}
+					<div className="mb-10">
+						<span className="text-sm tracking-widest text-neutral-500 uppercase font-bold block mb-2">
+							Danh sách
+						</span>
+						<h2 className="text-4xl font-black uppercase tracking-tight mb-2">
+							Chứng chỉ của bạn
+						</h2>
+						<div className="h-1 w-24 bg-yellow-400" />
 					</div>
-				) : certificates.length === 0 ? (
-					<div className="min-h-[400px] flex flex-col items-center justify-center">
-						<div className="w-32 h-32 bg-gradient-to-br from-cyan-100 to-blue-200 rounded-full flex items-center justify-center mb-6 shadow-inner">
-							<Award className="w-16 h-16 text-cyan-400" />
+
+					{loading ? (
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+							{Array.from({ length: 8 }).map((_, idx) => (
+								<div key={idx} className="bg-white border-2 border-neutral-900 overflow-hidden">
+									<div className="h-2 bg-neutral-200" />
+									<div className="w-full h-44 overflow-hidden">
+										<Skeleton.Image active className="!w-full !h-44" />
+									</div>
+									<div className="p-5">
+										<Skeleton active title={{ width: '70%' }} paragraph={{ rows: 2, width: ['100%', '60%'] }} />
+									</div>
+								</div>
+							))}
 						</div>
-						<p className="text-slate-700 text-xl font-semibold mb-2">{t('trainee.certificate.noCertificates')}</p>
-						<p className="text-slate-500 text-sm">Hoàn thành các khóa học để nhận chứng chỉ</p>
-					</div>
-				) : (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-						{certificates.map((cert) => {
-							const issueDate = cert.issuedDate ? new Date(cert.issuedDate) : null;
-							const expireDate = cert.expireDate ? new Date(cert.expireDate) : null;
-							const statusColors = getStatusColor(cert.expireDate);
-							const statusText = getStatusText(cert.expireDate);
+					) : certificates.length === 0 ? (
+						<div className="min-h-[400px] flex flex-col items-center justify-center">
+							<div className="w-24 h-24 bg-neutral-200 flex items-center justify-center mb-6">
+								<Award className="w-12 h-12 text-neutral-400" />
+							</div>
+							<p className="text-neutral-900 text-xl font-black uppercase mb-2">{t('trainee.certificate.noCertificates')}</p>
+							<p className="text-neutral-500 text-sm">Hoàn thành các khóa học để nhận chứng chỉ</p>
+						</div>
+					) : (
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+							{certificates.map((cert, index) => {
+								const issueDate = cert.issuedDate ? new Date(cert.issuedDate) : null;
+								const expireDate = cert.expireDate ? new Date(cert.expireDate) : null;
+								const statusColors = getStatusColor(cert.expireDate);
+								const statusText = getStatusText(cert.expireDate);
 
-							return (
-								<Link
-									key={cert.id}
-									to={`/certificate/${cert.id}`}
-									onClick={() => window.scrollTo({ top: 0 })}
-									className="group block"
-								>
-									<div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 overflow-hidden shadow-lg shadow-slate-200/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full">
-										{/* Cover */}
-										{cert.pdfUrl ? (
-											<div className="relative h-44 bg-slate-100 overflow-hidden">
-												<iframe
-													src={`${cert.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-													className="w-full h-full pointer-events-none"
-													title={t('trainee.certificate.preview')}
-												/>
-												<div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-											</div>
-										) : (
-											<div className="relative h-44 bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-600 flex items-center justify-center">
-												<div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-												<Award className="w-16 h-16 text-white/90" />
-											</div>
-										)}
+								return (
+									<Link
+										key={cert.id}
+										to={`/certificate/${cert.id}`}
+										onClick={() => window.scrollTo({ top: 0 })}
+										className="group block"
+									>
+										<div className="bg-white border-2 border-neutral-900 hover:border-yellow-400 overflow-hidden transition-all duration-300">
+											{/* Status bar */}
+											<div className={`h-2 ${statusColors.bg}`} />
 
-										{/* Content */}
-										<div className="p-5 space-y-3">
-											<div>
-												<h3 className="font-semibold text-slate-900 text-lg mb-1 line-clamp-2 group-hover:text-cyan-600 transition-colors">
-													{cert.courseName || cert.course || 'Certificate'}
-												</h3>
-												<p className="text-sm text-slate-500 font-mono">
-													{cert.certificateCode || cert.certificateId || 'N/A'}
-												</p>
-											</div>
-
-											<div className="space-y-2 pt-3 border-t border-slate-100">
-												<div className="flex items-center gap-2 text-sm text-slate-600">
-													<GraduationCap className="w-4 h-4 text-cyan-500" />
-													<span className="line-clamp-1">{cert.traineeName || cert.learnerName || 'N/A'}</span>
+											{/* Cover */}
+											{cert.pdfUrl ? (
+												<div className="relative h-44 bg-neutral-100 overflow-hidden">
+													<iframe
+														src={`${cert.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+														className="w-full h-full pointer-events-none"
+														title={t('trainee.certificate.preview')}
+													/>
+													<div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
 												</div>
-												{issueDate && (
-													<div className="flex items-center gap-2 text-sm text-slate-600">
-														<Calendar className="w-4 h-4 text-cyan-500" />
-														<span>{t('trainee.certificate.issued')}: {issueDate.toLocaleDateString()}</span>
-													</div>
-												)}
-												{expireDate && (
-													<div className="flex items-center gap-2 text-sm text-slate-600">
-														<Calendar className="w-4 h-4 text-amber-500" />
-														<span>{t('trainee.certificate.expires')}: {expireDate.toLocaleDateString()}</span>
-													</div>
-												)}
-											</div>
-
-											{cert.grade != null && (
-												<div className="pt-3 border-t border-slate-100">
-													<div className="flex items-center justify-between">
-														<span className="text-sm text-slate-500">Điểm số</span>
-														<div className="flex items-baseline gap-1">
-															<span className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">{cert.grade}</span>
-															<span className="text-slate-400 text-sm">/ 100</span>
-														</div>
-													</div>
+											) : (
+												<div className="relative h-44 bg-neutral-900 flex items-center justify-center">
+													<Award className="w-16 h-16 text-yellow-400" />
 												</div>
 											)}
+
+											{/* Content */}
+											<div className="p-5">
+												{/* Title & Code */}
+												<div className="mb-3">
+													<h3 className="font-black uppercase text-neutral-900 text-lg mb-1 line-clamp-2 group-hover:text-yellow-600 transition-colors">
+														{cert.courseName || cert.course || 'Certificate'}
+													</h3>
+													<p className="text-xs font-bold tracking-widest text-neutral-500 uppercase">
+														{cert.certificateCode || cert.certificateId || 'N/A'}
+													</p>
+												</div>
+
+												{/* Meta */}
+												<div className="space-y-2 pt-3 border-t border-neutral-200">
+													<div className="flex items-center gap-2 text-sm text-neutral-600">
+														<GraduationCap className="w-4 h-4 text-yellow-500" />
+														<span className="line-clamp-1 uppercase tracking-wider text-xs font-semibold">{cert.traineeName || cert.learnerName || 'N/A'}</span>
+													</div>
+													{issueDate && (
+														<div className="flex items-center gap-2 text-sm text-neutral-600">
+															<Calendar className="w-4 h-4 text-yellow-500" />
+															<span className="uppercase tracking-wider text-xs font-semibold">{t('trainee.certificate.issued')}: {issueDate.toLocaleDateString()}</span>
+														</div>
+													)}
+												</div>
+
+												{/* Status & Grade */}
+												<div className="pt-3 mt-3 border-t border-neutral-200 flex items-center justify-between">
+													<span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider ${statusColors.bg} ${statusColors.text}`}>
+														{statusText}
+													</span>
+													{cert.grade != null && (
+														<div className="flex items-baseline gap-1">
+															<span className="text-2xl font-black text-neutral-900">{cert.grade}</span>
+															<span className="text-neutral-400 text-xs font-bold">/100</span>
+														</div>
+													)}
+												</div>
+											</div>
 										</div>
-									</div>
-								</Link>
-							);
-						})}
-					</div>
-				)}
-			</div>
+									</Link>
+								);
+							})}
+						</div>
+					)}
+				</div>
+			</section>
 		</div>
 	);
 }
-

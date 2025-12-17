@@ -1,51 +1,37 @@
 import { AppstoreOutlined, TableOutlined } from "@ant-design/icons";
-import { Button, Tooltip, Space } from "antd";
+import { Tooltip } from "antd";
 import React from "react";
 import { useTranslation } from 'react-i18next';
 
-// Color presets for theming
-const colorPresets = {
-  default: {
-    bg: '',
-    hover: '',
-  },
-  violet: {
-    bg: '!bg-gradient-to-r !from-violet-500 !to-purple-600 !border-0',
-    hover: 'hover:!from-violet-600 hover:!to-purple-700',
-  },
-  cyan: {
-    bg: '!bg-gradient-to-r !from-cyan-500 !to-blue-600 !border-0',
-    hover: 'hover:!from-cyan-600 hover:!to-blue-700',
-  },
-};
-
-export default function ViewModeToggle({ viewMode, onViewModeChange, color = 'default' }) {
+export default function ViewModeToggle({ viewMode, onViewModeChange }) {
   const { t } = useTranslation();
-  const colorStyle = colorPresets[color] || colorPresets.default;
-
-  const getButtonClass = (isActive) => {
-    if (!isActive || color === 'default') return '';
-    return `${colorStyle.bg} ${colorStyle.hover}`;
-  };
 
   return (
-    <Space.Compact>
+    <div className="inline-flex">
       <Tooltip title={t('common.tableView')}>
-        <Button
-          type={viewMode === "table" ? "primary" : "default"}
-          icon={<TableOutlined />}
+        <button
+          type="button"
           onClick={() => onViewModeChange("table")}
-          className={getButtonClass(viewMode === "table")}
-        />
+          className={`w-10 h-10 border-2 border-neutral-900 flex items-center justify-center transition-all ${viewMode === "table"
+            ? "bg-yellow-400 border-yellow-400"
+            : "bg-white hover:bg-neutral-100"
+            }`}
+        >
+          <TableOutlined className="text-lg" />
+        </button>
       </Tooltip>
       <Tooltip title={t('common.cardView')}>
-        <Button
-          type={viewMode === "card" ? "primary" : "default"}
-          icon={<AppstoreOutlined />}
+        <button
+          type="button"
           onClick={() => onViewModeChange("card")}
-          className={getButtonClass(viewMode === "card")}
-        />
+          className={`w-10 h-10 border-2 border-neutral-900 -ml-0.5 flex items-center justify-center transition-all ${viewMode === "card"
+            ? "bg-yellow-400 border-yellow-400"
+            : "bg-white hover:bg-neutral-100"
+            }`}
+        >
+          <AppstoreOutlined className="text-lg" />
+        </button>
       </Tooltip>
-    </Space.Compact>
+    </div>
   );
 }
