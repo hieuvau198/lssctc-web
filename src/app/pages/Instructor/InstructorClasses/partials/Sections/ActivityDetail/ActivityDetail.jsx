@@ -84,6 +84,7 @@ const ActivityDetail = () => {
         classId={classId}
         sectionId={sectionId}
         activityId={activityId}
+        activityType={activity.type}  // <--- ADD THIS LINE
       />
     </div>
   );
