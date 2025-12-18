@@ -807,6 +807,7 @@
       "statusRejected": "Từ Chối",
       "statusPending": "Chờ Duyệt",
       "statusNotYet": "Chưa Làm",
+      "submitted": "Đã Nộp",
       "checklists": "Danh Sách Kiểm Tra",
       "checklistName": "Tên Kiểm Tra",
       "result": "Kết Quả",
