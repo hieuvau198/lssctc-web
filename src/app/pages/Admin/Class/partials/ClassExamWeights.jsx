@@ -34,6 +34,14 @@ const ClassExamWeights = ({ classId }) => {
   // Validation status for the Total
   const isTotalValid = Math.abs(total - 1.0) < 0.001;
 
+  // Validation status for individual fields (Must be > 0)
+  const isPartialValid = useMemo(() => {
+    if (!values) return false;
+    const { theoryWeight, simulationWeight, practicalWeight } = values;
+    // Check if fields exist and are strictly greater than 0
+    return (theoryWeight > 0) && (simulationWeight > 0) && (practicalWeight > 0);
+  }, [values]);
+
   // 1. Fetch Data on Mount
   useEffect(() => {
     if (classId) {
@@ -46,10 +54,11 @@ const ClassExamWeights = ({ classId }) => {
     try {
       const data = await getClassExamConfig(classId);
       
-      // Check if we have the expected structure
+      // Handle the complex GET response structure
       if (data && data.partialConfigs) {
         
         // Helper to find weight from the array and convert % to decimal (30.0 -> 0.3)
+        // We assume GET returns percentages (30.0) based on your log, so we divide by 100 for the UI
         const getWeight = (type) => {
             const config = data.partialConfigs.find(item => item.type === type);
             return config ? fixFloat(config.examWeight / 100) : 0;
@@ -61,7 +70,7 @@ const ClassExamWeights = ({ classId }) => {
           practicalWeight: getWeight('Practical')
         };
 
-        setInitialData(formattedData); // Save the formatted flat object as initial data
+        setInitialData(formattedData);
         form.setFieldsValue(formattedData);
         setIsDirty(false);
       }
@@ -91,22 +100,21 @@ const ClassExamWeights = ({ classId }) => {
 
     setSubmitting(true);
     try {
-      // Transform flat form values (0.3) back to API format (30.0)
-      const payload = [
-        { type: 'Theory', examWeight: fixFloat(values.theoryWeight * 100) },
-        { type: 'Simulation', examWeight: fixFloat(values.simulationWeight * 100) },
-        { type: 'Practical', examWeight: fixFloat(values.practicalWeight * 100) }
-      ];
+      // FIX: Send the flat object directly (e.g. { theoryWeight: 0.1, ... })
+      // Based on your finding, the backend accepts this flat structure and these decimal values.
+      const payload = {
+        theoryWeight: values.theoryWeight,
+        simulationWeight: values.simulationWeight,
+        practicalWeight: values.practicalWeight
+      };
 
-      // Note: Check if your API expects { partialConfigs: [...] } or just the array [...]
-      // Based on standard practices, it's often the list or wrapped in an object. 
-      // Assuming the API expects the list directly or wrapped:
-      await updateClassWeights(classId, payload); 
+      await updateClassWeights(classId, payload);
       
       message.success("Exam weights updated successfully");
-      setInitialData(values); 
+      setInitialData(values); // Update initial data to new saved values
       setIsDirty(false);
     } catch (error) {
+      console.error("Update Error:", error);
       const errMsg = error?.response?.data?.message || "Failed to update weights";
       message.error(errMsg);
     } finally {
@@ -116,7 +124,6 @@ const ClassExamWeights = ({ classId }) => {
 
   // Handle form changes to set Dirty state
   const onValuesChange = (changedValues, allValues) => {
-    // Check if current values differ from initial values
     const hasChanged = initialData && (
         allValues.theoryWeight !== initialData.theoryWeight ||
         allValues.simulationWeight !== initialData.simulationWeight ||
@@ -216,7 +223,7 @@ const ClassExamWeights = ({ classId }) => {
                   type="primary"
                   htmlType="submit"
                   loading={submitting}
-                  disabled={!isDirty || !isTotalValid} 
+                  disabled={!isDirty || !isTotalValid || !isPartialValid} 
                   icon={<Save size={16} />}
                   className="bg-black hover:bg-neutral-800 border-none rounded-none h-10 px-6 font-bold uppercase tracking-wider flex items-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
                 >
@@ -255,7 +262,6 @@ const ClassExamWeights = ({ classId }) => {
             })}
           </div>
           
-          {/* Summary Pie or Bar for total could go here, but simple bars are clearer */}
           <div className="mt-6 pt-4 border-t border-neutral-200 text-center">
             <span className="text-[10px] text-neutral-400 uppercase font-bold tracking-widest">
               Total Allocation
