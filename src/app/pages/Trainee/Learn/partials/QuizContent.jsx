@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import QuizAttempt from './QuizAttempt/QuizAttempt';
-import QuizAttemptsHistory from './QuizAttemptsHistory'; // Import the new component
-import { getQuizAttempts } from '../../../../apis/Trainee/TraineeQuizApi'; // Import API
+import QuizAttemptsHistory from './QuizAttemptsHistory'; 
+import { getQuizAttempts } from '../../../../apis/Trainee/TraineeQuizApi'; 
 import { ClipboardList, Clock, Target, HelpCircle, CheckCircle2, XCircle, Trophy, Play, AlertCircle } from 'lucide-react';
 import dayjs from 'dayjs';
 
@@ -240,17 +240,36 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
 
     // Fetch attempts history
     const fetchHistory = async () => {
-        // Try to get activityRecordId from partition (most reliable for content items) or sectionQuiz
-        const activityRecordId = partition?.activityRecordId || sectionQuiz?.activityRecordId;
+        // --- LOGGING START ---
+        console.group("QuizContent: fetchHistory");
+        console.log("Partition Obj:", partition);
+        console.log("SectionQuiz Obj:", sectionQuiz);
         
+        // Try to get activityRecordId. 
+        // 1. Check partition (unlikely to have activityRecordId based on your parent code)
+        // 2. Check sectionQuiz.activityRecordId (might be undefined if not at top level)
+        // 3. Check sectionQuiz.activityRecord.activityRecordId (most likely correct place)
+        const activityRecordId = 
+            partition?.activityRecordId || 
+            sectionQuiz?.activityRecordId || 
+            sectionQuiz?.activityRecord?.activityRecordId;
+
+        console.log("Resolved activityRecordId:", activityRecordId);
+        // --- LOGGING END ---
+
         if (activityRecordId) {
             try {
+                console.log("Calling getQuizAttempts with ID:", activityRecordId);
                 const history = await getQuizAttempts(activityRecordId);
+                console.log("Fetched history:", history);
                 setAttempts(history);
             } catch (error) {
                 console.error("Failed to fetch quiz history:", error);
             }
+        } else {
+            console.warn("Skipping fetchHistory: No valid activityRecordId found.");
         }
+        console.groupEnd();
     };
 
     useEffect(() => {
