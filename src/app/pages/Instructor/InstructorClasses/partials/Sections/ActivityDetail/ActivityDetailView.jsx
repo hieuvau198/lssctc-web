@@ -69,6 +69,7 @@ const ActivityDetailView = ({ activity, classId, sectionId }) => {
         classId={classId}
         sectionId={sectionId}
         activityId={activity.id}
+        activityType={activity.type}  // Pass activity type for conditional logic
       />
     </div>
   );

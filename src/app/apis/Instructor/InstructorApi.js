@@ -139,4 +139,18 @@ export const getPracticeAttemptsForInstructor = async (traineeId, activityRecord
   }
 };
 
+export const getQuizAttemptsForInstructor = async (traineeId, activityRecordId) => {
+  if (!traineeId || !activityRecordId) {
+    return [];
+  }
+  try {
+    // UPDATED: Matches the backend route "api/QuizAttempts/trainee/{traineeId}/activity-record/{activityRecordId}"
+    const response = await apiClient.get(`/QuizAttempts/trainee/${traineeId}/activity-record/${activityRecordId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching quiz attempts history:', error);
+    throw error;
+  }
+};
+
 //#endregion
