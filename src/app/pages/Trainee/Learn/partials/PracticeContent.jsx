@@ -11,6 +11,7 @@ import useAuthStore from '../../../../store/authStore';
 
 export default function PracticeContent({
     practiceId,
+    activityRecordId,
     title,
     duration,
     completed = false,
@@ -28,9 +29,9 @@ export default function PracticeContent({
 
     useEffect(() => {
         const fetchHistory = async () => {
-            if (nameid && practiceId) {
+            if (nameid && activityRecordId) {
                 try {
-                    const data = await getPracticeAttemptsHistory(nameid, practiceId);
+                    const data = await getPracticeAttemptsHistory(activityRecordId);
                     setAttempts(data);
                 } catch (error) {
                     console.error("Failed to load practice history", error);
@@ -38,7 +39,7 @@ export default function PracticeContent({
             }
         };
         fetchHistory();
-    }, [nameid, practiceId]);
+    }, [nameid, activityRecordId]);
     
     const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
 

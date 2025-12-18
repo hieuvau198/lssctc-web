@@ -361,6 +361,7 @@ export default function LearnContent() {
         sectionPractice && (
           <PracticeContent
             practiceId={sectionPractice.id} // <--- ADD THIS LINE
+            activityRecordId={sectionPractice.activityRecord.activityRecordId}
             title={sectionPractice.title}
             completed={sectionPractice.isCompleted}
             description={sectionPractice.practiceDescription}
