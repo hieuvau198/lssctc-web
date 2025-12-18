@@ -77,7 +77,7 @@ const CourseTableView = ({
       title: t('common.category'),
       dataIndex: "category",
       key: "category",
-      width: 150,
+      width: 200,
       render: (text) => <span className="text-neutral-600">{text || '-'}</span>
     },
     {
@@ -91,7 +91,7 @@ const CourseTableView = ({
       title: t('common.status'),
       dataIndex: "isActive",
       key: "isActive",
-      width: 120,
+      width: 150,
       render: (isActive) => (
         <span className={`px-3 py-1 text-xs font-bold uppercase border ${isActive
           ? 'bg-green-100 text-green-800 border-green-300'

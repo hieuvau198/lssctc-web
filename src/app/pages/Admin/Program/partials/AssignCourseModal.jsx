@@ -138,7 +138,7 @@ const AssignCourseModal = ({ program, existingCourseIds = [], onAssigned }) => {
             title: t('common.status'),
             dataIndex: 'isActive',
             key: 'isActive',
-            width: 100,
+            width: 150,
             align: 'center',
             render: (isActive) => (
                 <span className={`px-2 py-1 text-xs font-bold uppercase border ${isActive
