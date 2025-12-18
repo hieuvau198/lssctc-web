@@ -122,6 +122,16 @@ const PracticeTable = ({
       <style>{`
         .industrial-practice-table .ant-table {
           border: 2px solid #000 !important;
+          border-radius: 0 !important;
+        }
+        .industrial-practice-table .ant-table-container {
+          border-radius: 0 !important;
+        }
+        .industrial-practice-table .ant-table-thead > tr > th:first-child {
+          border-top-left-radius: 0 !important;
+        }
+        .industrial-practice-table .ant-table-thead > tr > th:last-child {
+          border-top-right-radius: 0 !important;
         }
         .industrial-practice-table .ant-table-thead > tr > th {
           background: #fef08a !important;
@@ -154,7 +164,7 @@ const PracticeTable = ({
           dataSource={practices}
           rowKey="id"
           pagination={false}
-          scroll={{ y: "calc(100vh - 350px)" }}
+          scroll={{ y: "calc(100vh - 450px)" }}
           size="middle"
           className="h-full"
         />

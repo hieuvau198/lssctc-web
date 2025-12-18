@@ -1520,6 +1520,7 @@
       },
       "drawer": {
         "createTitle": "Create Quiz",
+        "editTitle": "Edit Quiz",
         "cancel": "Cancel",
         "create": "Create Quiz",
         "save": "Save Changes"
