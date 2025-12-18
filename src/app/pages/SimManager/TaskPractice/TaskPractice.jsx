@@ -184,7 +184,7 @@ export default function TaskPractice() {
     }
 
     return (
-        <div className="h-[calc(100vh-64px)] flex flex-col p-6 bg-neutral-100 overflow-hidden">
+        <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
             {/* Header - Industrial Theme */}
             <div className="flex-none bg-black border-2 border-black p-5 mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
                 <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />

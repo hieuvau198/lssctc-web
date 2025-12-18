@@ -163,7 +163,42 @@ const PracticeTable = ({
           .industrial-practice-table .ant-table-container {
             border-radius: 0 !important;
           }
-           /* Custom Scrollbar */
+          /* Fix fixed column corners */
+          .industrial-practice-table .ant-table-cell-fix-left,
+          .industrial-practice-table .ant-table-cell-fix-right {
+            background-color: inherit !important;
+          }
+          .industrial-practice-table .ant-table-thead .ant-table-cell-fix-left,
+          .industrial-practice-table .ant-table-thead .ant-table-cell-fix-right {
+            background-color: #171717 !important;
+          }
+          .industrial-practice-table .ant-table-tbody .ant-table-cell-fix-left,
+          .industrial-practice-table .ant-table-tbody .ant-table-cell-fix-right {
+            background-color: #fff !important;
+          }
+          .industrial-practice-table .ant-table-tbody > tr:hover .ant-table-cell-fix-left,
+          .industrial-practice-table .ant-table-tbody > tr:hover .ant-table-cell-fix-right {
+            background-color: #fefce8 !important;
+          }
+          /* Remove corner gaps */
+          .industrial-practice-table .ant-table-ping-left:not(.ant-table-has-fix-left) .ant-table-container::before,
+          .industrial-practice-table .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after {
+            display: none !important;
+          }
+          .industrial-practice-table .ant-table-header {
+            border-radius: 0 !important;
+          }
+          .industrial-practice-table .ant-table-content {
+            border-radius: 0 !important;
+          }
+          /* Fix sticky header corners */
+          .industrial-practice-table .ant-table-thead > tr > th:first-child {
+            border-top-left-radius: 0 !important;
+          }
+          .industrial-practice-table .ant-table-thead > tr > th:last-child {
+            border-top-right-radius: 0 !important;
+          }
+          /* Custom Scrollbar */
           .industrial-practice-table .ant-table-body::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -178,6 +213,10 @@ const PracticeTable = ({
           }
           .industrial-practice-table .ant-table-body::-webkit-scrollbar-thumb:hover {
             background: #333;
+          }
+          /* Fix scrollbar corner */
+          .industrial-practice-table .ant-table-body::-webkit-scrollbar-corner {
+            background: #171717;
           }
         `}</style>
 
