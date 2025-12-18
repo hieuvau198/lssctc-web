@@ -45,17 +45,27 @@ const ClassExamWeights = ({ classId }) => {
     setLoading(true);
     try {
       const data = await getClassExamConfig(classId);
-      if (data) {
-        setInitialData(data);
-        form.setFieldsValue({
-          theoryWeight: data.theoryWeight,
-          simulationWeight: data.simulationWeight,
-          practicalWeight: data.practicalWeight
-        });
-        setIsDirty(false); // Reset dirty state after load
+      
+      // Check if we have the expected structure
+      if (data && data.partialConfigs) {
+        
+        // Helper to find weight from the array and convert % to decimal (30.0 -> 0.3)
+        const getWeight = (type) => {
+            const config = data.partialConfigs.find(item => item.type === type);
+            return config ? fixFloat(config.examWeight / 100) : 0;
+        };
+
+        const formattedData = {
+          theoryWeight: getWeight('Theory'),
+          simulationWeight: getWeight('Simulation'),
+          practicalWeight: getWeight('Practical')
+        };
+
+        setInitialData(formattedData); // Save the formatted flat object as initial data
+        form.setFieldsValue(formattedData);
+        setIsDirty(false);
       }
     } catch (error) {
-      // Handle 404 specifically if config doesn't exist yet, or generic error
       if (error?.response?.status !== 404) {
         message.error("Failed to load exam weights.");
       }
@@ -81,9 +91,20 @@ const ClassExamWeights = ({ classId }) => {
 
     setSubmitting(true);
     try {
-      await updateClassWeights(classId, values);
+      // Transform flat form values (0.3) back to API format (30.0)
+      const payload = [
+        { type: 'Theory', examWeight: fixFloat(values.theoryWeight * 100) },
+        { type: 'Simulation', examWeight: fixFloat(values.simulationWeight * 100) },
+        { type: 'Practical', examWeight: fixFloat(values.practicalWeight * 100) }
+      ];
+
+      // Note: Check if your API expects { partialConfigs: [...] } or just the array [...]
+      // Based on standard practices, it's often the list or wrapped in an object. 
+      // Assuming the API expects the list directly or wrapped:
+      await updateClassWeights(classId, payload); 
+      
       message.success("Exam weights updated successfully");
-      setInitialData(values); // Update initial data to new saved values
+      setInitialData(values); 
       setIsDirty(false);
     } catch (error) {
       const errMsg = error?.response?.data?.message || "Failed to update weights";
@@ -175,7 +196,7 @@ const ClassExamWeights = ({ classId }) => {
               <div className={`flex items-center gap-3 px-4 py-2 border-2 ${isTotalValid ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
                 <span className="font-bold uppercase text-xs text-neutral-500">Total Weight:</span>
                 <span className={`font-mono text-xl font-black ${isTotalValid ? 'text-green-700' : 'text-red-600'}`}>
-                  {total} / 1.0
+                  {total} / 1
                 </span>
                 {!isTotalValid && <span className="text-xs text-red-500 font-bold uppercase">(Invalid)</span>}
               </div>
