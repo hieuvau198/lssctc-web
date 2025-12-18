@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
-import { App, Skeleton, Popconfirm, Form, Tag } from "antd";
+import { App, Skeleton, Popconfirm, Form } from "antd";
 import { Edit, Trash2, Save, X, ArrowLeft } from "lucide-react";
 import { fetchProgramDetail, deleteProgram, updateProgramBasic } from "../../../apis/ProgramManager/ProgramManagerCourseApi";
 import ProgramDetailView from "./partials/ProgramDetailView";
@@ -89,47 +89,49 @@ const ProgramDetailPage = () => {
   return (
     <div className="min-h-screen bg-white pb-10">
       {/* Hero Background Section */}
-      <div className="relative w-full h-[300px] bg-neutral-900 group">
+      <div className="relative w-full h-[320px] bg-neutral-900 group border-b-4 border-yellow-400">
         {program.backgroundImageUrl ? (
           <img
             src={program.backgroundImageUrl}
             alt="Background"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover opacity-60"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-neutral-500">
-            No Background Image
+          <div className="w-full h-full flex items-center justify-center text-neutral-600 bg-neutral-900 absolute inset-0">
+            <div className="bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] absolute inset-0 opacity-20"></div>
           </div>
         )}
 
-        {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        {/* Overlay Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%,100%_100%] bg-[position:0_0,0_0] animate-gradient-xy opacity-20" />
 
         {/* Header Content on Banner */}
-        <div className="absolute bottom-0 left-0 w-full p-6 md:p-10 text-white flex flex-col md:flex-row justify-between items-end gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
+        <div className="absolute bottom-0 left-0 w-full p-6 md:p-10 text-white flex flex-col md:flex-row justify-between items-end gap-6 z-10">
+          <div className="flex-1">
+            <div className="flex items-center gap-4 mb-4">
               <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-1 text-white hover:text-yellow-400 transition-colors font-medium"
+                onClick={() => navigate('/admin/programs')}
+                className="group flex items-center gap-2 px-3 py-1.5 bg-black/50 backdrop-blur-sm border border-white/30 text-white hover:bg-yellow-400 hover:border-yellow-400 hover:text-black transition-all uppercase text-xs font-bold tracking-wider"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
+                <ArrowLeft className="w-4 h-4" /> {t('common.back')}
               </button>
-              <Tag
-                className={`border-0 font-semibold ${program.isActive
-                    ? 'bg-green-500 text-white'
-                    : 'bg-red-500 text-white'
-                  }`}
-              >
+              <div className={`px-3 py-1.5 text-xs font-black uppercase tracking-wider border ${program.isActive ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-red-500/20 border-red-500 text-red-400'}`}>
                 {program.isActive ? t('common.active') : t('common.inactive')}
-              </Tag>
+              </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-black text-white m-0 uppercase tracking-tight">
-              {program.name}
-            </h1>
-            <div className="text-neutral-400 text-sm mt-1">
-              ID: {program.id}
+
+            <div className="flex items-center gap-4">
+              <div className="w-1.5 h-12 bg-yellow-400 self-stretch shadow-[0_0_15px_rgba(250,204,21,0.5)]" />
+              <div>
+                <span className="text-4xl md:text-5xl font-black text-white m-0 tracking-tight uppercase shadow-sm">
+                  {program.name}
+                </span>
+                <div className="text-neutral-400 text-sm mt-2 font-mono flex items-center gap-4">
+                  <span className="bg-white/10 px-2 py-0.5 border border-white/20">CODE:</span>
+                  <span className="text-yellow-500">ID: #{program.id}</span>
+                </div>
+              </div>
             </div>
           </div>
 
