@@ -106,7 +106,7 @@ const ManagerProgramList = () => {
   // Loading State - Industrial Theme
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      <div className="max-w-7xl mx-auto">
         <div className="bg-black border-2 border-black p-6 mb-6">
           <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
           <Skeleton.Button style={{ width: 300, height: 40 }} active className="bg-neutral-800" />
@@ -135,7 +135,7 @@ const ManagerProgramList = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+    <div className="max-w-7xl mx-auto">
       {/* Header - Industrial Theme */}
       <div className="bg-black border-2 border-black p-5 mb-6">
         <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
@@ -145,9 +145,9 @@ const ManagerProgramList = () => {
               <Layers className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+              <span className="text-2xl font-black text-white uppercase tracking-tight">
                 {t('admin.programs.title')}
-              </h1>
+              </span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {total} {t('admin.programs.totalPrograms') || 'programs'}
               </p>

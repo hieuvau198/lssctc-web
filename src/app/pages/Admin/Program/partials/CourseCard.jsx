@@ -1,58 +1,61 @@
-import { Card, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { Clock, BarChart2, Folder } from 'lucide-react';
 
 const CourseCard = ({ course }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="mb-2">
-            <Card
-                key={course.id}
-                className="shadow-md transition-shadow"
-                role="button"
-            >
-                <div className="flex gap-4">
-                    {/* Course Image */}
-                    <div className="flex-shrink-0">
-                        <div className="w-32 h-24 rounded-lg overflow-hidden bg-slate-100">
-                            <img
-                                src={course.imageUrl || '/placeholder-course.jpg'}
-                                alt={course.name}
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
+        <div className="border-2 border-neutral-900 bg-white hover:border-yellow-400 transition-all group mb-2">
+            <div className="h-1 bg-yellow-400" />
+            <div className="flex gap-4 p-4">
+                {/* Course Image */}
+                <div className="flex-shrink-0">
+                    <div className="w-32 h-24 overflow-hidden bg-neutral-100 border border-neutral-200">
+                        <img
+                            src={course.imageUrl || '/placeholder-course.jpg'}
+                            alt={course.name}
+                            className="w-full h-full object-cover"
+                        />
                     </div>
+                </div>
 
-                    {/* Course Info */}
-                    <div className="flex-1 space-y-2">
-                        <div className="flex items-start justify-between gap-2">
-                            <h4 className="font-semibold text-base">{course.name}</h4>
-                            <Tag color={course.isActive ? 'green' : 'default'}>
-                                {course.isActive ? t('common.active') : t('common.inactive')}
-                            </Tag>
-                        </div>
+                {/* Course Info */}
+                <div className="flex-1 min-w-0">
+                    {/* Course Name */}
+                    <span className="block font-bold text-base uppercase tracking-wide text-neutral-900 group-hover:text-yellow-600 transition-colors mb-2">
+                        {course.name}
+                    </span>
 
-                        <div className="flex items-center gap-x-6 text-sm text-slate-600">
-                            {course.durationHours && (
-                                <span>
-                                    <span className="font-medium">{t('common.duration')}:</span> {course.durationHours}h
-                                </span>
-                            )}
-                            {course.level && (
-                                <span>
-                                    <span className="font-medium">{t('common.level')}:</span> {course.level}
-                                </span>
-                            )}
-                        </div>
+                    {/* Status + Metadata Row */}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-600">
+                        <span className={`px-2 py-1 text-xs font-bold uppercase ${course.isActive
+                                ? 'bg-yellow-400 text-black'
+                                : 'bg-neutral-200 text-neutral-600'
+                            }`}>
+                            {course.isActive ? t('common.active') : t('common.inactive')}
+                        </span>
 
+                        {course.durationHours && (
+                            <span className="flex items-center gap-1.5">
+                                <Clock className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                                <span className="font-semibold">{course.durationHours}h</span>
+                            </span>
+                        )}
+                        {course.level && (
+                            <span className="flex items-center gap-1.5">
+                                <BarChart2 className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                                <span className="font-semibold">{course.level}</span>
+                            </span>
+                        )}
                         {course.category && (
-                            <div className="text-sm text-slate-600 mt-1">
-                                <span className="font-medium">{t('common.category')}:</span> {course.category}
-                            </div>
+                            <span className="flex items-center gap-1.5">
+                                <Folder className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                                <span className="font-semibold">{course.category}</span>
+                            </span>
                         )}
                     </div>
                 </div>
-            </Card>
+            </div>
         </div>
     );
 };

@@ -16,7 +16,7 @@ export default function InstructorLayout() {
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   return (
-    <div className="min-h-screen flex bg-neutral-50">
+    <div className="min-h-screen flex">
       <SidebarInstructor
         collapsed={collapsed}
         onToggle={toggleCollapsed}

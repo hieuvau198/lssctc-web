@@ -100,8 +100,8 @@ const CourseCertificate = ({ courseId }) => {
             <div className="p-4 bg-yellow-400 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <SafetyCertificateOutlined className="text-3xl text-black" />
             </div>
-            <div>
-              <h4 className="text-lg font-black uppercase text-neutral-900 m-0 leading-tight">{certificate.name}</h4>
+            <div className="flex flex-col">
+              <span className="text-lg font-black uppercase text-neutral-900 m-0 leading-tight">{certificate.name}</span>
               <Space direction="vertical" size={2} className="mt-1">
                 <Text type="secondary" className="text-xs font-mono uppercase tracking-wider">Template ID: {certificate.id}</Text>
                 <div className="mt-1 flex gap-2">

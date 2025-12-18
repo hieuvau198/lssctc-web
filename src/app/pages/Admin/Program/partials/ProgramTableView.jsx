@@ -76,7 +76,7 @@ const ProgramTableView = ({
       title: t('admin.programs.table.courses'),
       dataIndex: "totalCourses",
       key: "totalCourses",
-      width: 100,
+      width: 120,
       align: "center",
       render: (count) => (
         <span className="inline-flex items-center justify-center min-w-[32px] px-2 py-1 bg-neutral-100 text-black font-bold text-sm border-2 border-neutral-200">
@@ -110,7 +110,7 @@ const ProgramTableView = ({
       title: t('admin.programs.table.status'),
       dataIndex: "isActive",
       key: "isActive",
-      width: 120,
+      width: 150,
       render: (isActive) => (
         <span className={`px-3 py-1 text-xs font-bold uppercase border ${isActive
           ? 'bg-green-100 text-green-800 border-green-300'

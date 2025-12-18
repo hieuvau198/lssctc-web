@@ -1,5 +1,5 @@
 import { Tooltip, App, Avatar, Dropdown, Menu, Switch } from 'antd';
-import { NavLink, useNavigate } from 'react-router';
+import { NavLink, useNavigate, useLocation } from 'react-router';
 import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, MoreVertical } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
@@ -9,22 +9,22 @@ import { decodeToken } from '../../../libs/jwtDecode';
 import { sAvatarUrl, setAvatarUrl, clearAvatarUrl } from '../../../store/userAvatar';
 
 const getItems = (t) => [
-  { to: '/admin/dashboard', label: t('sidebar.dashboard'), icon: <LayoutDashboard className="w-5 h-5" /> },
-  { to: '/admin/users/trainees', label: t('sidebar.users'), icon: <Users className="w-5 h-5" /> },
-  { to: '/admin/programs', label: t('sidebar.programs'), icon: <Layers className="w-5 h-5" /> },
-  { to: '/admin/courses', label: t('sidebar.courses'), icon: <BookOpen className="w-5 h-5" /> },
-  { to: '/admin/class', label: t('sidebar.class'), icon: <Calendar className="w-5 h-5" /> },
+  { to: '/admin/dashboard', label: t('sidebar.dashboard'), icon: <LayoutDashboard className="w-5 h-5" />, matchPath: '/admin/dashboard' },
+  { to: '/admin/users/trainees', label: t('sidebar.users'), icon: <Users className="w-5 h-5" />, matchPath: '/admin/users' },
+  { to: '/admin/programs', label: t('sidebar.programs'), icon: <Layers className="w-5 h-5" />, matchPath: '/admin/programs' },
+  { to: '/admin/courses', label: t('sidebar.courses'), icon: <BookOpen className="w-5 h-5" />, matchPath: '/admin/courses' },
+  { to: '/admin/class', label: t('sidebar.class'), icon: <Calendar className="w-5 h-5" />, matchPath: '/admin/class' },
 ];
 
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
   const { message } = App.useApp();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t, i18n } = useTranslation();
   const ITEMS = getItems(t);
 
   return (
     <>
-      {/* Overlay for mobile */}
       {mobileOpen && (
         <div
           onClick={onMobileClose}
@@ -42,10 +42,7 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
         ].join(' ')}
         aria-label="Sidebar navigation"
       >
-        {/* Yellow accent bar */}
         <div className="h-1 bg-yellow-400" />
-
-        {/* Header / Brand */}
         <div className={`flex items-center h-16 border-b border-neutral-700 ${collapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
           {collapsed ? (
             <Tooltip placement="right" title={t('sidebar.adminPanel')}>
@@ -66,7 +63,6 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
                   {t('sidebar.adminPanel')}
                 </span>
               </div>
-              {/* Desktop collapse button */}
               <button
                 onClick={onToggle}
                 className="hidden md:inline-flex w-9 h-9 items-center justify-center border border-neutral-700 hover:bg-yellow-400 hover:text-black hover:border-yellow-400 transition-all duration-200"
@@ -74,7 +70,6 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
               >
                 <PanelLeftClose className="w-4 h-4" />
               </button>
-              {/* Mobile close button */}
               <button
                 onClick={onMobileToggle}
                 className="md:hidden inline-flex w-9 h-9 items-center justify-center border border-neutral-700 hover:bg-yellow-400 hover:text-black hover:border-yellow-400 transition-all duration-200"
@@ -89,33 +84,36 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
         {/* Nav Items */}
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 px-3">
-            {ITEMS.map(item => (
-              <li key={item.to}>
-                <NavLink
-                  to={item.to}
-                  onClick={onMobileClose}
-                  className={({ isActive }) => [
-                    'group flex items-center py-2.5 text-sm font-semibold transition-all duration-200',
-                    collapsed ? 'justify-center mx-1' : 'gap-3 px-3',
-                    isActive
-                      ? 'bg-yellow-400 text-black'
-                      : 'text-neutral-300 hover:bg-neutral-800 hover:text-yellow-400'
-                  ].join(' ')}
-                  aria-label={collapsed ? item.label : undefined}
-                >
-                  {collapsed ? (
-                    <Tooltip placement="right" title={item.label} >
-                      <span className="text-lg flex-shrink-0 mx-auto">{item.icon}</span>
-                    </Tooltip>
-                  ) : (
-                    <>
-                      <span className="text-lg flex-shrink-0">{item.icon}</span>
-                      <span className="truncate uppercase tracking-wider">{item.label}</span>
-                    </>
-                  )}
-                </NavLink>
-              </li>
-            ))}
+            {ITEMS.map(item => {
+              const isActiveByPath = location.pathname.startsWith(item.matchPath);
+              return (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    onClick={onMobileClose}
+                    className={() => [
+                      'group flex items-center py-2.5 text-sm font-semibold transition-all duration-200',
+                      collapsed ? 'justify-center mx-1' : 'gap-3 px-3',
+                      isActiveByPath
+                        ? 'bg-yellow-400 text-black'
+                        : 'text-neutral-300 hover:bg-neutral-800 hover:text-yellow-400'
+                    ].join(' ')}
+                    aria-label={collapsed ? item.label : undefined}
+                  >
+                    {collapsed ? (
+                      <Tooltip placement="right" title={item.label} >
+                        <span className="text-lg flex-shrink-0 mx-auto">{item.icon}</span>
+                      </Tooltip>
+                    ) : (
+                      <>
+                        <span className="text-lg flex-shrink-0">{item.icon}</span>
+                        <span className="truncate uppercase tracking-wider">{item.label}</span>
+                      </>
+                    )}
+                  </NavLink>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
