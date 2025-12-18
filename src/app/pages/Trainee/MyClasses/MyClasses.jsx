@@ -1,6 +1,6 @@
-import { Empty, Spin, Table, Pagination } from 'antd';
+import { Empty, Spin } from 'antd';
 import { BookOpen, Calendar, Clock, ChevronRight, GraduationCap } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { getLearningClassesByTraineeId } from '../../../apis/Trainee/TraineeClassApi';
@@ -12,229 +12,234 @@ import { getClassStatus } from '../../../utils/classStatus';
 
 
 export default function MyClasses() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const { t } = useTranslation();
+  const [tab, setTab] = useState('in-progress');
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const columns = [
-    {
-      title: '#',
-      key: 'index',
-      width: 64,
-      align: 'center',
-      render: (_, __, idx) => (
-        <span className="font-bold text-neutral-500">
-          {(page - 1) * pageSize + idx + 1}
-        </span>
-      ),
-      fixed: 'left',
-    },
-    {
-      title: t('trainee.myLearning.classCode') || 'MÃ LỚP',
-      dataIndex: 'classCode',
-      key: 'classCode',
-      width: 120,
-      render: (text) => (
-        <span className="font-mono text-yellow-600 font-bold">{text}</span>
-      ),
-    },
-    {
-      title: t('trainee.myLearning.className') || 'TÊN LỚP',
-      dataIndex: 'name',
-      key: 'name',
-      minWidth: 200,
-      render: (text, record) => (
-        <Link to={`/my-classes/${record.id}`} className="font-bold text-black hover:text-yellow-600 transition-colors uppercase block">
-          {text}
-        </Link>
-      )
-    },
-    {
-      title: t('trainee.startDate'),
-      dataIndex: 'startDate',
-      key: 'startDate',
-      width: 140,
-      render: (date) => <span className="font-medium text-neutral-700">{new Date(date).toLocaleDateString('vi-VN')}</span>
-    },
-    {
-      title: t('trainee.endDate'),
-      dataIndex: 'endDate',
-      key: 'endDate',
-      width: 140,
-      render: (date) => <span className="font-medium text-neutral-700">{new Date(date).toLocaleDateString('vi-VN')}</span>
-    },
-    {
-      title: t('trainee.duration'),
-      dataIndex: 'durationHours',
-      key: 'durationHours',
-      width: 120,
-      align: 'center',
-      render: (v) => <span className="font-bold text-neutral-900">{v}h</span>
-    },
-    {
-      title: t('trainee.status'),
-      dataIndex: '_statusMapped',
-      key: 'status',
-      width: 140,
-      align: 'center',
-      render: (status) => {
-        const s = getClassStatus(status);
-        return (
-          <span className={`px-2 py-1 text-xs font-bold uppercase border ${s.color === 'green' ? 'bg-yellow-400 text-black border-black' : 'bg-neutral-100 text-neutral-600 border-neutral-300'}`}>
-            {s.label}
-          </span>
-        );
+  const authState = useAuthStore();
+  const traineeIdFromStore = authState.nameid;
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      const token = getAuthToken();
+      const decoded = token ? decodeToken(token) : null;
+      const resolvedTraineeId = traineeIdFromStore || decoded?.nameid;
+
+      if (!resolvedTraineeId) {
+        setLoading(false);
+        setPrograms([]);
+        return;
       }
-    },
-    {
-      title: t('trainee.action') || 'THAO TÁC',
-      key: 'action',
-      width: 100,
-      fixed: 'right',
-      align: 'center',
-      render: (_, record) => (
-        <Link to={`/my-classes/${record.id}`}>
-          <button className="w-9 h-9 bg-black border-2 border-black flex items-center justify-center hover:scale-105 transition-transform mx-auto">
-            <ChevronRight className="w-5 h-5 text-yellow-400" />
-          </button>
-        </Link>
-      ),
-    },
-  ];
 
-  // Filter programs based on tab
-  // (already done in useEffect, but we need to paginate the 'programs' state for the table if not fetching paginated API)
-  // The API getLearningClassesByTraineeId returns all classes. We do client-side pagination here for the table.
-  const paginatedData = programs.slice((page - 1) * pageSize, page * pageSize);
+      try {
+        setLoading(true);
+        const data = await getLearningClassesByTraineeId(resolvedTraineeId);
+
+        const filtered =
+          tab === 'completed'
+            ? data.filter((c) => c.classProgress === 100)
+            : data.filter((c) => c.classProgress < 100);
+
+        const mapped = filtered.map((c) => ({
+          id: c.id,
+          provider: 'Global Crane Academy',
+          name: c.name,
+          progress: c.classProgress ?? 0,
+          badge: c.status,
+          _statusMapped: c.status,
+          completedAt: c.endDate,
+          classCode: c.classCode,
+          description: c.description,
+          startDate: c.startDate,
+          endDate: c.endDate,
+          durationHours: c.durationHours,
+        }));
+
+        setPrograms(mapped);
+      } catch (error) {
+        console.error('Failed to fetch trainee classes:', error);
+        setPrograms([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClasses();
+  }, [tab, traineeIdFromStore]);
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col p-6 bg-neutral-100 overflow-hidden">
-      {/* Header - Industrial Theme */}
-      <div className="flex-none bg-black border-2 border-black p-5 mb-4">
-        <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-400 border-2 border-black flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-black" />
-            </div>
+    <div className="min-h-screen bg-white">
+      {/* Hero Section - Industrial Style */}
+      <section className="relative bg-black text-white py-12 overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=2070&auto=format&fit=crop"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "/images/crane-background.jpg";
+            }}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="absolute inset-0 bg-black/60" />
+
+        <div className="relative max-w-7xl mx-auto px-6">
+          <PageNav
+            nameMap={{ 'my-classes': 'My Classes' }}
+            className="mb-6 [&_a]:text-white/80 [&_a:hover]:text-yellow-400 [&_span]:text-white [&_svg]:text-white/60"
+          />
+
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+              <div className="mb-4 flex items-center gap-4">
+                <span className="text-sm tracking-widest text-white uppercase font-bold" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                  LSSCTC ACADEMY
+                </span>
+                <span className="h-1 w-1 rounded-full bg-yellow-400" />
+                <span className="px-4 py-1 bg-yellow-400 text-black text-xs font-bold tracking-wider uppercase">
+                  Lớp học
+                </span>
+              </div>
+              <h1 className="text-4xl lg:text-5xl font-black uppercase tracking-tight mb-4 text-white drop-shadow-xl" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)' }}>
                 {t('trainee.myLearning.title')}
               </h1>
-              <p className="text-yellow-400 text-sm mt-1 font-medium">
-                {programs.length} {tab === 'in-progress' ? t('trainee.inProgress') : t('trainee.completed').toLowerCase()}
-              </p>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Content Card - Table */}
-      <div className="flex-1 flex flex-col bg-white border-2 border-black overflow-hidden relative industrial-table">
-        <div className="h-1 bg-yellow-400 flex-none" />
-
-        <style>{`
-          .industrial-table .ant-table {
-            border: 2px solid #000 !important;
-            border-top: none !important; /* Visual tweak if needed, but standard 2px is fine */
-          }
-          .industrial-table .ant-table-container {
-             border-left: 2px solid #000 !important;
-             border-right: 2px solid #000 !important;
-             border-bottom: 2px solid #000 !important;
-          }
-           /* Override specific border for new layout */
-          .industrial-table .ant-table {
-            border: none !important;
-          }
-
-          .industrial-table .ant-table-thead > tr > th {
-            background: #fef08a !important;
-            border-bottom: 2px solid #000 !important;
-            font-weight: 700 !important;
-            text-transform: uppercase !important;
-            font-size: 12px !important;
-            letter-spacing: 0.05em !important;
-            color: #000 !important;
-            border-right: 1px solid rgba(0,0,0,0.05) !important;
-          }
-          .industrial-table .ant-table-tbody > tr > td {
-            border-bottom: 1px solid #e5e5e5 !important;
-            border-right: 1px solid #f0f0f0 !important;
-          }
-          .industrial-table .ant-table-tbody > tr:hover > td {
-            background: #fef9c3 !important;
-          }
-          .industrial-table .ant-pagination-item-active {
-            background: #facc15 !important;
-            border-color: #000 !important;
-          }
-          .industrial-table .ant-pagination-item-active a {
-            color: #000 !important;
-            font-weight: 700 !important;
-          }
-        `}</style>
-
-        <div className="flex-1 overflow-hidden p-6 pb-2">
-          {loading ? (
-            <div className="h-full flex flex-col items-center justify-center">
-              <Spin size="large" />
-              <p className="mt-4 font-bold uppercase text-neutral-500">{t('common.loading')}</p>
-            </div>
-          ) : programs.length === 0 ? (
-            <Empty
-              description={
-                <span className="font-bold text-neutral-500 uppercase">
-                  {t('trainee.myLearning.noClasses')}
-                </span>
-              }
-              className="py-20"
-            />
-          ) : (
-            <Table
-              columns={columns}
-              dataSource={paginatedData}
-              rowKey="id"
-              pagination={false}
-              scroll={{ y: "calc(100vh - 380px)" }}
-              size="middle"
-              className="border-2 border-black"
-            />
-          )}
-        </div>
-
-        {/* Pagination */}
-        {!loading && programs.length > 0 && (
-          <div className="flex-none p-4 border-t-2 border-neutral-200 flex justify-center bg-white z-10">
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-bold text-neutral-500">
-                {programs.length} {t('trainee.myLearning.title').toLowerCase()}
-              </span>
-              {/* Custom Pagination if needed, or just info */}
-              {/* Since we do client side pagination for now on this page */}
-              <div className="flex gap-1">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  className="px-3 py-1 border border-neutral-300 disabled:opacity-30 hover:bg-neutral-100 font-bold"
-                >
-                  &lt;
-                </button>
-                <span className="px-3 py-1 bg-yellow-400 border border-black font-bold text-black">
-                  {page}
-                </span>
-                <button
-                  disabled={page * pageSize >= programs.length}
-                  onClick={() => setPage(p => p + 1)}
-                  className="px-3 py-1 border border-neutral-300 disabled:opacity-30 hover:bg-neutral-100 font-bold"
-                >
-                  &gt;
-                </button>
+            {/* Stats */}
+            <div className="flex items-center gap-3 bg-black/50 backdrop-blur-sm px-4 py-3">
+              <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-black" />
+              </div>
+              <div>
+                <div className="text-2xl font-black text-white">{programs.length}</div>
+                <div className="text-xs text-yellow-400 uppercase tracking-wider font-semibold">
+                  {tab === 'in-progress' ? t('trainee.inProgress') : t('trainee.completed')}
+                </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </section>
+
+      {/* Content Area */}
+      <section className="py-12 bg-neutral-50 border-y border-neutral-200">
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Section Header */}
+          <div className="mb-10">
+            <span className="text-sm tracking-widest text-neutral-500 uppercase font-bold block mb-2">
+              Danh sách
+            </span>
+            <h2 className="text-4xl font-black uppercase tracking-tight mb-2">
+              Các lớp đang học
+            </h2>
+            <div className="h-1 w-24 bg-yellow-400" />
+          </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div className="min-h-[400px] flex flex-col items-center justify-center">
+              <div className="w-12 h-12 border-4 border-neutral-200 border-t-yellow-400 rounded-full animate-spin mb-4" />
+              <p className="text-neutral-500 uppercase tracking-wider font-semibold">{t('common.loading')}</p>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && programs.length === 0 && (
+            <div className="min-h-[400px] flex flex-col items-center justify-center">
+              <div className="w-24 h-24 bg-neutral-200 flex items-center justify-center mb-6">
+                <GraduationCap className="w-12 h-12 text-neutral-400" />
+              </div>
+              <p className="text-neutral-900 text-lg font-black uppercase">{t('trainee.myLearning.noClasses')}</p>
+              <p className="text-neutral-500 text-sm mt-2">Hãy đăng ký một khóa học để bắt đầu</p>
+            </div>
+          )}
+
+          {/* Course Cards Grid */}
+          {!loading && programs.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {programs.map((p, index) => (
+                <Link
+                  key={p.id}
+                  to={`/my-classes/${p.id}`}
+                  className="group block"
+                >
+                  <div className="bg-white border-2 border-neutral-900 hover:border-yellow-400 overflow-hidden transition-all duration-300">
+                    {/* Status bar */}
+                    <div className={`h-2 ${p._statusMapped && getClassStatus(p._statusMapped).color === 'green' ? 'bg-yellow-400' : 'bg-neutral-200'}`} />
+
+                    {/* Card Content */}
+                    <div className="p-5">
+                      {/* Header */}
+                      <div className="flex items-start justify-between gap-3 mb-4">
+                        <div className="flex items-center gap-3">
+                          <span className="w-8 h-8 bg-yellow-400 flex items-center justify-center text-black font-black text-sm">
+                            {index + 1}
+                          </span>
+                          <div>
+                            <div className="text-xs text-neutral-500 font-bold uppercase tracking-wider">
+                              {p.classCode}
+                            </div>
+                            <h3 className="text-lg font-black text-neutral-900 uppercase line-clamp-2 group-hover:text-yellow-600 transition-colors">
+                              {p.name}
+                            </h3>
+                          </div>
+                        </div>
+                        {p._statusMapped && (() => {
+                          const s = getClassStatus(p._statusMapped);
+                          return (
+                            <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-wider flex-shrink-0 ${s.color === 'green' ? 'bg-yellow-400 text-black' : 'bg-neutral-100 text-neutral-600'}`}>
+                              {s.label}
+                            </span>
+                          );
+                        })()}
+                      </div>
+
+                      {/* Info Grid */}
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-3 text-sm">
+                          <div className="w-8 h-8 bg-yellow-400 flex items-center justify-center">
+                            <Calendar className="w-4 h-4 text-black" />
+                          </div>
+                          <div>
+                            <div className="text-neutral-500 text-xs uppercase font-bold">{t('trainee.startDate')}</div>
+                            <div className="text-neutral-900 font-semibold">{new Date(p.startDate).toLocaleDateString('vi-VN')}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm">
+                          <div className="w-8 h-8 bg-neutral-200 flex items-center justify-center">
+                            <Calendar className="w-4 h-4 text-neutral-600" />
+                          </div>
+                          <div>
+                            <div className="text-neutral-500 text-xs uppercase font-bold">{t('trainee.endDate')}</div>
+                            <div className="text-neutral-900 font-semibold">{new Date(p.endDate).toLocaleDateString('vi-VN')}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm">
+                          <div className="w-8 h-8 bg-neutral-200 flex items-center justify-center">
+                            <Clock className="w-4 h-4 text-neutral-600" />
+                          </div>
+                          <div>
+                            <div className="text-neutral-500 text-xs uppercase font-bold">{t('trainee.duration')}</div>
+                            <div className="text-neutral-900 font-semibold">{p.durationHours} {t('common.hours')}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Hint */}
+                      <div className="flex items-center justify-end gap-1.5 text-sm font-bold text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-4 uppercase tracking-wider">
+                        <span>{t('trainee.viewDetails') || 'Xem chi tiết'}</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
