@@ -31,9 +31,9 @@ const SectionHeader = ({ icon: Icon, title }) => (
     <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center border-2 border-transparent shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       <Icon className="w-5 h-5 text-black" />
     </div>
-    <h3 className="text-xl font-black uppercase tracking-tight text-neutral-900 m-0">
+    <span className="text-xl font-black uppercase tracking-tight text-neutral-900 m-0">
       {title}
-    </h3>
+    </span>
   </div>
 );
 
@@ -105,7 +105,7 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
         <div className="lg:col-span-2 flex flex-col gap-8">
 
           {/* Metadata Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <InfoCard
               icon={Tag}
               label={t('common.category')}
@@ -121,12 +121,12 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
               label={t('common.duration')}
               value={`${course.durationHours}h`}
             />
-            <InfoCard
+            {/* <InfoCard
               icon={Banknote}
               label={t('common.price')}
               value={course.price?.toLocaleString('vi-VN') + ' VND'}
               highlight
-            />
+            /> */}
           </div>
 
           {/* Description Box */}
@@ -142,7 +142,6 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
         </div>
       </div>
 
-      {/* BOTTOM PART: Sections, Certificates & Classes */}
       <div className="w-full flex flex-col gap-10">
         {/* Sections List */}
         <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">

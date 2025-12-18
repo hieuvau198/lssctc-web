@@ -18,7 +18,7 @@ export default function SimManagerLayout() {
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   return (
-    <div className="min-h-screen flex bg-neutral-50">
+    <div className="min-h-screen flex">
       <SidebarSimManager
         collapsed={collapsed}
         onToggle={toggleCollapsed}

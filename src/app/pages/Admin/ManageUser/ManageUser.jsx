@@ -185,19 +185,19 @@ export default function ManageUser() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+    <div className="max-w-7xl mx-auto">
       {/* Header - Industrial Theme */}
-      <div className="bg-black border-2 border-black p-5 mb-6">
-        <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+      <div className="bg-black border-2 border-black p-5 mb-2">
+        <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-2" />
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <div className="w-12 h-12 bg-yellow-400 border-2 border-black flex items-center justify-center">
               <Users className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+              <span className="text-2xl font-black text-white uppercase tracking-tight">
                 {t('admin.users.title')}
-              </h1>
+              </span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {activeKey === 'trainees' && `${traineeData.totalCount} ${t('admin.users.trainee').toLowerCase()}`}
                 {activeKey === 'instructors' && `${instructorData.totalCount} ${t('admin.users.instructor').toLowerCase()}`}
@@ -223,8 +223,6 @@ export default function ManageUser() {
           </div>
         </div>
       </div>
-
-      {/* Search Bar - Integrated in Content Card */}
 
       {/* Main Content Card */}
       <div className="bg-white border-2 border-black overflow-hidden">

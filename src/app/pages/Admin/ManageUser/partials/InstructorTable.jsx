@@ -117,7 +117,7 @@ export default function InstructorTable() {
           {s === 'active' ? t('common.active') : t('common.inactive')}
         </span>
       ),
-      width: 120,
+      width: 150,
     },
     {
       title: t('common.action') || "Action",

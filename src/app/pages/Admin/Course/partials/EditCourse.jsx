@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { Modal, Form, Input, InputNumber, Select, Switch, Button, Image } from "antd";
+import { Modal, Form, Input, InputNumber, Select, Switch, Image } from "antd";
 import { fetchCourseCategories, fetchCourseLevels } from "../../../../apis/ProgramManager/CourseApi";
+import { Edit3, X } from 'lucide-react';
 
 const { Option } = Select;
 
@@ -22,11 +23,10 @@ const EditCourse = ({
   const [catsLoading, setCatsLoading] = useState(false);
   const [lvlsLoading, setLvlsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState("");
-  const [bgImagePreview, setBgImagePreview] = useState(""); // Added state
+  const [bgImagePreview, setBgImagePreview] = useState("");
 
   useEffect(() => {
     if (course && localCategories.length > 0 && localLevels.length > 0) {
-      // Map category and level names to IDs
       const categoryId = course.categoryId || localCategories.find(c => c.label === course.category)?.value;
       const levelId = course.levelId || localLevels.find(l => l.label === course.level)?.value;
 
@@ -40,15 +40,13 @@ const EditCourse = ({
         imageUrl: course.imageUrl,
         durationHours: course.durationHours,
         courseCodeName: course.courseCodeName,
-        backgroundImageUrl: course.backgroundImageUrl, // Map new field
+        backgroundImageUrl: course.backgroundImageUrl,
       });
-      // initialize preview when editing existing course
       setImagePreview(course.imageUrl || "");
-      setBgImagePreview(course.backgroundImageUrl || ""); // Init preview
+      setBgImagePreview(course.backgroundImageUrl || "");
     }
   }, [course, form, localCategories, localLevels]);
 
-  // ... (Load Categories/Levels useEffect - same as original)
   useEffect(() => {
     let mounted = true;
 
@@ -88,7 +86,6 @@ const EditCourse = ({
     };
   }, []);
 
-
   const handleOk = () => {
     form
       .validateFields()
@@ -99,127 +96,244 @@ const EditCourse = ({
   };
 
   const formContent = (
-    <Form
-      form={form}
-      layout="vertical"
-      className={
-        embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6" : undefined
-      }
-      disabled={confirmLoading}
-    >
-      {/* ... (Name field logic remains same) */}
-      {!embedded && (
-        <Form.Item
-          label={t('admin.courses.form.name')}
-          name="name"
-          rules={[{ required: true }]}
-        >
-           <Input showCount placeholder={t('admin.courses.form.namePlaceholder')} />
-        </Form.Item>
-      )}
+    <>
+      {/* Industrial Form Styles */}
+      <style>{`
+        .industrial-edit-form .ant-form-item-label > label {
+          font-family: 'Inter', sans-serif !important;
+          text-transform: uppercase !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          letter-spacing: 0.05em !important;
+          color: #404040 !important;
+        }
+        .industrial-edit-form .ant-input,
+        .industrial-edit-form .ant-input-number,
+        .industrial-edit-form .ant-select-selector,
+        .industrial-edit-form .ant-input-affix-wrapper {
+          border-radius: 0 !important;
+          border: 2px solid #e5e5e5 !important;
+          font-weight: 500 !important;
+        }
+        .industrial-edit-form .ant-input:hover,
+        .industrial-edit-form .ant-input:focus,
+        .industrial-edit-form .ant-input-number:hover,
+        .industrial-edit-form .ant-input-number-focused,
+        .industrial-edit-form .ant-select-selector:hover,
+        .industrial-edit-form .ant-select-focused .ant-select-selector,
+        .industrial-edit-form .ant-input-affix-wrapper:hover,
+        .industrial-edit-form .ant-input-affix-wrapper-focused {
+          border-color: #facc15 !important;
+        }
+        .industrial-edit-form .ant-input-number {
+          width: 100%;
+        }
+        .industrial-edit-form .ant-switch-checked {
+          background: #facc15 !important;
+        }
+      `}</style>
 
-      {/* Category and Level */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-        <Form.Item label={t('common.category')} name="categoryId" rules={[{ required: true }]}>
-            <Select loading={catsLoading}>
-            {localCategories.map((cat) => <Option key={cat.value} value={cat.value}>{cat.label}</Option>)}
-            </Select>
-        </Form.Item>
-        <Form.Item label={t('common.level')} name="levelId" rules={[{ required: true }]}>
-            <Select loading={lvlsLoading}>
-            {localLevels.map((lvl) => <Option key={lvl.value} value={lvl.value}>{lvl.label}</Option>)}
-            </Select>
-        </Form.Item>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-        <Form.Item label={t('common.price')} name="price" rules={[{ required: true, type: 'number' }]}>
-            <InputNumber step={0.01} style={{ width: "100%" }} />
-        </Form.Item>
-        <Form.Item label={t('admin.courses.form.durationHours')} name="durationHours" rules={[{ required: true, type: 'integer' }]}>
-            <InputNumber style={{ width: "100%" }} />
-        </Form.Item>
-      </div>
-
-      {/* Images Section: Main & Background */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-4 mt-2">
-        {/* Main Image */}
-        <div>
-            <Form.Item
-                label={t('admin.courses.form.imageUrl')}
-                name="imageUrl"
-                rules={[{ required: true, type: 'url' }]}
-            >
-                <Input onChange={(e) => {
-                    const val = e.target.value;
-                    form.setFieldsValue({ imageUrl: val });
-                    setImagePreview(val);
-                }} />
-            </Form.Item>
-            <div className="w-full h-32 flex items-center justify-center border rounded-md overflow-hidden bg-gray-50 mb-4">
-            {imagePreview ? <Image src={imagePreview} height={128} /> : <span>No Preview</span>}
-            </div>
-        </div>
-
-        {/* Background Image */}
-        <div>
-            <Form.Item
-                label="Background Image URL"
-                name="backgroundImageUrl"
-                rules={[{ type: 'url' }]}
-            >
-                <Input onChange={(e) => {
-                    const val = e.target.value;
-                    form.setFieldsValue({ backgroundImageUrl: val });
-                    setBgImagePreview(val);
-                }} />
-            </Form.Item>
-            <div className="w-full h-32 flex items-center justify-center border rounded-md overflow-hidden bg-gray-50 mb-4">
-            {bgImagePreview ? 
-                <Image src={bgImagePreview} className="object-cover w-full h-full" /> : 
-                <span className="text-gray-400 text-xs">No Background Preview</span>}
-            </div>
-        </div>
-      </div>
-
-      <Form.Item label={t('common.status')} name="isActive" valuePropName="checked">
-        <Switch checkedChildren={t('common.active')} unCheckedChildren={t('common.inactive')} />
-      </Form.Item>
-
-      <Form.Item
-        label={t('common.description')}
-        name="description"
-        rules={[{ required: true, max: 1000 }]}
+      <Form
+        form={form}
+        layout="vertical"
+        className={`industrial-edit-form ${embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6" : ""}`}
+        disabled={confirmLoading}
       >
-        <Input.TextArea rows={3} showCount />
-      </Form.Item>
-      
-      {embedded && (
-        <div className="md:col-span-2 mt-4 flex justify-end gap-3">
-          <Button onClick={onCancel} disabled={confirmLoading}>{t('common.cancel')}</Button>
-          <Button type="primary" loading={confirmLoading} onClick={handleOk} disabled={confirmLoading}>{t('common.save')}</Button>
+        {!embedded && (
+          <Form.Item
+            label={t('admin.courses.form.name')}
+            name="name"
+            rules={[{ required: true, message: t('admin.courses.form.nameRequired', 'Name is required') }]}
+          >
+            <Input showCount placeholder={t('admin.courses.form.namePlaceholder')} />
+          </Form.Item>
+        )}
+
+        {/* Category and Level */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+          <Form.Item
+            label={t('common.category')}
+            name="categoryId"
+            rules={[{ required: true, message: t('admin.courses.form.categoryRequired', 'Category is required') }]}
+          >
+            <Select loading={catsLoading} placeholder={t('admin.courses.form.selectCategory', 'Select category')}>
+              {localCategories.map((cat) => <Option key={cat.value} value={cat.value}>{cat.label}</Option>)}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label={t('common.level')}
+            name="levelId"
+            rules={[{ required: true, message: t('admin.courses.form.levelRequired', 'Level is required') }]}
+          >
+            <Select loading={lvlsLoading} placeholder={t('admin.courses.form.selectLevel', 'Select level')}>
+              {localLevels.map((lvl) => <Option key={lvl.value} value={lvl.value}>{lvl.label}</Option>)}
+            </Select>
+          </Form.Item>
         </div>
-      )}
-    </Form>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+          <Form.Item
+            label={t('common.price')}
+            name="price"
+            rules={[{ required: true, type: 'number', message: t('admin.courses.form.priceRequired', 'Price is required') }]}
+          >
+            <InputNumber step={0.01} style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            label={t('admin.courses.form.durationHours')}
+            name="durationHours"
+            rules={[{ required: true, type: 'integer', message: t('admin.courses.form.durationRequired', 'Duration is required') }]}
+          >
+            <InputNumber style={{ width: "100%" }} />
+          </Form.Item>
+        </div>
+
+        {/* Images Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-neutral-200 pt-4 mt-2">
+          {/* Main Image */}
+          <div>
+            <Form.Item
+              label={t('admin.courses.form.imageUrl')}
+              name="imageUrl"
+              rules={[{ required: true, type: 'url', message: t('admin.courses.form.imageUrlRequired', 'Valid image URL is required') }]}
+            >
+              <Input
+                placeholder="https://..."
+                onChange={(e) => {
+                  const val = e.target.value;
+                  form.setFieldsValue({ imageUrl: val });
+                  setImagePreview(val);
+                }}
+              />
+            </Form.Item>
+            <div className="w-full h-32 flex items-center justify-center border-2 border-neutral-200 overflow-hidden bg-neutral-50 mb-4">
+              {imagePreview ? <Image src={imagePreview} height={128} /> : <span className="text-neutral-400 text-xs uppercase">{t('common.noPreview', 'No Preview')}</span>}
+            </div>
+          </div>
+
+          {/* Background Image */}
+          <div>
+            <Form.Item
+              label={t('admin.courses.form.backgroundImageUrl', 'Background Image URL')}
+              name="backgroundImageUrl"
+              rules={[{ type: 'url', message: t('admin.courses.form.invalidUrl', 'Invalid URL') }]}
+            >
+              <Input
+                placeholder="https://..."
+                onChange={(e) => {
+                  const val = e.target.value;
+                  form.setFieldsValue({ backgroundImageUrl: val });
+                  setBgImagePreview(val);
+                }}
+              />
+            </Form.Item>
+            <div className="w-full h-32 flex items-center justify-center border-2 border-neutral-200 overflow-hidden bg-neutral-50 mb-4">
+              {bgImagePreview ?
+                <Image src={bgImagePreview} className="object-cover w-full h-full" /> :
+                <span className="text-neutral-400 text-xs uppercase">{t('common.noPreview', 'No Preview')}</span>}
+            </div>
+          </div>
+        </div>
+
+        <Form.Item label={t('common.status')} name="isActive" valuePropName="checked">
+          <Switch checkedChildren={t('common.active')} unCheckedChildren={t('common.inactive')} />
+        </Form.Item>
+
+        <Form.Item
+          label={t('common.description')}
+          name="description"
+          rules={[{ required: true, max: 1000, message: t('admin.courses.form.descriptionRequired', 'Description is required') }]}
+        >
+          <Input.TextArea rows={3} showCount />
+        </Form.Item>
+
+        {embedded && (
+          <div className="md:col-span-2 mt-4 flex justify-end gap-3 pt-4 border-t-2 border-neutral-200">
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={confirmLoading}
+              className="px-5 py-2.5 bg-white border-2 border-neutral-300 text-neutral-600 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all text-xs"
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              type="button"
+              onClick={handleOk}
+              disabled={confirmLoading}
+              className="px-5 py-2.5 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all text-xs flex items-center gap-2"
+            >
+              {confirmLoading && <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />}
+              {t('common.save')}
+            </button>
+          </div>
+        )}
+      </Form>
+    </>
   );
 
   if (embedded) return formContent;
 
   return (
     <Modal
-      title={t('admin.courses.editCourse')}
       open={open}
       onCancel={onCancel}
-      onOk={handleOk}
-      confirmLoading={confirmLoading}
+      footer={null}
+      closable={false}
       destroyOnClose
-      width={800} // Wider modal
-      footer={[
-        <Button key="back" onClick={onCancel} disabled={confirmLoading}>{t('common.cancel')}</Button>,
-        <Button key="submit" type="primary" loading={confirmLoading} onClick={handleOk} disabled={confirmLoading}>{t('admin.courses.updateCourse')}</Button>,
-      ]}
+      width={800}
+      styles={{
+        content: { padding: 0, borderRadius: 0 },
+        body: { padding: 0 },
+      }}
     >
-      {formContent}
+      {/* Industrial Header */}
+      <div className="bg-black p-4 flex items-center justify-between border-b-4 border-yellow-400">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+            <Edit3 className="w-5 h-5 text-black" />
+          </div>
+          <div>
+            <span className="text-white font-black uppercase text-lg leading-none m-0">
+              {t('admin.courses.editCourse')}
+            </span>
+            <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
+              {course?.name}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={onCancel}
+          className="text-neutral-400 hover:text-white transition-colors"
+        >
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="p-6">
+        {formContent}
+
+        {/* Custom Footer */}
+        <div className="flex justify-end gap-3 pt-4 border-t-2 border-neutral-200 mt-6">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={confirmLoading}
+            className="px-5 py-2.5 bg-white border-2 border-neutral-300 text-neutral-600 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all text-xs"
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            type="button"
+            onClick={handleOk}
+            disabled={confirmLoading}
+            className="px-5 py-2.5 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all text-xs flex items-center gap-2"
+          >
+            {confirmLoading && <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />}
+            {t('admin.courses.updateCourse')}
+          </button>
+        </div>
+      </div>
     </Modal>
   );
 };

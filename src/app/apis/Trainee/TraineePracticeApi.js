@@ -104,9 +104,29 @@ export async function getPracticeByActivityRecordId(activityRecordId) {
   }
 }
 
+export async function getPracticeAttemptsHistory(traineeId, practiceId) {
+  if (!traineeId || !practiceId) {
+    console.warn("Missing traineeId or practiceId for fetching history");
+    return [];
+  }
+
+  try {
+    const response = await api.get(`/PracticeAttempts/by-practice`, {
+      params: { traineeId, practiceId }
+    });
+    
+    // Based on your controller, it returns the list directly (Ok(result))
+    return response.data || [];
+  } catch (err) {
+    console.error(`Error fetching attempts for practice ${practiceId}:`, err);
+    return [];
+  }
+}
+
 //#endregion
 
 export default {
   getTraineePracticesByClassId,
   getPracticeByActivityRecordId,
+  getPracticeAttemptsHistory,
 };

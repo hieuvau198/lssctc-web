@@ -104,7 +104,7 @@ export default function TraineeTable() {
           {s === 'active' ? t('common.active') : t('common.inactive')}
         </span>
       ),
-      width: 120,
+      width: 150,
     },
   ];
 
