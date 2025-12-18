@@ -2081,7 +2081,9 @@
       "updateSuccess": "Task updated successfully",
       "updateFailed": "Failed to update task",
       "removeSuccess": "Task removed from practice successfully",
-      "removeFailed": "Failed to remove task from practice"
+      "removeFailed": "Failed to remove task from practice",
+      "assigned": "assigned",
+      "clickAssignToAdd": "Click 'Assign Task' to add tasks"
     },
     "assignTaskModal": {
       "assignTask": "Assign Task",

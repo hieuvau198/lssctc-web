@@ -2084,7 +2084,9 @@
       "updateSuccess": "Cập nhật nhiệm vụ thành công",
       "updateFailed": "Cập nhật nhiệm vụ thất bại",
       "removeSuccess": "Xóa nhiệm vụ khỏi bài thực hành thành công",
-      "removeFailed": "Xóa nhiệm vụ khỏi bài thực hành thất bại"
+      "removeFailed": "Xóa nhiệm vụ khỏi bài thực hành thất bại",
+      "assigned": "đã gán",
+      "clickAssignToAdd": "Nhấn 'Gán nhiệm vụ' để thêm"
     },
     "assignTaskModal": {
       "assignTask": "Gán nhiệm vụ",
