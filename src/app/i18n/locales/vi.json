@@ -1885,6 +1885,7 @@
       "success": "Thành công",
       "error": "Lỗi",
       "ok": "OK",
+      "cancel": "Hủy",
       "na": "N/A"
     },
     "practiceDetail": {

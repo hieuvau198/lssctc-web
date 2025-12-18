@@ -1882,6 +1882,7 @@
       "success": "Success",
       "error": "Error",
       "ok": "OK",
+      "cancel": "Cancel",
       "na": "N/A"
     },
     "practiceDetail": {

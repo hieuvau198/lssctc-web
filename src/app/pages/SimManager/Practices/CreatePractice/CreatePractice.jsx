@@ -349,7 +349,7 @@ export default function CreatePractice() {
                   {creating ? t('simManager.createPractice.creating') : t('simManager.createPractice.createPractice')}
                 </button>
                 <button
-                  className="px-6 py-3 bg-white text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-neutral-100 transition-all"
+                  className="px-6 py-3 bg-white text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-neutral-100 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => navigate(-1)}
                   disabled={creating}
                 >
@@ -382,9 +382,9 @@ export default function CreatePractice() {
                 {/* Difficulty */}
                 <div className="flex items-start gap-4">
                   <div className={`w-10 h-10 border-2 border-black flex items-center justify-center flex-shrink-0 ${form.difficultyLevel === 'Entry' ? 'bg-green-400' :
-                      form.difficultyLevel === 'Intermediate' ? 'bg-yellow-400' :
-                        form.difficultyLevel === 'Advanced' ? 'bg-red-500 text-white' :
-                          'bg-neutral-100'
+                    form.difficultyLevel === 'Intermediate' ? 'bg-yellow-400' :
+                      form.difficultyLevel === 'Advanced' ? 'bg-red-500 text-white' :
+                        'bg-neutral-100'
                     }`}>
                     <Zap className={`h-5 w-5 ${form.difficultyLevel === 'Advanced' ? 'text-white' : 'text-black'}`} />
                   </div>
