@@ -1,6 +1,7 @@
 import React from 'react';
 import { Drawer, Form, Input, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { X, Save, Plus, Pencil, Truck } from 'lucide-react';
 
 const BrandModelDrawerForm = ({
   visible = false,
@@ -13,34 +14,55 @@ const BrandModelDrawerForm = ({
 }) => {
   const { t } = useTranslation();
   const isViewMode = mode === 'view';
-  const title = mode === 'create'
-    ? t('simManager.brandModel.drawer.createTitle')
-    : mode === 'edit'
-      ? t('simManager.brandModel.drawer.editTitle')
-      : t('simManager.brandModel.drawer.viewTitle');
+  const isEditMode = mode === 'edit';
+  const isCreateMode = mode === 'create';
+
+  const getTitle = () => {
+    if (isCreateMode) return t('simManager.brandModel.drawer.createTitle');
+    if (isEditMode) return t('simManager.brandModel.drawer.editTitle');
+    return t('simManager.brandModel.drawer.viewTitle');
+  };
+
+  const getIcon = () => {
+    if (isCreateMode) return <Plus className="w-5 h-5" />;
+    if (isEditMode) return <Pencil className="w-5 h-5" />;
+    return <Truck className="w-5 h-5" />;
+  };
 
   return (
     <Drawer
       title={
         <div className="flex items-center gap-3">
-          <div className="w-1 h-6 bg-yellow-400" />
-          <span className="font-black uppercase tracking-wider">{title}</span>
+          <span className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            {getIcon()}
+          </span>
+          <span className="font-black uppercase tracking-tight text-xl">
+            {getTitle()}
+          </span>
         </div>
       }
       placement="right"
       width={520}
       onClose={onClose}
       open={visible}
+      closeIcon={
+        <div className="w-8 h-8 flex items-center justify-center hover:bg-red-500 hover:text-white border-2 border-transparent hover:border-black transition-all">
+          <X className="w-5 h-5" />
+        </div>
+      }
       styles={{
         header: {
-          borderBottom: '2px solid #171717',
+          borderBottom: '2px solid #000',
+          padding: '1.25rem',
         },
         body: {
-          padding: '24px',
+          padding: '1.5rem',
+          backgroundColor: '#fff',
         },
         footer: {
-          borderTop: '2px solid #171717',
-          padding: '16px 24px',
+          borderTop: '2px solid #000',
+          padding: '1rem',
+          backgroundColor: '#f5f5f5', // neutral-100
         }
       }}
       footer={
@@ -49,14 +71,15 @@ const BrandModelDrawerForm = ({
             <>
               <button
                 onClick={onClose}
-                className="h-10 px-6 border-2 border-neutral-300 text-neutral-700 font-bold uppercase tracking-wider hover:border-neutral-900 transition-all"
+                className="px-6 py-2 bg-white text-black font-bold uppercase border-2 border-black hover:bg-neutral-100 transition-all"
               >
                 {t('simManager.brandModel.drawer.close')}
               </button>
               <button
                 onClick={onSwitchToEdit}
-                className="h-10 px-6 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-black hover:text-yellow-400 transition-all"
+                className="px-6 py-2 bg-yellow-400 text-black font-bold uppercase border-2 border-black hover:bg-yellow-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2"
               >
+                <Pencil className="w-4 h-4" />
                 {t('simManager.brandModel.edit')}
               </button>
             </>
@@ -64,31 +87,53 @@ const BrandModelDrawerForm = ({
             <>
               <button
                 onClick={onClose}
-                className="h-10 px-6 border-2 border-neutral-300 text-neutral-700 font-bold uppercase tracking-wider hover:border-neutral-900 transition-all"
+                className="px-6 py-2 bg-white text-black font-bold uppercase border-2 border-black hover:bg-neutral-100 transition-all"
               >
                 {t('simManager.brandModel.drawer.cancel')}
               </button>
               <button
                 onClick={onSubmit}
                 disabled={loading}
-                className="h-10 px-6 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-black hover:text-yellow-400 transition-all disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-2 bg-yellow-400 text-black font-bold uppercase border-2 border-black hover:bg-yellow-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center gap-2"
               >
-                {loading && <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />}
-                {mode === 'create' ? t('simManager.brandModel.drawer.create') : t('simManager.brandModel.drawer.update')}
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  isCreateMode ? <Plus className="w-4 h-4" /> : <Save className="w-4 h-4" />
+                )}
+                {isCreateMode ? t('simManager.brandModel.drawer.create') : t('simManager.brandModel.drawer.update')}
               </button>
             </>
           )}
         </div>
       }
     >
-      <Form form={form} layout="vertical" disabled={isViewMode}>
+      <style>{`
+            .industrial-form .ant-form-item-label label {
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                font-size: 0.75rem !important;
+                letter-spacing: 0.05em !important;
+            }
+            .industrial-form .ant-input,
+            .industrial-form .ant-input-textarea {
+                border: 2px solid #e5e5e5 !important;
+                border-radius: 0 !important;
+                font-weight: 500 !important;
+                padding: 8px 12px !important;
+            }
+            .industrial-form .ant-input:focus,
+            .industrial-form .ant-input-textarea:focus,
+            .industrial-form .ant-input:hover,
+            .industrial-form .ant-input-textarea:hover {
+                border-color: #000 !important;
+                box-shadow: none !important;
+            }
+        `}</style>
+      <Form form={form} layout="vertical" disabled={isViewMode} className="industrial-form">
         <Form.Item
           name="name"
-          label={
-            <span className="font-bold uppercase tracking-wider text-neutral-700">
-              {t('simManager.brandModel.form.name')}
-            </span>
-          }
+          label={t('simManager.brandModel.form.name')}
           rules={[
             { required: true, message: t('simManager.brandModel.form.nameRequired') },
             { max: 100, message: t('simManager.brandModel.form.nameMax') },
@@ -96,33 +141,28 @@ const BrandModelDrawerForm = ({
         >
           <Input
             placeholder={t('simManager.brandModel.form.namePlaceholder')}
-            className="h-11 border-2 border-neutral-300 hover:border-yellow-400 focus:border-yellow-400"
+            maxLength={100}
+            showCount
+            className="h-11"
           />
         </Form.Item>
 
         <Form.Item
           name="description"
-          label={
-            <span className="font-bold uppercase tracking-wider text-neutral-700">
-              {t('simManager.brandModel.form.description')}
-            </span>
-          }
+          label={t('simManager.brandModel.form.description')}
           rules={[{ max: 500, message: t('simManager.brandModel.form.descriptionMax') }]}
         >
           <Input.TextArea
             rows={4}
             placeholder={t('simManager.brandModel.form.descriptionPlaceholder')}
-            className="border-2 border-neutral-300 hover:border-yellow-400 focus:border-yellow-400"
+            maxLength={500}
+            showCount
           />
         </Form.Item>
 
         <Form.Item
           name="isActive"
-          label={
-            <span className="font-bold uppercase tracking-wider text-neutral-700">
-              {t('simManager.brandModel.form.activeStatus')}
-            </span>
-          }
+          label={t('simManager.brandModel.form.activeStatus')}
           valuePropName="checked"
           initialValue={true}
         >

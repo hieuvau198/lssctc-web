@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Tooltip, Tag } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemove }) {
@@ -8,34 +8,34 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
     const handleDelete = onDelete || onRemove;
 
     return (
-        <div className="bg-white border-2 border-neutral-900 hover:border-yellow-400 transition-all group">
+        <div className="bg-white border-2 border-black hover:border-black hover:scale-[1.02] transition-all group shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             {/* Status bar */}
-            <div className="h-1.5 bg-neutral-100 group-hover:bg-yellow-400 transition-colors" />
+            <div className="h-1.5 bg-neutral-100 group-hover:bg-yellow-400 transition-colors border-b-2 border-black" />
 
             <div className="p-4">
                 {/* Header */}
                 <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                         {index !== undefined && (
-                            <span className="inline-flex items-center justify-center w-8 h-8 bg-yellow-400 text-black text-sm font-black flex-shrink-0">
+                            <span className="inline-flex items-center justify-center w-8 h-8 bg-yellow-400 border-2 border-black text-black text-sm font-black flex-shrink-0">
                                 {index + 1}
                             </span>
                         )}
-                        <span className="text-sm font-black uppercase truncate text-neutral-900 group-hover:text-yellow-600 transition-colors">
+                        <span className="text-sm font-black uppercase truncate text-black group-hover:text-yellow-600 transition-colors">
                             {task.taskName}
                         </span>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-1 flex-shrink-0">
+                    <div className="flex gap-2 flex-shrink-0">
                         {onView && (
                             <Tooltip title={t('common.view')}>
                                 <button
                                     type="button"
                                     onClick={() => onView(task)}
-                                    className="w-8 h-8 border border-neutral-300 hover:bg-yellow-400 hover:border-yellow-400 flex items-center justify-center transition-all"
+                                    className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:scale-110 transition-transform"
                                 >
-                                    <EyeOutlined className="text-sm" />
+                                    <Eye className="w-4 h-4 text-yellow-400" />
                                 </button>
                             </Tooltip>
                         )}
@@ -44,9 +44,9 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
                                 <button
                                     type="button"
                                     onClick={() => onEdit(task)}
-                                    className="w-8 h-8 border border-neutral-300 hover:bg-yellow-400 hover:border-yellow-400 flex items-center justify-center transition-all"
+                                    className="w-8 h-8 bg-white border-2 border-black flex items-center justify-center hover:bg-neutral-100 hover:scale-110 transition-all"
                                 >
-                                    <EditOutlined className="text-sm" />
+                                    <Pencil className="w-4 h-4 text-black" />
                                 </button>
                             </Tooltip>
                         )}
@@ -55,9 +55,9 @@ export default function TaskCard({ task, index, onView, onEdit, onDelete, onRemo
                                 <button
                                     type="button"
                                     onClick={() => handleDelete(onRemove ? task.id : task)}
-                                    className="w-8 h-8 border border-red-300 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 flex items-center justify-center transition-all"
+                                    className="w-8 h-8 bg-red-500 border-2 border-red-600 flex items-center justify-center hover:bg-red-600 hover:scale-110 transition-all"
                                 >
-                                    <DeleteOutlined className="text-sm" />
+                                    <Trash2 className="w-4 h-4 text-white" />
                                 </button>
                             </Tooltip>
                         )}
