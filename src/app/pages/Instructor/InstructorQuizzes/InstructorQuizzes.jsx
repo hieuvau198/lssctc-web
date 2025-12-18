@@ -213,9 +213,9 @@ export default function InstructorQuizzes() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+    <div className="h-[calc(100vh-64px)] flex flex-col p-6 bg-neutral-100 overflow-hidden">
       {/* Header - Industrial Theme */}
-      <div className="bg-black border-2 border-black p-5 mb-6">
+      <div className="flex-none bg-black border-2 border-black p-5 mb-4">
         <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
@@ -251,7 +251,7 @@ export default function InstructorQuizzes() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white border-2 border-black p-4 mb-6">
+      <div className="flex-none bg-white border-2 border-black p-4 mb-4">
         <div className="h-1 bg-yellow-400 -mx-4 -mt-4 mb-4" />
         <QuizFilters
           searchValue={searchValue}
@@ -261,13 +261,23 @@ export default function InstructorQuizzes() {
       </div>
 
       {/* Table Card */}
-      <div className="bg-white border-2 border-black overflow-hidden">
-        <div className="h-1 bg-yellow-400" />
+      <div className="flex-1 flex flex-col bg-white border-2 border-black overflow-hidden relative">
+        <div className="h-1 bg-yellow-400 flex-none" />
 
         {/* Industrial Table Styles */}
         <style>{`
           .industrial-quiz-table .ant-table {
-            border: none !important;
+            border: 2px solid #000 !important;
+            border-radius: 0 !important;
+          }
+          .industrial-quiz-table .ant-table-container {
+            border-radius: 0 !important;
+          }
+          .industrial-quiz-table .ant-table-thead > tr > th:first-child {
+            border-top-left-radius: 0 !important;
+          }
+          .industrial-quiz-table .ant-table-thead > tr > th:last-child {
+            border-top-right-radius: 0 !important;
           }
           .industrial-quiz-table .ant-table-thead > tr > th {
             background: #fef08a !important;
@@ -294,13 +304,13 @@ export default function InstructorQuizzes() {
           }
         `}</style>
 
-        <div className="industrial-quiz-table overflow-hidden min-h-[400px]">
+        <div className="flex-1 overflow-hidden p-0 industrial-quiz-table">
           <Table
             columns={columns}
             dataSource={quizzes}
             rowKey="id"
             pagination={false}
-            scroll={{ y: 400 }}
+            scroll={{ y: "calc(100vh - 480px)" }}
             size="middle"
             locale={{
               emptyText: (
@@ -322,7 +332,7 @@ export default function InstructorQuizzes() {
           />
         </div>
 
-        <div className="p-4 border-t-2 border-neutral-200 flex justify-center">
+        <div className="flex-none p-4 border-t-2 border-neutral-200 flex justify-center bg-white z-10">
           <Pagination
             current={page}
             pageSize={pageSize}
@@ -330,12 +340,38 @@ export default function InstructorQuizzes() {
             onChange={(p, ps) => { setPage(p); setPageSize(ps); load(p, ps); }}
             showSizeChanger
             pageSizeOptions={["10", "20", "50"]}
-            showTotal={(total, r) => (
-              <span className="text-sm font-medium text-neutral-600">
-                {r[0]}-{r[1]} / {total} {t('instructor.quizzes.title').toLowerCase()}
+            className="industrial-pagination"
+            showTotal={(total, range) => (
+              <span className="font-bold text-neutral-600 mr-4">
+                {range[0]}-{range[1]} / {total} {t('instructor.quizzes.title').toLowerCase()}
               </span>
             )}
+            itemRender={(curr, type, originalElement) => {
+              if (type === 'page') {
+                return (
+                  <a className={`font-bold flex items-center justify-center w-full h-full border border-neutral-300 hover:border-yellow-400 hover:text-yellow-600 transition-colors ${curr === page ? 'bg-yellow-400 text-black border-black' : 'bg-white text-neutral-600'}`}>
+                    {curr}
+                  </a>
+                );
+              }
+              return originalElement;
+            }}
           />
+          <style>{`
+            .industrial-pagination .ant-pagination-item-active {
+              border-color: #000 !important;
+              background: #facc15 !important;
+            }
+            .industrial-pagination .ant-pagination-item-active a {
+              color: #000 !important;
+            }
+             .industrial-pagination .ant-pagination-options .ant-select-selector {
+               border-radius: 0 !important;
+            }
+            .industrial-pagination .ant-pagination-item {
+               border-radius: 0 !important;
+            }
+          `}</style>
         </div>
       </div>
 
