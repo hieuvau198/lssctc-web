@@ -76,6 +76,34 @@ export const mapQuizAttempt = (item) => ({
     : [],
 });
 
+const mapQuizAttemptHistory = (item) => ({
+    id: item.id,
+    activityRecordId: item.activityRecordId,
+    quizId: item.quizId,
+    name: item.name,
+    attemptScore: item.attemptScore,
+    maxScore: item.maxScore,
+    quizAttemptDate: item.quizAttemptDate,
+    status: item.status,
+    attemptOrder: item.attemptOrder,
+    isPass: item.isPass,
+    isCurrent: item.isCurrent,
+    quizAttemptQuestions: Array.isArray(item.quizAttemptQuestions)
+        ? item.quizAttemptQuestions.map(q => ({
+            id: q.id,
+            name: q.name,
+            questionScore: q.questionScore,
+            attemptScore: q.attemptScore,
+            isCorrect: q.isCorrect,
+            quizAttemptAnswers: Array.isArray(q.quizAttemptAnswers) ? q.quizAttemptAnswers.map(a => ({
+                id: a.id,
+                name: a.name,
+                isCorrect: a.isCorrect
+            })) : []
+        }))
+        : [],
+});
+
 // --- HÀM API ---
 
 /**
@@ -94,6 +122,12 @@ export const getQuizByActivityRecordId = async (activityRecordId) => {
   if (!activityRecordId) throw new Error("ActivityRecordId is required");
   const response = await api.get(`/Quizzes/trainee/activity-record/${activityRecordId}`);
   return response.data; // Trả về { quiz: {...}, sessionStatus: {...} }
+};
+
+export const getQuizAttempts = async (activityRecordId) => {
+    if (!activityRecordId) throw new Error('activityRecordId is required');
+    const response = await api.get(`/QuizAttempts/my-attempts/activity-record/${activityRecordId}`);
+    return Array.isArray(response.data) ? response.data.map(mapQuizAttemptHistory) : [];
 };
 
 /**
