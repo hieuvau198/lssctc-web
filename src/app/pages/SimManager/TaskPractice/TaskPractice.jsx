@@ -184,78 +184,84 @@ export default function TaskPractice() {
     }
 
     return (
-        <div className="max-w-[1380px] mx-auto px-4 py-2 space-y-4">
-            {/* Header with Violet Gradient */}
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-                <div className="p-6">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-200/50">
-                                <Sliders className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <span className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                                    {t('simManager.tasks.title')}
-                                </span>
-                            </div>
+        <div className="h-[calc(100vh-64px)] flex flex-col p-6 bg-neutral-100 overflow-hidden">
+            {/* Header - Industrial Theme */}
+            <div className="flex-none bg-black border-2 border-black p-5 mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
+                <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-yellow-400 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]">
+                            <Sliders className="w-6 h-6 text-black" />
                         </div>
-                        <Space>
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={handleCreate}
-                                className="!bg-gradient-to-r !from-violet-500 !to-purple-600 !border-0 hover:!from-violet-600 hover:!to-purple-700"
-                            >
-                                {t('simManager.tasks.createTask')}
-                            </Button>
-                            <ViewModeToggle viewMode={viewMode} onViewModeChange={handleViewModeChange} color="violet" />
-                        </Space>
+                        <div>
+                            <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+                                {t('simManager.tasks.title')}
+                            </h1>
+                            <p className="text-yellow-400 text-sm mt-1 font-medium">
+                                {t('simManager.tasks.pagination', { start: (pageNumber - 1) * pageSize + 1, end: Math.min(pageNumber * pageSize, total), total })}
+                            </p>
+                        </div>
                     </div>
+                    <Space className="flex items-center gap-3">
+                        <button
+                            onClick={handleCreate}
+                            className="group inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-400 text-black font-bold uppercase tracking-wider text-sm border-2 border-black hover:bg-yellow-500 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                        >
+                            <PlusOutlined className="group-hover:scale-110 transition-transform" />
+                            {t('simManager.tasks.createTask')}
+                        </button>
+                        <ViewModeToggle viewMode={viewMode} onViewModeChange={handleViewModeChange} color="yellow" />
+                    </Space>
                 </div>
             </div>
 
             {/* Content */}
-            {tasks.length === 0 ? (
-                <Empty description={t('simManager.tasks.noTasksFound')} />
-            ) : viewMode === 'table' ? (
-                <TaskTable
-                    data={tasks}
-                    loading={loading}
-                    onView={handleView}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    pagination={{
-                        current: pageNumber,
-                        pageSize: pageSize,
-                        total: total,
-                        onChange: (page, size) => {
-                            setPageNumber(page);
-                            setPageSize(size);
-                            setSearchParams({ page: page.toString(), pageSize: size.toString(), view: viewMode });
-                            loadTasks(page, size);
-                        },
-                    }}
-                />
-            ) : (
-                <TaskList
-                    data={tasks}
-                    loading={loading}
-                    onView={handleView}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    pagination={{
-                        current: pageNumber,
-                        pageSize: pageSize,
-                        total: total,
-                        onChange: (page, size) => {
-                            setPageNumber(page);
-                            setPageSize(size);
-                            setSearchParams({ page: page.toString(), pageSize: size.toString(), view: viewMode });
-                            loadTasks(page, size);
-                        },
-                    }}
-                />
-            )}
+            <div className="flex-1 flex flex-col overflow-hidden">
+                {tasks.length === 0 ? (
+                    <div className="bg-white border-2 border-black p-12 flex-1 flex flex-col items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] relative">
+                        <div className="h-1 bg-yellow-400 w-full absolute top-0 left-0" />
+                        <Empty description={t('simManager.tasks.noTasksFound')} />
+                    </div>
+                ) : viewMode === 'table' ? (
+                    <TaskTable
+                        data={tasks}
+                        loading={loading}
+                        onView={handleView}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        pagination={{
+                            current: pageNumber,
+                            pageSize: pageSize,
+                            total: total,
+                            onChange: (page, size) => {
+                                setPageNumber(page);
+                                setPageSize(size);
+                                setSearchParams({ page: page.toString(), pageSize: size.toString(), view: viewMode });
+                                loadTasks(page, size);
+                            },
+                        }}
+                    />
+                ) : (
+                    <TaskList
+                        data={tasks}
+                        loading={loading}
+                        onView={handleView}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        pagination={{
+                            current: pageNumber,
+                            pageSize: pageSize,
+                            total: total,
+                            onChange: (page, size) => {
+                                setPageNumber(page);
+                                setPageSize(size);
+                                setSearchParams({ page: page.toString(), pageSize: size.toString(), view: viewMode });
+                                loadTasks(page, size);
+                            },
+                        }}
+                    />
+                )}
+            </div>
 
             {/* Drawer for Create/Edit/View */}
             <DrawerForm
