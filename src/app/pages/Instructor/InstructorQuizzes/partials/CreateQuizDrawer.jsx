@@ -359,10 +359,33 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         </div>
       }
     >
+
+      <style>{`
+          .industrial-form .ant-input, 
+          .industrial-form .ant-input-number, 
+          .industrial-form .ant-input-textarea {
+            border: 2px solid #e5e5e5 !important;
+            border-radius: 0 !important;
+            font-weight: 500;
+          }
+          .industrial-form .ant-input:focus, 
+          .industrial-form .ant-input-number-focused,
+          .industrial-form .ant-input-textarea:focus,
+          .industrial-form .ant-input:hover,
+          .industrial-form .ant-input-number:hover {
+            border-color: #000 !important;
+            box-shadow: none !important;
+          }
+          .industrial-form .ant-input-number-handler-wrap {
+            border-radius: 0 !important;
+            border-left: 2px solid #000 !important;
+          }
+        `}</style>
       <Form
         form={form}
         layout="vertical"
         onFinish={onFinish}
+        className="industrial-form"
         initialValues={{
           passScoreCriteria: 5,
           timelimitMinute: 20,
@@ -474,8 +497,8 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
 
             {/* Status Message */}
             <div className={`p-3 text-center text-sm font-bold uppercase border-2 ${isScoreValid
-                ? 'bg-green-100 text-green-800 border-green-500'
-                : 'bg-red-100 text-red-800 border-red-500'
+              ? 'bg-green-100 text-green-800 border-green-500'
+              : 'bg-red-100 text-red-800 border-red-500'
               }`}>
               {isScoreValid ? (
                 <span>✓ {t('instructor.quizzes.scoreSummary.mustEqual10')}</span>
@@ -576,8 +599,8 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                         <div
                           key={option.id}
                           className={`p-3 border-2 transition-all ${option.isCorrect
-                              ? 'bg-green-50 border-green-500'
-                              : 'bg-white border-neutral-300 hover:border-black'
+                            ? 'bg-green-50 border-green-500'
+                            : 'bg-white border-neutral-300 hover:border-black'
                             }`}
                         >
                           <div className="flex gap-2 items-center mb-2">
