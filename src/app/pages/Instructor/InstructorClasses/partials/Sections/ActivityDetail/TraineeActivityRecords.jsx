@@ -1,18 +1,117 @@
+// src/app/pages/Instructor/InstructorClasses/partials/Sections/ActivityDetail/TraineeActivityRecords.jsx
+
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Typography, Alert, Skeleton, Button, Modal, Tooltip, Collapse, Empty } from 'antd';
-import { 
-  CheckCircleOutlined, 
-  ClockCircleOutlined, 
-  HistoryOutlined, 
-  CloseCircleOutlined,
-  ExclamationCircleOutlined 
-} from '@ant-design/icons';
+import { Table, Tag, Typography, Alert, Skeleton, Button, Tooltip, Modal } from 'antd';
+import { CheckCircleOutlined, ClockCircleOutlined, HistoryOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { getActivityRecords, getPracticeAttemptsForInstructor } from '../../../../../../apis/Instructor/InstructorApi'; // Import new API
+import { getActivityRecords, getPracticeAttemptsForInstructor } from '../../../../../../apis/Instructor/InstructorApi';
 import DayTimeFormat from '../../../../../../components/DayTimeFormat/DayTimeFormat';
 
-const { Title, Text } = Typography;
-const { Panel } = Collapse;
+// Imports for History UI (matching PracticeAttemptsHistory style)
+import { History, ChevronDown, ChevronUp, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import dayjs from 'dayjs';
+
+const { Title } = Typography;
+
+// --- Helper Component for History List (Replicating PracticeAttemptsHistory.jsx) ---
+const AttemptsHistoryList = ({ attempts = [] }) => {
+    const { t } = useTranslation();
+    const [expandedId, setExpandedId] = useState(null);
+
+    if (!attempts || attempts.length === 0) {
+        return <div className="p-4 text-center text-gray-500">{t('common.noData', 'No attempts found.')}</div>;
+    }
+
+    const toggleExpand = (id) => {
+        setExpandedId(expandedId === id ? null : id);
+    };
+
+    return (
+        <div className="bg-white border-2 border-black mt-6">
+            <div className="px-4 py-3 bg-neutral-100 border-b-2 border-black flex items-center justify-between">
+                <h3 className="font-black text-black uppercase flex items-center gap-2">
+                    <History className="w-5 h-5" />
+                    {t('trainee.practice.history', 'Attempt History')} ({attempts.length})
+                </h3>
+            </div>
+            
+            <div className="divide-y-2 divide-neutral-200">
+                {attempts.map((attempt, index) => (
+                    <div key={attempt.id} className="bg-white">
+                        {/* Attempt Header - Click to Expand */}
+                        <div 
+                            onClick={() => toggleExpand(attempt.id)}
+                            className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-yellow-50 transition-colors"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className={`w-10 h-10 border-2 border-black flex items-center justify-center flex-shrink-0 ${attempt.isPass ? 'bg-green-400' : 'bg-red-400'}`}>
+                                    <span className="font-black text-sm">#{attempts.length - index}</span>
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-bold text-lg">
+                                            {dayjs(attempt.attemptDate).format('DD/MM/YYYY HH:mm')}
+                                        </span>
+                                        {attempt.isCurrent && (
+                                            <span className="px-2 py-0.5 bg-yellow-400 border border-black text-xs font-bold uppercase">
+                                                {t('common.latest', 'Latest')}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-4 text-sm text-neutral-600 mt-1">
+                                        <span className="flex items-center gap-1">
+                                            <CheckCircle2 className="w-3 h-3" /> 
+                                            Score: <span className="font-bold text-black">{attempt.score ?? 0}</span>
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <AlertCircle className="w-3 h-3" /> 
+                                            Mistakes: <span className="font-bold text-black">{attempt.totalMistakes ?? 0}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between md:justify-end gap-4">
+                                <div className={`px-4 py-1 border-2 border-black font-bold uppercase text-sm ${attempt.isPass ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                    {attempt.isPass ? 'Passed' : 'Failed'}
+                                </div>
+                                {expandedId === attempt.id ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                            </div>
+                        </div>
+
+                        {/* Expanded Task Details */}
+                        {expandedId === attempt.id && (
+                            <div className="border-t-2 border-neutral-200 bg-neutral-50 p-4">
+                                <h4 className="text-xs font-bold uppercase text-neutral-500 mb-3 ml-1">Task Breakdown</h4>
+                                <div className="grid gap-2">
+                                    {attempt.practiceAttemptTasks?.map((task) => (
+                                        <div key={task.id} className="flex items-center justify-between p-3 bg-white border border-neutral-300 shadow-sm">
+                                            <div className="flex items-center gap-3">
+                                                {task.isPass 
+                                                    ? <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                                    : <XCircle className="w-5 h-5 text-red-600" />
+                                                }
+                                                <span className={`${task.isPass ? 'text-black' : 'text-neutral-500'}`}>
+                                                    {task.taskCode || `Task #${task.taskId}`}
+                                                </span>
+                                            </div>
+                                            <div className="text-sm font-mono">
+                                                <span className="text-neutral-500">Mistakes:</span> <b>{task.mistakes ?? 0}</b>
+                                                <span className="mx-2 text-neutral-300">|</span>
+                                                <span className="text-neutral-500">Score:</span> <b>{task.score}</b>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+// -------------------------------------------------------------------
 
 const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
   const { t } = useTranslation();
@@ -20,11 +119,11 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- New State for History Modal ---
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [historyLoading, setHistoryLoading] = useState(false);
+  // Modal State
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [historyData, setHistoryData] = useState([]);
-  const [selectedTrainee, setSelectedTrainee] = useState('');
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [selectedTrainee, setSelectedTrainee] = useState(null);
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -48,21 +147,18 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
     fetchRecords();
   }, [classId, sectionId, activityId]);
 
-  // --- Handler to Open History Modal ---
   const handleViewHistory = async (record) => {
     setSelectedTrainee(record.traineeName);
-    setIsModalOpen(true);
+    setHistoryModalOpen(true);
     setHistoryLoading(true);
     setHistoryData([]);
 
     try {
-        // record.traineeId and record.id (activityRecordId) are needed. 
-        // Ensure your API response for getActivityRecords returns these fields.
-        // Assuming record.id is the ActivityRecordId based on typical API structure.
+        // record.id is the ActivityRecordId, record.traineeId is the TraineeId
         const data = await getPracticeAttemptsForInstructor(record.traineeId, record.id);
         setHistoryData(data || []);
     } catch (err) {
-        console.error("Failed to load history", err);
+        console.error("Failed to load history:", err);
     } finally {
         setHistoryLoading(false);
     }
@@ -118,59 +214,19 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
         return <DayTimeFormat value={date} />;
       },
     },
-    // --- New Actions Column ---
     {
-      title: t('common.actions', 'Actions'),
-      key: 'actions',
-      align: 'center',
-      render: (_, record) => (
-        <Tooltip title={t('instructor.classes.activityDetail.viewHistory', 'View Attempt History')}>
-          <Button 
-            type="default" 
-            shape="circle" 
-            icon={<HistoryOutlined />} 
-            onClick={() => handleViewHistory(record)} 
-          />
-        </Tooltip>
-      ),
-    },
-  ];
-
-  // --- Task Table Columns (Nested in History) ---
-  const taskColumns = [
-    {
-      title: t('common.task', 'Task'),
-      dataIndex: 'taskCode',
-      key: 'taskCode',
-      render: (code, item) => (
-        <span className={item.isPass ? 'text-green-600' : 'text-red-600'}>
-            {code || `Task #${item.taskId}`}
-        </span>
-      )
-    },
-    {
-      title: t('common.score', 'Score'),
-      dataIndex: 'score',
-      key: 'score',
-      align: 'center',
-      render: (score) => <b>{score}</b>
-    },
-    {
-      title: t('common.mistakes', 'Mistakes'),
-      dataIndex: 'mistakes',
-      key: 'mistakes',
-      align: 'center',
-      render: (mistakes) => mistakes ?? 0
-    },
-    {
-      title: t('common.result', 'Result'),
-      key: 'result',
-      align: 'center',
-      render: (_, item) => (
-        item.isPass 
-          ? <CheckCircleOutlined style={{ color: '#52c41a', fontSize: '16px' }} />
-          : <CloseCircleOutlined style={{ color: '#f5222d', fontSize: '16px' }} />
-      )
+        title: t('common.actions', 'Actions'),
+        key: 'actions',
+        align: 'center',
+        render: (_, record) => (
+            <Tooltip title={t('instructor.classes.activityDetail.viewHistory', 'View History')}>
+                <Button 
+                    type="default"
+                    icon={<HistoryOutlined />} 
+                    onClick={() => handleViewHistory(record)}
+                />
+            </Tooltip>
+        )
     }
   ];
 
@@ -201,64 +257,20 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
         loading={loading}
       />
 
-      {/* --- History Modal --- */}
       <Modal
-        title={
-          <span>
-            <HistoryOutlined className="mr-2" />
-            {t('instructor.classes.activityDetail.historyTitle', 'Attempt History')} - <span className="text-blue-600">{selectedTrainee}</span>
-          </span>
-        }
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
+        open={historyModalOpen}
+        onCancel={() => setHistoryModalOpen(false)}
         footer={[
-          <Button key="close" onClick={() => setIsModalOpen(false)}>
-            {t('common.close', 'Close')}
-          </Button>
+            <Button key="close" onClick={() => setHistoryModalOpen(false)}>
+                {t('common.close', 'Close')}
+            </Button>
         ]}
         width={700}
       >
         {historyLoading ? (
-          <Skeleton active />
-        ) : historyData.length === 0 ? (
-          <Empty description={t('common.noData', 'No attempts found')} />
+            <Skeleton active />
         ) : (
-          <Collapse accordion className="bg-transparent" defaultActiveKey={[historyData[0]?.id]}>
-            {historyData.map((attempt, index) => (
-              <Panel 
-                header={
-                  <div className="flex justify-between items-center w-full pr-4">
-                    <div className="flex items-center gap-2">
-                       <Tag color="blue">#{historyData.length - index}</Tag>
-                       <span className="font-semibold"><DayTimeFormat value={attempt.attemptDate} /></span>
-                       {attempt.isCurrent && <Tag color="gold">{t('common.latest', 'Latest')}</Tag>}
-                    </div>
-                    <div className="flex items-center gap-3">
-                       <Text type="secondary" className="text-xs">
-                          {t('common.mistakes', 'Mistakes')}: <b>{attempt.totalMistakes ?? 0}</b>
-                       </Text>
-                       <Tag color={attempt.isPass ? 'success' : 'error'}>
-                          {attempt.isPass ? t('common.passed', 'Passed') : t('common.failed', 'Failed')}
-                       </Tag>
-                       <Text strong className="text-lg" style={{ minWidth: '40px', textAlign: 'right' }}>
-                          {attempt.score}
-                       </Text>
-                    </div>
-                  </div>
-                } 
-                key={attempt.id}
-              >
-                <Table 
-                    dataSource={attempt.practiceAttemptTasks || []}
-                    columns={taskColumns}
-                    rowKey="id"
-                    pagination={false}
-                    size="small"
-                    bordered
-                />
-              </Panel>
-            ))}
-          </Collapse>
+            <AttemptsHistoryList attempts={historyData} />
         )}
       </Modal>
     </div>
