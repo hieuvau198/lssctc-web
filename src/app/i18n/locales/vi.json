@@ -1522,6 +1522,7 @@
       },
       "drawer": {
         "createTitle": "Tạo Bài kiểm tra",
+        "editTitle": "Sửa Bài kiểm tra",
         "cancel": "Hủy",
         "create": "Tạo Bài kiểm tra",
         "save": "Lưu Thay đổi"

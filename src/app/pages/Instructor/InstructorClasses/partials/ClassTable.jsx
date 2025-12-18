@@ -114,21 +114,21 @@ const ClassTable = ({
   ];
 
   return (
-    <div className="bg-white border-2 border-black overflow-hidden">
-      <div className="h-1 bg-yellow-400" />
-      <div className="min-h-[450px]">
+    <div className="flex-1 flex flex-col bg-white border-2 border-black overflow-hidden relative">
+      <div className="h-1 bg-yellow-400 flex-none" />
+      <div className="flex-1 overflow-hidden p-0">
         <Table
           columns={tableColumns}
           dataSource={classes}
           rowKey={(r) => r.id || r.classId}
           pagination={false}
-          scroll={{ y: 450 }}
+          scroll={{ y: "calc(100vh - 350px)" }} // Adjusted for header heights
           size="middle"
-          className="[&_.ant-table-thead>tr>th]:bg-neutral-900 [&_.ant-table-thead>tr>th]:text-white [&_.ant-table-thead>tr>th]:border-neutral-700 [&_.ant-table-tbody>tr>td]:border-neutral-200"
+          className="h-full [&_.ant-table-thead>tr>th]:bg-neutral-900 [&_.ant-table-thead>tr>th]:text-white [&_.ant-table-thead>tr>th]:border-neutral-700 [&_.ant-table-tbody>tr>td]:border-neutral-200"
         />
       </div>
 
-      <div className="p-4 border-t-2 border-black bg-neutral-50 flex justify-center">
+      <div className="flex-none p-4 border-t-2 border-black bg-neutral-50 flex justify-center z-10">
         <Pagination
           current={pageNumber}
           pageSize={pageSize}
@@ -136,8 +136,34 @@ const ClassTable = ({
           onChange={onPageChange}
           showSizeChanger
           pageSizeOptions={["10", "20", "50"]}
-          showTotal={(t, r) => <span className="font-bold text-neutral-600">{r[0]}-{r[1]} / {t}</span>}
+          className="industrial-pagination"
+          showTotal={(t, r) => <span className="font-bold text-neutral-600 mr-4">{r[0]}-{r[1]} / {t}</span>}
+          itemRender={(curr, type, originalElement) => {
+            if (type === 'page') {
+              return (
+                <a className={`font-bold flex items-center justify-center w-full h-full border border-neutral-300 hover:border-yellow-400 hover:text-yellow-600 transition-colors ${curr === pageNumber ? 'bg-yellow-400 text-black border-black' : 'bg-white text-neutral-600'}`}>
+                  {curr}
+                </a>
+              );
+            }
+            return originalElement;
+          }}
         />
+        <style>{`
+            .industrial-pagination .ant-pagination-item-active {
+              border-color: #000 !important;
+              background: #facc15 !important;
+            }
+            .industrial-pagination .ant-pagination-item-active a {
+              color: #000 !important;
+            }
+             .industrial-pagination .ant-pagination-options .ant-select-selector {
+               border-radius: 0 !important;
+            }
+            .industrial-pagination .ant-pagination-item {
+               border-radius: 0 !important;
+            }
+          `}</style>
       </div>
     </div>
   );

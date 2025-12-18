@@ -50,9 +50,9 @@ export default function InstructorPractices() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+    <div className="h-[calc(100vh-64px)] flex flex-col p-6 bg-neutral-100 overflow-hidden">
       {/* Header - Industrial Theme (matching MY CLASSES) */}
-      <div className="bg-black border-2 border-black p-5 mb-6">
+      <div className="flex-none bg-black border-2 border-black p-5 mb-4">
         <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-4">
@@ -76,37 +76,39 @@ export default function InstructorPractices() {
       </div>
 
       {/* Content */}
-      {(!practices || practices.length === 0) ? (
-        <div className="bg-white border-2 border-black p-12">
-          <div className="h-1 bg-yellow-400 -mx-12 -mt-12 mb-8" />
-          <Empty
-            description={
-              <div>
-                <p className="text-neutral-800 text-lg font-bold uppercase mb-2">
-                  {t('instructor.practices.noPractices')}
-                </p>
-                <p className="text-neutral-500 text-sm">
-                  {t('instructor.practices.noPracticesDesc')}
-                </p>
-              </div>
-            }
-            image={
-              <div className="w-20 h-20 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mx-auto mb-4">
-                <Settings className="w-10 h-10 text-neutral-400" />
-              </div>
-            }
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {(!practices || practices.length === 0) ? (
+          <div className="bg-white border-2 border-black p-12 flex-1 flex flex-col items-center justify-center">
+            <div className="h-1 bg-yellow-400 w-full mb-8 absolute top-0 left-0" />
+            <Empty
+              description={
+                <div>
+                  <p className="text-neutral-800 text-lg font-bold uppercase mb-2">
+                    {t('instructor.practices.noPractices')}
+                  </p>
+                  <p className="text-neutral-500 text-sm">
+                    {t('instructor.practices.noPracticesDesc')}
+                  </p>
+                </div>
+              }
+              image={
+                <div className="w-20 h-20 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mx-auto mb-4">
+                  <Settings className="w-10 h-10 text-neutral-400" />
+                </div>
+              }
+            />
+          </div>
+        ) : (
+          <PracticeTable
+            practices={practices}
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            total={total}
+            onPageChange={(p, ps) => { setPageNumber(p); setPageSize(ps); load(p, ps); }}
+            onView={(record) => nav(`/instructor/practices/${record.id}`)}
           />
-        </div>
-      ) : (
-        <PracticeTable
-          practices={practices}
-          pageNumber={pageNumber}
-          pageSize={pageSize}
-          total={total}
-          onPageChange={(p, ps) => { setPageNumber(p); setPageSize(ps); load(p, ps); }}
-          onView={(record) => nav(`/instructor/practices/${record.id}`)}
-        />
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Input } from "antd";
+import IndustrialSearchBar from "../../../../components/Industrial/IndustrialSearchBar";
 import { useTranslation } from 'react-i18next';
 
 const QuizFilters = ({
@@ -9,15 +9,13 @@ const QuizFilters = ({
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-wrap gap-4">
-      <Input.Search
+    <div className="w-full">
+      <IndustrialSearchBar
         placeholder={t('instructor.quizzes.filters.searchPlaceholder')}
-        allowClear
-        size="middle"
         value={searchValue}
-        onChange={(e) => setSearchValue(e.target.value)}
+        onChange={setSearchValue}
         onSearch={onSearch}
-        style={{ width: 300 }}
+        className="!bg-transparent !border-none !p-0"
       />
     </div>
   );

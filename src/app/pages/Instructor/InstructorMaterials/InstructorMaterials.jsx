@@ -100,9 +100,9 @@ export default function InstructorMaterials() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+    <div className="h-[calc(100vh-64px)] flex flex-col p-6 bg-neutral-100 overflow-hidden">
       {/* Header - Black background with yellow accent (matching MY CLASSES) */}
-      <div className="bg-black border-2 border-black p-5 mb-6">
+      <div className="flex-none bg-black border-2 border-black p-5 mb-4">
         <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -130,26 +130,26 @@ export default function InstructorMaterials() {
       </div>
 
       {/* Main Content Card */}
-      <div className="bg-white border-2 border-black overflow-hidden">
-        <div className="h-1 bg-yellow-400" />
+      <div className="flex-1 flex flex-col bg-white border-2 border-black overflow-hidden relative">
+        <div className="h-1 bg-yellow-400 flex-none" />
 
         {/* Tabs */}
-        <div className="border-b-2 border-neutral-200">
+        <div className="flex-none border-b-2 border-neutral-200">
           <div className="flex gap-0 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={`px-6 py-4 font-bold uppercase tracking-wider text-sm border-b-4 transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === tab.key
-                    ? 'border-yellow-400 text-black bg-yellow-50'
-                    : 'border-transparent text-neutral-400 hover:text-black hover:border-neutral-300 hover:bg-neutral-50'
+                  ? 'border-yellow-400 text-black bg-yellow-50'
+                  : 'border-transparent text-neutral-400 hover:text-black hover:border-neutral-300 hover:bg-neutral-50'
                   }`}
               >
                 <tab.icon className="w-5 h-5" />
                 {tab.label}
                 <span className={`ml-1 px-2 py-0.5 text-xs ${activeTab === tab.key
-                    ? 'bg-yellow-400 text-black'
-                    : 'bg-neutral-200 text-neutral-600'
+                  ? 'bg-yellow-400 text-black'
+                  : 'bg-neutral-200 text-neutral-600'
                   }`}>
                   {tab.count}
                 </span>
@@ -159,7 +159,7 @@ export default function InstructorMaterials() {
         </div>
 
         {/* Content Area */}
-        <div className="p-6">
+        <div className="flex-1 overflow-hidden p-6">
           {activeTab === 'videos' ? (
             <VideoMaterials
               materials={videos}
