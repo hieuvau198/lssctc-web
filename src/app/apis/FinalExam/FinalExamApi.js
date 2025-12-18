@@ -57,6 +57,29 @@ export async function getFinalExamsByClass(classId) {
 }
 
 /**
+ * GET /api/finalExams/class/{classId}/config
+ * Get exam configuration (weights) for a class
+ * @param {string|number} classId
+ * @returns {Promise<Object>}
+ */
+export async function getClassExamConfig(classId) {
+  const response = await apiClient.get(`/finalExams/class/${classId}/config`);
+  return response.data;
+}
+
+/**
+ * PUT /api/finalExams/class/{classId}/weights
+ * Update exam weights for a class
+ * @param {string|number} classId
+ * @param {Object} payload - { theoryWeight, simulationWeight, practicalWeight }
+ * @returns {Promise<Object>}
+ */
+export async function updateClassWeights(classId, payload) {
+  const response = await apiClient.put(`/finalExams/class/${classId}/weights`, payload);
+  return response.data;
+}
+
+/**
  * POST /api/finalExams/{id}/generate-code
  * Tạo một Exam Code ngẫu nhiên cho một Final Exam (cho TE)
  * @param {string|number} id
@@ -105,6 +128,8 @@ export default {
   updateFinalExam,
   deleteFinalExam,
   getFinalExamsByClass,
+  getClassExamConfig,
+  updateClassWeights,
   generateExamCode,
   finishFinalExamForClass,
   getMyFinalExamHistory,

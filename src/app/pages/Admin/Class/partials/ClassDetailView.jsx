@@ -7,6 +7,7 @@ import ClassMembersTable from "./ClassMembersTable";
 import ClassTimeslotManage from "./ClassTimeslotManage";
 import ClassCertificate from './ClassCertificate';
 import ClassCourseInfo from './ClassCourseInfo';
+import ClassExamWeights from './ClassExamWeights';
 import { openClass, startClass, completeClass, cancelClass } from '../../../../apis/ProgramManager/ClassesApi';
 import { getClassStatus } from '../../../../utils/classStatus';
 import dayjs from "dayjs";
@@ -333,6 +334,9 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             <ClassCourseInfo courseId={classItem.courseId} />
           </div>
         )}
+
+        {/* NEW EXAM WEIGHTS SECTION */}
+        <ClassExamWeights classId={classItem?.id} />
 
         {/* Certificates Section */}
         <div id="class-certificates" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
