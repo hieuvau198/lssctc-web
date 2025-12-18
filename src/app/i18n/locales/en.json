@@ -411,6 +411,7 @@
     "courseList": "Course List",
     "createCourse": "Create Course",
     "editCourse": "Edit Course",
+    "updateCourse": "Update Course",
     "deleteCourse": "Delete Course",
     "courseName": "Course Name",
     "courseCode": "Course Code",
@@ -2537,6 +2538,7 @@
       "updateError": "Failed to update course",
       "loadDetailError": "Failed to load course details",
       "pagination": "{{start}}-{{end}} of {{total}} courses",
+      "updateCourse": "Update Course",
       "columns": {
         "image": "Image",
         "courseName": "Course Name",
@@ -2769,6 +2771,20 @@
         "pagination": "{{start}}-{{end}} of {{total}} trainees",
         "approve": "Approve",
         "reject": "Reject"
+      },
+      "status": {
+        "title": "Status Management",
+        "currentStatus": "Current Status",
+        "availableActions": "Available Actions",
+        "noActionsAvailable": "No status actions available for this class.",
+        "publishSuccess": "Class published successfully",
+        "publishError": "Failed to publish class",
+        "startSuccess": "Class started successfully",
+        "startError": "Failed to start class",
+        "completeSuccess": "Class completed successfully",
+        "completeError": "Failed to complete class",
+        "cancelSuccess": "Class cancelled successfully",
+        "cancelError": "Failed to cancel class"
       },
       "modal": {
         "editClass": "Edit Class",
