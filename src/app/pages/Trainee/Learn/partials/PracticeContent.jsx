@@ -1,12 +1,16 @@
 // src/app/pages/Trainee/Learn/partials/PracticeContent.jsx
 
-import React from 'react';
+import React, { useEffect, useState } from 'react'; // Added useEffect, useState
 import { useTranslation } from 'react-i18next';
 import { Settings, CheckCircle2, Clock, Play, ListTodo, ChevronsRight, Monitor, Download, LogIn, MousePointer, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import PracticeAttemptsHistory from './PracticeAttemptsHistory'; // Import the new component
+import { getPracticeAttemptsHistory } from '../../../../apis/Trainee/TraineePracticeApi'; // Import API
+import useAuthStore from '../../../../store/authStore'; // Import your Auth Store to get TraineeId
 
 export default function PracticeContent({
+    practiceId, // <--- MAKE SURE TO PASS THIS PROP FROM PARENT
     title,
     duration,
     completed = false,
@@ -16,6 +20,23 @@ export default function PracticeContent({
 }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { user } = useAuthStore(); // Get current user (trainee)
+    const [attempts, setAttempts] = useState([]);
+
+    // Fetch attempts history on mount
+    useEffect(() => {
+        const fetchHistory = async () => {
+            if (user?.id && practiceId) {
+                try {
+                    const data = await getPracticeAttemptsHistory(user.id, practiceId);
+                    setAttempts(data);
+                } catch (error) {
+                    console.error("Failed to load practice history", error);
+                }
+            }
+        };
+        fetchHistory();
+    }, [user?.id, practiceId]);
 
     const completedTasks = tasks.filter(t => t.isPass).length;
     const avgScore = tasks.length > 0
@@ -183,6 +204,10 @@ export default function PracticeContent({
                 </div>
             </div>
 
+            {/* --- NEW HISTORY SECTION --- */}
+            <PracticeAttemptsHistory attempts={attempts} />
+
+            {/* Summary Section (Existing) */}
             {completed && (
                 <div className="bg-white border-2 border-black overflow-hidden">
                     <div className="h-0.5 bg-yellow-400" />
