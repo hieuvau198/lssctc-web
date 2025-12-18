@@ -1,14 +1,15 @@
 // src/app/pages/Trainee/Learn/partials/QuizContent.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import QuizAttempt from './QuizAttempt/QuizAttempt';
-import { Button, Alert } from 'antd';
+import QuizAttemptsHistory from './QuizAttemptsHistory'; 
+import { getQuizAttempts } from '../../../../apis/Trainee/TraineeQuizApi'; 
 import { ClipboardList, Clock, Target, HelpCircle, CheckCircle2, XCircle, Trophy, Play, AlertCircle } from 'lucide-react';
 import dayjs from 'dayjs';
 
 // Child component for quiz start screen - Light Wire Theme
-const QuizStartScreen = ({ quiz, onStart, t, sessionStatus }) => {
+const QuizStartScreen = ({ quiz, onStart, t, sessionStatus, attempts }) => {
     const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
 
     return (
@@ -122,12 +123,15 @@ const QuizStartScreen = ({ quiz, onStart, t, sessionStatus }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Attempts History */}
+            <QuizAttemptsHistory attempts={attempts} />
         </div>
     );
 };
 
 // Child component for quiz result screen - Light Wire Theme
-const QuizResultScreen = ({ quiz, onRestart, t }) => {
+const QuizResultScreen = ({ quiz, onRestart, t, attempts }) => {
     const isPass = (quiz.attemptScore || 0) >= (quiz.passScoreCriteria || 0);
     const scorePercent = (quiz.totalScore > 0) ? Math.round((quiz.attemptScore / quiz.totalScore) * 100) : 0;
 
@@ -217,6 +221,9 @@ const QuizResultScreen = ({ quiz, onRestart, t }) => {
                     </div>
                 </div>
             </div>
+
+             {/* Attempts History */}
+             <QuizAttemptsHistory attempts={attempts} />
         </div>
     );
 };
@@ -229,6 +236,45 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
     );
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [attempts, setAttempts] = useState([]);
+
+    // Fetch attempts history
+    const fetchHistory = async () => {
+        // --- LOGGING START ---
+        console.group("QuizContent: fetchHistory");
+        console.log("Partition Obj:", partition);
+        console.log("SectionQuiz Obj:", sectionQuiz);
+        
+        // Try to get activityRecordId. 
+        // 1. Check partition (unlikely to have activityRecordId based on your parent code)
+        // 2. Check sectionQuiz.activityRecordId (might be undefined if not at top level)
+        // 3. Check sectionQuiz.activityRecord.activityRecordId (most likely correct place)
+        const activityRecordId = 
+            partition?.activityRecordId || 
+            sectionQuiz?.activityRecordId || 
+            sectionQuiz?.activityRecord?.activityRecordId;
+
+        console.log("Resolved activityRecordId:", activityRecordId);
+        // --- LOGGING END ---
+
+        if (activityRecordId) {
+            try {
+                console.log("Calling getQuizAttempts with ID:", activityRecordId);
+                const history = await getQuizAttempts(activityRecordId);
+                console.log("Fetched history:", history);
+                setAttempts(history);
+            } catch (error) {
+                console.error("Failed to fetch quiz history:", error);
+            }
+        } else {
+            console.warn("Skipping fetchHistory: No valid activityRecordId found.");
+        }
+        console.groupEnd();
+    };
+
+    useEffect(() => {
+        fetchHistory();
+    }, [partition, sectionQuiz, quizState]); // Refetch when quiz state changes (e.g. after submit)
 
     const handleStartQuiz = () => {
         setQuizState('attempting');
@@ -241,6 +287,7 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
             await onSubmitAttempt(answers);
             setQuizState('result');
             console.log('[QuizContent] Submission successful.');
+            fetchHistory(); // Refresh history immediately
         } catch (error) {
             console.error('Submission failed in QuizContent:', error);
         } finally {
@@ -264,6 +311,7 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
                 quiz={sectionQuiz}
                 onRestart={() => setQuizState('start')}
                 t={t}
+                attempts={attempts}
             />
         );
     }
@@ -274,6 +322,7 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
             onStart={handleStartQuiz}
             t={t}
             sessionStatus={sessionStatus}
+            attempts={attempts}
         />
     );
 }
