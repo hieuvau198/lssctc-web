@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Button, Modal, App, Empty, Spin, Table, Tag, Pagination } from 'antd';
+import { Modal, App, Empty, Table, Pagination } from 'antd';
 import { Plus, CheckSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getAllTasks, addTaskToPractice } from '../../../../apis/SimulationManager/SimulationManagerTaskApi';
@@ -282,9 +282,13 @@ const AssignTaskModal = ({ practiceId, assignedTaskIds = [], onAssigned }) => {
                                     <button
                                         onClick={handleAssign}
                                         disabled={selectedTaskIds.length === 0 || assignLoading}
-                                        className="px-6 py-2.5 bg-black text-white font-bold uppercase tracking-wider border-2 border-black hover:bg-neutral-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shadow-[4px_4px_0px_0px_rgba(168,162,158,0.5)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                        className="px-6 py-2.5 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-yellow-500 transition-all disabled:bg-neutral-200 disabled:border-neutral-300 disabled:text-neutral-400 disabled:cursor-not-allowed flex items-center gap-2 text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0"
                                     >
-                                        {assignLoading ? <Spin size="small" /> : <Plus className="w-4 h-4" />}
+                                        {assignLoading ? (
+                                            <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                                        ) : (
+                                            <Plus className="w-4 h-4" />
+                                        )}
                                         {t('simManager.assignTaskModal.assignSelected', { count: selectedTaskIds.length })}
                                     </button>
                                 </div>
