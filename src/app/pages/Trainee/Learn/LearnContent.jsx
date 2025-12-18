@@ -9,14 +9,11 @@ import QuizContent from "./partials/QuizContent";
 import PracticeContent from "./partials/PracticeContent";
 import SessionLockScreen from "./partials/SessionLockScreen";
 import {
-  markSectionMaterialAsCompleted,
-  markSectionMaterialAsNotCompleted,
   getActivityRecordsByClassAndSection,
   getMaterialsByActivityRecordId,
   submitActivity,
 } from "../../../apis/Trainee/TraineeLearningApi";
 import {
-  getQuizByActivityIdForTrainee,
   getQuizByActivityRecordId,
   submitQuizAttempt,
 } from '../../../apis/Trainee/TraineeQuizApi';
@@ -144,14 +141,19 @@ export default function LearnContent() {
         setSectionQuiz(combinedQuizData);
         setSessionStatus(sessionStatus);
       } else if (activityType === 'Practice') {
-        const practiceData = await getPracticeByActivityRecordId(matchedRecord.activityRecordId);
-        const combinedPracticeData = {
-          ...practiceData,
-          title: matchedRecord.activityName || practiceData.practiceName,
-          isCompleted: matchedRecord.isCompleted,
-          activityRecord: matchedRecord,
-        };
-        setSectionPractice(combinedPracticeData);
+        // Updated to handle { practice, sessionStatus } response
+        const { practice, sessionStatus } = await getPracticeByActivityRecordId(matchedRecord.activityRecordId);
+        
+        if (practice) {
+          const combinedPracticeData = {
+            ...practice,
+            title: matchedRecord.activityName || practice.practiceName,
+            isCompleted: matchedRecord.isCompleted,
+            activityRecord: matchedRecord,
+          };
+          setSectionPractice(combinedPracticeData);
+        }
+        setSessionStatus(sessionStatus);
       } else {
         throw new Error(`Unsupported content type: ${activityType}`);
       }
@@ -363,6 +365,7 @@ export default function LearnContent() {
             description={sectionPractice.practiceDescription}
             duration={`${sectionPractice.estimatedDurationMinutes || 0} min`}
             tasks={sectionPractice.tasks}
+            sessionStatus={sessionStatus} // Pass the session status here
           />
         )
       );

@@ -2,15 +2,17 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Settings, CheckCircle2, Clock, Play, ListTodo, ChevronsRight, Monitor, Download, LogIn, MousePointer } from 'lucide-react';
+import { Settings, CheckCircle2, Clock, Play, ListTodo, ChevronsRight, Monitor, Download, LogIn, MousePointer, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 export default function PracticeContent({
     title,
     duration,
     completed = false,
     description,
-    tasks = []
+    tasks = [],
+    sessionStatus
 }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -19,9 +21,30 @@ export default function PracticeContent({
     const avgScore = tasks.length > 0
         ? Math.round(tasks.reduce((acc, t) => acc + (t.score || 0), 0) / tasks.length)
         : 0;
+    
+    // Check if session is open
+    const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
 
     return (
         <div className="space-y-6">
+             {/* Session Warning Banner */}
+             {sessionStatus && !isSessionOpen && (
+                <div className="flex items-center gap-3 p-4 bg-yellow-50 border-2 border-yellow-400">
+                    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                    <div>
+                        <span className="font-bold text-yellow-800 block text-sm uppercase tracking-wide">
+                            {sessionStatus.message === "Not started yet"
+                                ? t('trainee.learn.sessionNotStarted', 'Session Not Started')
+                                : t('trainee.learn.sessionExpired', 'Session Expired')}
+                        </span>
+                        <span className="text-xs text-yellow-700">
+                            {sessionStatus.startTime && `Start: ${dayjs(sessionStatus.startTime).format('DD/MM/YYYY HH:mm')}`}
+                            {sessionStatus.endTime && ` - End: ${dayjs(sessionStatus.endTime).format('DD/MM/YYYY HH:mm')}`}
+                        </span>
+                    </div>
+                </div>
+            )}
+
             {/* Header Card */}
             <div className="bg-white border-2 border-black overflow-hidden">
                 <div className="h-0.5 bg-yellow-400" />
@@ -43,6 +66,18 @@ export default function PracticeContent({
                             </div>
                             <h1 className="text-xl font-black text-black uppercase tracking-tight">{title}</h1>
                             {description && <p className="text-neutral-600 mt-1">{description}</p>}
+                            
+                            {/* Display Time Range if Session is Open and has limits */}
+                            {sessionStatus && isSessionOpen && (sessionStatus.startTime || sessionStatus.endTime) && (
+                                <div className="text-xs text-neutral-500 mt-2 flex items-center gap-2">
+                                    <Clock className="w-3 h-3" />
+                                    <span>
+                                        {sessionStatus.startTime ? dayjs(sessionStatus.startTime).format('DD/MM/YYYY HH:mm') : '...'} 
+                                        {' - '} 
+                                        {sessionStatus.endTime ? dayjs(sessionStatus.endTime).format('DD/MM/YYYY HH:mm') : '...'}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -87,12 +122,13 @@ export default function PracticeContent({
                                 <ul className="space-y-3">
                                     {tasks.map((task, index) => (
                                         <li key={task.taskId || index} className="flex items-start gap-3 p-3 border-2 border-neutral-200 hover:border-yellow-400 transition-colors">
-                                            <div className={`w-8 h-8 flex items-center justify-center border-2 border-black ${task.isPass ? 'bg-yellow-400' : 'bg-white'}`}>
+                                            <div className={`w-8 h-8 flex-shrink-0 flex items-center justify-center border-2 border-black ${task.isPass ? 'bg-yellow-400' : 'bg-white'}`}>
                                                 {task.isPass ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-sm font-black">{index + 1}</span>}
                                             </div>
                                             <div>
                                                 <div className="font-bold text-black">{task.taskName || 'Unnamed Task'}</div>
                                                 {task.taskDescription && <div className="text-sm text-neutral-600">{task.taskDescription}</div>}
+                                                {task.taskCode && <div className="text-xs font-mono text-neutral-400 mt-1">{task.taskCode}</div>}
                                             </div>
                                         </li>
                                     ))}
@@ -131,7 +167,15 @@ export default function PracticeContent({
                     </div>
 
                     <div className="text-center">
-                        <button onClick={() => navigate('/simulator')} className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-400 text-black font-bold uppercase border-2 border-black hover:scale-[1.02] transition-all">
+                        <button 
+                            onClick={() => navigate('/simulator')} 
+                            disabled={!isSessionOpen}
+                            className={`inline-flex items-center gap-2 px-8 py-3 font-bold uppercase border-2 border-black transition-all
+                                ${isSessionOpen 
+                                    ? 'bg-yellow-400 text-black hover:scale-[1.02]' 
+                                    : 'bg-neutral-300 text-neutral-500 cursor-not-allowed'}
+                            `}
+                        >
                             <Play className="w-5 h-5" />
                             {completed ? t('trainee.learn.practiceAgain', 'Practice Again') : t('trainee.learn.startPractice', 'Start Practice')}
                         </button>

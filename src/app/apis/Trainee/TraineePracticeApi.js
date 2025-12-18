@@ -21,6 +21,7 @@ const mapPracticeTaskFromApi = (task) => ({
   isPass: task.isPass,
   score: task.score,
   description: task.description,
+  taskCode: task.taskCode
 });
 
 /**
@@ -28,21 +29,25 @@ const mapPracticeTaskFromApi = (task) => ({
  * @param {object} practice - The raw practice item from the API.
  * @returns {object} - The mapped practice object.
  */
-const mapPracticeFromApi = (practice) => ({
-  id: practice.id,
-  practiceName: practice.practiceName,
-  practiceDescription: practice.practiceDescription,
-  estimatedDurationMinutes: practice.estimatedDurationMinutes,
-  difficultyLevel: practice.difficultyLevel,
-  maxAttempts: practice.maxAttempts,
-  createdDate: practice.createdDate,
-  isActive: practice.isActive,
-  // Fields from the /trainee/class/{id} endpoint
-  activityRecordId: practice.activityRecordId,
-  activityId: practice.activityId,
-  isCompleted: practice.isCompleted,
-  tasks: Array.isArray(practice.tasks) ? practice.tasks.map(mapPracticeTaskFromApi) : [],
-});
+const mapPracticeFromApi = (practice) => {
+  if (!practice) return null;
+  return {
+    id: practice.id,
+    practiceName: practice.practiceName,
+    practiceCode: practice.practiceCode,
+    practiceDescription: practice.practiceDescription,
+    estimatedDurationMinutes: practice.estimatedDurationMinutes,
+    difficultyLevel: practice.difficultyLevel,
+    maxAttempts: practice.maxAttempts,
+    createdDate: practice.createdDate,
+    isActive: practice.isActive,
+    // Fields from the /trainee/class/{id} endpoint
+    activityRecordId: practice.activityRecordId,
+    activityId: practice.activityId,
+    isCompleted: practice.isCompleted,
+    tasks: Array.isArray(practice.tasks) ? practice.tasks.map(mapPracticeTaskFromApi) : [],
+  };
+};
 
 //#endregion
 
@@ -51,8 +56,6 @@ const mapPracticeFromApi = (practice) => ({
 /**
  * Get all practices for a trainee within a specific class.
  * GET /api/Practices/trainee/class/{classId}
- * @param {number|string} classId - The ID of the class.
- * @returns {Promise<Array<object>>} - A promise resolving to an array of mapped practice objects.
  */
 export async function getTraineePracticesByClassId(classId) {
   if (!classId) {
@@ -60,39 +63,50 @@ export async function getTraineePracticesByClassId(classId) {
   }
 
   try {
-    const { data } = await api.get(`/Practices/trainee/class/${classId}`);
+    const response = await api.get(`/Practices/trainee/class/${classId}`);
+    // Extract the actual data payload from the API response wrapper
+    // The structure is { success: true, data: [...], ... }
+    const payload = response.data?.data || response.data;
     
-    if (Array.isArray(data)) {
-      return data.map(mapPracticeFromApi);
+    if (Array.isArray(payload)) {
+      return payload.map(mapPracticeFromApi);
     }
     
-    // If response is not an array, return empty array as a fallback
     return [];
   } catch (err) {
     console.error(`Error fetching practices for class ${classId}:`, err);
-    throw err; // Re-throw the error for the caller to handle
+    throw err;
   }
 }
 
+/**
+ * Get practice details and session status by Activity Record ID.
+ * GET /api/Practices/trainee/activity-record/{activityRecordId}
+ */
 export async function getPracticeByActivityRecordId(activityRecordId) {
   if (!activityRecordId) {
     throw new Error('Activity Record ID is required');
   }
   try {
-    // This endpoint is an assumption based on the user's request
-    // to use activityRecordId.
-    const { data } = await api.get(`/Practices/trainee/activity-record/${activityRecordId}`);
-    return mapPracticeFromApi(data);
+    const response = await api.get(`/Practices/trainee/activity-record/${activityRecordId}`);
+    
+    // Extract the actual data payload from the API response wrapper
+    // The structure is { success: true, data: { practice: {...}, sessionStatus: {...} } }
+    const payload = response.data?.data || response.data;
+    
+    return {
+      practice: mapPracticeFromApi(payload.practice),
+      sessionStatus: payload.sessionStatus
+    };
   } catch (err) {
     console.error(`Error fetching practice for activity record ${activityRecordId}:`, err);
     throw err;
   }
 }
 
-
 //#endregion
 
 export default {
   getTraineePracticesByClassId,
-  getPracticeByActivityRecordId, // <-- Export hàm đã thay đổi
+  getPracticeByActivityRecordId,
 };
