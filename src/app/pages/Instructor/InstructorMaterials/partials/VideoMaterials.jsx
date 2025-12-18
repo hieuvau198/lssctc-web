@@ -166,7 +166,7 @@ export default function VideoMaterials({ materials = [], viewMode = 'table', onD
           dataSource={paginatedData}
           rowKey="id"
           pagination={false}
-          scroll={{ y: 400 }}
+          scroll={{ y: "calc(100vh - 450px)" }}
           size="middle"
         />
       </div>

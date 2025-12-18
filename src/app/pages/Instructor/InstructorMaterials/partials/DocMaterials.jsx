@@ -161,7 +161,7 @@ export default function DocMaterials({ materials = [], viewMode = 'table', onDel
           dataSource={paginatedData}
           rowKey="id"
           pagination={false}
-          scroll={{ y: 400 }}
+          scroll={{ y: "calc(100vh - 450px)" }}
           size="middle"
         />
       </div>
