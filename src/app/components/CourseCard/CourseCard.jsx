@@ -40,12 +40,12 @@ export default function CourseCard({ course }) {
         {(level || duration) && (
           <div className="absolute left-2 top-2 flex gap-2">
             {level && (
-              <span className="px-3 py-1 text-xs font-bold bg-white text-black uppercase tracking-wider">
+              <span className="p-1 text-xs font-bold bg-white text-black uppercase tracking-wider">
                 {level}
               </span>
             )}
             {duration && (
-              <span className="px-3 py-1 inline-flex items-center gap-1 text-xs font-bold bg-yellow-400 text-black uppercase tracking-wider">
+              <span className="p-1 inline-flex items-center gap-1 text-xs font-bold bg-yellow-400 text-black uppercase tracking-wider">
                 <Clock className="w-3 h-3" />
                 {duration} {t('common.hours')}
               </span>
@@ -59,9 +59,9 @@ export default function CourseCard({ course }) {
         {provider && (
           <div className="text-xs text-neutral-500 font-bold uppercase tracking-wider mb-1.5">{provider}</div>
         )}
-        <h3 className="text-neutral-900 font-black leading-snug line-clamp-2 min-h-[2.5rem] uppercase group-hover:text-yellow-600 transition-colors">
+        <span className="text-neutral-900 font-black leading-snug line-clamp-2 min-h-[2.5rem] uppercase group-hover:text-yellow-600 transition-colors">
           {title}
-        </h3>
+        </span>
 
         {tags.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">

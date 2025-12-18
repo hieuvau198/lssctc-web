@@ -414,6 +414,7 @@
     "courseList": "Danh sách Khóa học",
     "createCourse": "Tạo Khóa học",
     "editCourse": "Sửa Khóa học",
+    "updateCourse": "Cập nhật Khóa học",
     "deleteCourse": "Xóa Khóa học",
     "courseName": "Tên Khóa học",
     "courseCode": "Mã Khóa học",
@@ -2541,6 +2542,7 @@
       "updateError": "Không thể cập nhật khóa học",
       "loadDetailError": "Không thể tải chi tiết khóa học",
       "pagination": "{{start}}-{{end}} của {{total}} khóa học",
+      "updateCourse": "Cập nhật khóa học",
       "columns": {
         "image": "Hình ảnh",
         "courseName": "Tên khóa học",
@@ -2770,6 +2772,20 @@
         "pagination": "{{start}}-{{end}} của {{total}} học viên",
         "approve": "Phê duyệt",
         "reject": "Từ chối"
+      },
+      "status": {
+        "title": "Quản lý Trạng thái",
+        "currentStatus": "Trạng thái hiện tại",
+        "availableActions": "Hành động khả dụng",
+        "noActionsAvailable": "Không có hành động nào cho lớp học này.",
+        "publishSuccess": "Xuất bản lớp học thành công",
+        "publishError": "Không thể xuất bản lớp học",
+        "startSuccess": "Bắt đầu lớp học thành công",
+        "startError": "Không thể bắt đầu lớp học",
+        "completeSuccess": "Hoàn thành lớp học thành công",
+        "completeError": "Không thể hoàn thành lớp học",
+        "cancelSuccess": "Hủy lớp học thành công",
+        "cancelError": "Không thể hủy lớp học"
       },
       "modal": {
         "editClass": "Chỉnh sửa lớp",
