@@ -360,12 +360,13 @@ export default function LearnContent() {
       return (
         sectionPractice && (
           <PracticeContent
+            practiceId={sectionPractice.id} // <--- ADD THIS LINE
             title={sectionPractice.title}
             completed={sectionPractice.isCompleted}
             description={sectionPractice.practiceDescription}
             duration={`${sectionPractice.estimatedDurationMinutes || 0} min`}
             tasks={sectionPractice.tasks}
-            sessionStatus={sessionStatus} // Pass the session status here
+            sessionStatus={sessionStatus}
           />
         )
       );

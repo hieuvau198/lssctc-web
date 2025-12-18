@@ -105,17 +105,20 @@ export async function getPracticeByActivityRecordId(activityRecordId) {
 }
 
 export async function getPracticeAttemptsHistory(traineeId, practiceId) {
+  // Note: For the "me" endpoint, traineeId isn't strictly needed in the URL 
+  // but we check it to ensure the user is logged in contextually.
   if (!traineeId || !practiceId) {
     console.warn("Missing traineeId or practiceId for fetching history");
     return [];
   }
 
   try {
-    const response = await api.get(`/PracticeAttempts/by-practice`, {
-      params: { traineeId, practiceId }
+    // CHANGE: Update URL to '/PracticeAttempts/by-practice/me'
+    // The backend retrieves TraineeId from the token, so we only need to pass practiceId as a query param.
+    const response = await api.get(`/PracticeAttempts/by-practice/me`, {
+      params: { practiceId } 
     });
     
-    // Based on your controller, it returns the list directly (Ok(result))
     return response.data || [];
   } catch (err) {
     console.error(`Error fetching attempts for practice ${practiceId}:`, err);

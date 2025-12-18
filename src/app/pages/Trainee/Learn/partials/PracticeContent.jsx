@@ -1,16 +1,16 @@
 // src/app/pages/Trainee/Learn/partials/PracticeContent.jsx
 
-import React, { useEffect, useState } from 'react'; // Added useEffect, useState
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Settings, CheckCircle2, Clock, Play, ListTodo, ChevronsRight, Monitor, Download, LogIn, MousePointer, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import PracticeAttemptsHistory from './PracticeAttemptsHistory'; // Import the new component
-import { getPracticeAttemptsHistory } from '../../../../apis/Trainee/TraineePracticeApi'; // Import API
-import useAuthStore from '../../../../store/authStore'; // Import your Auth Store to get TraineeId
+import PracticeAttemptsHistory from './PracticeAttemptsHistory';
+import { getPracticeAttemptsHistory } from '../../../../apis/Trainee/TraineePracticeApi';
+import useAuthStore from '../../../../store/authStore';
 
 export default function PracticeContent({
-    practiceId, // <--- MAKE SURE TO PASS THIS PROP FROM PARENT
+    practiceId,
     title,
     duration,
     completed = false,
@@ -20,15 +20,17 @@ export default function PracticeContent({
 }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { user } = useAuthStore(); // Get current user (trainee)
+    
+    const authData = useAuthStore();
+    const nameid = authData?.nameid;
+
     const [attempts, setAttempts] = useState([]);
 
-    // Fetch attempts history on mount
     useEffect(() => {
         const fetchHistory = async () => {
-            if (user?.id && practiceId) {
+            if (nameid && practiceId) {
                 try {
-                    const data = await getPracticeAttemptsHistory(user.id, practiceId);
+                    const data = await getPracticeAttemptsHistory(nameid, practiceId);
                     setAttempts(data);
                 } catch (error) {
                     console.error("Failed to load practice history", error);
@@ -36,14 +38,8 @@ export default function PracticeContent({
             }
         };
         fetchHistory();
-    }, [user?.id, practiceId]);
-
-    const completedTasks = tasks.filter(t => t.isPass).length;
-    const avgScore = tasks.length > 0
-        ? Math.round(tasks.reduce((acc, t) => acc + (t.score || 0), 0) / tasks.length)
-        : 0;
+    }, [nameid, practiceId]);
     
-    // Check if session is open
     const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
 
     return (
@@ -204,34 +200,8 @@ export default function PracticeContent({
                 </div>
             </div>
 
-            {/* --- NEW HISTORY SECTION --- */}
+            {/* Attempts History */}
             <PracticeAttemptsHistory attempts={attempts} />
-
-            {/* Summary Section (Existing) */}
-            {completed && (
-                <div className="bg-white border-2 border-black overflow-hidden">
-                    <div className="h-0.5 bg-yellow-400" />
-                    <div className="px-6 py-4 border-b-2 border-neutral-200 bg-yellow-50">
-                        <h3 className="font-black text-black uppercase flex items-center gap-2">
-                            <CheckCircle2 className="w-5 h-5" />
-                            {t('trainee.learn.practiceSummary', 'Practice Summary')}
-                        </h3>
-                    </div>
-                    <div className="p-6">
-                        <div className="w-full h-3 border-2 border-black bg-white mb-6"><div className="h-full bg-yellow-400 w-full" /></div>
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="border-2 border-black p-4 text-center">
-                                <div className="text-xs text-neutral-500 uppercase font-bold">{t('trainee.learn.tasksCompleted', 'Tasks Completed')}</div>
-                                <div className="text-2xl font-black">{completedTasks} / {tasks.length}</div>
-                            </div>
-                            <div className="border-2 border-black bg-yellow-50 p-4 text-center">
-                                <div className="text-xs text-neutral-500 uppercase font-bold">{t('trainee.learn.averageScore', 'Average Score')}</div>
-                                <div className="text-2xl font-black">{avgScore}%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
