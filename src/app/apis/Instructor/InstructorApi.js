@@ -139,4 +139,21 @@ export const getPracticeAttemptsForInstructor = async (traineeId, activityRecord
   }
 };
 
+export const getQuizAttemptsForInstructor = async (traineeId, activityRecordId) => {
+  if (!traineeId || !activityRecordId) {
+    return [];
+  }
+  try {
+    // Note: Ensure your backend has this endpoint or similar. 
+    // If using the same controller as Trainee, you might need an endpoint that accepts traineeId query param.
+    const response = await apiClient.get(`/QuizAttempts/by-activity-record/trainee`, {
+      params: { traineeId, activityRecordId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching quiz attempts history:', error);
+    throw error;
+  }
+};
+
 //#endregion

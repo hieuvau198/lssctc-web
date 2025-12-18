@@ -4,16 +4,19 @@ import React, { useState, useEffect } from 'react';
 import { Table, Tag, Typography, Alert, Skeleton, Button, Tooltip, Modal } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined, HistoryOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { getActivityRecords, getPracticeAttemptsForInstructor } from '../../../../../../apis/Instructor/InstructorApi';
+// --- FIX: Imported getQuizAttemptsForInstructor ---
+import { 
+    getActivityRecords, 
+    getPracticeAttemptsForInstructor, 
+    getQuizAttemptsForInstructor 
+} from '../../../../../../apis/Instructor/InstructorApi';
 import DayTimeFormat from '../../../../../../components/DayTimeFormat/DayTimeFormat';
-
-// Imports for History UI (matching PracticeAttemptsHistory style)
-import { History, ChevronDown, ChevronUp, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { History, ChevronDown, ChevronUp, CheckCircle2, XCircle, AlertCircle, Trophy } from 'lucide-react';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;
 
-// --- Helper Component for History List (Replicating PracticeAttemptsHistory.jsx) ---
+// --- Helper Component for Practice History ---
 const AttemptsHistoryList = ({ attempts = [] }) => {
     const { t } = useTranslation();
     const [expandedId, setExpandedId] = useState(null);
@@ -31,14 +34,13 @@ const AttemptsHistoryList = ({ attempts = [] }) => {
             <div className="px-4 py-3 bg-neutral-100 border-b-2 border-black flex items-center justify-between">
                 <h3 className="font-black text-black uppercase flex items-center gap-2">
                     <History className="w-5 h-5" />
-                    {t('trainee.practice.history', 'Attempt History')} ({attempts.length})
+                    {t('trainee.practice.history', 'Practice History')} ({attempts.length})
                 </h3>
             </div>
             
             <div className="divide-y-2 divide-neutral-200">
                 {attempts.map((attempt, index) => (
                     <div key={attempt.id} className="bg-white">
-                        {/* Attempt Header - Click to Expand */}
                         <div 
                             onClick={() => toggleExpand(attempt.id)}
                             className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-yellow-50 transition-colors"
@@ -70,7 +72,6 @@ const AttemptsHistoryList = ({ attempts = [] }) => {
                                     </div>
                                 </div>
                             </div>
-
                             <div className="flex items-center justify-between md:justify-end gap-4">
                                 <div className={`px-4 py-1 border-2 border-black font-bold uppercase text-sm ${attempt.isPass ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                     {attempt.isPass ? 'Passed' : 'Failed'}
@@ -78,8 +79,6 @@ const AttemptsHistoryList = ({ attempts = [] }) => {
                                 {expandedId === attempt.id ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                             </div>
                         </div>
-
-                        {/* Expanded Task Details */}
                         {expandedId === attempt.id && (
                             <div className="border-t-2 border-neutral-200 bg-neutral-50 p-4">
                                 <h4 className="text-xs font-bold uppercase text-neutral-500 mb-3 ml-1">Task Breakdown</h4>
@@ -111,15 +110,70 @@ const AttemptsHistoryList = ({ attempts = [] }) => {
         </div>
     );
 };
-// -------------------------------------------------------------------
 
-const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
+// --- FIX: Added QuizAttemptsHistoryList Component ---
+const QuizAttemptsHistoryList = ({ attempts = [] }) => {
+    const { t } = useTranslation();
+
+    if (!attempts || attempts.length === 0) {
+        return <div className="p-4 text-center text-gray-500">{t('common.noData', 'No attempts found.')}</div>;
+    }
+
+    return (
+        <div className="bg-white border-2 border-black mt-6">
+            <div className="px-4 py-3 bg-neutral-100 border-b-2 border-black flex items-center justify-between">
+                <h3 className="font-black text-black uppercase flex items-center gap-2">
+                    <History className="w-5 h-5" />
+                    {t('trainee.quiz.history', 'Quiz History')} ({attempts.length})
+                </h3>
+            </div>
+            
+            <div className="divide-y-2 divide-neutral-200">
+                {attempts.map((attempt, index) => (
+                    <div key={attempt.id} className="bg-white p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-yellow-50 transition-colors">
+                        <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 border-2 border-black flex items-center justify-center flex-shrink-0 ${attempt.isPass ? 'bg-green-400' : 'bg-red-400'}`}>
+                                <span className="font-black text-sm">#{attempts.length - index}</span>
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-bold text-lg">
+                                        {dayjs(attempt.quizAttemptDate || attempt.attemptDate).format('DD/MM/YYYY HH:mm')}
+                                    </span>
+                                    {attempt.isCurrent && (
+                                        <span className="px-2 py-0.5 bg-yellow-400 border border-black text-xs font-bold uppercase">
+                                            {t('common.latest', 'Latest')}
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-4 text-sm text-neutral-600 mt-1">
+                                    <span className="flex items-center gap-1">
+                                        <Trophy className="w-3 h-3" /> 
+                                        Score: <span className="font-bold text-black">{attempt.attemptScore} / {attempt.maxScore || attempt.totalScore}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between md:justify-end gap-4">
+                            <div className={`px-4 py-1 border-2 border-black font-bold uppercase text-sm ${attempt.isPass ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                {attempt.isPass ? 'Passed' : 'Failed'}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+// --- FIX: Added activityType to props ---
+const TraineeActivityRecords = ({ classId, sectionId, activityId, activityType }) => {
   const { t } = useTranslation();
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Modal State
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [historyData, setHistoryData] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -154,8 +208,15 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
     setHistoryData([]);
 
     try {
-        // record.id is the ActivityRecordId, record.traineeId is the TraineeId
-        const data = await getPracticeAttemptsForInstructor(record.traineeId, record.id);
+        let data = [];
+        // --- FIX: Logic to switch between Quiz and Practice APIs ---
+        if (activityType === 'Quiz') {
+            console.log("Fetching QUIZ history for", record.traineeName);
+            data = await getQuizAttemptsForInstructor(record.traineeId, record.id);
+        } else {
+            console.log("Fetching PRACTICE history for", record.traineeName);
+            data = await getPracticeAttemptsForInstructor(record.traineeId, record.id);
+        }
         setHistoryData(data || []);
     } catch (err) {
         console.error("Failed to load history:", err);
@@ -258,6 +319,7 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
       />
 
       <Modal
+        title={`${t('common.history', 'History')}: ${selectedTrainee}`}
         open={historyModalOpen}
         onCancel={() => setHistoryModalOpen(false)}
         footer={[
@@ -270,7 +332,12 @@ const TraineeActivityRecords = ({ classId, sectionId, activityId }) => {
         {historyLoading ? (
             <Skeleton active />
         ) : (
-            <AttemptsHistoryList attempts={historyData} />
+            // --- FIX: Switch between Quiz and Practice History UI ---
+            activityType === 'Quiz' ? (
+                <QuizAttemptsHistoryList attempts={historyData} />
+            ) : (
+                <AttemptsHistoryList attempts={historyData} />
+            )
         )}
       </Modal>
     </div>
