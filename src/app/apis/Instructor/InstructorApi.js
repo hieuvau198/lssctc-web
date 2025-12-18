@@ -124,4 +124,19 @@ export const getActivityRecords = async (classId, sectionId, activityId) => {
   }
 };
 
+export const getPracticeAttemptsForInstructor = async (traineeId, activityRecordId) => {
+  if (!traineeId || !activityRecordId) {
+    return [];
+  }
+  try {
+    const response = await apiClient.get(`/PracticeAttempts/by-activity-record/trainee`, {
+      params: { traineeId, activityRecordId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching practice attempts history:', error);
+    throw error;
+  }
+};
+
 //#endregion
