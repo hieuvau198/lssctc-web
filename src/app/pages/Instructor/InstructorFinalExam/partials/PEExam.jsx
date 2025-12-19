@@ -10,6 +10,7 @@ export default function PEExam({ classId }) {
   const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
   const [configs, setConfigs] = useState([]);
+  const [isExamCompleted, setIsExamCompleted] = useState(false); // [UPDATED] State for lock status
 
   // States for Config Modal (Template)
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -32,6 +33,7 @@ export default function PEExam({ classId }) {
     try {
       const response = await InstructorFEApi.getClassConfig(classId);
       setConfigs(response.data?.partialConfigs?.filter(c => c.type === 'Practical') || []);
+      setIsExamCompleted(response.data?.status === 'Completed'); // [UPDATED] Check status
     } catch (error) {
       console.error(error);
     } finally {
@@ -44,6 +46,8 @@ export default function PEExam({ classId }) {
   // --- Handlers for Config/Template ---
 
   const handleOpenConfig = (config) => {
+    if (isExamCompleted && !config) return; // Prevent creating if closed
+    
     setSelectedConfig(config);
     if (config) {
       form.setFieldsValue({
@@ -190,9 +194,14 @@ export default function PEExam({ classId }) {
       render: (_, record) => (
         <button
           onClick={() => handleOpenConfig(record)}
-          className="w-8 h-8 border-2 border-black bg-white hover:bg-yellow-400 flex items-center justify-center transition-all"
+          disabled={isExamCompleted} // [UPDATED] Disable if completed
+          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${
+            isExamCompleted 
+            ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed' 
+            : 'border-black bg-white hover:bg-yellow-400 text-black'
+          }`}
         >
-          <Edit3 className="w-4 h-4 text-black" />
+          <Edit3 className="w-4 h-4" />
         </button>
       ),
     },
@@ -268,7 +277,12 @@ export default function PEExam({ classId }) {
       render: (_, record) => (
         <button
           onClick={() => handleOpenGrading(record)}
-          className="px-4 py-2 bg-yellow-400 text-black font-bold uppercase text-xs border-2 border-black hover:bg-yellow-500 transition-all"
+          disabled={isExamCompleted} // [UPDATED] Disable if completed
+          className={`px-4 py-2 font-bold uppercase text-xs border-2 transition-all ${
+            isExamCompleted
+              ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
+              : 'bg-yellow-400 text-black border-black hover:bg-yellow-500'
+          }`}
         >
           Grade
         </button>
@@ -286,7 +300,8 @@ export default function PEExam({ classId }) {
           </div>
           <h2 className="text-xl font-black uppercase tracking-tight m-0">{t('instructor.finalExam.peTitle')}</h2>
         </div>
-        {configs.length === 0 && (
+        {/* [UPDATED] Conditional rendering based on isExamCompleted */}
+        {configs.length === 0 && !isExamCompleted && (
           <button
             onClick={() => handleOpenConfig(null)}
             className="h-10 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
@@ -310,6 +325,7 @@ export default function PEExam({ classId }) {
         />
       </div>
 
+      {/* ... (Modals remain mostly unchanged, just disabled via logic above) ... */}
       {/* --- Create/Edit Configuration Modal --- */}
       <Modal
         open={createModalOpen}

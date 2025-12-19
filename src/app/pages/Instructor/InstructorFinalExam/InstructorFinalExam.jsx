@@ -1,16 +1,81 @@
-import { Tabs, Empty } from 'antd';
-import { useState } from 'react';
+import { Tabs, Empty, Modal, message } from 'antd';
+import { useState, useEffect } from 'react'; // [UPDATED] Added useEffect
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import TEExam from './partials/TEExam';
 import SEExam from './partials/SEExam';
 import PEExam from './partials/PEExam';
-import { FileText, Monitor, Award, Trophy } from 'lucide-react';
+import { FileText, Monitor, Award, Trophy, CheckCircle, AlertTriangle, Lock } from 'lucide-react'; // [UPDATED] Added Lock icon
+import InstructorFEApi from '../../../apis/Instructor/InstructorFEApi';
 
 export default function InstructorFinalExam() {
   const { t } = useTranslation();
   const { classId } = useParams();
   const [activeTab, setActiveTab] = useState('te');
+  const [loading, setLoading] = useState(false);
+  const [examStatus, setExamStatus] = useState(null); // [UPDATED] State for exam status
+
+  // [FIX] Use the useModal hook instead of the static method
+  const [modal, contextHolder] = Modal.useModal();
+
+  // [UPDATED] Fetch status to determine if exam is closed
+  useEffect(() => {
+    const fetchStatus = async () => {
+      if (!classId) return;
+      try {
+        const response = await InstructorFEApi.getClassConfig(classId);
+        setExamStatus(response.data?.status);
+      } catch (error) {
+        console.error("Failed to fetch exam status", error);
+      }
+    };
+    fetchStatus();
+  }, [classId]);
+
+  // Handler for finishing the exam
+  const handleFinishExam = () => {    
+    // Use 'modal.confirm' (instance) instead of 'Modal.confirm' (static)
+    modal.confirm({
+      title: <span className="font-bold uppercase">{t('instructor.finalExam.finishConfirmTitle', 'Finish Exam')}</span>,
+      icon: <AlertTriangle className="text-yellow-500 w-6 h-6 mr-2" />,
+      content: (
+        <div className="text-neutral-600 mt-2">
+          <p>{t('instructor.finalExam.finishConfirmContent', 'Are you sure you want to finish the final exam for this class?')}</p>
+          <p className="font-bold mt-2 text-red-600 uppercase text-xs">
+            {t('instructor.finalExam.warning', 'Warning: This will calculate all scores and finalize the results. This action cannot be undone.')}
+          </p>
+        </div>
+      ),
+      okText: t('common.confirm', 'CONFIRM'),
+      cancelText: t('common.cancel', 'CANCEL'),
+      okButtonProps: { 
+        className: 'bg-black hover:!bg-neutral-800 border-none font-bold uppercase',
+        danger: true 
+      },
+      cancelButtonProps: {
+        className: 'font-bold uppercase border-2 border-neutral-300 hover:!border-black hover:!text-black'
+      },
+      onOk: async () => {
+        console.log(">>> [DEBUG] Modal confirmed. Starting API call...");
+        try {
+          setLoading(true);
+          await InstructorFEApi.finishClassExam(classId);
+          console.log(">>> [DEBUG] API Call Success.");
+          message.success(t('instructor.finalExam.finishSuccess', 'Final Exam concluded successfully!'));
+          
+          setTimeout(() => {
+              window.location.reload();
+          }, 1000);
+
+        } catch (error) {
+          console.error(">>> [DEBUG] Error in finishClassExam:", error);
+          message.error(t('instructor.finalExam.finishError', 'Failed to conclude exam.'));
+        } finally {
+          setLoading(false);
+        }
+      },
+    });
+  };
 
   if (!classId) {
     return (
@@ -59,24 +124,54 @@ export default function InstructorFinalExam() {
     },
   ];
 
+  const isExamCompleted = examStatus === 'Completed'; // [UPDATED] Check logic
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      {/* [FIX] Render the contextHolder to display the modal */}
+      {contextHolder}
+
       {/* Light Wire Header */}
       <div className="bg-black border-2 border-black p-6 mb-6">
         <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-yellow-400 border-2 border-black flex items-center justify-center">
-            <Trophy className="w-7 h-7 text-black" />
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          
+          {/* Title Section */}
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-yellow-400 border-2 border-black flex items-center justify-center shrink-0">
+              <Trophy className="w-7 h-7 text-black" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-white uppercase tracking-tight">{t('instructor.finalExam.title')}</h1>
+              <p className="text-yellow-400 text-sm mt-1 font-medium">{t('instructor.finalExam.subtitle')}</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-black text-white uppercase tracking-tight">{t('instructor.finalExam.title')}</h1>
-            <p className="text-yellow-400 text-sm mt-1 font-medium">{t('instructor.finalExam.subtitle')}</p>
-          </div>
+
+          {/* Action Button - [UPDATED] Logic for Completed status */}
+          <button
+            onClick={handleFinishExam}
+            disabled={loading || isExamCompleted}
+            className={`flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all 
+              ${isExamCompleted 
+                ? 'bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed' 
+                : 'bg-yellow-400 text-black border-white hover:bg-yellow-500 active:bg-yellow-600 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed'
+              }`}
+          >
+            {isExamCompleted ? <Lock className="w-5 h-5" /> : <CheckCircle className="w-5 h-5" />}
+            <span>
+              {loading 
+                ? 'Processing...' 
+                : isExamCompleted 
+                  ? 'Closed' 
+                  : t('instructor.finalExam.finishButton', 'Conclude Exam')}
+            </span>
+          </button>
+
         </div>
       </div>
 
       {/* Tabs Card */}
-      <div className="bg-white border-2 border-black overflow-hidden">
+      <div className="bg-white border-2 border-black overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)]">
         <div className="h-1 bg-yellow-400" />
         <Tabs
           activeKey={activeTab}

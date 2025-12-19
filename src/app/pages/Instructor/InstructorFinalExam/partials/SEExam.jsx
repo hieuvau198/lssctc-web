@@ -13,6 +13,7 @@ export default function SEExam({ classId }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [configs, setConfigs] = useState([]);
+  const [isExamCompleted, setIsExamCompleted] = useState(false); // [UPDATED]
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -29,6 +30,7 @@ export default function SEExam({ classId }) {
     try {
       const response = await InstructorFEApi.getClassConfig(classId);
       setConfigs(response.data?.partialConfigs?.filter(c => c.type === 'Simulation') || []);
+      setIsExamCompleted(response.data?.status === 'Completed'); // [UPDATED]
     } catch (error) {
       message.error('Failed to load SE config');
     } finally {
@@ -128,9 +130,14 @@ export default function SEExam({ classId }) {
             });
             setCreateModalOpen(true);
           }}
-          className="w-8 h-8 border-2 border-black bg-white hover:bg-yellow-400 flex items-center justify-center transition-all"
+          disabled={isExamCompleted} // [UPDATED]
+          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${
+            isExamCompleted
+            ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
+            : 'border-black bg-white hover:bg-yellow-400 text-black'
+          }`}
         >
-          <Edit3 className="w-4 h-4 text-black" />
+          <Edit3 className="w-4 h-4" />
         </button>
       ),
     },
@@ -205,7 +212,8 @@ export default function SEExam({ classId }) {
             View Detailed Results
           </button>
         </div>
-        {configs.length === 0 && (
+        {/* [UPDATED] */}
+        {configs.length === 0 && !isExamCompleted && (
           <button
             onClick={() => { setSelectedConfig(null); form.resetFields(); setCreateModalOpen(true); }}
             className="h-10 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
@@ -229,7 +237,7 @@ export default function SEExam({ classId }) {
         />
       </div>
 
-      {/* Create/Edit Modal */}
+      {/* Modals ... */}
       <Modal
         open={createModalOpen}
         onOk={handleSave}

@@ -67,6 +67,7 @@ export default function MyClassDetail() {
           progress: data.classProgress ?? 0,
           courseDurationHours: data.durationHours ?? 60,
           badge: "Professional",
+          backgroundImageUrl: data.backgroundImageUrl, // [UPDATED] Mapped background image
         });
       } catch (err) {
         console.error("Failed to fetch class detail:", err);
