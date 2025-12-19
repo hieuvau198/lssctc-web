@@ -205,11 +205,17 @@ export default function PracticeDetail() {
       })
       .catch((err) => {
         let errorMsg = t('simManager.practiceDetail.deleteFailed');
-        if (err.response?.data?.message) {
+
+        if (err.response?.data?.error?.details?.exceptionMessage) {
+          errorMsg = err.response.data.error.details.exceptionMessage;
+        } else if (err.response?.data?.error?.message) {
+          errorMsg = err.response.data.error.message;
+        } else if (err.response?.data?.message) {
           errorMsg = err.response.data.message;
         } else if (err.message) {
           errorMsg = err.message;
         }
+
         setError(errorMsg);
         setModalType("error");
         setShowDeleteConfirm(false);
@@ -901,12 +907,12 @@ export default function PracticeDetail() {
               {/* Difficulty */}
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${form.difficultyLevel === 'Entry' ? 'bg-green-200' :
-                    form.difficultyLevel === 'Intermediate' ? 'bg-yellow-200' :
-                      'bg-red-200'
+                  form.difficultyLevel === 'Intermediate' ? 'bg-yellow-200' :
+                    'bg-red-200'
                   }`}>
                   <Zap className={`h-5 w-5 ${form.difficultyLevel === 'Entry' ? 'text-green-700' :
-                      form.difficultyLevel === 'Intermediate' ? 'text-yellow-700' :
-                        'text-red-700'
+                    form.difficultyLevel === 'Intermediate' ? 'text-yellow-700' :
+                      'text-red-700'
                     }`} />
                 </div>
                 <div>
@@ -1427,10 +1433,10 @@ export default function PracticeDetail() {
                           key={task.id}
                           onClick={() => !isAlreadyAdded && setSelectedSystemTaskId(task.id)}
                           className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 ${isAlreadyAdded
-                              ? "bg-gray-100 border-gray-300 opacity-50 cursor-not-allowed"
-                              : isSelected
-                                ? "border-blue-500 bg-blue-50"
-                                : "border-gray-200 hover:border-blue-400 hover:bg-blue-50"
+                            ? "bg-gray-100 border-gray-300 opacity-50 cursor-not-allowed"
+                            : isSelected
+                              ? "border-blue-500 bg-blue-50"
+                              : "border-gray-200 hover:border-blue-400 hover:bg-blue-50"
                             }`}
                         >
                           <div className="flex items-start gap-3">
