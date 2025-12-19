@@ -49,13 +49,13 @@ export default function DrawerEdit({ visible = false, onClose = () => { }, userI
             };
 
             await updateUser(userId, payload);
-            message.success(t('admin.users.updateSuccess') || "Update success");
+            message.success(t('admin.users.messages.updateSuccess') || "Update success");
             form.resetFields();
             onUpdated();
             onClose();
         } catch (err) {
             console.error('Update user failed', err);
-            message.error(err?.response?.data?.message || err?.message || "Update failed");
+            message.error(err?.response?.data?.message || err?.message || t('admin.users.messages.updateFailed'));
         } finally {
             setLoading(false);
         }

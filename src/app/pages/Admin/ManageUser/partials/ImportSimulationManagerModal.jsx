@@ -48,6 +48,11 @@ const ImportSimulationManagerModal = ({ visible, onCancel, onSuccess }) => {
                         </div>
                     ),
                     width: 600,
+                    okType: 'default',
+                    okText: "OK",
+                    okButtonProps: {
+                        className: "!bg-yellow-400 !text-black !border-black hover:!bg-yellow-500 font-bold uppercase"
+                    },
                     onOk: () => {
                         setFileList([]);
                         onSuccess();
