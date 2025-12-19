@@ -41,6 +41,7 @@ export const updatePractice = (id, data, token) =>
 
 export const deletePractice = (id, token) =>
   apiClient.delete(`/Practices/${id}`, { headers: withAuth({}, token) }).then(res => {
+    if (res.status === 204) return true;
     if (res.data?.success && res.data?.data) return res.data.data;
     return res.data;
   });
