@@ -1,24 +1,38 @@
-import { Tabs, Empty, Modal, message } from 'antd';
-import { useState, useEffect } from 'react'; // [UPDATED] Added useEffect
+import { Collapse, Empty, Modal, message, Tooltip } from 'antd';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import TEExam from './partials/TEExam';
 import SEExam from './partials/SEExam';
 import PEExam from './partials/PEExam';
-import { FileText, Monitor, Award, Trophy, CheckCircle, AlertTriangle, Lock } from 'lucide-react'; // [UPDATED] Added Lock icon
+import { FileText, Monitor, Award, Trophy, CheckCircle, AlertTriangle, Lock, ChevronRight, Plus } from 'lucide-react';
 import InstructorFEApi from '../../../apis/Instructor/InstructorFEApi';
+
+const { Panel } = Collapse;
+
+// Panel Header Component (similar to SectionHeader in ClassSections)
+const ExamPanelHeader = ({ icon: Icon, title }) => (
+  <div className="flex justify-between items-center w-full">
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+        <Icon className="w-4 h-4 text-black" />
+      </div>
+      <span className="font-bold text-black uppercase tracking-tight">
+        {title}
+      </span>
+    </div>
+  </div>
+);
 
 export default function InstructorFinalExam() {
   const { t } = useTranslation();
   const { classId } = useParams();
-  const [activeTab, setActiveTab] = useState('te');
+  const [activeKeys, setActiveKeys] = useState(['te']);
   const [loading, setLoading] = useState(false);
-  const [examStatus, setExamStatus] = useState(null); // [UPDATED] State for exam status
+  const [examStatus, setExamStatus] = useState(null);
 
-  // [FIX] Use the useModal hook instead of the static method
   const [modal, contextHolder] = Modal.useModal();
 
-  // [UPDATED] Fetch status to determine if exam is closed
   useEffect(() => {
     const fetchStatus = async () => {
       if (!classId) return;
@@ -32,9 +46,7 @@ export default function InstructorFinalExam() {
     fetchStatus();
   }, [classId]);
 
-  // Handler for finishing the exam
-  const handleFinishExam = () => {    
-    // Use 'modal.confirm' (instance) instead of 'Modal.confirm' (static)
+  const handleFinishExam = () => {
     modal.confirm({
       title: <span className="font-bold uppercase">{t('instructor.finalExam.finishConfirmTitle', 'Finish Exam')}</span>,
       icon: <AlertTriangle className="text-yellow-500 w-6 h-6 mr-2" />,
@@ -48,27 +60,23 @@ export default function InstructorFinalExam() {
       ),
       okText: t('common.confirm', 'CONFIRM'),
       cancelText: t('common.cancel', 'CANCEL'),
-      okButtonProps: { 
+      okButtonProps: {
         className: 'bg-black hover:!bg-neutral-800 border-none font-bold uppercase',
-        danger: true 
+        danger: true
       },
       cancelButtonProps: {
         className: 'font-bold uppercase border-2 border-neutral-300 hover:!border-black hover:!text-black'
       },
       onOk: async () => {
-        console.log(">>> [DEBUG] Modal confirmed. Starting API call...");
         try {
           setLoading(true);
           await InstructorFEApi.finishClassExam(classId);
-          console.log(">>> [DEBUG] API Call Success.");
           message.success(t('instructor.finalExam.finishSuccess', 'Final Exam concluded successfully!'));
-          
           setTimeout(() => {
-              window.location.reload();
+            window.location.reload();
           }, 1000);
-
         } catch (error) {
-          console.error(">>> [DEBUG] Error in finishClassExam:", error);
+          console.error("Error in finishClassExam:", error);
           message.error(t('instructor.finalExam.finishError', 'Failed to conclude exam.'));
         } finally {
           setLoading(false);
@@ -91,51 +99,38 @@ export default function InstructorFinalExam() {
     );
   }
 
-  const tabItems = [
+  const isExamCompleted = examStatus === 'Completed';
+
+  const examPanels = [
     {
       key: 'te',
-      label: (
-        <span className="flex items-center gap-2 px-2 font-bold uppercase">
-          <FileText className="w-4 h-4" />
-          {t('instructor.finalExam.teTab')}
-        </span>
-      ),
-      children: <TEExam classId={classId} />,
+      icon: FileText,
+      title: t('instructor.finalExam.teTab'),
+      component: <TEExam classId={classId} />,
     },
     {
       key: 'se',
-      label: (
-        <span className="flex items-center gap-2 px-2 font-bold uppercase">
-          <Monitor className="w-4 h-4" />
-          {t('instructor.finalExam.seTab')}
-        </span>
-      ),
-      children: <SEExam classId={classId} />,
+      icon: Monitor,
+      title: t('instructor.finalExam.seTab'),
+      component: <SEExam classId={classId} />,
     },
     {
       key: 'pe',
-      label: (
-        <span className="flex items-center gap-2 px-2 font-bold uppercase">
-          <Award className="w-4 h-4" />
-          {t('instructor.finalExam.peTab')}
-        </span>
-      ),
-      children: <PEExam classId={classId} />,
+      icon: Award,
+      title: t('instructor.finalExam.peTab'),
+      component: <PEExam classId={classId} />,
     },
   ];
 
-  const isExamCompleted = examStatus === 'Completed'; // [UPDATED] Check logic
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
-      {/* [FIX] Render the contextHolder to display the modal */}
       {contextHolder}
 
       {/* Light Wire Header */}
       <div className="bg-black border-2 border-black p-6 mb-6">
         <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          
+
           {/* Title Section */}
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-yellow-400 border-2 border-black flex items-center justify-center shrink-0">
@@ -147,22 +142,22 @@ export default function InstructorFinalExam() {
             </div>
           </div>
 
-          {/* Action Button - [UPDATED] Logic for Completed status */}
+          {/* Action Button */}
           <button
             onClick={handleFinishExam}
             disabled={loading || isExamCompleted}
             className={`flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all 
-              ${isExamCompleted 
-                ? 'bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed' 
+              ${isExamCompleted
+                ? 'bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed'
                 : 'bg-yellow-400 text-black border-white hover:bg-yellow-500 active:bg-yellow-600 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed'
               }`}
           >
             {isExamCompleted ? <Lock className="w-5 h-5" /> : <CheckCircle className="w-5 h-5" />}
             <span>
-              {loading 
-                ? 'Processing...' 
-                : isExamCompleted 
-                  ? 'Closed' 
+              {loading
+                ? 'Processing...'
+                : isExamCompleted
+                  ? 'Closed'
                   : t('instructor.finalExam.finishButton', 'Conclude Exam')}
             </span>
           </button>
@@ -170,17 +165,36 @@ export default function InstructorFinalExam() {
         </div>
       </div>
 
-      {/* Tabs Card */}
+      {/* Collapse Card - Similar to Sections */}
       <div className="bg-white border-2 border-black overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)]">
         <div className="h-1 bg-yellow-400" />
-        <Tabs
-          activeKey={activeTab}
-          onChange={setActiveTab}
-          items={tabItems}
-          type="card"
-          size="large"
-          className="[&_.ant-tabs-nav]:bg-neutral-50 [&_.ant-tabs-nav]:border-b-2 [&_.ant-tabs-nav]:border-neutral-200 [&_.ant-tabs-tab]:border-2 [&_.ant-tabs-tab]:border-neutral-300 [&_.ant-tabs-tab-active]:border-black [&_.ant-tabs-tab-active]:bg-yellow-400 [&_.ant-tabs-tab-active]:text-black"
-        />
+        <div className="p-6 space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto">
+          <Collapse
+            activeKey={activeKeys}
+            onChange={(keys) => setActiveKeys(keys)}
+            bordered={false}
+            className="bg-transparent"
+            expandIconPosition="end"
+            expandIcon={({ isActive }) => (
+              <ChevronRight className={`w-5 h-5 text-neutral-500 transition-transform ${isActive ? 'rotate-90' : ''}`} />
+            )}
+          >
+            {examPanels.map((panel) => (
+              <Panel
+                key={panel.key}
+                header={
+                  <ExamPanelHeader
+                    icon={panel.icon}
+                    title={panel.title}
+                  />
+                }
+                className="mb-3 overflow-hidden border-2 border-neutral-200 hover:border-yellow-400 transition-all bg-white [&>.ant-collapse-header]:bg-neutral-50 [&>.ant-collapse-header]:border-b-2 [&>.ant-collapse-header]:border-neutral-200"
+              >
+                {panel.component}
+              </Panel>
+            ))}
+          </Collapse>
+        </div>
       </div>
     </div>
   );
