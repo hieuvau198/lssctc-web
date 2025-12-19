@@ -1,4 +1,4 @@
-import { Skeleton, Table } from 'antd';
+import { Skeleton, Table, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -23,13 +23,14 @@ export default function TraineeAttendance({ classId: classIdProp }) {
             try {
                 const res = await TimeSlotApi.getMyClassAttendance(classId);
                 if (cancelled) return;
-                // res is expected to be an array of timeslot attendance records
+                
                 const mapped = (res || []).map(item => {
                     const start = item.startTime ? new Date(item.startTime) : null;
                     const end = item.endTime ? new Date(item.endTime) : null;
                     const dateOnly = start ? start.toLocaleDateString('vi-VN') : '';
                     const startTime = start ? start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
                     const endTime = end ? end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                    
                     return {
                         key: item.timeslotId ?? `${item.timeslotId}_${item.startTime}`,
                         slotId: item.timeslotId,
@@ -37,8 +38,8 @@ export default function TraineeAttendance({ classId: classIdProp }) {
                         timeRange: startTime || endTime ? `${startTime}${endTime ? ' - ' + endTime : ''}` : '',
                         date: dateOnly,
                         room: item.location || '-',
-                        attendanceRecorded: String(item.attendanceStatus || '').toLowerCase() === 'present',
-                        scheduleStatus: item.attendanceStatus || '',
+                        // Default to NotStarted if no status provided
+                        scheduleStatus: item.attendanceStatus || 'NotStarted', 
                         note: item.note || '',
                     };
                 });
@@ -52,6 +53,16 @@ export default function TraineeAttendance({ classId: classIdProp }) {
         fetchMyAttendance();
         return () => { cancelled = true; };
     }, [classId]);
+
+    const getStatusColor = (status) => {
+        const s = (status || '').toLowerCase();
+        if (s === 'present') return 'success';
+        if (s === 'absent') return 'error';
+        if (s === 'cancelled') return 'default';
+        if (s === 'ongoing') return 'processing';
+        if (s === 'completed') return 'blue';
+        return 'default'; // NotStarted and others
+    };
 
     const columns = [
         {
@@ -85,14 +96,18 @@ export default function TraineeAttendance({ classId: classIdProp }) {
             dataIndex: 'scheduleStatus',
             key: 'scheduleStatus',
             width: 160,
-            render: (status, record) => (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${record.attendanceRecorded
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-red-100 text-red-700'
-                    }`}>
-                    {status}
-                </span>
-            ),
+            render: (status) => {
+                // Try to find translation in AttendanceStatus first, then TimeslotStatus, then fallback to raw
+                const translated = t(`common.attendanceStatus.${status}`, {
+                    defaultValue: t(`common.timeslotStatus.${status}`, { defaultValue: status })
+                });
+                
+                return (
+                    <Tag color={getStatusColor(status)} className="px-3 py-1 rounded-full text-xs font-semibold border-0">
+                        {translated}
+                    </Tag>
+                );
+            },
         },
     ];
 
@@ -124,4 +139,3 @@ export default function TraineeAttendance({ classId: classIdProp }) {
         </div>
     );
 }
-

@@ -88,6 +88,18 @@
       "Completed": "Completed",
       "Open": "Open",
       "Cancelled": "Cancelled"
+    },
+    "timeslotStatus": {
+      "NotStarted": "Not Started",
+      "Ongoing": "Ongoing",
+      "Completed": "Completed",
+      "Cancelled": "Cancelled"
+    },
+    "attendanceStatus": {
+      "NotStarted": "Not Started",
+      "Present": "Present",
+      "Absent": "Absent",
+      "Cancelled": "Cancelled"
     }
   },
   "class": {

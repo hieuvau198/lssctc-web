@@ -82,13 +82,25 @@
       "showTotal": "{{start}}-{{end}} của {{total}}"
     },
     "classStatus": {
-      "Draft": "Bản nháp",
+      "Draft": "Chưa Mở",
       "Open": "Mở",
       "Published": "Đã Công khai",
       "InProgress": "Đang diễn ra",
       "Inprogress": "Đang diễn ra",
       "Completed": "Đã hoàn thành",
       "Cancelled": "Đã hủy"
+    },
+    "timeslotStatus": {
+      "NotStarted": "Chưa bắt đầu",
+      "Ongoing": "Đang học",
+      "Completed": "Đã kết thúc",
+      "Cancelled": "Hủy"
+    },
+    "attendanceStatus": {
+      "NotStarted": "Chưa bắt đầu",
+      "Present": "Đã có mặt",
+      "Absent": "Vắng",
+      "Cancelled": "Hủy"
     }
   },
   "class": {
@@ -186,8 +198,8 @@
     "correctAnswers": "Số câu đúng",
     "incorrectAnswers": "Số câu sai",
     "status": "Trạng thái",
-    "passed": "ĐẠT",
-    "notPassed": "CHƯA ĐẠT",
+    "passed": "Đạt",
+    "notPassed": "Không đạt",
     "tryAgain": "Thử lại",
     "invalidId": "ID bài thi không hợp lệ",
     "notFound": "Không tìm thấy bài thi",
@@ -803,18 +815,18 @@
       "marks": "Điểm",
       "timeRange": "Khung Thời Gian",
       "action": "Hành động",
-      "statusApproved": "Đã Duyệt",
+      "statusApproved": "Đã Duyệt Kết Quả",
       "statusRejected": "Từ Chối",
       "statusPending": "Chờ Duyệt",
       "statusNotYet": "Chưa Làm",
-      "submitted": "Đã Nộp",
+      "submitted": "Đã Làm",
       "checklists": "Danh Sách Kiểm Tra",
       "checklistName": "Tên Kiểm Tra",
       "result": "Kết Quả",
       "quiz": "Bài Kiểm Tra",
       "practice": "Thực Hành",
       "completedAt": "Hoàn Thành Lúc",
-      "examCompleted": "Đã Hoàn Thành Bài Thi"
+      "examCompleted": "Hoàn Thành"
     },
     "quizHeader": {
       "questionOf": "Câu hỏi {{current}} / {{total}}",

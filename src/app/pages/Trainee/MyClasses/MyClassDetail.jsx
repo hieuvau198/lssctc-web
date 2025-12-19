@@ -16,7 +16,6 @@ import QuickStats from "./partials/QuickStats";
 import TabNavigation from "./partials/TabNavigation";
 import CourseCurriculum from "./partials/CourseCurriculum";
 import InstructorCard from "./partials/InstructorCard";
-import ProgressCard from "./partials/ProgressCard";
 import FinalExamTab from "./partials/FinalExamTab";
 import TraineeAttendance from "./partials/TraineeAttendance";
 import TraineeClassSchedule from "./partials/TraineeClassSchedule";
@@ -193,13 +192,7 @@ export default function MyClassDetail() {
               {/* Sidebar - 1/3 width */}
               <div className="space-y-6">
                 <InstructorCard instructor={instructor} />
-                <ProgressCard
-                  progress={classData.progress}
-                  completedSections={completedSections}
-                  totalSections={sections.length}
-                  completedActivities={completedActivities}
-                  totalActivities={totalActivities}
-                />
+                
               </div>
             </div>
           )}
