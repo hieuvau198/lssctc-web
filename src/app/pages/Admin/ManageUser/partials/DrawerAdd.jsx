@@ -40,14 +40,14 @@ export default function DrawerAdd({ visible = false, onClose = () => { }, role =
                 created = await createSimulationManager(payload);
             }
 
-            message.success(t('admin.users.createSuccess'));
+            message.success(t('admin.users.messages.createSuccess'));
             form.resetFields();
             setAvatarPreview(null);
             onCreated(created);
             onClose();
         } catch (err) {
             console.error('Create user failed', err);
-            let errorMsg = t('admin.users.createFailed');
+            let errorMsg = t('admin.users.messages.createFailed');
             if (err?.response?.data?.message) {
                 errorMsg = err.response.data.message;
             } else if (err?.response?.data?.title) {
