@@ -184,9 +184,9 @@ export default function BrandModel() {
               <Truck className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+              <span className="text-2xl font-black text-white uppercase tracking-tight">
                 {t('simManager.brandModel.title')}
-              </h1>
+              </span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {t('simManager.brandModel.subtitle', 'Manage crane brands and models')}
               </p>

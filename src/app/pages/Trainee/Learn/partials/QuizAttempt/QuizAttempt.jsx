@@ -25,8 +25,8 @@ const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange, tota
       <div className="px-6 py-4 border-b-2 border-neutral-200 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className={`w-10 h-10 flex items-center justify-center text-sm font-black ${isAnswered
-              ? 'bg-yellow-400 text-black'
-              : 'bg-neutral-200 text-neutral-600'
+            ? 'bg-yellow-400 text-black'
+            : 'bg-neutral-200 text-neutral-600'
             }`}>
             {questionIndex + 1}
           </div>
@@ -58,8 +58,8 @@ const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange, tota
                 <div
                   key={opt.id}
                   className={`p-4 border-2 transition-all cursor-pointer ${currentValue.includes(opt.id)
-                      ? 'border-yellow-400 bg-yellow-50'
-                      : 'border-neutral-200 hover:border-yellow-400'
+                    ? 'border-yellow-400 bg-yellow-50'
+                    : 'border-neutral-200 hover:border-yellow-400'
                     }`}
                 >
                   <Checkbox value={opt.id} className="w-full">
@@ -80,8 +80,8 @@ const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange, tota
                 <div
                   key={opt.id}
                   className={`p-4 border-2 transition-all cursor-pointer ${currentValue[0] === opt.id
-                      ? 'border-yellow-400 bg-yellow-50'
-                      : 'border-neutral-200 hover:border-yellow-400'
+                    ? 'border-yellow-400 bg-yellow-50'
+                    : 'border-neutral-200 hover:border-yellow-400'
                     }`}
                 >
                   <Radio value={opt.id} className="w-full">
@@ -187,10 +187,10 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
             <div className="flex items-center gap-4">
               {/* Timer */}
               <div className={`flex items-center gap-2 px-4 py-2 font-mono text-lg font-black border-2 ${isCriticalTime
-                  ? 'border-red-500 bg-red-50 text-red-600 animate-pulse'
-                  : isLowTime
-                    ? 'border-yellow-400 bg-yellow-50 text-yellow-700'
-                    : 'border-neutral-900 bg-white text-neutral-900'
+                ? 'border-red-500 bg-red-50 text-red-600 animate-pulse'
+                : isLowTime
+                  ? 'border-yellow-400 bg-yellow-50 text-yellow-700'
+                  : 'border-neutral-900 bg-white text-neutral-900'
                 }`}>
                 <Clock className="w-5 h-5" />
                 {formatTime(timeLeft)}
@@ -200,7 +200,7 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
               <button
                 onClick={() => handleSubmit(false)}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-black hover:text-yellow-400 transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
                 Submit
@@ -251,7 +251,7 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
           <button
             onClick={() => handleSubmit(false)}
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-black hover:text-yellow-400 transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
             Submit Quiz

@@ -66,7 +66,7 @@ const PracticeTable = ({
       width: 130,
       align: 'center',
       render: (v) => (
-        <span className="font-bold">{v} <span className="text-neutral-500 font-normal">min</span></span>
+        <span className="font-bold">{v}</span>
       ),
     },
     {
@@ -226,7 +226,7 @@ const PracticeTable = ({
           dataSource={data}
           rowKey="id"
           pagination={false}
-          scroll={{ y: 400 }}
+          scroll={{ y: 370 }}
           size="middle"
           loading={loading}
         />

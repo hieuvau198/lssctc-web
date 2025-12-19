@@ -184,7 +184,7 @@ export default function TaskPractice() {
     }
 
     return (
-        <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
+        <div className="h-[calc(100vh-64px)] flex flex-col">
             {/* Header - Industrial Theme */}
             <div className="flex-none bg-black border-2 border-black p-5 mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
                 <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
@@ -194,9 +194,9 @@ export default function TaskPractice() {
                             <Sliders className="w-6 h-6 text-black" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+                            <span className="text-2xl font-black text-white uppercase tracking-tight">
                                 {t('simManager.tasks.title')}
-                            </h1>
+                            </span>
                             <p className="text-yellow-400 text-sm mt-1 font-medium">
                                 {t('simManager.tasks.pagination', { start: (pageNumber - 1) * pageSize + 1, end: Math.min(pageNumber * pageSize, total), total })}
                             </p>
@@ -216,7 +216,7 @@ export default function TaskPractice() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col">
                 {tasks.length === 0 ? (
                     <div className="bg-white border-2 border-black p-12 flex-1 flex flex-col items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] relative">
                         <div className="h-1 bg-yellow-400 w-full absolute top-0 left-0" />

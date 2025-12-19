@@ -65,6 +65,13 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
             {t('trainee.finalExam.statusNotYet', 'Not Yet')}
           </span>
         );
+      case 'Submitted':
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 font-bold text-xs uppercase tracking-wider border-2 border-green-700">
+            <Clock className="w-3 h-3" />
+            {t('trainee.finalExam.submitted', 'Submitted')}
+          </span>
+        );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-neutral-500 font-bold text-xs uppercase tracking-wider border-2 border-neutral-300">
@@ -133,7 +140,7 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
                     </div>
                   ) : (
                     <div className="text-neutral-400 italic font-medium">
-                       -- / --
+                      -- / --
                     </div>
                   )}
 
@@ -255,7 +262,7 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
                     </div>
                   ) : (
                     <div className="text-neutral-400 italic font-medium">
-                       -- / --
+                      -- / --
                     </div>
                   )}
                 </div>

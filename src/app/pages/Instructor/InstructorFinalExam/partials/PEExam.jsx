@@ -233,15 +233,15 @@ export default function PEExam({ classId }) {
     },
     {
       title: <span className="uppercase font-black text-xs">Result</span>,
-      width: '10%',
+      width: 100,
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Practical');
         if (!p) return '-';
 
-        if (p.status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">Not Yet</span>;
+        if (p.status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase whitespace-nowrap">Not Yet</span>;
 
-        if (p.isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase">PASS</span>;
-        if (p.isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase">FAIL</span>;
+        if (p.isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase whitespace-nowrap">PASS</span>;
+        if (p.isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase whitespace-nowrap">FAIL</span>;
         return '-';
       }
     },
