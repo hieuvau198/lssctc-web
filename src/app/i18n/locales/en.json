@@ -915,7 +915,14 @@
       "time": "Time",
       "legend": "Legend",
       "noClass": "No class",
-      "clickToView": "Click to view details"
+      "noSchedule": "No schedule available",
+      "clickToView": "Click to view details",
+      "status": {
+        "notStarted": "Not Started",
+        "ongoing": "Ongoing",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      }
     },
     "dashboard": {
       "title": "Instructor Dashboard",

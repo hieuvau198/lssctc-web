@@ -187,24 +187,16 @@ export default function SEExam({ classId }) {
   ];
 
   return (
-    <div className="py-6">
-      {/* Header */}
-      <div className="mb-6 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
-              <Monitor className="w-5 h-5 text-black" />
-            </div>
-            <h2 className="text-xl font-black uppercase tracking-tight m-0">{t('instructor.finalExam.seTitle')}</h2>
-          </div>
-          <button
-            onClick={() => navigate(`/instructor/classes/${classId}/final-exam/se-results`)}
-            className="h-10 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
-          >
-            <ExternalLink className="w-4 h-4" />
-            View Detailed Results
-          </button>
-        </div>
+    <div className="py-4">
+      {/* Action Buttons */}
+      <div className="mb-4 flex justify-between items-center">
+        <button
+          onClick={() => navigate(`/instructor/classes/${classId}/final-exam/se-results`)}
+          className="h-10 px-4 flex items-center gap-2 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-all"
+        >
+          <ExternalLink className="w-4 h-4" />
+          View Detailed Results
+        </button>
         {configs.length === 0 && (
           <button
             onClick={() => { setSelectedConfig(null); form.resetFields(); setCreateModalOpen(true); }}
@@ -229,37 +221,81 @@ export default function SEExam({ classId }) {
         />
       </div>
 
-      {/* Create/Edit Modal */}
+      {/* Create/Edit Modal - Industrial Theme */}
       <Modal
         open={createModalOpen}
-        onOk={handleSave}
         onCancel={() => setCreateModalOpen(false)}
         title={
-          <div className="flex items-center gap-2 font-black uppercase">
-            <Monitor className="w-5 h-5" />
-            Configure Simulation Exam
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <Monitor className="w-4 h-4 text-black" />
+            </div>
+            <span className="font-black uppercase tracking-tight">
+              Configure Simulation Exam
+            </span>
           </div>
         }
-        okText="Save"
-        okButtonProps={{ className: 'bg-yellow-400 text-black font-bold uppercase border-2 border-black hover:bg-yellow-500' }}
+        footer={
+          <div className="flex justify-end gap-3 pt-4 border-t-2 border-neutral-200">
+            <button
+              onClick={() => setCreateModalOpen(false)}
+              className="px-6 py-2.5 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-6 py-2.5 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-colors"
+            >
+              Save
+            </button>
+          </div>
+        }
+        className="[&_.ant-modal-header]:border-b-4 [&_.ant-modal-header]:border-yellow-400 [&_.ant-modal-header]:pb-4"
       >
-        <Form form={form} layout="vertical">
-          <Form.Item name="practiceId" label={<span className="font-bold uppercase text-xs">Select Practice</span>} rules={[{ required: true }]}>
+        <Form form={form} layout="vertical" className="pt-4">
+          <Form.Item
+            name="practiceId"
+            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Select Practice</span>}
+            rules={[{ required: true, message: 'Please select a practice' }]}
+          >
             <Select
               options={practices.map(p => ({ label: p.practiceName, value: p.id }))}
               placeholder="Choose a practice"
+              className="[&_.ant-select-selector]:!border-2 [&_.ant-select-selector]:!border-neutral-300 [&_.ant-select-selector]:!h-11 [&_.ant-select-selector]:hover:!border-black [&_.ant-select-focused_.ant-select-selector]:!border-black [&_.ant-select-focused_.ant-select-selector]:!shadow-none"
             />
           </Form.Item>
           <div className="grid grid-cols-2 gap-4">
-            <Form.Item name="duration" label={<span className="font-bold uppercase text-xs">Duration (minutes)</span>} rules={[{ required: true }]}>
-              <InputNumber min={1} className="w-full" />
+            <Form.Item
+              name="duration"
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Duration (minutes)</span>}
+              rules={[{ required: true, message: 'Required' }]}
+            >
+              <InputNumber
+                min={1}
+                className="!w-full [&_.ant-input-number-input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-black focus-within:!shadow-none"
+              />
             </Form.Item>
-            <Form.Item name="examWeight" label={<span className="font-bold uppercase text-xs">Weight (%)</span>} rules={[{ required: true }]}>
-              <InputNumber min={0} max={100} className="w-full" />
+            <Form.Item
+              name="examWeight"
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Weight (%)</span>}
+              rules={[{ required: true, message: 'Required' }]}
+            >
+              <InputNumber
+                min={0}
+                max={100}
+                className="!w-full [&_.ant-input-number-input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-black focus-within:!shadow-none"
+              />
             </Form.Item>
           </div>
-          <Form.Item name="timeRange" label={<span className="font-bold uppercase text-xs">Time Range</span>}>
-            <DatePicker.RangePicker showTime className="w-full" />
+          <Form.Item
+            name="timeRange"
+            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Time Range</span>}
+          >
+            <DatePicker.RangePicker
+              showTime
+              className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-black focus-within:!shadow-none"
+            />
           </Form.Item>
         </Form>
       </Modal>
