@@ -200,8 +200,8 @@ export default function TEExam({ classId }) {
 
         return (
           <div className="flex items-center gap-2">
-            <span className="font-mono font-black text-yellow-600">{record.examCode || '-'}</span>
-            {!record.examCode && (
+            <span className="font-mono font-black text-yellow-600">{partial.examCode || '-'}</span>
+            {!partial.examCode && (
               <button
                 onClick={() => onGenerateCode(record.id)}
                 className="px-2 py-1 bg-black text-yellow-400 font-bold uppercase text-xs border-2 border-black hover:bg-yellow-400 hover:text-black flex items-center gap-1 transition-all"
