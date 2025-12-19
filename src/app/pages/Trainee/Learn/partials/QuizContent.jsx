@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { message } from 'antd';
 import QuizAttempt from './QuizAttempt/QuizAttempt';
 import QuizAttemptsHistory from './QuizAttemptsHistory'; 
 import { getQuizAttempts } from '../../../../apis/Trainee/TraineeQuizApi'; 
@@ -290,6 +291,13 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
             fetchHistory(); // Refresh history immediately
         } catch (error) {
             console.error('Submission failed in QuizContent:', error);
+            const errorMsg = error.response?.data?.message || t('trainee.quizContent.submitError', 'Submission failed');
+            message.error(errorMsg);
+            
+            // Force return to result screen even if submission fails (e.g. limit reached)
+            setQuizState('result');
+            if (onReload) onReload();
+            fetchHistory();
         } finally {
             setIsSubmitting(false);
         }
