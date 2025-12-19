@@ -107,7 +107,7 @@ const Program = () => {
         <div className="relative max-w-7xl mx-auto px-6">
           <PageNav
             nameMap={{ program: t('trainee.programs.title') }}
-            className="mb-6 [&_a]:text-white/80 [&_a:hover]:text-yellow-400 [&_span]:text-white [&_svg]:text-white/60"
+            className="mb-4 [&_a]:text-white/80 [&_a:hover]:text-yellow-400 [&_span]:text-white [&_svg]:text-white/60"
           />
 
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
@@ -123,11 +123,11 @@ const Program = () => {
                 </span>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black uppercase tracking-tight mb-6 text-white drop-shadow-xl" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)' }}>
+              <h1 className="text-5xl lg:text-6xl font-black uppercase tracking-tight mb-5 text-white drop-shadow-xl" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)' }}>
                 {t('trainee.programs.title')}
               </h1>
 
-              <p className="text-xl text-white max-w-xl mb-8 leading-relaxed font-medium drop-shadow-lg" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+              <p className="text-xl text-white max-w-xl mb-6 leading-relaxed font-medium drop-shadow-lg" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
                 Khám phá các chương trình đào tạo toàn diện về vận hành cần cẩu, an toàn lao động và kỹ năng logistics chuyên nghiệp.
               </p>
             </div>
@@ -155,6 +155,7 @@ const Program = () => {
                         }
                       }}
                       className="w-full px-4 py-3.5 bg-neutral-50 border-2 border-neutral-900 focus:outline-none focus:border-yellow-400 transition-all duration-300 text-neutral-900 placeholder-neutral-400"
+                      style={{ color: '#000' }}
                     />
                   </div>
                   <button
@@ -172,14 +173,14 @@ const Program = () => {
       </section>
 
       {/* Content Area */}
-      <section className="py-16 bg-neutral-50 border-y border-neutral-200">
+      <section className="py-6 bg-neutral-50 border-y border-neutral-200">
         <div className="max-w-7xl mx-auto px-6">
           {/* Section Header */}
-          <div className="mb-10">
+          <div className="mb-6">
             <span className="text-sm tracking-widest text-neutral-500 uppercase font-bold block mb-2">
               Danh sách
             </span>
-            <h2 className="text-4xl font-black uppercase tracking-tight mb-2">
+            <h2 className="text-4xl font-black uppercase tracking-tight mb-1">
               Tất cả chương trình
             </h2>
             <div className="h-1 w-24 bg-yellow-400" />

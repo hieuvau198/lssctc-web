@@ -73,21 +73,13 @@ export default function CourseDetail() {
       {/* Hero Section - Industrial Style */}
       <section className="relative bg-black text-white py-12 overflow-hidden">
         <div className="absolute inset-0">
-          {data.imageUrl ? (
-            <img
-              src={data.imageUrl}
-              alt={data.name}
-              className="w-full h-full object-cover opacity-40"
-            />
-          ) : (
-            <img
-              src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=2070&auto=format&fit=crop"
-              alt=""
-              className="w-full h-full object-cover opacity-40"
-            />
-          )}
+          <img
+            src={data.backgroundImageUrl || data.imageUrl || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=2070&auto=format&fit=crop"}
+            alt={data.name}
+            className="w-full h-full object-cover"
+          />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/50" />
+        <div className="absolute inset-0 bg-black/60" />
 
         <div className="relative max-w-7xl mx-auto px-6">
           <PageNav
@@ -123,16 +115,16 @@ export default function CourseDetail() {
                     {data.durationHours} {t('trainee.courseDetail.hours')}
                   </span>
                 )}
-                {data.levelName && (
+                {(data.level || data.levelName) && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-sm text-sm text-white font-semibold uppercase tracking-wider">
                     <BookOpen className="w-4 h-4 text-yellow-400" />
-                    {data.levelName}
+                    {data.level || data.levelName}
                   </span>
                 )}
-                {data.categoryName && (
+                {(data.category || data.categoryName) && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black text-sm font-bold uppercase tracking-wider">
                     <FolderOpen className="w-4 h-4" />
-                    {data.categoryName}
+                    {data.category || data.categoryName}
                   </span>
                 )}
                 {data.price != null && (
