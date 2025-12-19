@@ -277,10 +277,16 @@ export default function PEExam({ classId }) {
   ];
 
   return (
-    <div className="py-4">
-      {/* Action Button */}
-      {configs.length === 0 && (
-        <div className="mb-4 flex justify-end">
+    <div className="py-6">
+      {/* Header */}
+      <div className="mb-6 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
+            <Award className="w-5 h-5 text-black" />
+          </div>
+          <h2 className="text-xl font-black uppercase tracking-tight m-0">{t('instructor.finalExam.peTitle')}</h2>
+        </div>
+        {configs.length === 0 && (
           <button
             onClick={() => handleOpenConfig(null)}
             className="h-10 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
@@ -288,8 +294,8 @@ export default function PEExam({ classId }) {
             <Plus className="w-4 h-4" />
             {t('instructor.finalExam.createExam')}
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Config Table */}
       <div className="bg-white border-2 border-black">
@@ -304,122 +310,70 @@ export default function PEExam({ classId }) {
         />
       </div>
 
-      {/* --- Create/Edit Configuration Modal - Industrial Theme --- */}
+      {/* --- Create/Edit Configuration Modal --- */}
       <Modal
         open={createModalOpen}
+        onOk={handleSaveConfig}
         onCancel={() => setCreateModalOpen(false)}
         title={
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
-              <ClipboardList className="w-4 h-4 text-black" />
-            </div>
-            <span className="font-black uppercase tracking-tight">
-              Configure Practical Exam
-            </span>
+          <div className="flex items-center gap-2 font-black uppercase">
+            <ClipboardList className="w-5 h-5" />
+            Configure Practical Exam
           </div>
         }
         width={700}
-        footer={
-          <div className="flex justify-end gap-3 pt-4 border-t-2 border-neutral-200">
-            <button
-              onClick={() => setCreateModalOpen(false)}
-              className="px-6 py-2.5 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSaveConfig}
-              className="px-6 py-2.5 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-colors"
-            >
-              Save Configuration
-            </button>
-          </div>
-        }
-        className="[&_.ant-modal-header]:border-b-4 [&_.ant-modal-header]:border-yellow-400 [&_.ant-modal-header]:pb-4"
+        okText="Save Configuration"
+        okButtonProps={{ className: 'bg-yellow-400 text-black font-bold uppercase border-2 border-black hover:bg-yellow-500' }}
       >
-        <Form form={form} layout="vertical" className="pt-4">
+        <Form form={form} layout="vertical">
           <div className="grid grid-cols-2 gap-4">
-            <Form.Item
-              name="duration"
-              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Duration (minutes)</span>}
-              rules={[{ required: true, message: 'Required' }]}
-            >
-              <InputNumber
-                min={1}
-                className="!w-full [&_.ant-input-number-input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-black focus-within:!shadow-none"
-              />
+            <Form.Item name="duration" label={<span className="font-bold uppercase text-xs">Duration (minutes)</span>} rules={[{ required: true }]}>
+              <InputNumber min={1} className="w-full" />
             </Form.Item>
-            <Form.Item
-              name="examWeight"
-              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Weight (%)</span>}
-              rules={[{ required: true, message: 'Required' }]}
-            >
-              <InputNumber
-                min={0}
-                max={100}
-                className="!w-full [&_.ant-input-number-input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-black focus-within:!shadow-none"
-              />
+            <Form.Item name="examWeight" label={<span className="font-bold uppercase text-xs">Weight (%)</span>} rules={[{ required: true }]}>
+              <InputNumber min={0} max={100} className="w-full" />
             </Form.Item>
           </div>
-          <Form.Item
-            name="timeRange"
-            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Valid Time Range</span>}
-          >
-            <DatePicker.RangePicker
-              showTime
-              className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-black focus-within:!shadow-none"
-            />
+          <Form.Item name="timeRange" label={<span className="font-bold uppercase text-xs">Valid Time Range</span>}>
+            <DatePicker.RangePicker showTime className="w-full" />
           </Form.Item>
 
-          {/* Checklist Section with Industrial Divider */}
-          <div className="mt-6 mb-4">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-0.5 flex-1 bg-neutral-200"></div>
-              <span className="font-bold uppercase text-xs tracking-wider text-neutral-600 px-2">Checklist Template</span>
-              <div className="h-0.5 flex-1 bg-neutral-200"></div>
-            </div>
-          </div>
+          <Divider orientation="left" className="font-bold uppercase text-sm">Checklist Template</Divider>
 
           <Form.List name="checklistConfig">
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ key, name, ...restField }) => (
-                  <div key={key} className="flex gap-2 items-start mb-3">
+                  <div key={key} className="flex gap-2 items-start mb-2">
                     <Form.Item
                       {...restField}
                       name={[name, 'name']}
                       rules={[{ required: true, message: 'Required' }]}
                       className="flex-1 mb-0"
                     >
-                      <Input
-                        placeholder="Criteria Name (e.g. Safety Check)"
-                        className="!h-10 !border-2 !border-neutral-300 hover:!border-black focus:!border-black focus:!shadow-none"
-                      />
+                      <Input placeholder="Criteria Name (e.g. Safety Check)" className="border-2 border-neutral-300 focus:border-yellow-400" />
                     </Form.Item>
                     <Form.Item
                       {...restField}
                       name={[name, 'description']}
                       className="flex-1 mb-0"
                     >
-                      <Input
-                        placeholder="Description (Optional)"
-                        className="!h-10 !border-2 !border-neutral-300 hover:!border-black focus:!border-black focus:!shadow-none"
-                      />
+                      <Input placeholder="Description (Optional)" className="border-2 border-neutral-300 focus:border-yellow-400" />
                     </Form.Item>
                     <button
                       type="button"
                       onClick={() => remove(name)}
-                      className="mt-0.5 w-10 h-10 bg-white text-red-600 border-2 border-red-300 hover:bg-red-500 hover:text-white hover:border-red-500 flex items-center justify-center transition-all"
+                      className="mt-1 w-8 h-8 bg-red-100 text-red-600 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all"
                     >
                       <MinusCircle className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
-                <Form.Item className="mb-0">
+                <Form.Item>
                   <button
                     type="button"
                     onClick={() => add()}
-                    className="w-full py-2.5 border-2 border-dashed border-neutral-400 text-neutral-600 font-bold uppercase text-sm hover:border-yellow-400 hover:text-black hover:bg-yellow-50 flex items-center justify-center gap-2 transition-all"
+                    className="w-full py-2 border-2 border-dashed border-neutral-400 text-neutral-600 font-bold uppercase text-sm hover:border-yellow-400 hover:text-yellow-600 flex items-center justify-center gap-2 transition-all"
                   >
                     <Plus className="w-4 h-4" />
                     Add Criteria

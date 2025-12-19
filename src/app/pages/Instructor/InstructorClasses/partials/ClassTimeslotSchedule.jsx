@@ -176,10 +176,10 @@ export default function ClassTimeslotSchedule({ classId, className }) {
     // Status styling for Light Wire theme
     const getStatusStyle = (status) => {
         const statusMap = {
-            'NotStarted': { bg: 'bg-neutral-100', text: 'text-neutral-600', border: 'border-neutral-300', label: t('instructor.schedule.status.notStarted') || 'Not Started' },
-            'Ongoing': { bg: 'bg-yellow-400', text: 'text-black', border: 'border-black', label: t('instructor.schedule.status.ongoing') || 'Ongoing' },
-            'Completed': { bg: 'bg-black', text: 'text-yellow-400', border: 'border-black', label: t('instructor.schedule.status.completed') || 'Completed' },
-            'Cancelled': { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-400', label: t('instructor.schedule.status.cancelled') || 'Cancelled' },
+            'NotStarted': { bg: 'bg-neutral-100', text: 'text-neutral-600', border: 'border-neutral-300', label: 'Chưa bắt đầu' },
+            'Ongoing': { bg: 'bg-yellow-400', text: 'text-black', border: 'border-black', label: 'Đang diễn ra' },
+            'Completed': { bg: 'bg-black', text: 'text-yellow-400', border: 'border-black', label: 'Hoàn thành' },
+            'Cancelled': { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-400', label: 'Đã hủy' },
         };
         return statusMap[status] || { bg: 'bg-neutral-100', text: 'text-neutral-600', border: 'border-neutral-300', label: status || '-' };
     };
@@ -378,10 +378,10 @@ export default function ClassTimeslotSchedule({ classId, className }) {
             {/* Status Legend */}
             <div className="p-4 border-b-2 border-neutral-100 flex flex-wrap gap-3 items-center bg-neutral-50">
                 <span className="text-sm text-neutral-600 font-bold uppercase">{t('instructor.schedule.legend') || 'Legend'}:</span>
-                <span className="px-2 py-1 text-xs font-bold uppercase bg-neutral-100 text-neutral-600 border border-neutral-300">{t('instructor.schedule.status.notStarted') || 'Not Started'}</span>
-                <span className="px-2 py-1 text-xs font-bold uppercase bg-yellow-400 text-black border border-black">{t('instructor.schedule.status.ongoing') || 'Ongoing'}</span>
-                <span className="px-2 py-1 text-xs font-bold uppercase bg-black text-yellow-400 border border-black">{t('instructor.schedule.status.completed') || 'Completed'}</span>
-                <span className="px-2 py-1 text-xs font-bold uppercase bg-red-100 text-red-700 border border-red-400">{t('instructor.schedule.status.cancelled') || 'Cancelled'}</span>
+                <span className="px-2 py-1 text-xs font-bold uppercase bg-neutral-100 text-neutral-600 border border-neutral-300">Chưa bắt đầu</span>
+                <span className="px-2 py-1 text-xs font-bold uppercase bg-yellow-400 text-black border border-black">Đang diễn ra</span>
+                <span className="px-2 py-1 text-xs font-bold uppercase bg-black text-yellow-400 border border-black">Hoàn thành</span>
+                <span className="px-2 py-1 text-xs font-bold uppercase bg-red-100 text-red-700 border border-red-400">Đã hủy</span>
             </div>
 
             {/* Schedule Grid */}
@@ -397,7 +397,7 @@ export default function ClassTimeslotSchedule({ classId, className }) {
                 locale={{
                     emptyText: (
                         <Empty
-                            description={<span className="font-bold uppercase text-neutral-500">{t('instructor.schedule.noSchedule') || 'No schedule available'}</span>}
+                            description={<span className="font-bold uppercase text-neutral-500">Chưa có lịch học nào</span>}
                         />
                     ),
                 }}

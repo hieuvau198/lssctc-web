@@ -1,39 +1,16 @@
-import { Collapse, Empty } from 'antd';
+import { Tabs, Empty } from 'antd';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import TEExam from './partials/TEExam';
 import SEExam from './partials/SEExam';
 import PEExam from './partials/PEExam';
-import { FileText, Monitor, Award, Trophy, ChevronRight } from 'lucide-react';
-
-const { Panel } = Collapse;
-
-// Panel Header Component (similar to SectionHeader in ClassSections)
-const ExamPanelHeader = ({ icon: Icon, title, subtitle }) => (
-  <div className="flex justify-between items-center w-full">
-    <div className="flex items-center gap-3">
-      <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
-        <Icon className="w-4 h-4 text-black" />
-      </div>
-      <div>
-        <span className="font-bold text-black uppercase tracking-tight">
-          {title}
-        </span>
-        {subtitle && (
-          <span className="ml-2 text-xs text-neutral-500 font-medium">
-            {subtitle}
-          </span>
-        )}
-      </div>
-    </div>
-  </div>
-);
+import { FileText, Monitor, Award, Trophy } from 'lucide-react';
 
 export default function InstructorFinalExam() {
   const { t } = useTranslation();
   const { classId } = useParams();
-  const [activeKeys, setActiveKeys] = useState(['te']);
+  const [activeTab, setActiveTab] = useState('te');
 
   if (!classId) {
     return (
@@ -49,56 +26,66 @@ export default function InstructorFinalExam() {
     );
   }
 
-  const examPanels = [
+  const tabItems = [
     {
       key: 'te',
-      icon: FileText,
-      title: t('instructor.finalExam.teTab'),
-      component: <TEExam classId={classId} />,
+      label: (
+        <span className="flex items-center gap-2 px-2 font-bold uppercase">
+          <FileText className="w-4 h-4" />
+          {t('instructor.finalExam.teTab')}
+        </span>
+      ),
+      children: <TEExam classId={classId} />,
     },
     {
       key: 'se',
-      icon: Monitor,
-      title: t('instructor.finalExam.seTab'),
-      component: <SEExam classId={classId} />,
+      label: (
+        <span className="flex items-center gap-2 px-2 font-bold uppercase">
+          <Monitor className="w-4 h-4" />
+          {t('instructor.finalExam.seTab')}
+        </span>
+      ),
+      children: <SEExam classId={classId} />,
     },
     {
       key: 'pe',
-      icon: Award,
-      title: t('instructor.finalExam.peTab'),
-      component: <PEExam classId={classId} />,
+      label: (
+        <span className="flex items-center gap-2 px-2 font-bold uppercase">
+          <Award className="w-4 h-4" />
+          {t('instructor.finalExam.peTab')}
+        </span>
+      ),
+      children: <PEExam classId={classId} />,
     },
   ];
 
   return (
-    <div className="bg-white border-2 border-black overflow-hidden">
-      <div className="h-1 bg-yellow-400" />
-      <div className="p-6 space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto">
-        <Collapse
-          activeKey={activeKeys}
-          onChange={(keys) => setActiveKeys(keys)}
-          bordered={false}
-          className="bg-transparent"
-          expandIconPosition="end"
-          expandIcon={({ isActive }) => (
-            <ChevronRight className={`w-5 h-5 text-neutral-500 transition-transform ${isActive ? 'rotate-90' : ''}`} />
-          )}
-        >
-          {examPanels.map((panel) => (
-            <Panel
-              key={panel.key}
-              header={
-                <ExamPanelHeader
-                  icon={panel.icon}
-                  title={panel.title}
-                />
-              }
-              className="mb-3 overflow-hidden border-2 border-neutral-200 hover:border-yellow-400 transition-all bg-white [&>.ant-collapse-header]:bg-neutral-50 [&>.ant-collapse-header]:border-b-2 [&>.ant-collapse-header]:border-neutral-200"
-            >
-              {panel.component}
-            </Panel>
-          ))}
-        </Collapse>
+    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      {/* Light Wire Header */}
+      <div className="bg-black border-2 border-black p-6 mb-6">
+        <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-yellow-400 border-2 border-black flex items-center justify-center">
+            <Trophy className="w-7 h-7 text-black" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-white uppercase tracking-tight">{t('instructor.finalExam.title')}</h1>
+            <p className="text-yellow-400 text-sm mt-1 font-medium">{t('instructor.finalExam.subtitle')}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs Card */}
+      <div className="bg-white border-2 border-black overflow-hidden">
+        <div className="h-1 bg-yellow-400" />
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={tabItems}
+          type="card"
+          size="large"
+          className="[&_.ant-tabs-nav]:bg-neutral-50 [&_.ant-tabs-nav]:border-b-2 [&_.ant-tabs-nav]:border-neutral-200 [&_.ant-tabs-tab]:border-2 [&_.ant-tabs-tab]:border-neutral-300 [&_.ant-tabs-tab-active]:border-black [&_.ant-tabs-tab-active]:bg-yellow-400 [&_.ant-tabs-tab-active]:text-black"
+        />
       </div>
     </div>
   );

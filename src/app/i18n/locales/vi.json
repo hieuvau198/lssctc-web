@@ -919,14 +919,7 @@
       "time": "Thời gian",
       "legend": "Chú thích",
       "noClass": "Không có lớp",
-      "noSchedule": "Chưa có lịch học nào",
-      "clickToView": "Nhấn để xem chi tiết",
-      "status": {
-        "notStarted": "Chưa bắt đầu",
-        "ongoing": "Đang diễn ra",
-        "completed": "Hoàn thành",
-        "cancelled": "Đã hủy"
-      }
+      "clickToView": "Nhấn để xem chi tiết"
     },
     "dashboard": {
       "title": "Bảng điều khiển Giảng viên",
