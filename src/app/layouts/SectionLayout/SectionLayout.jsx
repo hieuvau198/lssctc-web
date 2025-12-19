@@ -86,7 +86,7 @@ export default function SectionLayout({
                     <div className="px-5 py-4 border-b-2 border-black bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 relative">
                         <div className="absolute top-0 left-0 right-0 h-1 bg-black" />
                         <div className="flex items-center gap-2 mb-3 pt-1">
-                            <button onClick={() => navigate(`/my-classes/${classId}`)} className="w-8 h-8 border-2 border-black flex items-center justify-center text-black hover:bg-black hover:text-yellow-400 transition-colors"><ArrowLeft className="w-4 h-4" /></button>
+                            <button onClick={() => navigate(`/my-classes/${classId}`)} className="w-8 h-8 border-2 border-black flex items-center justify-center text-black bg-white/80 hover:bg-yellow-500 hover:scale-105 transition-all"><ArrowLeft className="w-4 h-4" /></button>
                             <GraduationCap className="w-5 h-5 text-black" />
                             <span className="text-sm font-bold text-black uppercase tracking-wide truncate">{courseTitle}</span>
                         </div>

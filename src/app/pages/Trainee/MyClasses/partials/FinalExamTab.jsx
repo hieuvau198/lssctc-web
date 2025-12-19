@@ -76,7 +76,7 @@ export default function FinalExamTab({ classId }) {
         );
       case 'Submitted':
         return (
-          <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 font-black text-sm uppercase tracking-wider border-2 border-blue-700">
+          <div className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 font-black text-sm uppercase tracking-wider border-2 border-green-700">
             <Clock className="w-5 h-5" />
             {t('trainee.finalExam.submitted', 'Submitted')}
           </div>
