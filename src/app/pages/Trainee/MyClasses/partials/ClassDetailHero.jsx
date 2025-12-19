@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users, Clock, BookOpen } from 'lucide-react';
 import PageNav from '../../../../components/PageNav/PageNav';
+import getClassStatus from '../../../../utils/classStatus'; // Import the helper
 
 export default function ClassDetailHero({
     classData,
@@ -15,6 +16,8 @@ export default function ClassDetailHero({
     // [UPDATED] Determine image source
     const defaultImage = "https://i.ibb.co/fGDt4tzT/hinh-anh-xe-cau-3-1024x683.jpg";
     const bgImage = classData.backgroundImageUrl || defaultImage;
+    const statusObj = getClassStatus(classData.status);
+    const translatedStatus = t(`common.classStatus.${statusObj.key}`, { defaultValue: statusObj.label });
 
     return (
         <section className="relative bg-black text-white py-24 overflow-hidden">
@@ -50,7 +53,7 @@ export default function ClassDetailHero({
                     </span>
                     <span className="h-1 w-1 rounded-full bg-yellow-400" />
                     <span className="px-4 py-1 bg-yellow-400 text-black text-xs font-bold tracking-wider uppercase">
-                        {classData.status}
+                        {translatedStatus}
                     </span>
                 </div>
 

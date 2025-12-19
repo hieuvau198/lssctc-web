@@ -187,13 +187,15 @@ export default function MyClasses() {
                           </div>
                         </div>
                         {p._statusMapped && (() => {
-                          const s = getClassStatus(p._statusMapped);
-                          return (
-                            <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-wider flex-shrink-0 ${s.color === 'green' ? 'bg-yellow-400 text-black' : 'bg-neutral-100 text-neutral-600'}`}>
-                              {s.label}
-                            </span>
-                          );
-                        })()}
+  const s = getClassStatus(p._statusMapped);
+  // Translate the label
+  const translatedLabel = t(`common.classStatus.${s.key}`, { defaultValue: s.label });
+  return (
+    <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-wider flex-shrink-0 ${s.color === 'green' ? 'bg-yellow-400 text-black' : 'bg-neutral-100 text-neutral-600'}`}>
+      {translatedLabel}
+    </span>
+  );
+})()}
                       </div>
 
                       {/* Info Grid */}

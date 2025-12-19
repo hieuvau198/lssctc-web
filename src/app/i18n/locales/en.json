@@ -84,10 +84,12 @@
     "classStatus": {
       "Draft": "Draft",
       "Published": "Published",
+      "Open": "Open",
+      "InProgress": "In Progress",
       "Inprogress": "In Progress",
       "Completed": "Completed",
-      "Open": "Open",
-      "Cancelled": "Cancelled"
+      "Cancelled": "Cancelled",
+      "OnGoing": "On Going"
     },
     "timeslotStatus": {
       "NotStarted": "Not Started",
