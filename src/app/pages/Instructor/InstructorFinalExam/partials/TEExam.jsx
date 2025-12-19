@@ -11,6 +11,7 @@ export default function TEExam({ classId }) {
   const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
   const [configs, setConfigs] = useState([]);
+  const [isExamCompleted, setIsExamCompleted] = useState(false); // [UPDATED]
 
   // Modal States
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -31,6 +32,7 @@ export default function TEExam({ classId }) {
       // Filter for Theory type
       const teConfigs = response.data?.partialConfigs?.filter(c => c.type === 'Theory') || [];
       setConfigs(teConfigs);
+      setIsExamCompleted(response.data?.status === 'Completed'); // [UPDATED]
     } catch (error) {
       console.error(error);
       message.error('Failed to load exam configurations');
@@ -72,12 +74,14 @@ export default function TEExam({ classId }) {
   };
 
   const handleCreate = () => {
+    if (isExamCompleted) return; // [UPDATED] Guard
     setSelectedConfig(null);
     form.resetFields();
     setCreateModalOpen(true);
   };
 
   const handleEdit = (record) => {
+    if (isExamCompleted) return; // [UPDATED] Guard
     setSelectedConfig(record);
     form.setFieldsValue({
       ...record,
@@ -171,9 +175,14 @@ export default function TEExam({ classId }) {
       render: (_, record) => (
         <button
           onClick={() => handleEdit(record)}
-          className="w-8 h-8 border-2 border-black bg-white hover:bg-yellow-400 flex items-center justify-center transition-all"
+          disabled={isExamCompleted} // [UPDATED]
+          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${
+            isExamCompleted
+            ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
+            : 'border-black bg-white hover:bg-yellow-400 text-black'
+          }`}
         >
-          <Edit3 className="w-4 h-4 text-black" />
+          <Edit3 className="w-4 h-4" />
         </button>
       ),
     },
@@ -204,7 +213,12 @@ export default function TEExam({ classId }) {
             {!partial.examCode && (
               <button
                 onClick={() => onGenerateCode(record.id)}
-                className="px-2 py-1 bg-black text-yellow-400 font-bold uppercase text-xs border-2 border-black hover:bg-yellow-400 hover:text-black flex items-center gap-1 transition-all"
+                disabled={isExamCompleted} // [UPDATED]
+                className={`px-2 py-1 font-bold uppercase text-xs border-2 flex items-center gap-1 transition-all ${
+                  isExamCompleted
+                  ? 'bg-neutral-200 text-neutral-400 border-neutral-400 cursor-not-allowed'
+                  : 'bg-black text-yellow-400 border-black hover:bg-yellow-400 hover:text-black'
+                }`}
               >
                 <RefreshCw className="w-3 h-3" />
                 Gen
@@ -266,7 +280,8 @@ export default function TEExam({ classId }) {
           </div>
           <h2 className="text-xl font-black uppercase tracking-tight m-0">{t('instructor.finalExam.teTitle')}</h2>
         </div>
-        {configs.length === 0 && (
+        {/* [UPDATED] */}
+        {configs.length === 0 && !isExamCompleted && (
           <button
             onClick={handleCreate}
             className="h-10 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
@@ -290,7 +305,7 @@ export default function TEExam({ classId }) {
         />
       </div>
 
-      {/* Create/Edit Modal */}
+      {/* Modals ... */}
       <Modal
         title={
           <div className="flex items-center gap-2 font-black uppercase">
