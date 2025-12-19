@@ -440,7 +440,7 @@ export default function CreatePractice() {
               <p className="text-neutral-600 font-medium mb-8">{successMessage}</p>
               <button
                 onClick={() => setModalType(null)}
-                className="w-full px-6 py-3 bg-black text-white font-bold uppercase tracking-wider hover:bg-neutral-800 transition-colors"
+                className="w-full px-6 py-3 bg-yellow-400 text-black border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-500 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
               >
                 {t('simManager.createPractice.ok')}
               </button>
@@ -461,7 +461,7 @@ export default function CreatePractice() {
               <p className="text-neutral-600 font-medium mb-8">{error}</p>
               <button
                 onClick={() => setModalType(null)}
-                className="w-full px-6 py-3 bg-black text-white font-bold uppercase tracking-wider hover:bg-neutral-800 transition-colors"
+                className="w-full px-6 py-3 bg-yellow-400 text-black border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-500 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
               >
                 {t('simManager.createPractice.ok')}
               </button>

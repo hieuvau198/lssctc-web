@@ -10,7 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function Practices() {
   const { t } = useTranslation();
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [practices, setPractices] = useState([]);
@@ -39,19 +39,30 @@ export default function Practices() {
   useEffect(() => { load(); }, []);
 
   const handleDelete = (record) => {
-    Modal.confirm({
+    console.log('Delete requested for:', record);
+    modal.confirm({
       title: t('simManager.practices.confirmDelete'),
       content: t('simManager.practices.confirmDeleteDesc', { name: record.practiceName }),
       okText: t('common.delete'),
       okType: 'danger',
       onOk: async () => {
+        console.log('Confirm delete clicked');
         setDeleting(record.id);
         try {
-          await deletePractice(record.id);
+          const res = await deletePractice(record.id);
+          console.log('Delete response:', res);
+
+          if (res && res.success === false) {
+            const errorMsg = res.message || (res.error && res.error.message) || t('simManager.practices.deleteFailed');
+            throw new Error(errorMsg);
+          }
+
           message.success(t('simManager.practices.deleteSuccess'));
           await load(pageNumber, pageSize);
         } catch (err) {
+          console.error('Delete failed:', err);
           let errorMsg = t('simManager.practices.deleteFailed');
+
           if (err.response?.data?.error?.details?.exceptionMessage) {
             errorMsg = err.response.data.error.details.exceptionMessage;
           } else if (err.response?.data?.error?.message) {
