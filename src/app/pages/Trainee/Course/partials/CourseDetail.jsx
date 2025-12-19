@@ -1,10 +1,11 @@
+
 import { Alert, Empty } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'react-router';
 import { fetchCourseDetail } from '../../../../apis/ProgramManager/CourseApi';
 import PageNav from '../../../../components/PageNav/PageNav';
-import { Clock, BookOpen, FolderOpen, Wallet, Info, GraduationCap } from 'lucide-react';
+import { Clock, BookOpen, FolderOpen, Info, GraduationCap } from 'lucide-react';
 import ClassesSection from './ClassesSection';
 
 export default function CourseDetail() {
@@ -125,12 +126,6 @@ export default function CourseDetail() {
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black text-sm font-bold uppercase tracking-wider">
                     <FolderOpen className="w-4 h-4" />
                     {data.category || data.categoryName}
-                  </span>
-                )}
-                {data.price != null && (
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black text-sm font-bold uppercase tracking-wider">
-                    <Wallet className="w-4 h-4" />
-                    {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.price)}
                   </span>
                 )}
               </div>

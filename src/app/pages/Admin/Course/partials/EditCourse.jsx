@@ -1,3 +1,5 @@
+// hieuvau198/lssctc-web/lssctc-web-fix-v10/src/app/pages/Admin/Course/partials/EditCourse.jsx
+
 import React, { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { Modal, Form, Input, InputNumber, Select, Switch, Image } from "antd";
@@ -35,7 +37,6 @@ const EditCourse = ({
         description: course.description,
         categoryId: categoryId,
         levelId: levelId,
-        price: course.price,
         isActive: course.isActive,
         imageUrl: course.imageUrl,
         durationHours: course.durationHours,
@@ -90,7 +91,7 @@ const EditCourse = ({
     form
       .validateFields()
       .then((values) => {
-        onUpdate(values);
+        onUpdate({ ...values, price: 500000 });
       })
       .catch(() => { });
   };
@@ -171,14 +172,7 @@ const EditCourse = ({
           </Form.Item>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-          <Form.Item
-            label={t('common.price')}
-            name="price"
-            rules={[{ required: true, type: 'number', message: t('admin.courses.form.priceRequired', 'Price is required') }]}
-          >
-            <InputNumber step={0.01} style={{ width: "100%" }} />
-          </Form.Item>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">          
           <Form.Item
             label={t('admin.courses.form.durationHours')}
             name="durationHours"

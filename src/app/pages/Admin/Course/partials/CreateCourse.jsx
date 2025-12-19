@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { Modal, Form, Input, InputNumber, Select, Image, message } from "antd";
 import { fetchCourseCategories, fetchCourseLevels } from "../../../../apis/ProgramManager/CourseApi";
-import { Plus, X, ImageIcon, FileImage, BookOpen, Tag, Clock, DollarSign, Layers, Code } from "lucide-react";
+import { Plus, X, ImageIcon, FileImage, BookOpen, Tag, Clock, Layers, Code } from "lucide-react"; // Removed DollarSign
 
 const { Option } = Select;
 
@@ -69,7 +70,7 @@ const CreateCourse = ({
   }, []);
 
   const handleFinish = (values) => {
-    onCreate(values);
+    onCreate({ ...values, price: 500000 });
   };
 
   const handleFinishFailed = (errorInfo) => {
@@ -130,7 +131,6 @@ const CreateCourse = ({
           description: "",
           categoryId: undefined,
           levelId: undefined,
-          price: undefined,
           imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2sUcEWdSaINXf8E4hmy7obh3B1w0-l_T8Tw&s",
           backgroundImageUrl: "https://templates.framework-y.com/lightwire/images/wide-1.jpg",
           durationHours: undefined,
@@ -190,11 +190,6 @@ const CreateCourse = ({
             <Select placeholder={t('admin.courses.form.levelPlaceholder')} showSearch allowClear loading={lvlsLoading} optionFilterProp="children">
               {localLevels.map((lvl) => (<Option key={lvl.value} value={lvl.value}>{lvl.label}</Option>))}
             </Select>
-          </Form.Item>
-
-          <Form.Item label={t('common.price')} name="price"
-            rules={[{ type: 'number', min: 0, max: 1000000000, message: t('admin.courses.form.priceRange') }]}>
-            <InputNumber step={0.01} style={{ width: "100%" }} prefix={<DollarSign className="w-4 h-4 text-neutral-400" />} />
           </Form.Item>
 
           <Form.Item label={t('admin.courses.form.durationHours')} name="durationHours"
