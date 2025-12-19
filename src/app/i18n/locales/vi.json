@@ -826,7 +826,13 @@
       "quiz": "Bài Kiểm Tra",
       "practice": "Thực Hành",
       "completedAt": "Hoàn Thành Lúc",
-      "examCompleted": "Hoàn Thành"
+      "examCompleted": "Hoàn Thành",
+      "qualifiedTitle": "Đủ điều kiện thi cuối khóa",
+      "notQualifiedTitle": "Chưa đủ điều kiện thi",
+      "qualifiedDesc": "Bạn đã hoàn thành tất cả các yêu cầu của khóa học và có thể bắt đầu bài thi cuối khóa.",
+      "notQualifiedDesc": "Bạn phải hoàn thành tất cả tài liệu học tập và yêu cầu tiến độ trước khi có thể bắt đầu bài thi cuối khóa.",
+      "currentStatus": "Trạng thái hiện tại",
+      "lockedDesc": "Hoàn thành tiến độ khóa học trước"
     },
     "quizHeader": {
       "questionOf": "Câu hỏi {{current}} / {{total}}",

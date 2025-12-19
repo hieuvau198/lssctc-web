@@ -771,7 +771,13 @@
       "quiz": "Quiz",
       "practice": "Practice",
       "completedAt": "Completed At",
-      "examCompleted": "Exam Completed"
+      "examCompleted": "Exam Completed",
+      "qualifiedTitle": "Qualified for Final Exam",
+      "notQualifiedTitle": "Not Yet Qualified",
+      "qualifiedDesc": "You have completed all course requirements and can now proceed with the final exam.",
+      "notQualifiedDesc": "You must complete all course learning materials and progress requirements before you can start the final exam.",
+      "currentStatus": "Current Status",
+      "lockedDesc": "Complete course progress first"
     },
     "quizHeader": {
       "questionOf": "Question {{current}} of {{total}}",

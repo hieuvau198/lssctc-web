@@ -177,18 +177,16 @@ export default function FinalExamTab({ classId }) {
           </div>
           <div>
             <h3 className="font-bold text-lg uppercase tracking-tight mb-1">
-              {isQualified ? t('trainee.finalExam.qualifiedTitle', 'Qualified for Final Exam') : t('trainee.finalExam.notQualifiedTitle', 'Not Yet Qualified')}
+              {isQualified 
+                ? t('trainee.finalExam.qualifiedTitle', 'Qualified for Final Exam') 
+                : t('trainee.finalExam.notQualifiedTitle', 'Not Yet Qualified')}
             </h3>
             <p className="text-sm text-neutral-600">
               {isQualified
                 ? t('trainee.finalExam.qualifiedDesc', 'You have completed all course requirements and can now proceed with the final exam.')
                 : t('trainee.finalExam.notQualifiedDesc', 'You must complete all course learning materials and progress requirements before you can start the final exam.')}
             </p>
-            {progress && (
-              <div className="mt-2 text-xs font-mono bg-white px-2 py-1 border border-neutral-300 inline-block">
-                Current Status: <span className="font-bold">{progress.status}</span> ({progress.progressPercentage?.toFixed(0)}%)
-              </div>
-            )}
+            
           </div>
         </div>
       </div>
