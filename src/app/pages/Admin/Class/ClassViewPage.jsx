@@ -87,7 +87,7 @@ const ClassViewPage = () => {
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-4">
               <button
-                onClick={() => navigate('/admin/classes')}
+                onClick={() => navigate('/admin/class')}
                 className="group flex items-center gap-2 px-3 py-1.5 bg-black/50 backdrop-blur-sm border border-white/30 text-white hover:bg-yellow-400 hover:border-yellow-400 hover:text-black transition-all uppercase text-xs font-bold tracking-wider"
               >
                 <ArrowLeft className="w-4 h-4" /> {t('common.back')}
