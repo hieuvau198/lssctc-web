@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { fetchProgramDetail, fetchCoursesByProgram } from "../../../../apis/Trainee/TraineeProgramApi";
@@ -242,7 +243,6 @@ const ProgramDetail = ({ id: idProp, onBack }) => {
                       duration: c.duration || c.durationHours || null,
                       thumbnail: c.imageUrl,
                       tags: c.tags || c.keywords || [c.category].filter(Boolean),
-                      price: c.price,
                     }}
                   />
                 </button>
