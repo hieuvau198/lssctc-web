@@ -92,6 +92,7 @@ export default function Header() {
                 <li key={item.to}>
                   <NavLink
                     to={item.to}
+                    onClick={() => window.scrollTo({ top: 0 })}
                     className={({ isActive }) => [
                       "px-4 py-2 text-sm font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 border-b-2",
                       isActive
@@ -140,7 +141,7 @@ export default function Header() {
               {navItems.map((item) => (
                 <NavLink
                   key={item.to}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={() => { setMobileOpen(false); window.scrollTo({ top: 0 }); }}
                   to={item.to}
                   className={({ isActive }) => [
                     "flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-l-4",
