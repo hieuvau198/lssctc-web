@@ -34,6 +34,8 @@ const mapClassFromApi = (item) => ({
   status: item.status || 'Unknown',
   classProgress: item.classProgress ?? 0, // <-- ADDED THIS LINE
   durationHours: item.durationHours ?? 80, // <-- ADDED THIS LINE
+  backgroundImageUrl: item.backgroundImageUrl || 'https://templates.framework-y.com/lightwire/images/wide-1.jpg', // <-- ADDED THIS LINE
+
 });
 
 /**

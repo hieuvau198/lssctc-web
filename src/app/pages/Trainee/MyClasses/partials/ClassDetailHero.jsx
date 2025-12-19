@@ -12,16 +12,20 @@ export default function ClassDetailHero({
 
     if (!classData) return null;
 
+    // [UPDATED] Determine image source
+    const defaultImage = "https://i.ibb.co/fGDt4tzT/hinh-anh-xe-cau-3-1024x683.jpg";
+    const bgImage = classData.backgroundImageUrl || defaultImage;
+
     return (
         <section className="relative bg-black text-white py-24 overflow-hidden">
             <div className="absolute inset-0">
                 <img
-                    src="https://i.ibb.co/fGDt4tzT/hinh-anh-xe-cau-3-1024x683.jpg"
+                    src={bgImage} // [UPDATED] Use dynamic image
                     onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = "/images/industrial-crane-construction-site.jpg";
+                        e.target.src = "/images/industrial-crane-construction-site.jpg"; // Final fallback
                     }}
-                    alt=""
+                    alt={classData.name}
                     className="w-full h-full object-cover"
                 />
             </div>
@@ -92,19 +96,6 @@ export default function ClassDetailHero({
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 bg-black/50 backdrop-blur-sm px-4 py-3 rounded-lg">
-                        <div className="w-12 h-12 border-2 border-yellow-400 bg-black/50 flex items-center justify-center">
-                            <BookOpen className="w-6 h-6 text-yellow-400" />
-                        </div>
-                        <div>
-                            <div className="text-2xl font-bold text-white drop-shadow-md">
-                                {completedActivities}/{totalActivities}
-                            </div>
-                            <div className="text-sm text-yellow-400 uppercase tracking-wider font-semibold">
-                                {t('trainee.myClassDetail.activities', 'Activities')}
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
