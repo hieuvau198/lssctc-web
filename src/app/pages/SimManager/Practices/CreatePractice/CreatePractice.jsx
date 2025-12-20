@@ -142,7 +142,7 @@ export default function CreatePractice() {
   };
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col p-6 bg-neutral-100 overflow-hidden">
+    <div className="min-h-screen">
       {/* Header - Industrial Style */}
       <div className="flex-none bg-black border-2 border-black p-5 mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
         <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
@@ -155,9 +155,9 @@ export default function CreatePractice() {
               <ArrowLeft className="w-5 h-5 text-black" />
             </button>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+              <span className="text-2xl font-black text-white uppercase tracking-tight">
                 {t('simManager.createPractice.title')}
-              </h1>
+              </span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {t('simManager.createPractice.subtitle')}
               </p>
@@ -172,19 +172,19 @@ export default function CreatePractice() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="flex-1 overflow-y-auto pr-2 pb-4">
+      <div className="pb-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Form */}
           <div className="lg:col-span-2 space-y-6">
             {/* Basic Information Card */}
-            <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] relative overflow-hidden">
+            <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] relative">
               <div className="h-1 bg-yellow-400 absolute top-0 left-0 w-full z-10" />
               <div className="p-6 border-b-2 border-neutral-100">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
                     <BookOpen className="h-5 w-5 text-black" />
                   </div>
-                  <h2 className="text-xl font-black uppercase tracking-tight text-black">{t('simManager.createPractice.basicInfo')}</h2>
+                  <span className="text-xl font-black uppercase tracking-tight text-black">{t('simManager.createPractice.basicInfo')}</span>
                 </div>
               </div>
 
