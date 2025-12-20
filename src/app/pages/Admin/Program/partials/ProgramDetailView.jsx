@@ -108,12 +108,12 @@ const ProgramDetailView = ({ program, loading }) => {
                 <span className="font-bold">{dayjs(program.createdAt).format(dateFormat)}</span>
               </div>
             )}
-            {program.updatedAt && (
+            {/* {program.updatedAt && (
               <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
                 <span className="text-neutral-500 font-mono uppercase">{t('common.updatedAt', 'Updated')}</span>
                 <span className="font-bold">{dayjs(program.updatedAt).format(dateFormat)}</span>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 

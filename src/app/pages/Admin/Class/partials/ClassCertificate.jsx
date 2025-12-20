@@ -45,7 +45,7 @@ const ClassCertificate = ({ classId }) => {
   // Columns for the Trainee List Table
   const columns = [
     {
-      title: 'TRAINEE',
+      title: t('admin.classes.certificate.trainee'),
       dataIndex: 'traineeName',
       key: 'traineeName',
       render: (text, record) => (
@@ -61,7 +61,7 @@ const ClassCertificate = ({ classId }) => {
       ),
     },
     {
-      title: 'ISSUE DATE',
+      title: t('admin.classes.certificate.issueDate'),
       dataIndex: 'issuedDate',
       key: 'issuedDate',
       render: (date) => date ? (
@@ -72,7 +72,7 @@ const ClassCertificate = ({ classId }) => {
       ) : '-',
     },
     {
-      title: 'CERT CODE',
+      title: t('admin.classes.certificate.certCode'),
       dataIndex: 'certificateCode',
       key: 'certificateCode',
       render: (text) => <span className="font-mono text-xs font-bold text-slate-700 bg-yellow-100 px-1 border border-yellow-200">{text}</span>
@@ -103,13 +103,13 @@ const ClassCertificate = ({ classId }) => {
           <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
             <FileBadge size={18} strokeWidth={2.5} />
           </div>
-          <h3 className="text-xl font-bold uppercase tracking-wide text-slate-900 m-0">Class Certificates</h3>
+          <h3 className="text-xl font-bold uppercase tracking-wide text-slate-900 m-0">{t('admin.classes.certificate.title')}</h3>
         </div>
         <div className="border-2 border-dashed border-slate-300 bg-slate-50 p-8 flex flex-col items-center justify-center text-center">
           <div className="w-16 h-16 bg-white border-2 border-slate-200 flex items-center justify-center rounded-full mb-4">
             <FileBadge size={32} className="text-slate-300" />
           </div>
-          <p className="text-slate-500 font-medium">No certificate template assigned to this course yet.</p>
+          <p className="text-slate-500 font-medium">{t('admin.classes.certificate.noTemplate')}</p>
         </div>
       </div>
     );
@@ -141,7 +141,7 @@ const ClassCertificate = ({ classId }) => {
         <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
           <Award size={18} strokeWidth={2.5} />
         </div>
-        <h3 className="text-xl font-bold uppercase tracking-wide text-slate-900 m-0">Class Certificates</h3>
+        <h3 className="text-xl font-bold uppercase tracking-wide text-slate-900 m-0">{t('admin.classes.certificate.title')}</h3>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -151,7 +151,7 @@ const ClassCertificate = ({ classId }) => {
           <div className="border-2 border-black bg-neutral-900 text-white p-6 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-400 rounded-full blur-2xl opacity-10 -mr-10 -mt-10 pointer-events-none"></div>
 
-            <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4 border-b border-neutral-700 pb-2">Certificate Template</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4 border-b border-neutral-700 pb-2">{t('admin.classes.certificate.template')}</h4>
 
             <div className="text-2xl font-bold text-white mb-2 leading-tight">
               {template.name}
@@ -159,10 +159,10 @@ const ClassCertificate = ({ classId }) => {
 
             <div className="mt-6 space-y-4">
               <div>
-                <div className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold mb-1">Source Course</div>
+                <div className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold mb-1">{t('admin.classes.certificate.sourceCourse')}</div>
                 <div className="flex items-center gap-2 text-yellow-400 font-bold">
                   <BookOpenIcon className="w-4 h-4" />
-                  {template.courseName || "Current Course"}
+                  {template.courseName || t('admin.classes.certificate.currentCourse')}
                 </div>
               </div>
 
@@ -182,7 +182,7 @@ const ClassCertificate = ({ classId }) => {
         <div className="lg:col-span-2">
           <div className="border-2 border-slate-200 bg-white">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-              <span className="font-bold text-slate-700 uppercase text-xs tracking-wider">Issued Certificates</span>
+              <span className="font-bold text-slate-700 uppercase text-xs tracking-wider">{t('admin.classes.certificate.issuedCertificates')}</span>
               <span className="px-2 py-0.5 bg-black text-white text-xs font-bold rounded-full">
                 {traineeCerts.length}
               </span>
@@ -192,7 +192,7 @@ const ClassCertificate = ({ classId }) => {
               columns={columns}
               rowKey="id"
               pagination={{ pageSize: 5 }}
-              locale={{ emptyText: <div className="py-8 text-slate-400 text-center italic">No certificates issued yet.</div> }}
+              locale={{ emptyText: <div className="py-8 text-slate-400 text-center italic">{t('admin.classes.certificate.noCertificates')}</div> }}
               className="cert-table"
             />
           </div>

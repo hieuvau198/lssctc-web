@@ -2734,7 +2734,9 @@
         "subtitle": "Fill in the class details",
         "basicInfo": "Basic Information",
         "programCourse": "Program & Course",
-        "schedule": "Schedule"
+        "schedule": "Schedule",
+        "programAndCourse": "Program & Course",
+        "scheduleAndCapacity": "Schedule & Capacity"
       },
       "placeholders": {
         "className": "Enter class name",
@@ -2833,7 +2835,83 @@
         "inProgress": "In Progress",
         "completed": "Completed",
         "notStarted": "Not Started"
-      }
+      },
+      "schedule": "Schedule",
+      "parentCourse": "Parent Course",
+      "certificates": "Certificates",
+      "viewClassDetail": "View class details",
+      "cannotEditNonDraft": "Cannot edit non-draft class",
+      "period": "Period",
+      "loadError": "Failed to load class data",
+      "weights": {
+        "title": "Exam Weights",
+        "configRules": "Configuration Rules",
+        "configDesc": "Set the weight for each exam component. Values must be decimals between 0 and 1. The total must sum to 1.0.",
+        "theoryWeight": "Theory Weight",
+        "simulationWeight": "Simulation Weight",
+        "practicalWeight": "Practical Weight",
+        "totalWeight": "Total Weight",
+        "invalid": "Invalid",
+        "distribution": "Weight Distribution",
+        "theory": "Theory",
+        "simulation": "Simulation",
+        "practical": "Practical",
+        "totalAllocation": "Total Allocation",
+        "reset": "Reset",
+        "saveChanges": "Save Changes",
+        "updateSuccess": "Exam weights updated successfully",
+        "loadFailed": "Failed to load exam weights.",
+        "updateFailed": "Failed to update weights",
+        "totalMustEqual": "The total weight must equal 1.0 (100%)"
+      },
+      "certificate": {
+        "title": "Class Certificates",
+        "template": "Certificate Template",
+        "sourceCourse": "Source Course",
+        "currentCourse": "Current Course",
+        "issuedCertificates": "Issued Certificates",
+        "noCertificates": "No certificates issued yet.",
+        "noTemplate": "No certificate template assigned to this course yet.",
+        "trainee": "Trainee",
+        "issueDate": "Issue Date",
+        "certCode": "Cert Code"
+      },
+      "courseInfo": {
+        "title": "Parent Course",
+        "viewFullDetails": "View Full Details",
+        "category": "Category",
+        "duration": "Duration",
+        "level": "Level",
+        "version": "Version",
+        "active": "Active",
+        "inactive": "Inactive",
+        "noDescription": "No description available for this course."
+      },
+      "instructorDetail": {
+        "phone": "Phone",
+        "hireDate": "Hire Date"
+      },
+      "trainee": {
+        "addTrainee": "Add Trainee",
+        "selectTrainee": "Select a trainee",
+        "noTraineesAvailable": "No trainees available",
+        "enrollSuccess": "Trainee enrolled to class",
+        "enrollFailed": "Failed to enroll trainee",
+        "selectWarning": "Please select a trainee",
+        "loadFailed": "Failed to load trainees"
+      },
+      "dangerZone": {
+        "title": "Danger Zone",
+        "description": "Deleting this class is irreversible. Please be certain."
+      },
+      "visuals": {
+        "title": "Visuals",
+        "backgroundImageUrl": "Background Image URL",
+        "placeholder": "Enter image URL"
+      },
+      "noTimeslots": "No timeslots scheduled",
+      "programAndCourse": "Program & Course",
+      "scheduleAndCapacity": "Schedule & Capacity"
     }
   }
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Skeleton, Typography } from 'antd';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowRight,
   BookOpen,
@@ -14,6 +15,7 @@ import { fetchCourseDetail } from '../../../../apis/ProgramManager/CourseApi';
 const { Paragraph } = Typography;
 
 const ClassCourseInfo = ({ courseId }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -52,13 +54,13 @@ const ClassCourseInfo = ({ courseId }) => {
           <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
             <BookOpen size={18} strokeWidth={2.5} />
           </div>
-          <span className="text-xl font-bold uppercase tracking-wide text-slate-900">Parent Course</span>
+          <span className="text-xl font-bold uppercase tracking-wide text-slate-900">{t('admin.classes.courseInfo.title')}</span>
         </div>
         <button
           onClick={() => navigate(`/admin/courses/${course.id}`)}
           className="group flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-500 hover:text-black transition-colors"
         >
-          View Full Details
+          {t('admin.classes.courseInfo.viewFullDetails')}
           <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
         </button>
       </div>
@@ -76,10 +78,10 @@ const ClassCourseInfo = ({ courseId }) => {
             />
             <div className="absolute top-2 left-2">
               <span className={`px-2 py-1 text-xs font-bold uppercase tracking-wider border-2 ${course.isActive
-                  ? 'bg-green-100 text-green-700 border-green-700'
-                  : 'bg-red-100 text-red-700 border-red-700'
+                ? 'bg-green-100 text-green-700 border-green-700'
+                : 'bg-red-100 text-red-700 border-red-700'
                 }`}>
-                {course.isActive ? "Active" : "Inactive"}
+                {course.isActive ? t('admin.classes.courseInfo.active') : t('admin.classes.courseInfo.inactive')}
               </span>
             </div>
           </div>
@@ -98,25 +100,25 @@ const ClassCourseInfo = ({ courseId }) => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-t border-b border-slate-100 mb-4">
               <div>
                 <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center gap-1">
-                  <Grid size={12} /> Category
+                  <Grid size={12} /> {t('admin.classes.courseInfo.category')}
                 </div>
                 <div className="font-semibold text-slate-700">{course.category || 'General'}</div>
               </div>
               <div>
                 <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center gap-1">
-                  <Clock size={12} /> Duration
+                  <Clock size={12} /> {t('admin.classes.courseInfo.duration')}
                 </div>
-                <div className="font-semibold text-slate-700">{course.durationHours ? `${course.durationHours} hrs` : '-'}</div>
+                <div className="font-semibold text-slate-700">{course.durationHours ? `${course.durationHours} ${t('common.hours')}` : '-'}</div>
               </div>
               <div>
                 <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center gap-1">
-                  <BarChart size={12} /> Level
+                  <BarChart size={12} /> {t('admin.classes.courseInfo.level')}
                 </div>
                 <div className="font-semibold text-slate-700">{course.level || '-'}</div>
               </div>
               <div>
                 <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center gap-1">
-                  <Layers size={12} /> Version
+                  <Layers size={12} /> {t('admin.classes.courseInfo.version')}
                 </div>
                 <div className="font-semibold text-slate-700">v{course.version || '1.0'}</div>
               </div>
@@ -126,7 +128,7 @@ const ClassCourseInfo = ({ courseId }) => {
               ellipsis={{ rows: 2, expandable: true, symbol: 'more' }}
               className="text-slate-600 mb-0 font-medium leading-relaxed"
             >
-              {course.description || "No description available for this course."}
+              {course.description || t('admin.classes.courseInfo.noDescription')}
             </Paragraph>
           </div>
         </div>

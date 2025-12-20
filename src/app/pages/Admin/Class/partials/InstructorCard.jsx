@@ -108,7 +108,7 @@ const InstructorCard = ({ classItem }) => {
                     <Phone size={14} />
                   </div>
                   <div>
-                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Phone</div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{t('admin.classes.instructorDetail.phone')}</div>
                     <div className="font-semibold text-slate-700">{instructor.phoneNumber || instructor.phone || '-'}</div>
                   </div>
                 </div>
@@ -118,7 +118,7 @@ const InstructorCard = ({ classItem }) => {
                     <Calendar size={14} />
                   </div>
                   <div>
-                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Hire Date</div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{t('admin.classes.instructorDetail.hireDate')}</div>
                     <div className="font-semibold text-slate-700">
                       <DayTimeFormat value={instructor.hireDate} />
                     </div>

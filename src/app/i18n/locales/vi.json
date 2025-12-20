@@ -2733,7 +2733,9 @@
         "subtitle": "Điền thông tin chi tiết lớp học",
         "basicInfo": "Thông tin cơ bản",
         "programCourse": "Chương trình & Khóa học",
-        "schedule": "Lịch trình"
+        "schedule": "Lịch trình",
+        "programAndCourse": "Chương trình & Khóa học",
+        "scheduleAndCapacity": "Lịch trình & Sức chứa"
       },
       "placeholders": {
         "className": "Nhập tên lớp học",
@@ -2831,7 +2833,83 @@
         "inProgress": "Đang thực hiện",
         "completed": "Hoàn thành",
         "notStarted": "Chưa bắt đầu"
-      }
+      },
+      "schedule": "Lịch học",
+      "parentCourse": "Khóa học gốc",
+      "certificates": "Chứng chỉ",
+      "viewClassDetail": "Xem chi tiết lớp học",
+      "cannotEditNonDraft": "Không thể chỉnh sửa lớp không ở trạng thái Nháp",
+      "period": "Thời gian",
+      "loadError": "Không thể tải dữ liệu lớp học",
+      "weights": {
+        "title": "Trọng số Bài thi",
+        "configRules": "Quy tắc Cấu hình",
+        "configDesc": "Thiết lập trọng số cho từng thành phần bài thi. Giá trị phải là số thập phân từ 0 đến 1. Tổng phải bằng 1.0.",
+        "theoryWeight": "Trọng số Lý thuyết",
+        "simulationWeight": "Trọng số Mô phỏng",
+        "practicalWeight": "Trọng số Thực hành",
+        "totalWeight": "Tổng Trọng số",
+        "invalid": "Không hợp lệ",
+        "distribution": "Phân bổ Trọng số",
+        "theory": "Lý thuyết",
+        "simulation": "Mô phỏng",
+        "practical": "Thực hành",
+        "totalAllocation": "Tổng Phân bổ",
+        "reset": "Đặt lại",
+        "saveChanges": "Lưu Thay đổi",
+        "updateSuccess": "Cập nhật trọng số bài thi thành công",
+        "loadFailed": "Không thể tải trọng số bài thi.",
+        "updateFailed": "Không thể cập nhật trọng số",
+        "totalMustEqual": "Tổng trọng số phải bằng 1.0 (100%)"
+      },
+      "certificate": {
+        "title": "Chứng chỉ Lớp học",
+        "template": "Mẫu Chứng chỉ",
+        "sourceCourse": "Khóa học Nguồn",
+        "currentCourse": "Khóa học Hiện tại",
+        "issuedCertificates": "Chứng chỉ Đã cấp",
+        "noCertificates": "Chưa có chứng chỉ nào được cấp.",
+        "noTemplate": "Chưa có mẫu chứng chỉ nào được gán cho khóa học này.",
+        "trainee": "Học viên",
+        "issueDate": "Ngày Cấp",
+        "certCode": "Mã Chứng chỉ"
+      },
+      "courseInfo": {
+        "title": "Khóa học Gốc",
+        "viewFullDetails": "Xem Chi tiết Đầy đủ",
+        "category": "Danh mục",
+        "duration": "Thời lượng",
+        "level": "Cấp độ",
+        "version": "Phiên bản",
+        "active": "Hoạt động",
+        "inactive": "Không hoạt động",
+        "noDescription": "Chưa có mô tả cho khóa học này."
+      },
+      "instructorDetail": {
+        "phone": "Điện thoại",
+        "hireDate": "Ngày Tuyển dụng"
+      },
+      "trainee": {
+        "addTrainee": "Thêm Học viên",
+        "selectTrainee": "Chọn học viên",
+        "noTraineesAvailable": "Không có học viên khả dụng",
+        "enrollSuccess": "Đã thêm học viên vào lớp",
+        "enrollFailed": "Không thể thêm học viên",
+        "selectWarning": "Vui lòng chọn học viên",
+        "loadFailed": "Không thể tải danh sách học viên"
+      },
+      "dangerZone": {
+        "title": "Khu vực Nguy hiểm",
+        "description": "Xóa lớp học này là không thể hoàn tác. Hãy chắc chắn trước khi thực hiện."
+      },
+      "visuals": {
+        "title": "Hình ảnh",
+        "backgroundImageUrl": "URL Ảnh Nền",
+        "placeholder": "Nhập URL hình ảnh"
+      },
+      "noTimeslots": "Chưa có buổi học nào được lên lịch",
+      "programAndCourse": "Chương trình & Khóa học",
+      "scheduleAndCapacity": "Lịch trình & Sức chứa"
     }
   }
 }

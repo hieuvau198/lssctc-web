@@ -92,12 +92,12 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
                 <span className="font-bold">{dayjs(course.createdAt).format(dateFormat)}</span>
               </div>
             )}
-            {course.updatedAt && (
+            {/* {course.updatedAt && (
               <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
                 <span className="text-neutral-500 font-mono uppercase">Updated</span>
                 <span className="font-bold">{dayjs(course.updatedAt).format(dateFormat)}</span>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
