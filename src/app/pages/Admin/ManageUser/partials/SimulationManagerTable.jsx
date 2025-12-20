@@ -122,7 +122,7 @@ export default function SimulationManagerTable() {
     {
       title: t('common.action') || "Action",
       key: 'action',
-      width: 80,
+      width: 120,
       align: 'center',
       render: (_, record) => (
         <Tooltip title={t('common.edit') || "Edit"}>

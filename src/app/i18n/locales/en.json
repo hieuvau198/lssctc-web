@@ -2405,7 +2405,8 @@
         "confirmPasswordRequired": "Please confirm password",
         "passwordMismatch": "Passwords do not match",
         "avatarUrl": "Avatar URL",
-        "avatarPreview": "Avatar Preview"
+        "avatarPreview": "Avatar Preview",
+        "avatarHelp": "Enter a valid image URL to verify the preview."
       },
       "validation": {
         "fullNameRequired": "Please enter full name",

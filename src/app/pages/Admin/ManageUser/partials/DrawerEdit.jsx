@@ -160,33 +160,45 @@ export default function DrawerEdit({ visible = false, onClose = () => { }, userI
                                     <span className="font-bold uppercase text-sm tracking-wider">Avatar</span>
                                 </div>
 
-                                <Form.Item
-                                    name="avatarUrl"
-                                    label={<span className="font-bold text-xs uppercase tracking-wider">{t('admin.users.form.avatarUrl')}</span>}
-                                >
-                                    <Input
-                                        placeholder="https://example.com/avatar.jpg"
-                                        allowClear
-                                        className="h-10 border-2 border-neutral-300 focus:border-black"
-                                        onChange={(e) => {
-                                            const v = e?.target?.value || '';
-                                            setAvatarPreview(v.trim() ? v.trim() : null);
-                                        }}
-                                    />
-                                </Form.Item>
-
-                                <div>
-                                    <div className="font-bold text-xs uppercase tracking-wider mb-2">{t('admin.users.form.avatarPreview')}</div>
-                                    <div className="w-28 h-28 border-2 border-black flex items-center justify-center bg-neutral-100">
-                                        {avatarPreview ? (
-                                            <Image
-                                                src={avatarPreview}
-                                                preview={{ mask: t('common.clickToPreview') }}
-                                                className="w-full h-full object-cover"
+                                <div className="flex flex-col-reverse sm:flex-row gap-6">
+                                    <div className="flex-1">
+                                        <Form.Item
+                                            name="avatarUrl"
+                                            label={<span className="font-bold text-xs uppercase tracking-wider">{t('admin.users.form.avatarUrl')}</span>}
+                                            style={{ marginBottom: 8 }}
+                                        >
+                                            <Input
+                                                placeholder="https://example.com/avatar.jpg"
+                                                allowClear
+                                                className="h-10 border-2 border-neutral-300 focus:border-black"
+                                                onChange={(e) => {
+                                                    const v = e?.target?.value || '';
+                                                    setAvatarPreview(v.trim() ? v.trim() : null);
+                                                }}
                                             />
-                                        ) : (
-                                            <div className="text-neutral-400 text-xs text-center">{t('common.noImage')}</div>
-                                        )}
+                                        </Form.Item>
+                                        <p className="text-xs text-neutral-500">
+                                            {t('admin.users.form.avatarHelp') || "Enter a valid image URL to verify the preview."}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <div className="font-bold text-xs uppercase tracking-wider mb-2">{t('admin.users.form.avatarPreview')}</div>
+                                        <div className="w-32 h-32 border-2 border-black flex items-center justify-center bg-neutral-100 overflow-hidden relative group">
+                                            {avatarPreview ? (
+                                                <Image
+                                                    src={avatarPreview}
+                                                    preview={{ mask: t('common.clickToPreview') }}
+                                                    className="w-full h-full object-cover"
+                                                    wrapperClassName="w-full h-full"
+                                                />
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center text-neutral-400 gap-2">
+                                                    <ImageIcon className="w-8 h-8 opacity-50" />
+                                                    <span className="text-[10px] uppercase font-bold tracking-wider">{t('common.noImage')}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

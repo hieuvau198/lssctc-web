@@ -2407,7 +2407,8 @@
         "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu",
         "passwordMismatch": "Mật khẩu không khớp",
         "avatarUrl": "URL ảnh đại diện",
-        "avatarPreview": "Xem trước ảnh đại diện"
+        "avatarPreview": "Xem trước ảnh đại diện",
+        "avatarHelp": "Nhập URL hình ảnh hợp lệ để xem trước."
       },
       "validation": {
         "fullNameRequired": "Vui lòng nhập họ và tên",
