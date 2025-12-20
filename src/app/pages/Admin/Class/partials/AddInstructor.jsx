@@ -1,4 +1,4 @@
-import { App, Button, Select } from 'antd';
+import { App, Button, Select, Tooltip } from 'antd';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,7 @@ import { getInstructors } from '../../../../apis/Admin/AdminUser';
 import { addInstructorToClass, fetchAvailableInstructors } from '../../../../apis/ProgramManager/ClassesApi';
 
 // Component: Add/assign an instructor to a class (similar style to AssignCourse)
-export default function AddInstructor({ classItem, onAssigned }) {
+export default function AddInstructor({ classItem, onAssigned, allowAssign = true }) {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [editing, setEditing] = useState(false);
@@ -87,14 +87,17 @@ export default function AddInstructor({ classItem, onAssigned }) {
     <div className="flex justify-end items-center gap-2">
       {!editing ? (
         <div className="flex justify-end mb-4">
-          <Button
-            icon={<Plus size={16} strokeWidth={2.5} />}
-            onClick={() => { setEditing(true); setError(null); }}
-            className="bg-yellow-400 text-black border border-yellow-500 font-bold h-9 px-4 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all flex items-center gap-2"
-            style={{ backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
-          >
-            {t('admin.classes.buttons.assignInstructor')}
-          </Button>
+          <Tooltip title={!allowAssign ? "Please add schedule timeslots first" : ""}>
+            <Button
+              icon={<Plus size={16} strokeWidth={2.5} />}
+              onClick={() => { setEditing(true); setError(null); }}
+              disabled={!allowAssign}
+              className="bg-yellow-400 text-black border border-yellow-500 font-bold h-9 px-4 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={!allowAssign ? {} : { backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
+            >
+              {t('admin.classes.buttons.assignInstructor')}
+            </Button>
+          </Tooltip>
         </div>
       ) : (
         <div className="inline-flex items-center gap-2 mb-4">

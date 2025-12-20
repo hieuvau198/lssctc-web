@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createTimeslot, getInstructorClassTimeslots, updateTimeslot } from '../../../../apis/TimeSlot/TimeSlot';
 
-export default function ClassTimeslotManage({ classItem }) {
+export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
     const { t } = useTranslation();
     const { message } = App.useApp();
     const [timeslots, setTimeslots] = useState([]);
@@ -14,6 +14,12 @@ export default function ClassTimeslotManage({ classItem }) {
     const [submitting, setSubmitting] = useState(false);
     const [editingSlot, setEditingSlot] = useState(null);
     const [form] = Form.useForm();
+
+    useEffect(() => {
+        if (onTimeSlotsChange) {
+            onTimeSlotsChange(timeslots.length > 0);
+        }
+    }, [timeslots, onTimeSlotsChange]);
 
     const fetchSlots = async () => {
         if (!classItem?.id) return;

@@ -6,7 +6,7 @@ import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import AddInstructor from "./AddInstructor";
 import { UserCog, Phone, Mail, Calendar } from "lucide-react";
 
-const InstructorCard = ({ classItem }) => {
+const InstructorCard = ({ classItem, allowAssign }) => {
   const { t } = useTranslation();
   const [instructor, setInstructor] = useState(null);
   const [instructorLoading, setInstructorLoading] = useState(false);
@@ -62,7 +62,7 @@ const InstructorCard = ({ classItem }) => {
       <div className="ml-0 mb-6">
         {!instructor && !instructorLoading && (
           <div className="bg-slate-50 border-2 border-dashed border-slate-300 p-6 flex items-center justify-center">
-            <AddInstructor classItem={classItem} onAssigned={handleAssigned} />
+            <AddInstructor classItem={classItem} onAssigned={handleAssigned} allowAssign={allowAssign} />
           </div>
         )}
       </div>

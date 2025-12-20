@@ -65,6 +65,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [statusLoading, setStatusLoading] = React.useState(false);
+  const [hasTimeSlots, setHasTimeSlots] = React.useState(false);
 
   const handleStatusAction = async (action, actionName) => {
     setStatusLoading(true);
@@ -309,22 +310,22 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           </div>
         </div>
 
+        {/* Schedule / Timeslots */}
+        <div id="class-schedule" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+          <SectionHeader icon={CalendarDays} title={t('admin.classes.schedule', 'Schedule')} />
+          <ClassTimeslotManage classItem={classItem} onTimeSlotsChange={setHasTimeSlots} />
+        </div>
+
         {/* Instructor Section */}
         <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
           <SectionHeader icon={UserCheck} title={t('admin.classes.instructor.title', 'Instructor')} />
-          <InstructorCard classItem={classItem} />
+          <InstructorCard classItem={classItem} allowAssign={hasTimeSlots} />
         </div>
 
         {/* Members / Trainees Table */}
         <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
           <SectionHeader icon={Users} title={t('admin.classes.members.title', 'Class Members')} />
           <ClassMembersTable classItem={classItem} />
-        </div>
-
-        {/* Schedule / Timeslots */}
-        <div id="class-schedule" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={CalendarDays} title={t('admin.classes.schedule', 'Schedule')} />
-          <ClassTimeslotManage classItem={classItem} />
         </div>
 
         {/* Parent Course Info */}
