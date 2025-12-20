@@ -113,17 +113,7 @@ const InstructorCard = ({ classItem }) => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 group-hover:border-slate-200 transition-colors">
-                  <div className="w-8 h-8 rounded-none bg-white border border-slate-200 flex items-center justify-center text-slate-400">
-                    <Calendar size={14} />
-                  </div>
-                  <div>
-                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{t('admin.classes.instructorDetail.hireDate')}</div>
-                    <div className="font-semibold text-slate-700">
-                      <DayTimeFormat value={instructor.hireDate} />
-                    </div>
-                  </div>
-                </div>
+                {/* Hire Date Removed */}
               </div>
             </div>
           </div>

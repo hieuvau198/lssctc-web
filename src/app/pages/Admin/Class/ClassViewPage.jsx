@@ -113,10 +113,7 @@ const ClassViewPage = () => {
                   {classItem.name}
                 </span>
                 <div className="text-neutral-400 text-sm mt-2 font-mono flex items-center gap-4">
-                  <span className="bg-white/10 px-2 py-0.5 border border-white/20">
-                    CODE: {classItem.classCode?.name || classItem.classCode || "NO CODE"}
-                  </span>
-                  <span className="text-yellow-500">ID: #{classItem.id}</span>
+                  {/* Code and ID removed from banner */}
                 </div>
               </div>
             </div>

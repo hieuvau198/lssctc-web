@@ -235,7 +235,7 @@ const ClassMembersTable = ({ classItem }) => {
         }
     };
 
-    const members = (trainees && trainees.length > 0) ? trainees : (Array.isArray(classItem.members) ? classItem.members : []);
+    const members = trainees || [];
 
     return (
         <div>

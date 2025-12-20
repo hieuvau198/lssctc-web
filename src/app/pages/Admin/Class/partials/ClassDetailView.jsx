@@ -196,10 +196,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           <div className="relative group">
             <div className="absolute inset-0 border-2 border-black translate-x-2 translate-y-2 bg-neutral-900" />
             <div className="relative border-2 border-black bg-yellow-400 p-6">
-              {/* ID Badge */}
-              <div className="absolute top-0 right-0 bg-black text-white px-2 py-1 text-xs font-black">
-                ID: {classItem.id}
-              </div>
+              {/* ID Badge Removed */}
 
               <div className="flex flex-col items-center text-center pt-4">
                 <div className="w-16 h-16 bg-black flex items-center justify-center mb-4">
@@ -209,7 +206,10 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
                   {classItem.name}
                 </span>
                 <div className="text-black font-mono text-sm">
-                  {classItem.courseCode || classItem.code || 'CLASS'}
+                  {(() => {
+                    const code = classItem.classCode?.name || classItem.classCode || classItem.courseCode || classItem.code;
+                    return code ? `CODE: ${code}` : 'CLASS';
+                  })()}
                 </div>
               </div>
             </div>
@@ -280,12 +280,12 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
                 {t('admin.classes.status.currentStatus', 'Current Status')}:
               </span>
               <div className={`px-4 py-2 text-sm font-black uppercase tracking-wider border-2 ${statusInfo.key === 'Open' || statusInfo.key === 'Inprogress'
-                  ? 'bg-green-100 border-green-500 text-green-700'
-                  : statusInfo.key === 'Completed'
-                    ? 'bg-blue-100 border-blue-500 text-blue-700'
-                    : statusInfo.key === 'Cancelled'
-                      ? 'bg-red-100 border-red-500 text-red-700'
-                      : 'bg-yellow-100 border-yellow-500 text-yellow-700'
+                ? 'bg-green-100 border-green-500 text-green-700'
+                : statusInfo.key === 'Completed'
+                  ? 'bg-blue-100 border-blue-500 text-blue-700'
+                  : statusInfo.key === 'Cancelled'
+                    ? 'bg-red-100 border-red-500 text-red-700'
+                    : 'bg-yellow-100 border-yellow-500 text-yellow-700'
                 }`}>
                 {t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}
               </div>

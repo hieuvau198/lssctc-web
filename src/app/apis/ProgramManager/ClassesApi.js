@@ -147,7 +147,7 @@ export async function fetchClassMembers(classId) {
  */
 export async function fetchClassTrainees(classId, { page = 1, pageSize = 10 } = {}) {
 	if (classId == null) throw new Error("classId is required");
-	const qs = buildQuery({ page, pageSize });
+	const qs = buildQuery({ pageNumber: page, pageSize });
 	const { data } = await apiClient.get(`${CLASSES_BASE}/${classId}/trainees${qs}`);
 	// normalize paged response or plain array
 	if (Array.isArray(data)) {
