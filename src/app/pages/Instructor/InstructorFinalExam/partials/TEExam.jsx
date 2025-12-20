@@ -176,11 +176,10 @@ export default function TEExam({ classId }) {
         <button
           onClick={() => handleEdit(record)}
           disabled={isExamCompleted} // [UPDATED]
-          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${
-            isExamCompleted
+          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${isExamCompleted
             ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
             : 'border-black bg-white hover:bg-yellow-400 text-black'
-          }`}
+            }`}
         >
           <Edit3 className="w-4 h-4" />
         </button>
@@ -202,29 +201,15 @@ export default function TEExam({ classId }) {
     },
     {
       title: <span className="uppercase font-black text-xs">Exam Code</span>,
-      dataIndex: 'examCode',
-      render: (code, record) => {
+      key: 'examCode',
+      render: (_, record) => {
+        // Try to get examCode from partials first, then from record directly
         const partial = record.partials?.find(p => p.type === 'Theory');
-        if (!partial) return '-';
-
-        return (
-          <div className="flex items-center gap-2">
-            <span className="font-mono font-black text-yellow-600">{partial.examCode || '-'}</span>
-            {!partial.examCode && (
-              <button
-                onClick={() => onGenerateCode(record.id)}
-                disabled={isExamCompleted} // [UPDATED]
-                className={`px-2 py-1 font-bold uppercase text-xs border-2 flex items-center gap-1 transition-all ${
-                  isExamCompleted
-                  ? 'bg-neutral-200 text-neutral-400 border-neutral-400 cursor-not-allowed'
-                  : 'bg-black text-yellow-400 border-black hover:bg-yellow-400 hover:text-black'
-                }`}
-              >
-                <RefreshCw className="w-3 h-3" />
-                Gen
-              </button>
-            )}
-          </div>
+        const code = partial?.examCode || record.examCode;
+        return code ? (
+          <span className="font-mono font-black text-yellow-600">{code}</span>
+        ) : (
+          <span className="text-neutral-400">-</span>
         );
       }
     },
@@ -233,9 +218,10 @@ export default function TEExam({ classId }) {
       key: 'score',
       render: (_, record) => {
         const partial = record.partials?.find(p => p.type === 'Theory');
-        return partial?.marks !== null && partial?.marks !== undefined ? (
-          <span className="px-3 py-1 bg-yellow-400 text-black font-black text-sm">{partial.marks}</span>
-        ) : '-';
+        const marks = partial?.marks ?? record.marks;
+        return marks !== null && marks !== undefined ? (
+          <span className="px-3 py-1 bg-yellow-400 text-black font-black text-sm">{marks}</span>
+        ) : <span className="text-neutral-400">-</span>;
       }
     },
     {
@@ -243,13 +229,14 @@ export default function TEExam({ classId }) {
       key: 'result',
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Theory');
-        if (!p) return '-';
+        const status = p?.status || r.status;
+        const isPass = p?.isPass ?? r.isPass;
 
-        if (p.status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">Not Yet</span>;
+        if (status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">Not Yet</span>;
 
-        if (p.isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase">PASS</span>;
-        if (p.isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase">FAIL</span>;
-        return '-';
+        if (isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase">PASS</span>;
+        if (isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase">FAIL</span>;
+        return <span className="text-neutral-400">-</span>;
       }
     },
     {
@@ -257,11 +244,11 @@ export default function TEExam({ classId }) {
       key: 'status',
       render: (_, record) => {
         const p = record.partials?.find(p => p.type === 'Theory');
-        let statusText = p?.status || 'Pending';
+        let statusText = p?.status || record.status || 'Pending';
         let bgColor = 'bg-neutral-100 text-neutral-600';
 
-        if (p?.status === 'Approved') bgColor = 'bg-yellow-400 text-black';
-        else if (p?.status === 'Submitted') bgColor = 'bg-neutral-800 text-yellow-400';
+        if (statusText === 'Approved') bgColor = 'bg-yellow-400 text-black';
+        else if (statusText === 'Submitted') bgColor = 'bg-neutral-800 text-yellow-400';
 
         if (statusText === 'NotYet') statusText = 'NOT YET';
 
@@ -271,17 +258,10 @@ export default function TEExam({ classId }) {
   ];
 
   return (
-    <div className="py-6">
-      {/* Header */}
-      <div className="mb-6 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
-            <FileText className="w-5 h-5 text-black" />
-          </div>
-          <h2 className="text-xl font-black uppercase tracking-tight m-0">{t('instructor.finalExam.teTitle')}</h2>
-        </div>
-        {/* [UPDATED] */}
-        {configs.length === 0 && !isExamCompleted && (
+    <div className="py-4">
+      {/* Action Button - Only show when no configs exist */}
+      {configs.length === 0 && !isExamCompleted && (
+        <div className="mb-4 flex justify-end">
           <button
             onClick={handleCreate}
             className="h-10 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
@@ -289,8 +269,8 @@ export default function TEExam({ classId }) {
             <Plus className="w-4 h-4" />
             {t('instructor.finalExam.createExam')}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Config Table */}
       <div className="bg-white border-2 border-black">
@@ -305,55 +285,104 @@ export default function TEExam({ classId }) {
         />
       </div>
 
-      {/* Modals ... */}
+      {/* Create/Edit Modal - Industrial Theme */}
       <Modal
         title={
-          <div className="flex items-center gap-2 font-black uppercase">
-            <FileText className="w-5 h-5" />
-            {selectedConfig ? "Update Configuration" : "Create Theory Exam"}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <FileText className="w-4 h-4 text-black" />
+            </div>
+            <span className="font-black uppercase tracking-tight">
+              {selectedConfig ? "Update Configuration" : "Create Theory Exam"}
+            </span>
           </div>
         }
         open={createModalOpen}
-        onOk={handleSave}
         onCancel={() => setCreateModalOpen(false)}
-        okText="Save"
-        okButtonProps={{ className: 'bg-yellow-400 text-black font-bold uppercase border-2 border-black hover:bg-yellow-500' }}
+        footer={
+          <div className="flex justify-end gap-3 pt-4 border-t-2 border-neutral-200">
+            <button
+              onClick={() => setCreateModalOpen(false)}
+              className="px-6 py-2.5 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-6 py-2.5 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-colors"
+            >
+              Save
+            </button>
+          </div>
+        }
+        className="[&_.ant-modal-header]:border-b-4 [&_.ant-modal-header]:border-yellow-400 [&_.ant-modal-header]:pb-4"
       >
-        <Form form={form} layout="vertical">
-          <Form.Item name="quizId" label={<span className="font-bold uppercase text-xs">Select Quiz</span>} rules={[{ required: true }]}>
+        <Form form={form} layout="vertical" className="pt-4">
+          <Form.Item
+            name="quizId"
+            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Select Quiz</span>}
+            rules={[{ required: true, message: 'Please select a quiz' }]}
+          >
             <Select
               options={quizzes.map(q => ({ label: q.name, value: q.id }))}
               placeholder="Choose a quiz"
+              className="[&_.ant-select-selector]:!border-2 [&_.ant-select-selector]:!border-neutral-300 [&_.ant-select-selector]:!h-11 [&_.ant-select-selector]:hover:!border-black [&_.ant-select-focused_.ant-select-selector]:!border-yellow-400 [&_.ant-select-focused_.ant-select-selector]:!shadow-none"
             />
           </Form.Item>
           <div className="grid grid-cols-2 gap-4">
-            <Form.Item name="duration" label={<span className="font-bold uppercase text-xs">Duration (minutes)</span>} rules={[{ required: true }]}>
-              <InputNumber min={1} className="w-full" />
+            <Form.Item
+              name="duration"
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Duration (minutes)</span>}
+              rules={[{ required: true, message: 'Required' }]}
+            >
+              <InputNumber
+                min={1}
+                className="!w-full [&_.ant-input-number-input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
+              />
             </Form.Item>
-            <Form.Item name="examWeight" label={<span className="font-bold uppercase text-xs">Weight (%)</span>} rules={[{ required: true }]}>
-              <InputNumber min={0} max={100} className="w-full" />
+            <Form.Item
+              name="examWeight"
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Weight (%)</span>}
+              rules={[{ required: true, message: 'Required' }]}
+            >
+              <InputNumber
+                min={0}
+                max={100}
+                className="!w-full [&_.ant-input-number-input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
+              />
             </Form.Item>
           </div>
-          <Form.Item name="timeRange" label={<span className="font-bold uppercase text-xs">Time Range</span>}>
-            <DatePicker.RangePicker showTime className="w-full" />
+          <Form.Item
+            name="timeRange"
+            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Time Range</span>}
+          >
+            <DatePicker.RangePicker
+              showTime
+              className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
+            />
           </Form.Item>
         </Form>
       </Modal>
 
-      {/* View Details Modal */}
+      {/* View Details Modal - Industrial Theme */}
       <Modal
         title={
-          <div className="flex items-center gap-2 font-black uppercase">
-            <Users className="w-5 h-5" />
-            Student Exam Codes & Status
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <Users className="w-4 h-4 text-black" />
+            </div>
+            <span className="font-black uppercase tracking-tight">
+              Student Exam Codes & Status
+            </span>
           </div>
         }
         open={viewModalOpen}
         onCancel={() => setViewModalOpen(false)}
         footer={null}
         width={900}
+        className="[&_.ant-modal-header]:border-b-4 [&_.ant-modal-header]:border-yellow-400 [&_.ant-modal-header]:pb-4"
       >
-        <div className="border-2 border-black">
+        <div className="border-2 border-black mt-4">
           <div className="h-1 bg-yellow-400" />
           <Table
             dataSource={studentExams}
