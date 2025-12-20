@@ -77,10 +77,6 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
                 alt={course.name}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter group-hover:brightness-110"
               />
-              {/* Optional ID Badge on Image */}
-              <div className="absolute top-0 right-0 bg-yellow-400 px-2 py-1 border-l-2 border-b-2 border-black text-xs font-black">
-                ID: {course.id}
-              </div>
             </div>
           </div>
 

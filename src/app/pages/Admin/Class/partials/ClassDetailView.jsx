@@ -209,7 +209,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
                 <div className="text-black font-mono text-sm">
                   {(() => {
                     const code = classItem.classCode?.name || classItem.classCode || classItem.courseCode || classItem.code;
-                    return code ? `CODE: ${code}` : 'CLASS';
+                    return code ? `${code}` : 'CLASS';
                   })()}
                 </div>
               </div>
