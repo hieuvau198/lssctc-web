@@ -2467,7 +2467,9 @@
           "noChangeHeader": "Do not change the header row."
         }
       },
-      "traineeDetail": "Trainee Detail"
+      "traineeDetail": "Trainee Detail",
+      "instructorDetail": "Instructor Detail",
+      "simManagerDetail": "Simulation Manager Detail"
     },
     "programs": {
       "title": "Program Management",

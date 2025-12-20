@@ -13,10 +13,10 @@ export default function Avt({ onLogout }) {
   const { message } = App.useApp();
   const nav = useNavigate();
   const { t } = useTranslation();
-  
+
   const authState = useAuthStore();
   const persistedAvatar = sAvatarUrl.use();
-  
+
   const userName = authState.fullName || authState.name || 'User';
   const initial = userName.charAt(0).toUpperCase();
   const avatarUrl = authState.avatarUrl || persistedAvatar || null;
@@ -71,10 +71,10 @@ export default function Avt({ onLogout }) {
       <button
         type="button"
         title="Account"
-        className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-blue-600 text-white font-semibold select-none shadow-sm outline-none focus:ring-2 focus:ring-blue-300 overflow-hidden"
+        className="inline-flex cursor-pointer items-center justify-center w-9 h-9 rounded-full bg-blue-600 text-white font-semibold select-none shadow-sm outline-none focus:ring-2 focus:ring-blue-300 overflow-hidden"
       >
-        <img 
-          src={getAvatarUrl()} 
+        <img
+          src={getAvatarUrl()}
           alt={userName}
           className="w-full h-full object-cover rounded-full"
           onError={(e) => {

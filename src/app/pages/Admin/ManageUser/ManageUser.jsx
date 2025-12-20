@@ -185,39 +185,39 @@ export default function ManageUser() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto h-[calc(100vh-60px)] flex flex-col pb-2">
       {/* Header - Industrial Theme */}
-      <div className="bg-black border-2 border-black p-5 mb-2">
-        <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-2" />
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-12 h-12 bg-yellow-400 border-2 border-black flex items-center justify-center">
-              <Users className="w-6 h-6 text-black" />
+      <div className="bg-black border-2 border-black px-4 py-3 mb-0 flex-none z-10">
+        <div className="h-1 bg-yellow-400 -mx-4 -mt-3 mb-3" />
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <Users className="w-5 h-5 text-black" />
             </div>
             <div>
-              <span className="text-2xl font-black text-white uppercase tracking-tight">
+              <span className="text-xl font-black text-white uppercase tracking-tight leading-none block">
                 {t('admin.users.title')}
               </span>
-              <p className="text-yellow-400 text-sm mt-1 font-medium">
+              <p className="text-yellow-400 text-xs mt-0.5 font-bold">
                 {activeKey === 'trainees' && `${traineeData.totalCount} ${t('admin.users.trainee').toLowerCase()}`}
                 {activeKey === 'instructors' && `${instructorData.totalCount} ${t('admin.users.instructor').toLowerCase()}`}
                 {activeKey === 'simulation-managers' && `${simManagerData.totalCount} ${t('admin.users.simulatorManager').toLowerCase()}`}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={handleImportClick}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black font-bold uppercase tracking-wider text-sm border-2 border-black hover:bg-neutral-100 hover:scale-[1.02] transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-black font-bold uppercase tracking-wider text-xs border-2 border-black hover:bg-neutral-100 hover:scale-[1.02] transition-all"
             >
-              <FileSpreadsheet className="w-4 h-4" />
+              <FileSpreadsheet className="w-3.5 h-3.5" />
               {getImportLabel()}
             </button>
             <button
               onClick={() => setDrawerVisible(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-400 text-black font-bold uppercase tracking-wider text-sm border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-400 text-black font-bold uppercase tracking-wider text-xs border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
               {getButtonLabel()}
             </button>
           </div>
@@ -225,11 +225,10 @@ export default function ManageUser() {
       </div>
 
       {/* Main Content Card */}
-      <div className="bg-white border-2 border-black overflow-hidden">
-        <div className="h-1 bg-yellow-400" />
+      <div className="bg-white border-x-2 border-b-2 border-black overflow-hidden flex-1 flex flex-col min-h-0">
 
         {/* Industrial Tabs */}
-        <div className="border-b-2 border-neutral-200">
+        <div className="border-b-2 border-neutral-200 flex-none bg-neutral-50/50">
           <div className="flex gap-0 overflow-x-auto">
             {MENU_ITEMS.map((item) => {
               const IconComponent = item.icon;
@@ -237,12 +236,12 @@ export default function ManageUser() {
                 <Link
                   key={item.key}
                   to={item.to}
-                  className={`px-6 py-4 font-bold uppercase tracking-wider text-sm border-b-4 transition-all whitespace-nowrap flex items-center gap-2 ${activeKey === item.key
-                    ? 'border-yellow-400 text-black bg-yellow-50'
-                    : 'border-transparent text-neutral-400 hover:text-black hover:border-neutral-300 hover:bg-neutral-50'
+                  className={`px-5 py-2.5 font-bold uppercase tracking-wider text-xs border-b-4 transition-all whitespace-nowrap flex items-center gap-2 ${activeKey === item.key
+                    ? 'border-yellow-400 text-black bg-white'
+                    : 'border-transparent text-neutral-500 hover:text-black hover:border-neutral-300 hover:bg-neutral-100'
                     }`}
                 >
-                  <IconComponent className="w-5 h-5" />
+                  <IconComponent className="w-4 h-4" />
                   {item.label}
                 </Link>
               );
@@ -251,34 +250,34 @@ export default function ManageUser() {
         </div>
 
         {/* Integrated Search Bar */}
-        <div className="px-6 py-4 bg-neutral-50 border-b-2 border-neutral-200">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
+        <div className="px-4 py-2 bg-white border-b-2 border-neutral-200 flex-none shadow-sm z-10">
+          <div className="flex flex-col md:flex-row gap-3 items-center">
             {/* Custom Search Input */}
             <div className="flex-1 w-full relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                <Search className="w-5 h-5 text-neutral-400" />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Search className="w-4 h-4 text-neutral-400" />
               </div>
               <input
                 type="text"
-                placeholder={t('admin.users.searchPlaceholder') || "Search by name, email, phone..."}
+                placeholder={t('admin.users.searchPlaceholder') || "Search..."}
                 value={localSearchTerm}
                 onChange={(e) => setLocalSearchTerm(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch(localSearchTerm)}
-                className="w-full h-12 pl-12 pr-4 bg-white border-2 border-neutral-300 focus:border-black focus:ring-0 font-medium text-black placeholder-neutral-400 transition-colors outline-none"
+                className="w-full h-9 pl-10 pr-4 bg-neutral-50 border border-neutral-300 focus:border-black focus:bg-white focus:ring-1 focus:ring-black font-medium text-sm text-black placeholder-neutral-400 transition-all outline-none"
               />
               {localSearchTerm && (
                 <button
                   onClick={() => { setLocalSearchTerm(''); handleSearch(''); }}
-                  className="absolute inset-y-0 right-14 flex items-center pr-2 text-neutral-400 hover:text-black"
+                  className="absolute inset-y-0 right-10 flex items-center pr-2 text-neutral-400 hover:text-black"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               )}
               <button
                 onClick={() => handleSearch(localSearchTerm)}
-                className="absolute inset-y-0 right-0 flex items-center px-5 bg-yellow-400 text-black font-bold uppercase text-sm border-l-2 border-black hover:bg-yellow-500 transition-colors"
+                className="absolute inset-y-0 right-0 flex items-center px-4 bg-yellow-400 text-black font-bold uppercase text-xs border-l border-black hover:bg-yellow-500 transition-colors"
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-3.5 h-3.5" />
               </button>
             </div>
 
@@ -288,11 +287,11 @@ export default function ManageUser() {
               allowClear
               value={statusFilter}
               onChange={handleStatusChange}
-              size="large"
-              style={{ width: 180 }}
-              className="industrial-select"
+              size="middle"
+              style={{ width: 150 }}
+              className="industrial-select-compact"
             >
-              <Option value={undefined}>{t('common.all') || "All Status"}</Option>
+              <Option value={undefined}>{t('common.all') || "All"}</Option>
               <Option value={true}>{t('common.active') || "Active"}</Option>
               <Option value={false}>{t('common.inactive') || "Inactive"}</Option>
             </Select>
@@ -300,7 +299,7 @@ export default function ManageUser() {
         </div>
 
         {/* Content Area */}
-        <div className="p-6">
+        <div className="flex-1 overflow-hidden">
           <Outlet
             context={{
               setDrawerVisible,
@@ -314,7 +313,8 @@ export default function ManageUser() {
               instructorData,
               loadingInstructors,
               simManagerData,
-              loadingSimManagers
+              loadingSimManagers,
+              tableScroll: { y: 'calc(100vh - 350px)' }
             }}
           />
         </div>
@@ -322,14 +322,44 @@ export default function ManageUser() {
 
       {/* Industrial Select Styles */}
       <style>{`
-        .industrial-select .ant-select-selector {
-          border: 2px solid #000 !important;
-          height: 48px !important;
+        .industrial-select-compact .ant-select-selector {
+          border: 1px solid #d4d4d4 !important;
+          height: 36px !important;
+          background-color: #fafafa !important;
         }
-        .industrial-select .ant-select-selection-item,
-        .industrial-select .ant-select-selection-placeholder {
-          line-height: 44px !important;
+        .industrial-select-compact.ant-select-focused .ant-select-selector {
+          border-color: #000 !important;
+          box-shadow: 0 0 0 1px #000 !important;
+        }
+        .industrial-select-compact .ant-select-selection-item,
+        .industrial-select-compact .ant-select-selection-placeholder {
+          line-height: 34px !important;
           font-weight: 500 !important;
+          font-size: 13px !important;
+        }
+        .industrial-modal .ant-modal-content {
+          border: 2px solid #000 !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+        }
+        .industrial-modal .ant-modal-header {
+          border-radius: 0 !important;
+          border-bottom: 2px solid #000 !important;
+          margin-bottom: 0 !important;
+          background: #fff !important;
+          padding: 16px 24px !important;
+        }
+        .industrial-modal .ant-modal-title {
+          font-weight: 900 !important;
+          text-transform: uppercase !important;
+        }
+        .industrial-modal .ant-modal-close {
+          top: 16px !important;
+          right: 20px !important;
+        }
+        .industrial-modal .ant-modal-body {
+          padding: 24px !important;
         }
       `}</style>
 

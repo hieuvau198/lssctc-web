@@ -24,7 +24,8 @@ export default function SimulationManagerTable() {
     page,
     pageSize,
     setPage,
-    setPageSize
+    setPageSize,
+    tableScroll
   } = useOutletContext() || {};
 
   const [data, setData] = useState([]);
@@ -170,7 +171,7 @@ export default function SimulationManagerTable() {
         rowKey="key"
         loading={loadingSimManagers}
         emptyContent={emptyContent}
-        scrollY={360}
+        scroll={tableScroll}
         pagination={{
           current: page,
           pageSize: pageSize,
@@ -189,61 +190,68 @@ export default function SimulationManagerTable() {
       {/* Industrial Modal */}
       <Modal
         title={
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
-              <Settings className="w-4 h-4 text-black" />
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-yellow-400 border border-black flex items-center justify-center">
+              <Settings className="w-3.5 h-3.5 text-black" />
             </div>
-            <span className="font-bold uppercase">{t('admin.users.simManagerDetail') || "Simulation Manager Detail"}</span>
+            <span className="font-bold uppercase text-sm">{t('admin.users.simManagerDetail') || "Simulation Manager Detail"}</span>
           </div>
         }
         open={isViewModalOpen}
         onCancel={() => setIsViewModalOpen(false)}
         footer={null}
-        width={600}
+        width={500}
+        centered
+        className="industrial-modal"
       >
         {viewLoading ? (
-          <div className="flex justify-center py-10">
-            <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+          <div className="flex justify-center py-8">
+            <div className="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : viewingUser ? (
-          <div className="flex flex-col gap-6">
-            <div className="flex items-center gap-4 border-b-2 border-black pb-4">
-              <Avatar
-                size={80}
-                src={viewingUser.avatarUrl}
-                style={{ backgroundColor: '#facc15', color: '#000', fontWeight: 'bold' }}
-              >
-                {getInitials(viewingUser.fullName)}
-              </Avatar>
-              <div>
-                <h3 className="text-xl font-black uppercase m-0">{viewingUser.fullName}</h3>
-                <div className="text-neutral-500">{viewingUser.email}</div>
-                <span className={`inline-block mt-2 px-3 py-1 text-xs font-bold uppercase border ${viewingUser.isActive
-                  ? 'bg-green-100 text-green-800 border-green-300'
-                  : 'bg-red-100 text-red-800 border-red-300'
+          <div>
+            {/* Header Profile Section */}
+            <div className="flex items-center gap-4 border-b border-neutral-200 pb-4 mb-4">
+              <div className="relative">
+                <Avatar
+                  size={64}
+                  src={viewingUser.avatarUrl}
+                  style={{ backgroundColor: '#facc15', color: '#000', fontWeight: 'bold', border: '2px solid #000' }}
+                >
+                  {getInitials(viewingUser.fullName)}
+                </Avatar>
+                <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${viewingUser.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-black uppercase truncate m-0 leading-tight">{viewingUser.fullName}</h3>
+                <p className="text-sm text-neutral-500 truncate mb-1">{viewingUser.email}</p>
+                <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase border ${viewingUser.isActive
+                  ? 'bg-green-50 text-green-700 border-green-200'
+                  : 'bg-red-50 text-red-700 border-red-200'
                   }`}>
                   {viewingUser.isActive ? t('common.active') : t('common.inactive')}
                 </span>
               </div>
             </div>
 
-            <div className="space-y-3">
+            {/* Compact Details Grid */}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4 bg-neutral-50 p-4 border border-neutral-200">
               {[
-                { label: t('admin.users.table.fullName'), value: viewingUser.fullName },
-                { label: t('admin.users.table.email'), value: viewingUser.email },
+                { label: t('admin.users.table.fullName'), value: viewingUser.fullName, full: true },
+                { label: t('admin.users.table.email'), value: viewingUser.email, full: true },
                 { label: t('admin.users.table.phone'), value: viewingUser.phoneNumber || '-' },
                 { label: 'Role', value: viewingUser.role },
                 { label: 'Username', value: viewingUser.username },
               ].map((item, idx) => (
-                <div key={idx} className="border-2 border-neutral-200 p-3">
-                  <p className="text-xs font-bold uppercase text-neutral-500 mb-1">{item.label}</p>
-                  <p className="font-medium text-black">{item.value}</p>
+                <div key={idx} className={`${item.full ? 'col-span-2' : 'col-span-1'}`}>
+                  <p className="text-[10px] font-bold uppercase text-neutral-400 mb-0.5 tracking-wide">{item.label}</p>
+                  <p className="text-sm font-bold text-black break-all" title={item.value}>{item.value}</p>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          <Empty description="No Data" />
+          <Empty description="No Data" image={Empty.PRESENTED_IMAGE_SIMPLE} />
         )}
       </Modal>
 

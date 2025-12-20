@@ -2469,7 +2469,9 @@
           "noChangeHeader": "Không thay đổi hàng tiêu đề."
         }
       },
-      "traineeDetail": "Chi tiết học viên"
+      "traineeDetail": "Chi tiết Học viên",
+      "instructorDetail": "Chi tiết Giảng viên",
+      "simManagerDetail": "Chi tiết Quản lý Mô phỏng"
     },
     "programs": {
       "title": "Quản lý chương trình",
