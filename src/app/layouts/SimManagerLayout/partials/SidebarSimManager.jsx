@@ -198,7 +198,7 @@ export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onM
                 </div>
               ) : (
                 <div className="w-full">
-                  <div className="bg-neutral-800 border border-neutral-700 w-full flex items-center justify-between px-3 py-2.5">
+                  <div className="bg-neutral-700 border border-neutral-700 w-full flex items-center justify-between px-3 py-2.5">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {(() => {
                         const persisted = sAvatarUrl.use();

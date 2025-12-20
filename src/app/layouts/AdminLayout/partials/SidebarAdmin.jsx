@@ -28,13 +28,13 @@ export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobile
       {mobileOpen && (
         <div
           onClick={onMobileClose}
-          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+          className="fixed inset-0 bg-neutral-700 z-40 md:hidden"
           aria-hidden
         />
       )}
       <aside
         className={[
-          'flex flex-col bg-neutral-900 text-white z-50',
+          'flex flex-col bg-neutral-700 text-white z-50',
           'transition-all duration-300 ease-in-out',
           collapsed ? 'w-20' : 'w-64',
           'h-screen fixed md:sticky top-0 left-0',
