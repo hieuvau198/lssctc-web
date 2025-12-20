@@ -341,7 +341,7 @@ const PMClasses = () => {
           ) : classes.length === 0 ? (
             <Empty description={t('admin.classes.noClasses')} className="py-20" />
           ) : (
-            <div className="p-6">
+            <div className="">
               <ClassList
                 classes={classes}
                 viewMode={viewMode}
@@ -353,7 +353,7 @@ const PMClasses = () => {
                 onEdit={openEdit}
                 onDelete={handleDelete}
                 deletingId={deletingId}
-                scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
+                scroll={{ x: 'max-content', y: 'calc(100vh - 330px)' }}
               />
             </div>
           )}

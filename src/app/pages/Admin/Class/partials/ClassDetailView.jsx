@@ -89,7 +89,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
     return <Empty description={t('admin.classes.noClassData')} />;
   }
 
-  const dateFormat = "YYYY-MM-DD HH:mm";
+
   const statusInfo = getClassStatus(classItem.status);
 
   // Status action buttons based on current status
@@ -209,7 +209,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
                 <div className="text-black font-mono text-sm">
                   {(() => {
                     const code = classItem.classCode?.name || classItem.classCode || classItem.courseCode || classItem.code;
-                    return code ? `CODE: ${code}` : 'CLASS';
+                    return code ? `${code}` : 'CLASS';
                   })()}
                 </div>
               </div>
@@ -221,13 +221,13 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             {classItem.createdAt && (
               <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
                 <span className="text-neutral-500 font-mono uppercase">{t('common.createdAt', 'Created')}</span>
-                <span className="font-bold">{dayjs(classItem.createdAt).format(dateFormat)}</span>
+                <span className="font-bold"><DayTimeFormat value={classItem.createdAt} /></span>
               </div>
             )}
             {classItem.updatedAt && (
               <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
                 <span className="text-neutral-500 font-mono uppercase">{t('common.updatedAt', 'Updated')}</span>
-                <span className="font-bold">{dayjs(classItem.updatedAt).format(dateFormat)}</span>
+                <span className="font-bold"><DayTimeFormat value={classItem.updatedAt} /></span>
               </div>
             )}
           </div>

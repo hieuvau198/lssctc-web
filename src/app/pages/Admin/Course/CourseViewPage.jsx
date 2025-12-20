@@ -109,8 +109,7 @@ const CourseViewPage = () => {
                   {course.name}
                 </h1>
                 <div className="text-neutral-400 text-sm mt-2 font-mono flex items-center gap-4">
-                  <span className="bg-white/10 px-2 py-0.5 border border-white/20">CODE: {course.courseCode}</span>
-                  <span className="text-yellow-500">ID: #{course.id}</span>
+
                 </div>
               </div>
             </div>

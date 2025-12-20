@@ -4,6 +4,7 @@ import { Avatar } from "antd";
 import { ExternalLink, Layers } from "lucide-react";
 import { IndustrialTable } from "../../../../components/Industrial";
 import dayjs from "dayjs";
+import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 
 const ProgramTableView = ({
   programs,
@@ -25,7 +26,7 @@ const ProgramTableView = ({
       .join('');
   };
 
-  const dateFormat = "YYYY-MM-DD HH:mm";
+
 
   const tableColumns = [
     {
@@ -90,22 +91,11 @@ const ProgramTableView = ({
       dataIndex: "createdAt",
       key: "createdAt",
       width: 160,
-      render: (date) => date ? (
+      render: (date) => (
         <span className="text-neutral-600 text-sm font-medium">
-          {dayjs(date).format(dateFormat)}
+          <DayTimeFormat value={date} />
         </span>
-      ) : "-",
-    },
-    {
-      title: "Updated At",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      width: 160,
-      render: (date) => date ? (
-        <span className="text-neutral-600 text-sm font-medium">
-          {dayjs(date).format(dateFormat)}
-        </span>
-      ) : "-",
+      ),
     },
     {
       title: t('admin.programs.table.status'),
