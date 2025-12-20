@@ -30,7 +30,7 @@ export default function InstructorCard({ instructor }) {
     const initials = instructorData.name.split(' ').filter(Boolean).slice(0, 2).map(n => n[0]).join('').toUpperCase();
 
     return (
-        <div className="bg-black text-white border-4 border-black sticky top-24">
+        <div className="backdrop-blur-xl bg-neutral-900/60 text-white border border-white/20 shadow-xl sticky top-24 rounded-lg overflow-hidden">
             <div className="h-2 bg-yellow-400" />
 
             <div className="p-8">
@@ -40,7 +40,7 @@ export default function InstructorCard({ instructor }) {
                 </h3>
 
                 <div className="mb-6">
-                    <div className="w-32 h-32 mx-auto mb-4 border-4 border-yellow-400 overflow-hidden bg-neutral-900 flex items-center justify-center">
+                    <div className="w-32 h-32 mx-auto mb-4 border-4 border-yellow-400 overflow-hidden bg-white/10 flex items-center justify-center rounded-none shadow-sm">
                         {instructorData.avatar ? (
                             <img
                                 src={instructorData.avatar}
@@ -53,31 +53,31 @@ export default function InstructorCard({ instructor }) {
                     </div>
                     <div className="text-center">
                         <h4 className="text-2xl font-black uppercase mb-1">{instructorData.name}</h4>
-                        <p className="text-sm text-neutral-400 uppercase tracking-wider">{instructorData.role}</p>
+                        <p className="text-sm font-semibold text-neutral-300 uppercase tracking-wider">{instructorData.role}</p>
                     </div>
                 </div>
 
-                <div className="space-y-4 mb-6 pb-6 border-b border-neutral-800">
-                    <p className="text-sm text-neutral-300 leading-relaxed">{instructorData.bio}</p>
+                <div className="space-y-4 mb-6 pb-6 border-b border-white/10">
+                    <p className="text-sm text-neutral-200 leading-relaxed font-normal">{instructorData.bio}</p>
                 </div>
 
                 <div className="space-y-3 mb-6">
                     {instructorData.certifications.map((cert, index) => (
                         <div key={index} className="flex items-center gap-2">
                             <CheckCircle className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-                            <span className="text-sm text-neutral-300">{cert}</span>
+                            <span className="text-sm text-neutral-200 font-normal">{cert}</span>
                         </div>
                     ))}
                 </div>
 
                 <div className="space-y-3">
-                    <div className="flex items-center gap-3 p-3 bg-neutral-900 border border-neutral-800">
+                    <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-sm">
                         <Mail className="w-5 h-5 text-yellow-400" />
-                        <span className="text-sm text-neutral-300 break-all">{instructorData.email}</span>
+                        <span className="text-sm text-neutral-100 break-all font-normal">{instructorData.email}</span>
                     </div>
-                    <div className="flex items-center gap-3 p-3 bg-neutral-900 border border-neutral-800">
+                    <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-sm">
                         <Phone className="w-5 h-5 text-yellow-400" />
-                        <span className="text-sm text-neutral-300">{instructorData.phone}</span>
+                        <span className="text-sm text-neutral-100 font-normal">{instructorData.phone}</span>
                     </div>
                 </div>
             </div>
