@@ -361,6 +361,12 @@ export default function ManageUser() {
         .industrial-modal .ant-modal-body {
           padding: 24px !important;
         }
+        .industrial-modal .ant-modal-footer {
+          padding: 20px 24px !important;
+          border-top: 2px solid #000 !important;
+          text-align: right !important;
+          background: #fff !important;
+        }
       `}</style>
 
       <DrawerAdd
