@@ -1,9 +1,9 @@
 
-import React, { useEffect, useState } from "react";
+import { App, Form, Image, Input, InputNumber, Modal, Select } from "antd";
+import { BookOpen, Clock, Code, FileImage, ImageIcon, Layers, Plus, Tag, X } from "lucide-react"; // Removed DollarSign
+import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { Modal, Form, Input, InputNumber, Select, Image, message } from "antd";
 import { fetchCourseCategories, fetchCourseLevels } from "../../../../apis/ProgramManager/CourseApi";
-import { Plus, X, ImageIcon, FileImage, BookOpen, Tag, Clock, Layers, Code } from "lucide-react"; // Removed DollarSign
 
 const { Option } = Select;
 
@@ -17,6 +17,7 @@ const CreateCourse = ({
   embedded = false,
 }) => {
   const { t } = useTranslation();
+  const {message} = App.useApp();
   const [form] = Form.useForm();
   const [imagePreview, setImagePreview] = useState("");
   const [bgImagePreview, setBgImagePreview] = useState("");

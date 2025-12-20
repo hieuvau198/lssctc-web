@@ -362,15 +362,15 @@ const EditDeleteClassForm = ({
 
         {/* Visuals */}
         <div className={embedded ? "md:col-span-2 mt-2" : "mt-2"}>
-          <SectionHeader icon={ImageIcon} title="Visuals" />
+          <SectionHeader icon={ImageIcon} title={t('admin.classes.visuals.title')} />
         </div>
 
         <Form.Item
-          label="Background Image URL"
+          label={t('admin.classes.visuals.backgroundImageUrl')}
           name="backgroundImageUrl"
           className={embedded ? "md:col-span-2" : undefined}
         >
-          <Input placeholder="Enter image URL" allowClear prefix={<ImageIcon className="w-4 h-4 text-neutral-400" />} />
+          <Input placeholder={t('admin.classes.visuals.placeholder')} allowClear prefix={<ImageIcon className="w-4 h-4 text-neutral-400" />} />
         </Form.Item>
 
         <Form.Item label={t('admin.classes.form.description')} name="description" className={embedded ? "md:col-span-2" : undefined}>
@@ -407,8 +407,8 @@ const EditDeleteClassForm = ({
       {!embedded && showDelete && (
         <div className="mt-8 pt-6 border-t border-neutral-200">
           <div className="bg-red-50 border-2 border-red-100 p-4">
-            <h4 className="text-red-800 font-bold uppercase tracking-wide text-xs mb-2">Danger Zone</h4>
-            <p className="text-red-600 text-sm mb-4">Deleting this class is irreversible. Please be certain.</p>
+            <h4 className="text-red-800 font-bold uppercase tracking-wide text-xs mb-2">{t('admin.classes.dangerZone.title')}</h4>
+            <p className="text-red-600 text-sm mb-4">{t('admin.classes.dangerZone.description')}</p>
             {deleteError && (
               <Alert type="error" message={deleteError} showIcon className="mb-2" />
             )}

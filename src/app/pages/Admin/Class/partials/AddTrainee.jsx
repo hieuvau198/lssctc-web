@@ -1,11 +1,13 @@
 import { App, Button, Select } from 'antd';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getTrainees } from '../../../../apis/Admin/AdminUser';
 import { enrollTrainee } from '../../../../apis/ProgramManager/ClassesApi';
 
 // Component: Add/enroll a trainee to a class (similar style to AddInstructor)
 export default function AddTrainee({ classItem, onAssigned }) {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -27,7 +29,7 @@ export default function AddTrainee({ classItem, onAssigned }) {
       .catch((err) => {
         if (!active) return;
         console.error('Failed to fetch trainees:', err);
-        message.error('Failed to load trainees');
+        message.error(t('admin.classes.trainee.loadFailed'));
       })
       .finally(() => active && setLoadingTrainees(false));
     return () => { active = false; };
@@ -35,20 +37,20 @@ export default function AddTrainee({ classItem, onAssigned }) {
 
   const handleSave = async () => {
     if (!selected) {
-      message.warning('Please select a trainee');
+      message.warning(t('admin.classes.trainee.selectWarning'));
       return;
     }
     setLoading(true);
     try {
       await enrollTrainee({ classId: classItem.id, traineeId: selected });
-      message.success('Trainee enrolled to class');
+      message.success(t('admin.classes.trainee.enrollSuccess'));
       setSelected(null);
       setEditing(false);
       onAssigned?.();
     } catch (err) {
       console.error('Failed to enroll trainee:', err);
       const apiData = err?.response?.data;
-      const msg = (apiData && (apiData.message || apiData.error || String(apiData))) || err?.message || 'Failed to enroll trainee';
+      const msg = (apiData && (apiData.message || apiData.error || String(apiData))) || err?.message || t('admin.classes.trainee.enrollFailed');
       message.error(msg);
     } finally {
       setLoading(false);
@@ -72,7 +74,7 @@ export default function AddTrainee({ classItem, onAssigned }) {
             onClick={() => { setEditing(true); }}
             size="middle"
           >
-            Add Trainee
+            {t('admin.classes.trainee.addTrainee')}
           </Button>
         </div>
       ) : (
@@ -80,7 +82,7 @@ export default function AddTrainee({ classItem, onAssigned }) {
           <div className="w-[350px]">
             <Select
               showSearch
-              placeholder="Select a trainee"
+              placeholder={t('admin.classes.trainee.selectTrainee')}
               optionFilterProp="children"
               loading={loadingTrainees}
               allowClear
@@ -93,7 +95,7 @@ export default function AddTrainee({ classItem, onAssigned }) {
             >
               {trainees.length === 0 && !loadingTrainees ? (
                 <Select.Option disabled value="">
-                  No trainees available
+                  {t('admin.classes.trainee.noTraineesAvailable')}
                 </Select.Option>
               ) : (
                 trainees.map((t) => (
@@ -106,10 +108,10 @@ export default function AddTrainee({ classItem, onAssigned }) {
           </div>
           <div className="flex gap-2">
             <Button type="primary" onClick={handleSave} loading={loading} size="middle">
-              Save
+              {t('common.save')}
             </Button>
             <Button onClick={handleCancel} size="middle" disabled={loadingTrainees}>
-              Cancel
+              {t('common.cancel')}
             </Button>
           </div>
         </div>
