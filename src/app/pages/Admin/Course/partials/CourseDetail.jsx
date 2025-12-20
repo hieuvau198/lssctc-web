@@ -6,6 +6,7 @@ import SectionList from './Sections/SectionList';
 import CourseClassList from './CourseClassList';
 import CourseCertificate from './CourseCertificate';
 import dayjs from "dayjs";
+import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import { Clock, Banknote, Tag, BarChart2, Calendar, FileText, Layers, Award, Users } from "lucide-react";
 
 /**
@@ -59,7 +60,7 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
   if (loading) return <Skeleton active paragraph={{ rows: 6 }} />;
   if (error) return <Alert message="Error" description={error} type="error" showIcon />;
 
-  const dateFormat = "YYYY-MM-DD HH:mm";
+
 
   return (
     <div className="flex flex-col gap-12 font-sans text-neutral-800">
@@ -85,7 +86,7 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
             {course.createdAt && (
               <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
                 <span className="text-neutral-500 font-mono uppercase">Created</span>
-                <span className="font-bold">{dayjs(course.createdAt).format(dateFormat)}</span>
+                <span className="font-bold"><DayTimeFormat value={course.createdAt} /></span>
               </div>
             )}
             {/* {course.updatedAt && (

@@ -9,6 +9,7 @@ import {
   Calendar
 } from 'lucide-react';
 import dayjs from 'dayjs';
+import DayTimeFormat from '../../../../components/DayTimeFormat/DayTimeFormat';
 import { fetchCertificateByClass, fetchTraineeCertificatesByClass } from '../../../../apis/ProgramManager/ClassCertificateApi';
 
 const ClassCertificate = ({ classId }) => {
@@ -67,7 +68,7 @@ const ClassCertificate = ({ classId }) => {
       render: (date) => date ? (
         <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
           <Calendar size={14} className="text-yellow-600" />
-          {dayjs(date).format('YYYY-MM-DD')}
+          <DayTimeFormat value={date} />
         </div>
       ) : '-',
     },
@@ -166,9 +167,8 @@ const ClassCertificate = ({ classId }) => {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-neutral-800 text-xs text-neutral-500 font-mono">
-                ID: {template.id} <br />
-                Created: {dayjs(template.createdAt).format('YYYY-MM-DD')}
+              <div className="pt-4 border-t border-neutral-800 text-xs text-neutral-500">
+                {template.description || t('common.noDescription', 'No description')}
               </div>
             </div>
 

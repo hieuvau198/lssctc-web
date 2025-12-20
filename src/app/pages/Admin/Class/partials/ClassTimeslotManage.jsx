@@ -1,5 +1,6 @@
 import { App, Button, DatePicker, Form, Input, Modal, Table } from 'antd';
 import dayjs from 'dayjs';
+import DayTimeFormat from '../../../../components/DayTimeFormat/DayTimeFormat';
 import { Edit, Plus, Calendar, MapPin, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -103,7 +104,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
             render: (val) => val ? (
                 <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
                     <Calendar size={14} className="text-yellow-600" />
-                    {dayjs(val).format('YYYY-MM-DD HH:mm')}
+                    <DayTimeFormat value={val} showTime={true} />
                 </div>
             ) : '-',
             width: 180,
@@ -115,7 +116,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
             render: (val) => val ? (
                 <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
                     <Clock size={14} className="text-yellow-600" />
-                    {dayjs(val).format('YYYY-MM-DD HH:mm')}
+                    <DayTimeFormat value={val} showTime={true} />
                 </div>
             ) : '-',
             width: 180,

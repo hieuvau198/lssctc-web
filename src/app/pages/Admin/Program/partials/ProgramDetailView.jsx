@@ -6,6 +6,7 @@ import { fetchCoursesByProgram } from "../../../../apis/ProgramManager/CourseApi
 import CourseCard from "../../../../components/CourseCard/CourseCard";
 import AssignCourseModal from "./AssignCourseModal";
 import dayjs from "dayjs";
+import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
 import { BookOpen, Calendar, Clock, FileText, Layers } from "lucide-react";
 
 /**
@@ -75,7 +76,7 @@ const ProgramDetailView = ({ program, loading }) => {
     return <Empty description={t('admin.programs.noData')} />;
   }
 
-  const dateFormat = "YYYY-MM-DD HH:mm";
+
 
   return (
     <div className="flex flex-col gap-12 font-sans text-neutral-800">
@@ -101,7 +102,7 @@ const ProgramDetailView = ({ program, loading }) => {
             {program.createdAt && (
               <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
                 <span className="text-neutral-500 font-mono uppercase">{t('common.createdAt', 'Created')}</span>
-                <span className="font-bold">{dayjs(program.createdAt).format(dateFormat)}</span>
+                <span className="font-bold"><DayTimeFormat value={program.createdAt} /></span>
               </div>
             )}
             {/* {program.updatedAt && (
@@ -126,12 +127,12 @@ const ProgramDetailView = ({ program, loading }) => {
             <InfoCard
               icon={Calendar}
               label={t('common.createdAt', 'Created')}
-              value={program.createdAt ? dayjs(program.createdAt).format('DD/MM/YYYY') : '-'}
+              value={<DayTimeFormat value={program.createdAt} />}
             />
             <InfoCard
               icon={Clock}
               label={t('common.updatedAt', 'Updated')}
-              value={program.updatedAt ? dayjs(program.updatedAt).format('DD/MM/YYYY') : '-'}
+              value={<DayTimeFormat value={program.updatedAt} />}
             />
           </div>
 
