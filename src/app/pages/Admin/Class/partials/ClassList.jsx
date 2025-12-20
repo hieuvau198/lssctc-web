@@ -16,7 +16,8 @@ const ClassTableView = ({
   onView,
   onEdit,
   onDelete,
-  deletingId
+  deletingId,
+  ...rest
 }) => {
   const { t } = useTranslation();
 
@@ -83,6 +84,7 @@ const ClassTableView = ({
       dataIndex: "status",
       key: "status",
       width: 150,
+      align: 'center',
       render: (status) => {
         const s = getClassStatus(status);
         // Map status colors to industrial style
@@ -126,6 +128,7 @@ const ClassTableView = ({
         onChange: onPageChange,
         label: t('admin.classes.totalClasses'),
       }}
+      {...rest}
     />
   );
 };
@@ -207,7 +210,8 @@ const ClassList = ({
   onView,
   onEdit,
   onDelete,
-  deletingId
+  deletingId,
+  ...rest
 }) => {
   const { t } = useTranslation();
 
@@ -234,6 +238,7 @@ const ClassList = ({
         onEdit={onEdit}
         onDelete={onDelete}
         deletingId={deletingId}
+        {...rest}
       />
     );
   }

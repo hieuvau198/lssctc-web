@@ -167,76 +167,61 @@ const PMClasses = () => {
   };
 
   // Loading State - Industrial Theme
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-black border-2 border-black p-6 mb-6">
-          <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
-          <Skeleton.Button style={{ width: 300, height: 40 }} active className="bg-neutral-800" />
-        </div>
-        <div className="bg-white border-2 border-black p-6">
-          <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
-          <Skeleton active paragraph={{ rows: 8 }} />
-        </div>
-      </div>
-    );
-  }
+  const renderLoading = () => (
+    <div className="p-6 h-full flex items-center justify-center">
+      <Skeleton active paragraph={{ rows: 10 }} className="max-w-4xl" />
+    </div>
+  );
 
   // Error State - Industrial Theme
-  if (error) {
-    return (
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white border-2 border-black p-6">
-          <div className="h-1 bg-red-500 -mx-6 -mt-6 mb-4" />
-          <div className="flex items-center gap-3 text-red-600">
-            <AlertCircle className="w-6 h-6" />
-            <span className="font-bold uppercase">{error}</span>
-          </div>
-        </div>
+  const renderError = () => (
+    <div className="p-6 h-full flex items-center justify-center">
+      <div className="bg-red-50 border border-red-200 p-6 flex flex-col items-center gap-3 text-red-600 max-w-lg shadow-sm">
+        <AlertCircle className="w-10 h-10" />
+        <span className="font-bold uppercase text-lg">{error}</span>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto h-[calc(100vh-64px)] flex flex-col pb-2">
       {/* Header - Industrial Theme */}
-      <div className="bg-black border-2 border-black p-5 mb-6">
-        <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-400 border-2 border-black flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-black" />
+      <div className="bg-black border-2 border-black px-4 py-3 mb-0 flex-none z-10">
+        <div className="h-1 bg-yellow-400 -mx-4 -mt-3 mb-3" />
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <GraduationCap className="w-5 h-5 text-black" />
             </div>
             <div>
-              <span className="text-2xl font-black text-white uppercase tracking-tight">
+              <span className="text-xl font-black text-white uppercase tracking-tight leading-none block">
                 {t('admin.classes.title')}
               </span>
-              <p className="text-yellow-400 text-sm mt-1 font-medium">
+              <p className="text-yellow-400 text-xs mt-0.5 font-bold">
                 {total} {t('admin.classes.totalClasses') || 'classes'}
               </p>
             </div>
           </div>
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-400 text-black font-bold uppercase tracking-wider text-sm border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-400 text-black font-bold uppercase tracking-wider text-xs border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             {t('admin.classes.addClass')}
           </button>
         </div>
       </div>
 
-      {/* Main Content Card */}
-      <div className="bg-white border-2 border-black overflow-hidden">
-        <div className="h-1 bg-yellow-400" />
+      {/* Main Content Card Wrapper */}
+      <div className="bg-white border-x-2 border-b-2 border-black overflow-hidden flex-1 flex flex-col min-h-0">
 
-        {/* Search Bar - Industrial Theme */}
-        <div className="px-6 py-4 bg-neutral-50 border-b-2 border-neutral-200">
-          <div className="flex flex-col xl:flex-row gap-4 items-center">
+        {/* Integrated Search Bar & Filters */}
+        <div className="px-4 py-2 bg-white border-b-2 border-neutral-200 flex-none shadow-sm z-10">
+          <div className="flex flex-col xl:flex-row gap-3 items-center">
             {/* Search Input */}
             <div className="flex-1 w-full relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                <Search className="w-5 h-5 text-neutral-400" />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Search className="w-4 h-4 text-neutral-400" />
               </div>
               <input
                 type="text"
@@ -244,34 +229,34 @@ const PMClasses = () => {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchValue)}
-                className="w-full h-12 pl-12 pr-24 bg-white border-2 border-neutral-300 focus:border-black focus:ring-0 font-medium text-black placeholder-neutral-400 transition-colors outline-none"
+                className="w-full h-9 pl-10 pr-4 bg-neutral-50 border border-neutral-300 focus:border-black focus:bg-white focus:ring-1 focus:ring-black font-medium text-sm text-black placeholder-neutral-400 transition-all outline-none"
               />
               {searchValue && (
                 <button
                   onClick={() => { setSearchValue(''); handleSearch(''); }}
-                  className="absolute inset-y-0 right-14 flex items-center pr-2 text-neutral-400 hover:text-black transition-colors"
+                  className="absolute inset-y-0 right-10 flex items-center pr-2 text-neutral-400 hover:text-black"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               )}
               <button
                 onClick={() => handleSearch(searchValue)}
-                className="absolute inset-y-0 right-0 flex items-center px-5 bg-yellow-400 text-black font-bold uppercase text-sm border-l-2 border-black hover:bg-yellow-500 transition-colors"
+                className="absolute inset-y-0 right-0 flex items-center px-4 bg-yellow-400 text-black font-bold uppercase text-xs border-l border-black hover:bg-yellow-500 transition-colors"
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-3.5 h-3.5" />
               </button>
             </div>
 
             {/* Filters */}
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap items-center">
               <Select
                 placeholder={t('admin.classes.filters.status') || "Status"}
                 allowClear
                 value={status}
                 onChange={handleStatusChange}
-                className="industrial-select"
-                size="large"
-                style={{ width: 150 }}
+                className="industrial-select-compact"
+                size="middle"
+                style={{ width: 140 }}
               >
                 <Option value="Draft">{t('common.classStatus.Draft') || "Draft"}</Option>
                 <Option value="Open">{t('common.classStatus.Open') || "Open"}</Option>
@@ -284,9 +269,9 @@ const PMClasses = () => {
                 placeholder={t('admin.classes.filters.sortByDate') || "Sort Date"}
                 value={`${sortBy}_${sortDirection}`}
                 onChange={handleSortChange}
-                className="industrial-select"
-                size="large"
-                style={{ width: 200 }}
+                className="industrial-select-compact"
+                size="middle"
+                style={{ width: 180 }}
               >
                 <Option value="startDate_desc">{t('admin.classes.filters.startDateNewest') || "Latest Start Date"}</Option>
                 <Option value="startDate_asc">{t('admin.classes.filters.startDateOldest') || "Earliest Start Date"}</Option>
@@ -300,7 +285,7 @@ const PMClasses = () => {
           </div>
         </div>
 
-        {/* Industrial Select Styles */}
+
         <style>{`
           .industrial-select .ant-select-selector {
             border: 2px solid #000 !important;
@@ -321,23 +306,56 @@ const PMClasses = () => {
           }
         `}</style>
 
+        {/* Industrial Select Styles (Compact) */}
+        <style>{`
+          .industrial-select-compact .ant-select-selector {
+            border: 1px solid #d4d4d4 !important;
+            height: 36px !important;
+            border-radius: 0 !important;
+            background-color: #fafafa !important;
+          }
+          .industrial-select-compact .ant-select-selection-item,
+          .industrial-select-compact .ant-select-selection-placeholder {
+            line-height: 34px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            color: #000 !important;
+          }
+          .industrial-select-compact:hover .ant-select-selector {
+            border-color: #000 !important;
+            background-color: #fff !important;
+          }
+          .industrial-select-compact.ant-select-focused .ant-select-selector {
+            border-color: #000 !important;
+            box-shadow: none !important;
+            background-color: #fff !important;
+          }
+        `}</style>
+
         {/* Content Area */}
-        <div className="p-6">
-          {classes.length === 0 ? (
-            <Empty description={t('admin.classes.noClasses')} className="py-16" />
+        <div className={`flex-1 ${viewMode === 'table' ? 'overflow-hidden' : 'overflow-y-auto'} bg-white relative`}>
+          {loading ? (
+            renderLoading()
+          ) : error ? (
+            renderError()
+          ) : classes.length === 0 ? (
+            <Empty description={t('admin.classes.noClasses')} className="py-20" />
           ) : (
-            <ClassList
-              classes={classes}
-              viewMode={viewMode}
-              page={page}
-              pageSize={pageSize}
-              total={total}
-              onPageChange={handlePageChange}
-              onView={openView}
-              onEdit={openEdit}
-              onDelete={handleDelete}
-              deletingId={deletingId}
-            />
+            <div className="p-6">
+              <ClassList
+                classes={classes}
+                viewMode={viewMode}
+                page={page}
+                pageSize={pageSize}
+                total={total}
+                onPageChange={handlePageChange}
+                onView={openView}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+                deletingId={deletingId}
+                scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
+              />
+            </div>
           )}
         </div>
       </div>

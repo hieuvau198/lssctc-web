@@ -12,6 +12,7 @@ const ProgramTableView = ({
   total,
   onPageChange,
   onView,
+  ...rest
 }) => {
   const { t } = useTranslation();
 
@@ -144,6 +145,7 @@ const ProgramTableView = ({
         onChange: onPageChange,
         label: t('admin.programs.totalPrograms'),
       }}
+      {...rest}
     />
   );
 };

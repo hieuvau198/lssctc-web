@@ -24,7 +24,8 @@ const CourseTableView = ({
   onView,
   onEdit,
   onDelete,
-  deletingId
+  deletingId,
+  ...rest
 }) => {
   const { t } = useTranslation();
 
@@ -45,6 +46,7 @@ const CourseTableView = ({
       dataIndex: "imageUrl",
       key: "imageUrl",
       width: 90,
+      align: "center",
       render: (imageUrl, record) => (
         <Avatar
           src={imageUrl}
@@ -125,6 +127,7 @@ const CourseTableView = ({
         onChange: onPageChange,
         label: t('admin.courses.totalCourses'),
       }}
+      {...rest}
     />
   );
 };
@@ -206,7 +209,8 @@ const CourseList = ({
   onSelect,
   onEdit,
   onDelete,
-  deletingId
+  deletingId,
+  ...rest
 }) => {
   const { t } = useTranslation();
 
@@ -233,6 +237,7 @@ const CourseList = ({
         onEdit={onEdit}
         onDelete={onDelete}
         deletingId={deletingId}
+        {...rest}
       />
     );
   }

@@ -99,7 +99,7 @@ const IndustrialTable = ({
 
       {/* Pagination */}
       {pagination && (
-        <div className="pt-2 pb-2 border-t-2 border-neutral-200 bg-white flex justify-center">
+        <div className="pt-4 pb-4 border-t-2 border-neutral-200 bg-white flex justify-center">
           <Pagination
             current={pagination.current}
             pageSize={pagination.pageSize}
