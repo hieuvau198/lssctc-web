@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Table, Pagination, Tag, Tooltip, Button, Space } from 'antd';
+import { Table, Pagination, Tag, Tooltip, Button, Space, Popconfirm } from 'antd';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -81,14 +82,22 @@ const TaskTable = ({
               <Pencil className="w-4 h-4 text-black" />
             </button>
           </Tooltip>
-          <Tooltip title={t('simManager.tasks.delete')}>
-            <button
-              onClick={() => onDelete(record)}
-              className="w-8 h-8 bg-red-500 border-2 border-red-600 flex items-center justify-center hover:bg-red-600 hover:scale-105 transition-all"
-            >
-              <Trash2 className="w-4 h-4 text-white" />
-            </button>
-          </Tooltip>
+          <Popconfirm
+            title={t('simManager.tasks.confirmDelete')}
+            description={t('simManager.tasks.deleteContent', { name: record.taskName })}
+            onConfirm={() => onDelete(record)}
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
+            okButtonProps={{ danger: true }}
+          >
+            <Tooltip title={t('simManager.tasks.delete')}>
+              <button
+                className="w-8 h-8 bg-red-500 border-2 border-red-600 flex items-center justify-center hover:bg-red-600 hover:scale-105 transition-all"
+              >
+                <Trash2 className="w-4 h-4 text-white" />
+              </button>
+            </Tooltip>
+          </Popconfirm>
         </div>
       ),
     },
@@ -100,86 +109,86 @@ const TaskTable = ({
 
       {/* Industrial Table Styles */}
       <style>{`
-          .industrial-task-table .ant-table-thead > tr > th {
-            background-color: #171717 !important; /* neutral-900 */
-            color: #ffffff !important;
-            border-bottom: 2px solid #404040 !important; /* neutral-700 */
-            border-radius: 0 !important;
-            text-transform: uppercase;
-            font-weight: 800;
-          }
-           .industrial-task-table .ant-table-wrapper .ant-table-thead > tr > th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not([colspan])::before {
-            display: none !important;
-           }
-          .industrial-task-table .ant-table-tbody > tr > td {
-            border-bottom: 1px solid #e5e5e5;
-            font-weight: 500;
-          }
-          .industrial-task-table .ant-table-tbody > tr:hover > td {
-            background-color: #fefce8 !important; /* yellow-50 */
-          }
-          .industrial-task-table .ant-table {
-            border-radius: 0 !important;
-          }
-          .industrial-task-table .ant-table-container {
-            border-radius: 0 !important;
-          }
+  .industrial - task - table.ant - table - thead > tr > th {
+  background - color: #171717!important; /* neutral-900 */
+  color: #ffffff!important;
+  border - bottom: 2px solid #404040!important; /* neutral-700 */
+  border - radius: 0!important;
+  text - transform: uppercase;
+  font - weight: 800;
+}
+           .industrial - task - table.ant - table - wrapper.ant - table - thead > tr > th: not(: last - child): not(.ant - table - selection - column): not(.ant - table - row - expand - icon - cell): not([colspan])::before {
+  display: none!important;
+}
+          .industrial - task - table.ant - table - tbody > tr > td {
+  border - bottom: 1px solid #e5e5e5;
+  font - weight: 500;
+}
+          .industrial - task - table.ant - table - tbody > tr: hover > td {
+  background - color: #fefce8!important; /* yellow-50 */
+}
+          .industrial - task - table.ant - table {
+  border - radius: 0!important;
+}
+          .industrial - task - table.ant - table - container {
+  border - radius: 0!important;
+}
           /* Fix fixed column corners */
-          .industrial-task-table .ant-table-cell-fix-left,
-          .industrial-task-table .ant-table-cell-fix-right {
-            background-color: inherit !important;
-          }
-          .industrial-task-table .ant-table-thead .ant-table-cell-fix-left,
-          .industrial-task-table .ant-table-thead .ant-table-cell-fix-right {
-            background-color: #171717 !important;
-          }
-          .industrial-task-table .ant-table-tbody .ant-table-cell-fix-left,
-          .industrial-task-table .ant-table-tbody .ant-table-cell-fix-right {
-            background-color: #fff !important;
-          }
-          .industrial-task-table .ant-table-tbody > tr:hover .ant-table-cell-fix-left,
-          .industrial-task-table .ant-table-tbody > tr:hover .ant-table-cell-fix-right {
-            background-color: #fefce8 !important;
-          }
+          .industrial - task - table.ant - table - cell - fix - left,
+          .industrial - task - table.ant - table - cell - fix - right {
+  background - color: inherit!important;
+}
+          .industrial - task - table.ant - table - thead.ant - table - cell - fix - left,
+          .industrial - task - table.ant - table - thead.ant - table - cell - fix - right {
+  background - color: #171717!important;
+}
+          .industrial - task - table.ant - table - tbody.ant - table - cell - fix - left,
+          .industrial - task - table.ant - table - tbody.ant - table - cell - fix - right {
+  background - color: #fff!important;
+}
+          .industrial - task - table.ant - table - tbody > tr: hover.ant - table - cell - fix - left,
+          .industrial - task - table.ant - table - tbody > tr: hover.ant - table - cell - fix - right {
+  background - color: #fefce8!important;
+}
           /* Remove corner gaps */
-          .industrial-task-table .ant-table-ping-left:not(.ant-table-has-fix-left) .ant-table-container::before,
-          .industrial-task-table .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after {
-            display: none !important;
-          }
-          .industrial-task-table .ant-table-header {
-            border-radius: 0 !important;
-          }
-          .industrial-task-table .ant-table-content {
-            border-radius: 0 !important;
-          }
+          .industrial - task - table.ant - table - ping - left: not(.ant - table - has - fix - left).ant - table - container:: before,
+          .industrial - task - table.ant - table - ping - right: not(.ant - table - has - fix - right).ant - table - container::after {
+  display: none!important;
+}
+          .industrial - task - table.ant - table - header {
+  border - radius: 0!important;
+}
+          .industrial - task - table.ant - table - content {
+  border - radius: 0!important;
+}
           /* Fix sticky header corners */
-          .industrial-task-table .ant-table-thead > tr > th:first-child {
-            border-top-left-radius: 0 !important;
-          }
-          .industrial-task-table .ant-table-thead > tr > th:last-child {
-            border-top-right-radius: 0 !important;
-          }
+          .industrial - task - table.ant - table - thead > tr > th: first - child {
+  border - top - left - radius: 0!important;
+}
+          .industrial - task - table.ant - table - thead > tr > th: last - child {
+  border - top - right - radius: 0!important;
+}
           /* Custom Scrollbar */
-          .industrial-task-table .ant-table-body::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-          }
-          .industrial-task-table .ant-table-body::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-left: 2px solid #000;
-          }
-          .industrial-task-table .ant-table-body::-webkit-scrollbar-thumb {
-            background: #000;
-            border-radius: 0;
-          }
-          .industrial-task-table .ant-table-body::-webkit-scrollbar-thumb:hover {
-            background: #333;
-          }
+          .industrial - task - table.ant - table - body:: -webkit - scrollbar {
+  width: 8px;
+  height: 8px;
+}
+          .industrial - task - table.ant - table - body:: -webkit - scrollbar - track {
+  background: #f1f1f1;
+  border - left: 2px solid #000;
+}
+          .industrial - task - table.ant - table - body:: -webkit - scrollbar - thumb {
+  background: #000;
+  border - radius: 0;
+}
+          .industrial - task - table.ant - table - body:: -webkit - scrollbar - thumb:hover {
+  background: #333;
+}
           /* Fix scrollbar corner */
-          .industrial-task-table .ant-table-body::-webkit-scrollbar-corner {
-            background: #171717;
-          }
-        `}</style>
+          .industrial - task - table.ant - table - body:: -webkit - scrollbar - corner {
+  background: #171717;
+}
+`}</style>
 
       <div className="flex-1 overflow-hidden p-0 industrial-task-table">
         <Table
@@ -210,7 +219,7 @@ const TaskTable = ({
           itemRender={(curr, type, originalElement) => {
             if (type === 'page') {
               return (
-                <a className={`font-bold flex items-center justify-center w-full h-full border border-neutral-300 hover:border-yellow-400 hover:text-yellow-600 transition-colors ${curr === pagination.current ? 'bg-yellow-400 text-black border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-neutral-600 hover:shadow-[2px_2px_0px_0px_rgba(250,204,21,1)]'}`}>
+                <a className={`font - bold flex items - center justify - center w - full h - full border border - neutral - 300 hover: border - yellow - 400 hover: text - yellow - 600 transition - colors ${curr === pagination.current ? 'bg-yellow-400 text-black border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-neutral-600 hover:shadow-[2px_2px_0px_0px_rgba(250,204,21,1)]'} `}>
                   {curr}
                 </a>
               );
@@ -219,27 +228,27 @@ const TaskTable = ({
           }}
         />
         <style>{`
-            .industrial-pagination .ant-pagination-item-active {
-              border-color: #000 !important;
-              background: transparent !important;
-            }
-            .industrial-pagination .ant-pagination-item-active a {
-              color: #000 !important;
-            }
-             .industrial-pagination .ant-pagination-options .ant-select-selector {
-               border-radius: 0 !important;
-               border: 1px solid #d4d4d4 !important;
-            }
-            .industrial-pagination .ant-pagination-item {
-               border-radius: 0 !important;
-               border: none !important;
-            }
-            .industrial-pagination .ant-pagination-prev .ant-pagination-item-link,
-            .industrial-pagination .ant-pagination-next .ant-pagination-item-link {
-               border-radius: 0 !important;
-               border: 1px solid #d4d4d4 !important;
-            }
-          `}</style>
+  .industrial - pagination.ant - pagination - item - active {
+  border - color: #000!important;
+  background: transparent!important;
+}
+            .industrial - pagination.ant - pagination - item - active a {
+  color: #000!important;
+}
+             .industrial - pagination.ant - pagination - options.ant - select - selector {
+  border - radius: 0!important;
+  border: 1px solid #d4d4d4!important;
+}
+            .industrial - pagination.ant - pagination - item {
+  border - radius: 0!important;
+  border: none!important;
+}
+            .industrial - pagination.ant - pagination - prev.ant - pagination - item - link,
+            .industrial - pagination.ant - pagination - next.ant - pagination - item - link {
+  border - radius: 0!important;
+  border: 1px solid #d4d4d4!important;
+}
+`}</style>
       </div>
     </div>
   );

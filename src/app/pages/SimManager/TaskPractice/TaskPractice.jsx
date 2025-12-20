@@ -95,26 +95,34 @@ export default function TaskPractice() {
             okText: t('simManager.tasks.delete'),
             okType: 'danger',
             onOk: async () => {
-                try {
-                    await deleteTask(record.id, token);
-                    message.success(t('simManager.tasks.deleteSuccess'));
-                    await loadTasks(pageNumber, pageSize);
-                } catch (e) {
-                    console.error('Failed to delete task', e);
-                    let errorMsg = t('simManager.tasks.failedToDelete');
-                    if (e.response?.data?.error?.details?.exceptionMessage) {
-                        errorMsg = e.response.data.error.details.exceptionMessage;
-                    } else if (e.response?.data?.error?.message) {
-                        errorMsg = e.response.data.error.message;
-                    } else if (e.response?.data?.message) {
-                        errorMsg = e.response.data.message;
-                    } else if (e.message) {
-                        errorMsg = e.message;
-                    }
-                    message.error(errorMsg);
-                }
+                await executeDelete(record);
             },
         });
+    };
+
+    const handleDeleteDirect = async (record) => {
+        await executeDelete(record);
+    };
+
+    const executeDelete = async (record) => {
+        try {
+            await deleteTask(record.id, token);
+            message.success(t('simManager.tasks.deleteSuccess'));
+            await loadTasks(pageNumber, pageSize);
+        } catch (e) {
+            console.error('Failed to delete task', e);
+            let errorMsg = t('simManager.tasks.failedToDelete');
+            if (e.response?.data?.error?.details?.exceptionMessage) {
+                errorMsg = e.response.data.error.details.exceptionMessage;
+            } else if (e.response?.data?.error?.message) {
+                errorMsg = e.response.data.error.message;
+            } else if (e.response?.data?.message) {
+                errorMsg = e.response.data.message;
+            } else if (e.message) {
+                errorMsg = e.message;
+            }
+            message.error(errorMsg);
+        }
     };
 
     const handleDrawerClose = () => {
@@ -228,7 +236,7 @@ export default function TaskPractice() {
                         loading={loading}
                         onView={handleView}
                         onEdit={handleEdit}
-                        onDelete={handleDelete}
+                        onDelete={handleDeleteDirect}
                         pagination={{
                             current: pageNumber,
                             pageSize: pageSize,
