@@ -140,7 +140,7 @@ const PracticeTable = ({
       {/* Industrial Table Styles */}
       <style>{`
           .industrial-practice-table .ant-table-thead > tr > th {
-            background-color: #171717 !important; /* neutral-900 */
+            background-color: #404040 !important; /* neutral-700 */
             color: #ffffff !important;
             border-bottom: 2px solid #404040 !important; /* neutral-700 */
             border-radius: 0 !important;
@@ -170,7 +170,7 @@ const PracticeTable = ({
           }
           .industrial-practice-table .ant-table-thead .ant-table-cell-fix-left,
           .industrial-practice-table .ant-table-thead .ant-table-cell-fix-right {
-            background-color: #171717 !important;
+            background-color: #404040 !important;
           }
           .industrial-practice-table .ant-table-tbody .ant-table-cell-fix-left,
           .industrial-practice-table .ant-table-tbody .ant-table-cell-fix-right {
