@@ -127,9 +127,13 @@ export async function fetchCourseCategories() {
   }
 }
 
-export async function fetchClassesByCourse(courseId) {
+export async function fetchClassesByCourse(courseId, programId) {
   try {
-    const resp = await apiClient.get(`${import.meta.env.VITE_API_Program_Service_URL}/Classes/course/${courseId}`);
+    const url = programId 
+      ? `${import.meta.env.VITE_API_Program_Service_URL}/Classes/program/${programId}/course/${courseId}/available`
+      : `${import.meta.env.VITE_API_Program_Service_URL}/Classes/course/${courseId}`;
+      
+    const resp = await apiClient.get(url);
     return Array.isArray(resp.data) ? resp.data : [];
   } catch (err) {
     console.error('Error fetching classes by course:', err);

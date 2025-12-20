@@ -200,7 +200,8 @@ export default function CourseDetail() {
             </div>
             <div className="h-1 w-24 bg-yellow-400 mt-4" />
           </div>
-          <ClassesSection courseId={id} />
+          {/* Update: Pass programId from fromProgram state */}
+          <ClassesSection courseId={id} programId={fromProgram?.id} />
         </div>
       </section>
     </div>
