@@ -109,12 +109,30 @@ const AddClassForm = ({
       onCreated?.();
       onClose();
     } catch (err) {
+      const apiError = err?.response?.data;
       setError(
-        err?.response?.data?.message || err?.message || t('admin.classes.createError')
+        (typeof apiError === 'string' ? apiError : apiError?.message) ||
+        err?.message ||
+        t('admin.classes.createError')
       );
     } finally {
       setSaving(false);
     }
+  };
+
+  const disabledStartDate = (current) => {
+    return current && current < dayjs().startOf('day');
+  };
+
+  const disabledEndDate = (current) => {
+    const startDate = form.getFieldValue('startDate');
+    if (current && current < dayjs().startOf('day')) {
+      return true;
+    }
+    if (startDate) {
+      return current && current <= startDate.endOf('day');
+    }
+    return false;
   };
 
   // Section Header Component
@@ -269,7 +287,7 @@ const AddClassForm = ({
           name="startDate"
           rules={[{ required: true, message: t('admin.classes.form.startDateRequired') }]}
         >
-          <DatePicker className="w-full" />
+          <DatePicker className="w-full" disabledDate={disabledStartDate} />
         </Form.Item>
 
         <Form.Item
@@ -287,7 +305,7 @@ const AddClassForm = ({
             })
           ]}
         >
-          <DatePicker className="w-full" />
+          <DatePicker className="w-full" disabledDate={disabledEndDate} />
         </Form.Item>
 
         <Form.Item

@@ -160,7 +160,12 @@ const PMClasses = () => {
       setTotal(data.totalCount || 0);
       closeDrawer();
     } catch (err) {
-      message.error(err?.message || t('admin.classes.createError'));
+      const apiError = err?.response?.data;
+      message.error(
+        (typeof apiError === 'string' ? apiError : apiError?.message) ||
+        err?.message ||
+        t('admin.classes.createError')
+      );
     } finally {
       setSubmitting(false);
     }
