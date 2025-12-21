@@ -16,13 +16,16 @@ const InstructorFEApi = {
   // Generate an exam code for a specific student's exam
   generateCode: (id) => apiClient.post(`/FinalExams/${id}/generate-code`),
 
+  // Open the final exam for the class [NEW]
+  openClassExam: (classId) => apiClient.post(`/FinalExams/class/${classId}/open`),
+
   // Finish/Finalize the exam for the class
   finishClassExam: (classId) => apiClient.post(`/FinalExams/class/${classId}/finish`),
 
   // Submit Practical Exam Grade
   submitPe: (partialId, data) => apiClient.post(`/FinalExams/submit/pe/${partialId}`, data),
 
-  // [NEW] Get class simulation results details
+  // Get class simulation results details
   getClassSimulationResults: (classId) => apiClient.get(`/FinalExams/class/${classId}/simulation-results`),
 };
 

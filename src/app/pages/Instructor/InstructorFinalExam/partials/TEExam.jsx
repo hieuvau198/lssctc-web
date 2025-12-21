@@ -77,14 +77,14 @@ export default function TEExam({ classId }) {
   };
 
   const handleCreate = () => {
-    if (isExamCompleted) return; // [UPDATED] Guard
+    if (!isExamNotYet) return; // [UPDATED] Only allowed if NotYet
     setSelectedConfig(null);
     form.resetFields();
     setCreateModalOpen(true);
   };
 
   const handleEdit = (record) => {
-    if (isExamCompleted) return; // [UPDATED] Guard
+    if (!isExamNotYet) return; // [UPDATED] Only allowed if NotYet
     setSelectedConfig(record);
     form.setFieldsValue({
       ...record,
@@ -178,8 +178,8 @@ export default function TEExam({ classId }) {
       render: (_, record) => (
         <button
           onClick={() => handleEdit(record)}
-          disabled={isExamCompleted} // [UPDATED]
-          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${isExamCompleted
+          disabled={!isExamNotYet} // [UPDATED] Disabled unless NotYet
+          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${!isExamNotYet
             ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
             : 'border-black bg-white hover:bg-yellow-400 text-black'
             }`}
@@ -263,7 +263,7 @@ export default function TEExam({ classId }) {
   return (
     <div className="py-4">
       {/* Action Button - Only show when no configs exist */}
-      {configs.length === 0 && !isExamCompleted && (
+      {configs.length === 0 && isExamNotYet && ( // [UPDATED] Only allow create if NotYet
         <div className="mb-4 flex justify-end">
           <button
             onClick={handleCreate}
