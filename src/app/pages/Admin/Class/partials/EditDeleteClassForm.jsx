@@ -322,7 +322,7 @@ const EditDeleteClassForm = ({
           rules={[{ required: true, message: t('admin.classes.validation.startDateRequired') }]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <DatePicker className="w-full" disabled={!isDraft} />
+          <DatePicker className="w-full" format="DD-MM-YYYY" disabled={!isDraft} />
         </Form.Item>
 
         <Form.Item
@@ -341,7 +341,7 @@ const EditDeleteClassForm = ({
           ]}
           className={embedded ? "md:col-span-1" : undefined}
         >
-          <DatePicker className="w-full" disabled={!isDraft} />
+          <DatePicker className="w-full" format="DD-MM-YYYY" disabled={!isDraft} />
         </Form.Item>
 
         <Form.Item

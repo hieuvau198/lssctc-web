@@ -150,15 +150,21 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
             key: 'action',
             width: 100,
             align: 'right',
-            render: (_, record) => (
-                <Button
-                    type="text"
-                    size="small"
-                    icon={<Edit size={16} />}
-                    className="text-slate-400 hover:text-black hover:bg-yellow-400 rounded-none transition-colors"
-                    onClick={() => handleOpenModal(record)}
-                />
-            ),
+            render: (_, record) => {
+                const isNotStarted = record.status === 'NotStarted';
+                return (
+                    <Button
+                        type="text"
+                        size="small"
+                        icon={<Edit size={16} />}
+                        className={`rounded-none transition-colors ${isNotStarted
+                            ? 'text-slate-400 hover:text-black hover:bg-yellow-400'
+                            : 'text-slate-300 cursor-not-allowed'}`}
+                        onClick={() => handleOpenModal(record)}
+                        disabled={!isNotStarted}
+                    />
+                );
+            },
         }
     ];
 
@@ -278,8 +284,12 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
                 <Button
                     icon={<Plus size={16} strokeWidth={3} />}
                     onClick={() => handleOpenModal(null)}
-                    className="bg-yellow-400 text-black border border-yellow-500 font-bold h-10 px-6 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all"
-                    style={{ backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
+                    className={`font-bold h-10 px-6 rounded-md shadow-sm transition-all ${classItem?.status === 'Completed'
+                            ? 'bg-neutral-200 text-neutral-400 border-neutral-300 cursor-not-allowed'
+                            : 'bg-yellow-400 text-black border border-yellow-500 hover:bg-yellow-500 hover:text-black'
+                        }`}
+                    style={classItem?.status === 'Completed' ? {} : { backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
+                    disabled={classItem?.status === 'Completed'}
                 >
                     {t('class.timeslot.add')}
                 </Button>
@@ -323,6 +333,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
                             <Input placeholder="e.g. Session 1: Safety Introduction" className="h-11 font-medium text-slate-700" />
                         </Form.Item>
 
+
                         <div className="grid grid-cols-2 gap-5">
                             <Form.Item
                                 label={t('class.timeslot.startTime')}
@@ -332,11 +343,12 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
                             >
                                 <DatePicker
                                     showTime={{ format: 'HH:mm' }}
-                                    format="YYYY-MM-DD HH:mm"
+                                    format="DD-MM-YYYY HH:mm:ss"
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
                                     placeholder="Select start time"
                                     popupClassName="rounded-lg"
+                                    disabledDate={(current) => current && current < dayjs().startOf('day')}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -358,11 +370,12 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
                             >
                                 <DatePicker
                                     showTime={{ format: 'HH:mm' }}
-                                    format="YYYY-MM-DD HH:mm"
+                                    format="DD-MM-YYYY HH:mm:ss"
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
                                     placeholder="Select end time"
                                     popupClassName="rounded-lg"
+                                    disabledDate={(current) => current && current < dayjs().startOf('day')}
                                 />
                             </Form.Item>
                         </div>
