@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import InstructorFEApi from '../../../../apis/Instructor/InstructorFEApi';
 import InstructorPracticeApi from '../../../../apis/Instructor/InstructorPractice';
 import { useNavigate } from 'react-router-dom';
+import DayTimeFormat from '../../../../components/DayTimeFormat/DayTimeFormat';
 
 export default function SEExam({ classId }) {
   const { t } = useTranslation();
@@ -13,7 +14,8 @@ export default function SEExam({ classId }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [configs, setConfigs] = useState([]);
-  const [isExamCompleted, setIsExamCompleted] = useState(false); // [UPDATED]
+  const [isExamCompleted, setIsExamCompleted] = useState(false);
+  const [isExamNotYet, setIsExamNotYet] = useState(true); // State for NotYet status
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -30,7 +32,8 @@ export default function SEExam({ classId }) {
     try {
       const response = await InstructorFEApi.getClassConfig(classId);
       setConfigs(response.data?.partialConfigs?.filter(c => c.type === 'Simulation') || []);
-      setIsExamCompleted(response.data?.status === 'Completed'); // [UPDATED]
+      setIsExamCompleted(response.data?.status === 'Completed');
+      setIsExamNotYet(response.data?.status === 'NotYet');
     } catch (error) {
       message.error('Failed to load SE config');
     } finally {
@@ -115,7 +118,7 @@ export default function SEExam({ classId }) {
     {
       title: <span className="uppercase font-black text-xs">Start Time</span>,
       dataIndex: 'startTime',
-      render: (val) => val ? <span className="text-neutral-600">{dayjs(val).format('YYYY-MM-DD HH:mm')}</span> : '-',
+      render: (val) => val ? <span className="text-neutral-600"><DayTimeFormat value={val} showTime /></span> : '-',
     },
     {
       title: <span className="uppercase font-black text-xs">Actions</span>,
@@ -149,9 +152,22 @@ export default function SEExam({ classId }) {
       render: (val) => <span className="font-bold">{val}</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Code</span>,
+      title: <span className="uppercase font-black text-xs">Student Code</span>,
       dataIndex: 'traineeCode',
       render: (val) => <span className="text-neutral-600 font-medium">{val}</span>
+    },
+    {
+      title: <span className="uppercase font-black text-xs">Exam Code</span>,
+      key: 'examCode',
+      render: (_, record) => {
+        const partial = record.partials?.find(p => p.type === 'Simulation');
+        const code = partial?.examCode || record.examCode;
+        return code ? (
+          <span className="font-mono font-black text-yellow-600">{code}</span>
+        ) : (
+          <span className="text-neutral-400">-</span>
+        );
+      }
     },
     {
       title: <span className="uppercase font-black text-xs">Score</span>,
@@ -290,6 +306,7 @@ export default function SEExam({ classId }) {
               <InputNumber
                 min={0}
                 max={100}
+                disabled
                 className="!w-full [&_.ant-input-number-input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
               />
             </Form.Item>
@@ -300,6 +317,8 @@ export default function SEExam({ classId }) {
           >
             <DatePicker.RangePicker
               showTime
+              format="DD-MM-YYYY HH:mm:ss"
+              disabledDate={(current) => current && current < dayjs().startOf('day')}
               className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
             />
           </Form.Item>

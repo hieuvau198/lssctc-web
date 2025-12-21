@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { fetchClassesByCourse } from '../../../../apis/ProgramManager/CourseApi';
 import dayjs from 'dayjs';
 import { CalendarOutlined } from '@ant-design/icons';
+import DayTimeFormat from '../../../../components/DayTimeFormat/DayTimeFormat';
 
 const CourseClassList = ({ courseId }) => {
   const { t } = useTranslation();
@@ -44,13 +45,13 @@ const CourseClassList = ({ courseId }) => {
       title: t('admin.classes.form.startDate') || "Start Date",
       dataIndex: 'startDate',
       key: 'startDate',
-      render: (date) => date ? dayjs(date).format('DD/MM/YYYY') : '-',
+      render: (date) => date ? <DayTimeFormat value={date} /> : '-',
     },
     {
       title: t('admin.classes.form.endDate') || "End Date",
       dataIndex: 'endDate',
       key: 'endDate',
-      render: (date) => date ? dayjs(date).format('DD/MM/YYYY') : '-',
+      render: (date) => date ? <DayTimeFormat value={date} /> : '-',
     },
     {
       title: t('admin.classes.columns.capacity') || "Capacity",

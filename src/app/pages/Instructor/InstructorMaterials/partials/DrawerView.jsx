@@ -8,8 +8,8 @@ export default function DrawerView({ visible, onClose, material }) {
 
   if (!material) return null;
 
-  const isVideo = Number(material.typeId) === 2;
-  const isDoc = Number(material.typeId) === 1;
+  const isVideo = Number(material.typeId) === 1;
+  const isDoc = Number(material.typeId) === 2;
 
   const content = isVideo ? (
     // render HTML5 video player if url is a direct video

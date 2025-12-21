@@ -197,7 +197,7 @@ const ClassMembers = ({ classId }) => {
             rowKey={(r) => r.enrollmentId || r.traineeId || r.id}
             pagination={false}
             size="middle"
-            scroll={{ y: 400 }}
+            scroll={{ y: 380 }}
             className="[&_.ant-table-thead>tr>th]:bg-neutral-900 [&_.ant-table-thead>tr>th]:text-white [&_.ant-table-thead>tr>th]:border-neutral-700 [&_.ant-table-tbody>tr>td]:border-neutral-200 [&_.ant-table-tbody>tr:hover>td]:bg-yellow-50"
           />
 

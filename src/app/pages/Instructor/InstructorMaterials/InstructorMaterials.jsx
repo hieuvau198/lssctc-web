@@ -57,7 +57,7 @@ export default function InstructorMaterials() {
     return () => { cancelled = true; };
   }, [refreshKey, isAddMode, isEditMode]);
 
-  // mapping: learningMaterialTypeId === 1 => doc, === 2 => video
+  // mapping: learningMaterialTypeId === 2 => doc, === 1 => video
   const docs = materials.filter((m) => Number(m.typeId) === 2);
   const videos = materials.filter((m) => Number(m.typeId) === 1);
   const [viewMode, setViewMode] = useState('table');
@@ -71,7 +71,7 @@ export default function InstructorMaterials() {
   // Loading State
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      <div className="max-w-7xl mx-auto">
         <div className="bg-black border-2 border-black p-6 mb-6">
           <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
           <Skeleton.Button style={{ width: 300, height: 40 }} active className="bg-neutral-800" />
@@ -87,7 +87,7 @@ export default function InstructorMaterials() {
   // Error State
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+      <div className="max-w-7xl mx-auto">
         <div className="bg-white border-2 border-black p-6">
           <div className="h-1 bg-red-500 -mx-6 -mt-6 mb-4" />
           <div className="flex items-center gap-3 text-red-600">
@@ -100,7 +100,7 @@ export default function InstructorMaterials() {
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col p-6 bg-neutral-100 overflow-hidden">
+    <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
       {/* Header - Black background with yellow accent (matching MY CLASSES) */}
       <div className="flex-none bg-black border-2 border-black p-5 mb-4">
         <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />

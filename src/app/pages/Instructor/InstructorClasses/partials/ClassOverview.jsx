@@ -1,18 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { Calendar, Users, Clock, Hash, FileText, CheckCircle } from 'lucide-react';
+import DayTimeFormat from '../../../../components/DayTimeFormat/DayTimeFormat';
 
 const ClassOverview = ({ classData }) => {
   const { t } = useTranslation();
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   // Status styling for Light Wire theme
   const getStatusStyle = (status) => {
@@ -86,7 +77,7 @@ const ClassOverview = ({ classData }) => {
               <span className="text-xs font-bold uppercase text-neutral-500 tracking-wider">
                 {t('instructor.classes.overview.startDate')}
               </span>
-              <p className="text-base font-bold text-black mt-1">{formatDate(classData.startDate)}</p>
+              <p className="text-base font-bold text-black mt-1"><DayTimeFormat value={classData.startDate} /></p>
             </div>
           </div>
 
@@ -99,7 +90,7 @@ const ClassOverview = ({ classData }) => {
               <span className="text-xs font-bold uppercase text-neutral-500 tracking-wider">
                 {t('instructor.classes.overview.endDate')}
               </span>
-              <p className="text-base font-bold text-black mt-1">{formatDate(classData.endDate)}</p>
+              <p className="text-base font-bold text-black mt-1"><DayTimeFormat value={classData.endDate} /></p>
             </div>
           </div>
 

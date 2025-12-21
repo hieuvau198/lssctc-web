@@ -39,7 +39,7 @@ const ClassTable = ({
       title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.classCode')}</span>,
       dataIndex: 'classCode',
       key: 'classCode',
-      width: 100,
+      width: 80,
       fixed: 'left',
       render: (code) => <span className="font-mono font-bold text-yellow-600">{code}</span>,
     },
@@ -47,14 +47,14 @@ const ClassTable = ({
       title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.name')}</span>,
       dataIndex: 'name',
       key: 'name',
-      width: 260,
+      width: 300,
       render: (name, record) => (
-        <button
-          className="font-bold text-black hover:text-yellow-600 text-left transition-colors"
+        <div
+          className="font-bold text-black cursor-pointer hover:text-yellow-600 text-left transition-colors"
           onClick={() => onView(record)}
         >
           {name || record.className || t('common.na')}
-        </button>
+        </div>
       ),
     },
     {
@@ -70,14 +70,6 @@ const ClassTable = ({
       key: 'endDate',
       width: 120,
       render: (date) => <span className="text-neutral-600 font-medium">{date ? new Date(date).toLocaleDateString() : '-'}</span>,
-    },
-    {
-      title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.trainees')}</span>,
-      dataIndex: 'traineeCount',
-      key: 'traineeCount',
-      width: 100,
-      align: 'center',
-      render: (count) => <span className="font-black text-black">{count ?? 0}</span>,
     },
     {
       title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.status')}</span>,

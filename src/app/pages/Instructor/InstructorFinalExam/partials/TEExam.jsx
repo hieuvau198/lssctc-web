@@ -5,13 +5,15 @@ import { Plus, Edit3, RefreshCw, FileText, Users } from 'lucide-react';
 import dayjs from 'dayjs';
 import InstructorFEApi from '../../../../apis/Instructor/InstructorFEApi';
 import InstructorQuizApi from '../../../../apis/Instructor/InstructorQuiz';
+import DayTimeFormat from '../../../../components/DayTimeFormat/DayTimeFormat';
 
 export default function TEExam({ classId }) {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
   const [configs, setConfigs] = useState([]);
-  const [isExamCompleted, setIsExamCompleted] = useState(false); // [UPDATED]
+  const [isExamCompleted, setIsExamCompleted] = useState(false);
+  const [isExamNotYet, setIsExamNotYet] = useState(true); // State for NotYet status
 
   // Modal States
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -32,7 +34,8 @@ export default function TEExam({ classId }) {
       // Filter for Theory type
       const teConfigs = response.data?.partialConfigs?.filter(c => c.type === 'Theory') || [];
       setConfigs(teConfigs);
-      setIsExamCompleted(response.data?.status === 'Completed'); // [UPDATED]
+      setIsExamCompleted(response.data?.status === 'Completed');
+      setIsExamNotYet(response.data?.status === 'NotYet');
     } catch (error) {
       console.error(error);
       message.error('Failed to load exam configurations');
@@ -166,7 +169,7 @@ export default function TEExam({ classId }) {
     {
       title: <span className="uppercase font-black text-xs">Start Time</span>,
       dataIndex: 'startTime',
-      render: (val) => val ? <span className="text-neutral-600">{dayjs(val).format('YYYY-MM-DD HH:mm')}</span> : '-',
+      render: (val) => val ? <span className="text-neutral-600"><DayTimeFormat value={val} showTime /></span> : '-',
     },
     {
       title: <span className="uppercase font-black text-xs">Actions</span>,
@@ -348,6 +351,7 @@ export default function TEExam({ classId }) {
               <InputNumber
                 min={0}
                 max={100}
+                disabled
                 className="!w-full [&_.ant-input-number-input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
               />
             </Form.Item>
@@ -358,6 +362,8 @@ export default function TEExam({ classId }) {
           >
             <DatePicker.RangePicker
               showTime
+              format="DD-MM-YYYY HH:mm:ss"
+              disabledDate={(current) => current && current < dayjs().startOf('day')}
               className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
             />
           </Form.Item>

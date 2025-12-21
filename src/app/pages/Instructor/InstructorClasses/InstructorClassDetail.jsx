@@ -50,25 +50,27 @@ export default function InstructorClassDetail() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-4 h-10 px-4 flex items-center gap-2 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-400 transition-all"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back
-      </button>
-
-      {/* Tabs */}
+    <div className="max-w-7xl mx-auto">
+      {/* Tabs with Back Button */}
       <div className="bg-white border-2 border-black overflow-hidden">
         <div className="h-1 bg-yellow-400" />
-        <Tabs
-          activeKey={activeTab}
-          items={tabItems}
-          type="line"
-          className="[&_.ant-tabs-nav]:px-4 [&_.ant-tabs-nav]:bg-neutral-50 [&_.ant-tabs-nav]:border-b-2 [&_.ant-tabs-nav]:border-neutral-200 [&_.ant-tabs-tab-active]:border-b-2 [&_.ant-tabs-tab-active]:border-yellow-400 [&_.ant-tabs-ink-bar]:bg-yellow-400"
-        />
+        <div className="flex items-center bg-neutral-50 border-b-2 border-neutral-200">
+          {/* Tabs */}
+          <Tabs
+            activeKey={activeTab}
+            items={tabItems}
+            type="line"
+            className="flex-1 [&_.ant-tabs-nav]:px-4 [&_.ant-tabs-nav]:!mb-0 [&_.ant-tabs-nav::before]:!border-0 [&_.ant-tabs-tab-active]:border-b-2 [&_.ant-tabs-tab-active]:border-yellow-400 [&_.ant-tabs-ink-bar]:bg-yellow-400"
+          />
+          {/* Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="h-10 px-4 flex items-center gap-2 text-black font-bold uppercase text-sm hover:bg-yellow-400 transition-all border-l-2 border-neutral-200"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+        </div>
       </div>
 
       {/* Content */}

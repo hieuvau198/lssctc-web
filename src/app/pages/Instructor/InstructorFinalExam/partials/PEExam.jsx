@@ -4,13 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Edit3, MinusCircle, Check, X, ClipboardList, Users, Award } from 'lucide-react';
 import dayjs from 'dayjs';
 import InstructorFEApi from '../../../../apis/Instructor/InstructorFEApi';
+import DayTimeFormat from '../../../../components/DayTimeFormat/DayTimeFormat';
 
 export default function PEExam({ classId }) {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
   const [configs, setConfigs] = useState([]);
-  const [isExamCompleted, setIsExamCompleted] = useState(false); // [UPDATED] State for lock status
+  const [isExamCompleted, setIsExamCompleted] = useState(false); // State for lock status
+  const [isExamNotYet, setIsExamNotYet] = useState(true); // State for NotYet status - disable grading
 
   // States for Config Modal (Template)
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -33,7 +35,8 @@ export default function PEExam({ classId }) {
     try {
       const response = await InstructorFEApi.getClassConfig(classId);
       setConfigs(response.data?.partialConfigs?.filter(c => c.type === 'Practical') || []);
-      setIsExamCompleted(response.data?.status === 'Completed'); // [UPDATED] Check status
+      setIsExamCompleted(response.data?.status === 'Completed');
+      setIsExamNotYet(response.data?.status === 'NotYet');
     } catch (error) {
       console.error(error);
     } finally {
@@ -186,7 +189,7 @@ export default function PEExam({ classId }) {
     {
       title: <span className="uppercase font-black text-xs">Start Time</span>,
       dataIndex: 'startTime',
-      render: (val) => val ? <span className="text-neutral-600">{dayjs(val).format('YYYY-MM-DD HH:mm')}</span> : '-',
+      render: (val) => val ? <span className="text-neutral-600"><DayTimeFormat value={val} showTime /></span> : '-',
     },
     {
       title: <span className="uppercase font-black text-xs">Actions</span>,
@@ -273,18 +276,21 @@ export default function PEExam({ classId }) {
       title: <span className="uppercase font-black text-xs">Action</span>,
       key: 'action',
       width: '10%',
-      render: (_, record) => (
-        <button
-          onClick={() => handleOpenGrading(record)}
-          disabled={isExamCompleted} // [UPDATED] Disable if completed
-          className={`px-4 py-2 font-bold uppercase text-xs border-2 transition-all ${isExamCompleted
-            ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
-            : 'bg-yellow-400 text-black border-black hover:bg-yellow-500'
-            }`}
-        >
-          Grade
-        </button>
-      )
+      render: (_, record) => {
+        const isGradeDisabled = isExamCompleted || isExamNotYet;
+        return (
+          <button
+            onClick={() => handleOpenGrading(record)}
+            disabled={isGradeDisabled}
+            className={`px-4 py-2 font-bold uppercase text-xs border-2 transition-all ${isGradeDisabled
+              ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
+              : 'bg-yellow-400 text-black border-black hover:bg-yellow-500'
+              }`}
+          >
+            Grade
+          </button>
+        );
+      }
     }
   ];
 
@@ -369,6 +375,7 @@ export default function PEExam({ classId }) {
               <InputNumber
                 min={0}
                 max={100}
+                disabled
                 className="!w-full [&_.ant-input-number-input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
               />
             </Form.Item>
@@ -379,6 +386,8 @@ export default function PEExam({ classId }) {
           >
             <DatePicker.RangePicker
               showTime
+              format="DD-MM-YYYY HH:mm:ss"
+              disabledDate={(current) => current && current < dayjs().startOf('day')}
               className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
             />
           </Form.Item>

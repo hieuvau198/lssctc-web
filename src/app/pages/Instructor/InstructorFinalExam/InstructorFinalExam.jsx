@@ -123,7 +123,7 @@ export default function InstructorFinalExam() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+    <div className="max-w-7xl mx-auto">
       {contextHolder}
 
       {/* Light Wire Header */}
@@ -137,7 +137,7 @@ export default function InstructorFinalExam() {
               <Trophy className="w-7 h-7 text-black" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">{t('instructor.finalExam.title')}</h1>
+              <span className="text-2xl font-black text-white uppercase tracking-tight">{t('instructor.finalExam.title')}</span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">{t('instructor.finalExam.subtitle')}</p>
             </div>
           </div>
