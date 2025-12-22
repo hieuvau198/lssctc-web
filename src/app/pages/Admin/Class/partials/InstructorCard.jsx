@@ -50,8 +50,8 @@ const InstructorCard = ({ classItem, allowAssign }) => {
   };
 
   return (
-    <div className="mt-12">
-      {/* Header */}
+    <div className="mt-0 h-full flex flex-col">
+      {/* Header - Removed large margin top to fit better in container */}
       <div className="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
         <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
           <UserCog size={18} strokeWidth={2.5} />
@@ -59,7 +59,7 @@ const InstructorCard = ({ classItem, allowAssign }) => {
         <h3 className="text-xl font-bold uppercase tracking-wide text-slate-900 m-0">{t('admin.classes.detail.instructor')}</h3>
       </div>
 
-      <div className="ml-0 mb-6">
+      <div className="ml-0 mb-4">
         {!instructor && !instructorLoading && (
           <div className="bg-slate-50 border-2 border-dashed border-slate-300 p-6 flex items-center justify-center">
             <AddInstructor classItem={classItem} onAssigned={handleAssigned} allowAssign={allowAssign} />
@@ -70,8 +70,14 @@ const InstructorCard = ({ classItem, allowAssign }) => {
       {instructorLoading ? (
         <Skeleton active paragraph={{ rows: 2 }} />
       ) : instructor ? (
-        <div className="bg-white border-2 border-slate-200 hover:border-black transition-all p-6 group">
-          <div className="flex flex-col md:flex-row items-start gap-6">
+        <div className="bg-white border-2 border-slate-200 hover:border-black transition-all p-4 lg:p-6 group">
+          {/* Responsive Layout Logic:
+            - Mobile (< sm): Stacked
+            - Tablet/Desktop (sm - xl): Row (Card is wide in 1-col grid)
+            - Large Desktop (xl - 2xl): Stacked (Card is narrow in 4-col sidebar)
+            - Huge Desktop (2xl+): Row (Card is wide enough in sidebar)
+          */}
+          <div className="flex flex-col sm:flex-row xl:flex-col 2xl:flex-row items-center sm:items-start xl:items-center 2xl:items-start gap-6">
             <div className="shrink-0 relative">
               <div className="absolute -inset-2 bg-yellow-400 rotate-3 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               {instructor.avatarUrl ? (
@@ -85,35 +91,33 @@ const InstructorCard = ({ classItem, allowAssign }) => {
               )}
             </div>
 
-            <div className="flex-1 w-full">
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 pb-4 border-b border-slate-100">
+            <div className="flex-1 w-full text-center sm:text-left xl:text-center 2xl:text-left min-w-0">
+              <div className="flex flex-col justify-center gap-1 mb-4 pb-4 border-b border-slate-100 w-full">
                 <div>
-                  <div className="text-2xl font-bold text-slate-900 leading-none mb-1">
+                  <div className="text-xl md:text-2xl font-bold text-slate-900 leading-tight truncate">
                     {instructor.fullname || instructor.fullName || instructor.name || 'N/A'}
                   </div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-yellow-600">
+                  <div className="text-xs font-bold uppercase tracking-wider text-yellow-600 mt-1">
                     {instructor.instructorCode || '-'}
                   </div>
                 </div>
                 {instructor.email && (
-                  <div className="flex items-center gap-2 text-slate-500 font-medium text-sm mt-2 md:mt-0">
-                    <Mail size={14} /> {instructor.email}
+                  <div className="flex items-center justify-center sm:justify-start xl:justify-center 2xl:justify-start gap-2 text-slate-500 font-medium text-sm mt-1 truncate">
+                    <Mail size={14} className="shrink-0" /> <span className="truncate">{instructor.email}</span>
                   </div>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 group-hover:border-slate-200 transition-colors">
-                  <div className="w-8 h-8 rounded-none bg-white border border-slate-200 flex items-center justify-center text-slate-400">
+              <div className="w-full">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 group-hover:border-slate-200 transition-colors w-full">
+                  <div className="w-8 h-8 shrink-0 rounded-none bg-white border border-slate-200 flex items-center justify-center text-slate-400">
                     <Phone size={14} />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1 text-left">
                     <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{t('admin.classes.instructorDetail.phone')}</div>
-                    <div className="font-semibold text-slate-700">{instructor.phoneNumber || instructor.phone || '-'}</div>
+                    <div className="font-semibold text-slate-700 truncate">{instructor.phoneNumber || instructor.phone || '-'}</div>
                   </div>
                 </div>
-
-                {/* Hire Date Removed */}
               </div>
             </div>
           </div>

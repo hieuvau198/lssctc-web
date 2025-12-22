@@ -1,4 +1,4 @@
-import { App, Avatar, Button, Divider, Empty, Pagination, Popconfirm, Skeleton, Space, Table, Tooltip } from "antd";
+import { App, Avatar, Button, Divider, Empty, Pagination, Popconfirm, Space, Table, Tooltip } from "antd";
 import { Check, X, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -62,43 +62,30 @@ const ClassMembersTable = ({ classItem }) => {
     }, [classItem?.id, page, pageSize]);
 
     const columns = [
+        // COMBINED: Avatar + Name + Email
         {
-            title: '#',
-            dataIndex: 'idx',
-            width: 60,
-            align: 'center',
-            render: (v) => <span className="font-bold text-neutral-500">{v}</span>
-        },
-        {
-            title: t('common.avatar'),
-            dataIndex: 'avatar',
-            width: 80,
-            align: 'center',
-            render: (src, record) => (
-                <Avatar
-                    src={src}
-                    alt={record.fullName}
-                    style={{ backgroundColor: '#facc15', color: '#000', fontWeight: 'bold' }}
-                >
-                    {!src && getInitials(record.fullName)}
-                </Avatar>
+            title: t('admin.classes.members.traineeInfo', 'Trainee Information'),
+            key: 'traineeInfo',
+            render: (_, record) => (
+                <div className="flex items-center gap-3">
+                    <Avatar
+                        src={record.avatar}
+                        alt={record.fullName}
+                        size={40}
+                        style={{ backgroundColor: '#facc15', color: '#000', fontWeight: 'bold', flexShrink: 0 }}
+                    >
+                        {!record.avatar && getInitials(record.fullName)}
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                        <span className="font-bold text-black truncate leading-tight" title={record.fullName}>
+                            {record.fullName}
+                        </span>
+                        <span className="text-xs text-neutral-500 truncate" title={record.email}>
+                            {record.email}
+                        </span>
+                    </div>
+                </div>
             ),
-        },
-        {
-            title: t('common.fullName'),
-            dataIndex: 'fullName',
-            render: (text) => <span className="font-bold text-black">{text}</span>
-        },
-        {
-            title: t('common.email'),
-            dataIndex: 'email',
-            render: (text) => <span className="text-neutral-600">{text}</span>
-        },
-        {
-            title: t('common.phone'),
-            dataIndex: 'phoneNumber',
-            width: 150,
-            render: (text) => <span className="font-medium">{text}</span>
         },
         {
             title: t('admin.classes.columns.enrollDate'),
@@ -239,38 +226,49 @@ const ClassMembersTable = ({ classItem }) => {
 
     return (
         <div>
-            {/* Industrial Table Styles */}
+            {/* Industrial Table Styles - Matched to ClassTimeslotManage */}
             <style>{`
                 .industrial-members-table .ant-table-thead > tr > th {
-                    background: #fef08a !important;
-                    border-bottom: 2px solid #000 !important;
-                    font-weight: 700 !important;
-                    text-transform: uppercase !important;
-                    font-size: 12px !important;
-                    letter-spacing: 0.05em !important;
-                    color: #000 !important;
-                }
-                .industrial-members-table .ant-table-thead > tr > th::before {
-                    display: none !important;
+                    background: #000 !important;
+                    color: #fff !important;
+                    text-transform: uppercase;
+                    font-weight: 700;
+                    font-size: 12px;
+                    letter-spacing: 0.05em;
+                    border-radius: 0 !important;
+                    padding: 12px 16px;
                 }
                 .industrial-members-table .ant-table-tbody > tr > td {
-                    border-bottom: 1px solid #e5e5e5 !important;
+                    border-bottom: 1px solid #e5e5e5;
+                    padding: 16px;
+                }
+                .industrial-members-table .ant-table-container {
+                    border: 2px solid #000;
+                    border-radius: 0;
                 }
                 .industrial-members-table .ant-table-tbody > tr:hover > td {
-                    background: #fef9c3 !important;
+                    background: #fef9c3 !important; /* Keep slight yellow hover */
                 }
             `}</style>
 
-            <Divider orientation="left" className="!font-bold !uppercase !text-black !border-black">
-                {t('admin.classes.detail.members')} ({totalCount})
-            </Divider>
+            <div className="flex justify-between items-end mb-4 border-b-2 border-slate-200 pb-2">
+                 <div className="flex items-center gap-3">
+                    {/* Using simple text header to match the timeslot card style slightly better, or keep divider */}
+                    <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
+                        <Users size={18} strokeWidth={2.5} />
+                    </div>
+                    <span className="text-xl font-bold uppercase tracking-wide text-slate-900">
+                        {t('admin.classes.detail.members')} <span className="text-slate-500">({totalCount})</span>
+                    </span>
+                </div>
+            </div>
 
             {/* Add Trainee button - only show when class is Draft or Open */}
             {(() => {
                 const s = getClassStatus(classItem.status);
                 if (s.key === 'Draft' || s.key === 'Open') {
                     return (
-                        <div className="ml-3 mb-4">
+                        <div className="mb-4">
                             <AddTraineeModal
                                 classItem={classItem}
                                 existingTraineeIds={trainees.map(t => t.traineeId || t.id)}
@@ -289,7 +287,7 @@ const ClassMembersTable = ({ classItem }) => {
                     ))}
                 </div>
             ) : members.length === 0 ? (
-                <div className="py-12 flex flex-col items-center justify-center">
+                <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 bg-slate-50">
                     <div className="w-16 h-16 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mb-4">
                         <Users className="w-8 h-8 text-neutral-400" />
                     </div>
@@ -300,7 +298,7 @@ const ClassMembersTable = ({ classItem }) => {
                     {(() => {
                         const rows = members.map((it, idx) => ({
                             key: it.id || it.traineeId || idx,
-                            enrollmentId: it.id, // enrollment id for approve/reject
+                            enrollmentId: it.id,
                             idx: (page - 1) * pageSize + idx + 1,
                             avatar: it.avatarUrl || it.avatar || '',
                             fullName: it.traineeName || it.trainee?.fullName || it.traineeName || '-',
@@ -348,4 +346,3 @@ const ClassMembersTable = ({ classItem }) => {
 };
 
 export default ClassMembersTable;
-
