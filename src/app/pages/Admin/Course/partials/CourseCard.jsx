@@ -1,3 +1,5 @@
+// hieuvau198/lssctc-web/lssctc-web-fix-admin-class/src/app/pages/Admin/Course/partials/CourseCard.jsx
+
 import React from "react";
 import { useTranslation } from 'react-i18next';
 import { Card, Tag, Button, Tooltip, Popconfirm } from "antd";
@@ -56,13 +58,17 @@ const CourseCard = ({ course, onSelect, onEdit, onDelete, deletingId }) => {
     >
       <div className="flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h3
-            className="font-semibold text-slate-900 line-clamp-2 flex-1 cursor-pointer"
-            onClick={() => onSelect(course)}
-          >
-            {course.name}
-          </h3>
-          <Tag color={course.isActive ? "green" : "red"} className="m-0">
+          <div className="flex-1 cursor-pointer" onClick={() => onSelect(course)}>
+            <h3 className="font-semibold text-slate-900 line-clamp-2 leading-tight">
+              {course.name}
+            </h3>
+            {course.courseCode && (
+              <p className="text-xs text-slate-500 font-mono mt-1">
+                {course.courseCode}
+              </p>
+            )}
+          </div>
+          <Tag color={course.isActive ? "green" : "red"} className="m-0 shrink-0">
             {course.isActive ? t('common.active') : t('common.inactive')}
           </Tag>
         </div>

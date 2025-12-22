@@ -1,4 +1,4 @@
-import { App, Avatar, Button, Divider, Empty, Pagination, Popconfirm, Space, Table, Tooltip } from "antd";
+import { App, Avatar, Button, Pagination, Popconfirm, Space, Table, Tooltip } from "antd";
 import { Check, X, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -77,10 +77,10 @@ const ClassMembersTable = ({ classItem }) => {
                         {!record.avatar && getInitials(record.fullName)}
                     </Avatar>
                     <div className="flex flex-col min-w-0">
-                        <span className="font-bold text-black truncate leading-tight" title={record.fullName}>
+                        <span className="font-bold text-slate-800 truncate leading-tight" title={record.fullName}>
                             {record.fullName}
                         </span>
-                        <span className="text-xs text-neutral-500 truncate" title={record.email}>
+                        <span className="text-xs text-slate-500 truncate" title={record.email}>
                             {record.email}
                         </span>
                     </div>
@@ -91,7 +91,7 @@ const ClassMembersTable = ({ classItem }) => {
             title: t('admin.classes.columns.enrollDate'),
             dataIndex: 'enrollDate',
             width: 150,
-            render: (d) => <span className="text-neutral-600"><DayTimeFormat value={d} /></span>,
+            render: (d) => <span className="text-slate-600"><DayTimeFormat value={d} /></span>,
         },
         {
             title: t('common.status'),
@@ -103,7 +103,7 @@ const ClassMembersTable = ({ classItem }) => {
                     'blue': 'bg-blue-100 text-blue-800 border-blue-300',
                     'orange': 'bg-orange-100 text-orange-800 border-orange-300',
                     'red': 'bg-red-100 text-red-800 border-red-300',
-                    'default': 'bg-neutral-100 text-neutral-800 border-neutral-300',
+                    'default': 'bg-slate-100 text-slate-800 border-slate-300',
                 };
                 const statusClass = colorMap[st.color] || colorMap.default;
                 return (
@@ -123,7 +123,7 @@ const ClassMembersTable = ({ classItem }) => {
                 const st = getEnrollmentStatus(record.status);
                 // Only show actions for Pending status
                 if (st.key !== 'Pending') {
-                    return <span className="text-neutral-400">-</span>;
+                    return <span className="text-slate-400">-</span>;
                 }
                 const isApproving = actionLoading[record.enrollmentId] === 'approve';
                 const isRejecting = actionLoading[record.enrollmentId] === 'reject';
@@ -225,10 +225,10 @@ const ClassMembersTable = ({ classItem }) => {
     const members = trainees || [];
 
     return (
-        <div>
+        <div className="">
             {/* Industrial Table Styles - Matched to ClassTimeslotManage */}
             <style>{`
-                .industrial-members-table .ant-table-thead > tr > th {
+                .industrial-table .ant-table-thead > tr > th {
                     background: #000 !important;
                     color: #fff !important;
                     text-transform: uppercase;
@@ -238,22 +238,18 @@ const ClassMembersTable = ({ classItem }) => {
                     border-radius: 0 !important;
                     padding: 12px 16px;
                 }
-                .industrial-members-table .ant-table-tbody > tr > td {
+                .industrial-table .ant-table-tbody > tr > td {
                     border-bottom: 1px solid #e5e5e5;
                     padding: 16px;
                 }
-                .industrial-members-table .ant-table-container {
+                .industrial-table .ant-table-container {
                     border: 2px solid #000;
                     border-radius: 0;
-                }
-                .industrial-members-table .ant-table-tbody > tr:hover > td {
-                    background: #fef9c3 !important; /* Keep slight yellow hover */
                 }
             `}</style>
 
             <div className="flex justify-between items-end mb-4 border-b-2 border-slate-200 pb-2">
                  <div className="flex items-center gap-3">
-                    {/* Using simple text header to match the timeslot card style slightly better, or keep divider */}
                     <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
                         <Users size={18} strokeWidth={2.5} />
                     </div>
@@ -283,20 +279,21 @@ const ClassMembersTable = ({ classItem }) => {
             {traineesLoading ? (
                 <div className="space-y-3">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="h-12 bg-neutral-100 animate-pulse" />
+                        <div key={i} className="h-12 bg-slate-100 animate-pulse" />
                     ))}
                 </div>
             ) : members.length === 0 ? (
                 <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 bg-slate-50">
-                    <div className="w-16 h-16 bg-neutral-100 border-2 border-neutral-300 flex items-center justify-center mb-4">
-                        <Users className="w-8 h-8 text-neutral-400" />
+                    <div className="w-16 h-16 bg-slate-100 border-2 border-slate-300 flex items-center justify-center mb-4">
+                        <Users className="w-8 h-8 text-slate-400" />
                     </div>
-                    <p className="text-neutral-800 font-bold uppercase">{t('admin.classes.detail.noMembers')}</p>
+                    <p className="text-slate-800 font-bold uppercase">{t('admin.classes.detail.noMembers')}</p>
                 </div>
             ) : (
-                <div className="industrial-members-table">
-                    {(() => {
-                        const rows = members.map((it, idx) => ({
+                <>
+                    <Table
+                        className="industrial-table"
+                        dataSource={members.map((it, idx) => ({
                             key: it.id || it.traineeId || idx,
                             enrollmentId: it.id,
                             idx: (page - 1) * pageSize + idx + 1,
@@ -307,39 +304,30 @@ const ClassMembersTable = ({ classItem }) => {
                             traineeCode: it.traineeCode || it.classCode || '',
                             enrollDate: it.enrollDate,
                             status: it.status,
-                        }));
+                        }))}
+                        columns={columns}
+                        pagination={false}
+                        rowKey="key"
+                        size="middle"
+                        loading={traineesLoading}
+                    />
 
-                        return (
-                            <>
-                                <Table
-                                    dataSource={rows}
-                                    columns={columns}
-                                    pagination={false}
-                                    rowKey="key"
-                                    size="middle"
-                                    loading={traineesLoading}
-                                    scroll={{ y: 320 }}
-                                />
-
-                                <div className="py-4 border-t-2 border-neutral-200 bg-white flex justify-center">
-                                    <Pagination
-                                        current={page}
-                                        pageSize={pageSize}
-                                        total={totalCount}
-                                        onChange={(p, s) => { setPage(p); setPageSize(s); }}
-                                        showSizeChanger
-                                        pageSizeOptions={["10", "20", "35", "50"]}
-                                        showTotal={(total, range) => (
-                                            <span className="text-sm font-medium text-neutral-600">
-                                                {range[0]}-{range[1]} / {total}
-                                            </span>
-                                        )}
-                                    />
-                                </div>
-                            </>
-                        );
-                    })()}
-                </div>
+                    <div className="py-4 border-t-2 border-slate-200 bg-white flex justify-center">
+                        <Pagination
+                            current={page}
+                            pageSize={pageSize}
+                            total={totalCount}
+                            onChange={(p, s) => { setPage(p); setPageSize(s); }}
+                            showSizeChanger
+                            pageSizeOptions={["10", "20", "35", "50"]}
+                            showTotal={(total, range) => (
+                                <span className="text-sm font-medium text-slate-600">
+                                    {range[0]}-{range[1]} / {total}
+                                </span>
+                            )}
+                        />
+                    </div>
+                </>
             )}
         </div>
     );

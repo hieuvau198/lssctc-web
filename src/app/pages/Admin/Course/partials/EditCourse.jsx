@@ -1,10 +1,10 @@
-// hieuvau198/lssctc-web/lssctc-web-fix-v10/src/app/pages/Admin/Course/partials/EditCourse.jsx
+// hieuvau198/lssctc-web/lssctc-web-fix-admin-class/src/app/pages/Admin/Course/partials/EditCourse.jsx
 
 import React, { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { Modal, Form, Input, InputNumber, Select, Switch, Image } from "antd";
 import { fetchCourseCategories, fetchCourseLevels } from "../../../../apis/ProgramManager/CourseApi";
-import { Edit3, X } from 'lucide-react';
+import { Edit3, X, Code, BookOpen } from 'lucide-react'; // Added Code, BookOpen
 
 const { Option } = Select;
 
@@ -28,7 +28,8 @@ const EditCourse = ({
   const [bgImagePreview, setBgImagePreview] = useState("");
 
   useEffect(() => {
-    if (course && localCategories.length > 0 && localLevels.length > 0) {
+    if (course) {
+      // Logic to find IDs if labels are provided (fallback)
       const categoryId = course.categoryId || localCategories.find(c => c.label === course.category)?.value;
       const levelId = course.levelId || localLevels.find(l => l.label === course.level)?.value;
 
@@ -40,7 +41,7 @@ const EditCourse = ({
         isActive: course.isActive,
         imageUrl: course.imageUrl,
         durationHours: course.durationHours,
-        courseCodeName: course.courseCodeName,
+        courseCode: course.courseCode, // Fixed: use courseCode property
         backgroundImageUrl: course.backgroundImageUrl,
       });
       setImagePreview(course.imageUrl || "");
@@ -79,8 +80,8 @@ const EditCourse = ({
       }
     }
 
-    loadCategories();
-    loadLevels();
+    if (categories.length === 0) loadCategories();
+    if (levels.length === 0) loadLevels();
 
     return () => {
       mounted = false;
@@ -140,14 +141,37 @@ const EditCourse = ({
         className={`industrial-edit-form ${embedded ? "grid grid-cols-1 md:grid-cols-2 gap-x-6" : ""}`}
         disabled={confirmLoading}
       >
+        {/* Name and Code Grid */}
         {!embedded && (
-          <Form.Item
-            label={t('admin.courses.form.name')}
-            name="name"
-            rules={[{ required: true, message: t('admin.courses.form.nameRequired', 'Name is required') }]}
-          >
-            <Input showCount placeholder={t('admin.courses.form.namePlaceholder')} />
-          </Form.Item>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <Form.Item
+              label={t('admin.courses.form.name')}
+              name="name"
+              rules={[{ required: true, message: t('admin.courses.form.nameRequired', 'Name is required') }]}
+            >
+              <Input 
+                showCount 
+                placeholder={t('admin.courses.form.namePlaceholder')} 
+                prefix={<BookOpen className="w-4 h-4 text-neutral-400" />}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label={t('admin.courses.form.courseCode')}
+              name="courseCode"
+              rules={[
+                { required: false, message: t('admin.courses.form.courseCodeRequired') },
+                { max: 50, message: t('admin.courses.form.courseCodeMax') }
+              ]}
+            >
+              <Input 
+                showCount 
+                maxLength={50} 
+                placeholder={t('admin.courses.form.courseCodePlaceholder')}
+                prefix={<Code className="w-4 h-4 text-neutral-400" />} 
+              />
+            </Form.Item>
+          </div>
         )}
 
         {/* Category and Level */}

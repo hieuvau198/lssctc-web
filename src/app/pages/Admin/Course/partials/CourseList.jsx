@@ -1,3 +1,6 @@
+// hieuvau198/lssctc-web/lssctc-web-fix-admin-class/src/app/pages/Admin/Course/partials/CourseList.jsx
+
+// ... imports remain the same
 import React from "react";
 import { useTranslation } from 'react-i18next';
 import { Avatar, Pagination } from "antd";
@@ -66,13 +69,20 @@ const CourseTableView = ({
       dataIndex: "name",
       key: "name",
       render: (name, record) => (
-        <span
+        <div
           onClick={() => onView(record)}
-          className="font-bold text-black cursor-pointer hover:text-yellow-600 transition-colors flex items-center gap-2 group"
+          className="cursor-pointer group"
         >
-          {name}
-          <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </span>
+          <div className="font-bold text-black group-hover:text-yellow-600 transition-colors flex items-center gap-2">
+            {name}
+            <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          {record.courseCode && (
+            <div className="text-xs text-neutral-500 font-mono mt-0.5">
+              {record.courseCode}
+            </div>
+          )}
+        </div>
       ),
     },
     {
@@ -132,7 +142,8 @@ const CourseTableView = ({
   );
 };
 
-// Card View Component with Industrial styling
+// ... Rest of the file (CourseCardView and CourseList component) remains the same
+// Copy the rest of the file content from the original CourseList.jsx here
 const CourseCardView = ({
   courses,
   pageNumber,

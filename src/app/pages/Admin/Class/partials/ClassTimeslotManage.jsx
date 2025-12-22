@@ -187,6 +187,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
             }
         };
     };
+    
 
 
     // --- Columns Definition (Respects readOnly) ---
@@ -196,6 +197,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                 title: t('common.name') || 'NAME',
                 dataIndex: 'name',
                 key: 'name',
+                width: 280, // Increased width
                 render: (text) => <span className="font-bold text-slate-800">{text}</span>
             },
             {
@@ -226,12 +228,11 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                 title: t('class.timeslot.location') || 'LOCATION',
                 key: 'location',
                 render: (_, record) => (
-                    <div className="flex items-start gap-2">
-                        <MapPin size={16} className="text-neutral-400 mt-1 shrink-0" />
-                        <div>
-                            <div className="font-bold text-slate-800 uppercase tracking-wide text-xs">{record.locationRoom} - {record.locationBuilding}</div>
-                            <div className="text-xs text-slate-500">{record.locationDetail}</div>
-                        </div>
+                    <div className="flex items-center gap-2">
+                        <MapPin size={16} className="text-neutral-400 shrink-0" />
+                        <span className="font-bold text-slate-800 uppercase tracking-wide text-xs">
+                            {record.locationRoom}
+                        </span>
                     </div>
                 ),
             },
@@ -271,7 +272,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
     };
 
     return (
-        <div className="mt-12">
+        <div className="">
             <style>{`
                 .industrial-table .ant-table-thead > tr > th {
                     background: #000 !important;
@@ -376,7 +377,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                 }
             `}</style>
 
-            <div className="flex justify-between items-end mb-4 border-b-2 border-slate-200 pb-2">
+            <div className="flex justify-between items-end mb-4  pb-2">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
                         <Calendar size={18} strokeWidth={2.5} />

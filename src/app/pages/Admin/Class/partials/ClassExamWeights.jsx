@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Form, InputNumber, Button, Skeleton, App, Alert } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { Scale, Save, RotateCcw } from 'lucide-react';
+import { Scale, Save, RotateCcw, Info } from 'lucide-react';
 import { getClassExamConfig, updateClassWeights } from '../../../../apis/FinalExam/FinalExamApi';
 
 /**
@@ -38,7 +38,6 @@ const ClassExamWeights = ({ classId, readOnly }) => {
   const isPartialValid = useMemo(() => {
     if (!values) return false;
     const { theoryWeight, simulationWeight, practicalWeight } = values;
-    // Check if fields exist and are strictly greater than 0
     return (theoryWeight > 0) && (simulationWeight > 0) && (practicalWeight > 0);
   }, [values]);
 
@@ -53,12 +52,7 @@ const ClassExamWeights = ({ classId, readOnly }) => {
     setLoading(true);
     try {
       const data = await getClassExamConfig(classId);
-
-      // Handle the complex GET response structure
       if (data && data.partialConfigs) {
-
-        // Helper to find weight from the array and convert % to decimal (30.0 -> 0.3)
-        // We assume GET returns percentages (30.0) based on your log, so we divide by 100 for the UI
         const getWeight = (type) => {
           const config = data.partialConfigs.find(item => item.type === type);
           return config ? fixFloat(config.examWeight / 100) : 0;
@@ -100,8 +94,6 @@ const ClassExamWeights = ({ classId, readOnly }) => {
 
     setSubmitting(true);
     try {
-      // FIX: Send the flat object directly (e.g. { theoryWeight: 0.1, ... })
-      // Based on your finding, the backend accepts this flat structure and these decimal values.
       const payload = {
         theoryWeight: values.theoryWeight,
         simulationWeight: values.simulationWeight,
@@ -111,7 +103,7 @@ const ClassExamWeights = ({ classId, readOnly }) => {
       await updateClassWeights(classId, payload);
 
       message.success(t('admin.classes.weights.updateSuccess'));
-      setInitialData(values); // Update initial data to new saved values
+      setInitialData(values);
       setIsDirty(false);
     } catch (error) {
       console.error("Update Error:", error);
@@ -122,7 +114,6 @@ const ClassExamWeights = ({ classId, readOnly }) => {
     }
   };
 
-  // Handle form changes to set Dirty state
   const onValuesChange = (changedValues, allValues) => {
     const hasChanged = initialData && (
       allValues.theoryWeight !== initialData.theoryWeight ||
@@ -134,20 +125,20 @@ const ClassExamWeights = ({ classId, readOnly }) => {
 
   if (loading) {
     return (
-      <div className="p-6 border-2 border-neutral-100 bg-white">
+      <div className="p-6 border-2 border-slate-200 bg-white">
         <Skeleton active paragraph={{ rows: 3 }} />
       </div>
     );
   }
 
   return (
-    <div id="class-weights" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+    <div id="class-weights" className="p-6 border-2 border-slate-200 bg-white">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center border-2 border-transparent shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <Scale className="w-5 h-5 text-black" />
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-slate-100 pb-4">
+        <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
+          <Scale size={18} strokeWidth={2.5} />
         </div>
-        <span className="text-xl font-black uppercase tracking-tight text-neutral-900 m-0">
+        <span className="text-xl font-bold uppercase tracking-wide text-slate-900">
           {t('admin.classes.weights.title', 'Exam Weights')}
         </span>
       </div>
@@ -155,13 +146,13 @@ const ClassExamWeights = ({ classId, readOnly }) => {
       <div className="flex flex-col xl:flex-row gap-8">
         {/* Left: Form */}
         <div className="flex-1">
-          <Alert
-            message={t('admin.classes.weights.configRules')}
-            description={t('admin.classes.weights.configDesc')}
-            type="info"
-            showIcon
-            className="mb-6 border-blue-200 bg-blue-50 text-blue-800"
-          />
+          <div className="flex items-start gap-3 p-4 bg-slate-50 border border-slate-200 mb-6">
+            <Info className="w-5 h-5 text-slate-400 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-slate-600">
+              <p className="font-bold text-slate-800 uppercase text-xs mb-1">Configuration Rules</p>
+              {t('admin.classes.weights.configDesc')}
+            </div>
+          </div>
 
           <Form
             form={form}
@@ -169,28 +160,28 @@ const ClassExamWeights = ({ classId, readOnly }) => {
             onFinish={onFinish}
             onValuesChange={onValuesChange}
             initialValues={{ theoryWeight: 0, simulationWeight: 0, practicalWeight: 0 }}
-            disabled={readOnly} // Disable Form Interactions
+            disabled={readOnly}
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {['Theory', 'Simulation', 'Practical'].map((type) => {
                 const fieldName = `${type.toLowerCase()}Weight`;
                 return (
                   <Form.Item
                     key={fieldName}
-                    label={<span className="font-bold uppercase text-xs">{type} Weight</span>}
+                    label={<span className="font-bold uppercase text-xs text-slate-500 tracking-wider">{type} Weight</span>}
                     name={fieldName}
+                    className="mb-0"
                     rules={[
                       { required: true, message: 'Required' },
-                      { type: 'number', min: 0.0001, max: 0.9999, message: 'Must be > 0 and < 1' }
+                      { type: 'number', min: 0.0001, max: 0.9999, message: '> 0' }
                     ]}
                   >
                     <InputNumber
                       step={0.1}
                       min={0}
                       max={1}
-                      className="w-full font-mono font-bold"
-                      style={{ borderRadius: 0 }}
-                      placeholder="e.g. 0.3"
+                      className="w-full font-mono font-bold text-lg !bg-white !border-slate-300 focus:!border-black !rounded-none focus:!shadow-none h-12 flex items-center"
+                      placeholder="0.0"
                       disabled={readOnly}
                     />
                   </Form.Item>
@@ -199,25 +190,34 @@ const ClassExamWeights = ({ classId, readOnly }) => {
             </div>
 
             {/* Total & Actions */}
-            <div className="flex flex-wrap items-center justify-between mt-6 pt-6 border-t border-neutral-100 gap-4">
+            <div className="flex flex-wrap items-center justify-between mt-8 pt-6 border-t-2 border-slate-100 gap-4">
 
               {/* Total Display */}
-              <div className={`flex items-center gap-3 px-4 py-2 border-2 ${isTotalValid ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                <span className="font-bold uppercase text-xs text-neutral-500">{t('admin.classes.weights.totalWeight')}:</span>
-                <span className={`font-mono text-xl font-black ${isTotalValid ? 'text-green-700' : 'text-red-600'}`}>
-                  {total} / 1
+              <div className="flex items-center gap-4">
+                <span className="font-bold uppercase text-xs text-slate-400 tracking-wider">
+                  {t('admin.classes.weights.totalWeight')}:
                 </span>
-                {!isTotalValid && <span className="text-xs text-red-500 font-bold uppercase">({t('admin.classes.weights.invalid')})</span>}
+                <div className={`flex items-center gap-2 px-3 py-1 border-2 ${isTotalValid ? 'border-slate-300 bg-slate-100 text-slate-400' : 'border-slate-300 bg-slate-100 text-slate-400'}`}>
+                   <span className="font-mono text-xl font-bold">
+                    {total.toFixed(2)}
+                  </span>
+                  <span className="text-sm font-medium opacity-60">/ 1.00</span>
+                </div>
+                {!isTotalValid && (
+                  <span className="text-xs font-bold uppercase text-slate-500 bg-slate-200 px-2 py-1">
+                    Invalid Total
+                  </span>
+                )}
               </div>
 
-              {/* Action Buttons - Hide if readOnly */}
+              {/* Action Buttons */}
               {!readOnly && (
                 <div className="flex items-center gap-3">
                   <Button
                     onClick={handleReset}
                     disabled={!isDirty || loading}
                     icon={<RotateCcw size={14} />}
-                    className="rounded-none border-neutral-300 text-neutral-500 hover:text-black hover:border-black"
+                    className="h-10 px-4 rounded-none border-2 border-slate-200 text-slate-500 font-bold uppercase hover:!border-black hover:!text-black transition-all"
                   >
                     {t('admin.classes.weights.reset')}
                   </Button>
@@ -228,7 +228,7 @@ const ClassExamWeights = ({ classId, readOnly }) => {
                     loading={submitting}
                     disabled={!isDirty || !isTotalValid || !isPartialValid}
                     icon={<Save size={16} />}
-                    className="bg-black hover:bg-neutral-800 border-none rounded-none h-10 px-6 font-bold uppercase tracking-wider flex items-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
+                    className="h-10 px-6 rounded-none bg-yellow-400 text-black border-2 border-yellow-500 font-bold uppercase hover:!bg-yellow-500 hover:!text-black shadow-sm disabled:opacity-50 disabled:bg-slate-200 disabled:border-slate-200 disabled:text-slate-400"
                   >
                     {t('admin.classes.weights.saveChanges')}
                   </Button>
@@ -238,24 +238,26 @@ const ClassExamWeights = ({ classId, readOnly }) => {
           </Form>
         </div>
 
-        {/* Right: Visual Preview */}
-        <div className="w-full xl:w-72 shrink-0 bg-neutral-50 border-2 border-neutral-200 p-5">
-          <h4 className="font-bold uppercase text-xs text-neutral-500 mb-4 border-b border-neutral-200 pb-2">{t('admin.classes.weights.distribution')}</h4>
-          <div className="space-y-5">
+        {/* Right: Visual Preview - Industrial Monochrome */}
+        <div className="w-full xl:w-72 shrink-0 bg-slate-50 border-2 border-slate-200 p-6">
+          <h4 className="font-bold uppercase text-xs text-slate-400 tracking-wider mb-6 pb-2 border-b border-slate-200">
+            {t('admin.classes.weights.distribution')}
+          </h4>
+          <div className="space-y-6">
             {[
-              { label: 'Theory', color: 'bg-blue-500', name: 'theoryWeight' },
-              { label: 'Simulation', color: 'bg-yellow-400', name: 'simulationWeight' },
-              { label: 'Practical', color: 'bg-green-500', name: 'practicalWeight' }
+              { label: 'Theory', color: 'bg-black', name: 'theoryWeight' },
+              { label: 'Simulation', color: 'bg-slate-500', name: 'simulationWeight' },
+              { label: 'Practical', color: 'bg-yellow-400', name: 'practicalWeight' } // Yellow as the only accent
             ].map((item) => {
               const val = form.getFieldValue(item.name) || 0;
               const percent = Math.round(val * 100);
               return (
                 <div key={item.name}>
-                  <div className="flex justify-between text-xs mb-1.5">
-                    <span className="font-bold text-neutral-700 uppercase tracking-wide">{item.label}</span>
-                    <span className="font-mono font-bold">{percent}%</span>
+                  <div className="flex justify-between text-xs mb-2">
+                    <span className="font-bold text-slate-800 uppercase tracking-wide">{item.label}</span>
+                    <span className="font-mono font-bold text-slate-600">{percent}%</span>
                   </div>
-                  <div className="h-4 bg-white w-full border border-neutral-300 p-0.5">
+                  <div className="h-3 bg-white w-full border border-slate-300 p-0.5">
                     <div
                       className={`h-full ${item.color} transition-all duration-300`}
                       style={{ width: `${Math.min(percent, 100)}%` }}
@@ -266,14 +268,7 @@ const ClassExamWeights = ({ classId, readOnly }) => {
             })}
           </div>
 
-          <div className="mt-6 pt-4 border-t border-neutral-200 text-center">
-            <span className="text-[10px] text-neutral-400 uppercase font-bold tracking-widest">
-              {t('admin.classes.weights.totalAllocation')}
-            </span>
-            <div className="mt-1 font-mono text-2xl font-black text-neutral-800">
-              {Math.round(total * 100)}%
-            </div>
-          </div>
+          
         </div>
       </div>
     </div>

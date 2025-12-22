@@ -28,19 +28,19 @@ import {
 } from 'lucide-react';
 
 /**
- * Industrial Style Metadata Card (matching CourseDetail)
+ * Industrial Style Metadata Card
  */
 const InfoCard = ({ icon: Icon, label, value, subValue, highlight = false }) => (
-  <div className={`p-4 border-2 ${highlight ? 'border-yellow-400 bg-yellow-50' : 'border-neutral-200 bg-white'} flex flex-col items-start gap-2 hover:border-black transition-colors group`}>
-    <div className="flex items-center gap-2 text-neutral-500 group-hover:text-black transition-colors">
+  <div className={`p-4 border-2 ${highlight ? 'border-yellow-400 bg-yellow-50' : 'border-slate-200 bg-white'} flex flex-col items-start gap-2 hover:border-black transition-colors group`}>
+    <div className="flex items-center gap-2 text-slate-500 group-hover:text-black transition-colors">
       <Icon className="w-4 h-4" />
       <span className="text-xs font-bold uppercase tracking-wider">{label}</span>
     </div>
-    <div className={`text-lg font-bold ${highlight ? 'text-black' : 'text-neutral-800'}`}>
+    <div className={`text-lg font-bold ${highlight ? 'text-black' : 'text-slate-800'}`}>
       {value}
     </div>
     {subValue && (
-      <div className="text-xs text-neutral-400 font-mono">
+      <div className="text-xs text-slate-400 font-mono">
         {subValue}
       </div>
     )}
@@ -48,14 +48,14 @@ const InfoCard = ({ icon: Icon, label, value, subValue, highlight = false }) => 
 );
 
 /**
- * Industrial Section Header (matching CourseDetail)
+ * Industrial Section Header
  */
 const SectionHeader = ({ icon: Icon, title }) => (
-  <div className="flex items-center gap-3 mb-6">
-    <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center border-2 border-transparent shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-      <Icon className="w-5 h-5 text-black" />
+  <div className="flex items-center gap-3 mb-6 border-b-2 border-slate-100 pb-4">
+    <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
+      <Icon size={18} strokeWidth={2.5} />
     </div>
-    <span className="text-xl font-black uppercase tracking-tight text-neutral-900 m-0">
+    <span className="text-xl font-bold uppercase tracking-wide text-slate-900">
       {title}
     </span>
   </div>
@@ -95,28 +95,28 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   // Determine if the class is editable (Only editable if status is Draft)
   const readOnly = statusInfo.key !== 'Draft';
 
+  // Shared Button Styles
+  const primaryBtnClass = "flex items-center gap-2 px-5 py-2.5 bg-black border-2 border-black text-white font-bold uppercase tracking-wider hover:bg-yellow-400 hover:text-black hover:border-yellow-500 transition-all text-xs disabled:opacity-50 w-full justify-center shadow-sm";
+  const secondaryBtnClass = "flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-slate-200 text-slate-600 font-bold uppercase tracking-wider hover:border-black hover:text-black hover:bg-slate-50 transition-all text-xs disabled:opacity-50 w-full justify-center";
+
   // Status action buttons based on current status
   const renderStatusActions = () => {
     switch (statusInfo.key) {
       case 'Draft':
         return (
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col gap-3">
             <Popconfirm
               title={t('class.publishConfirm', 'Publish Class')}
               description={t('class.publishConfirmDesc', 'Are you sure you want to publish this class?')}
               onConfirm={() => handleStatusAction(openClass, 'publish')}
               okText={t('common.yes')}
               cancelText={t('common.no')}
-              okButtonProps={{ className: 'rounded-none' }}
-              cancelButtonProps={{ className: 'rounded-none' }}
+              okButtonProps={{ className: 'bg-black' }}
             >
-              <button
-                disabled={statusLoading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-green-500 border-2 border-green-600 text-white font-bold uppercase tracking-wider hover:bg-green-600 transition-all text-xs disabled:opacity-50 w-full justify-center"
-              >
+              <a disabled={statusLoading} className={primaryBtnClass}>
                 <Send className="w-4 h-4" />
                 {t('class.publishClass', 'Publish')}
-              </button>
+              </a>
             </Popconfirm>
             <Popconfirm
               title={t('class.cancelConfirm', 'Cancel Class')}
@@ -124,13 +124,9 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
               onConfirm={() => handleStatusAction(cancelClass, 'cancel')}
               okText={t('common.yes')}
               cancelText={t('common.no')}
-              okButtonProps={{ danger: true, className: 'rounded-none' }}
-              cancelButtonProps={{ className: 'rounded-none' }}
+              okButtonProps={{ danger: true }}
             >
-              <button
-                disabled={statusLoading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-transparent border-2 border-red-500 text-red-500 font-bold uppercase tracking-wider hover:bg-red-500 hover:text-white transition-all text-xs disabled:opacity-50 w-full justify-center"
-              >
+              <button disabled={statusLoading} className={secondaryBtnClass}>
                 <XCircle className="w-4 h-4" />
                 {t('class.cancelClass', 'Cancel')}
               </button>
@@ -145,13 +141,9 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             onConfirm={() => handleStatusAction(startClass, 'start')}
             okText={t('common.yes')}
             cancelText={t('common.no')}
-            okButtonProps={{ className: 'rounded-none' }}
-            cancelButtonProps={{ className: 'rounded-none' }}
+            okButtonProps={{ className: 'bg-black' }}
           >
-            <button
-              disabled={statusLoading}
-              className="flex items-center gap-2 px-5 py-2.5 bg-blue-500 border-2 border-blue-600 text-white font-bold uppercase tracking-wider hover:bg-blue-600 transition-all text-xs disabled:opacity-50 w-full justify-center"
-            >
+            <button disabled={statusLoading} className={primaryBtnClass}>
               <Play className="w-4 h-4" />
               {t('class.startClass', 'Start Class')}
             </button>
@@ -165,13 +157,9 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             onConfirm={() => handleStatusAction(completeClass, 'complete')}
             okText={t('common.yes')}
             cancelText={t('common.no')}
-            okButtonProps={{ className: 'rounded-none' }}
-            cancelButtonProps={{ className: 'rounded-none' }}
+            okButtonProps={{ className: 'bg-black' }}
           >
-            <button
-              disabled={statusLoading}
-              className="flex items-center gap-2 px-5 py-2.5 bg-yellow-400 border-2 border-black text-black font-bold uppercase tracking-wider hover:bg-yellow-500 transition-all text-xs disabled:opacity-50 w-full justify-center"
-            >
+            <button disabled={statusLoading} className={primaryBtnClass}>
               <CheckCircle className="w-4 h-4" />
               {t('class.completeClass', 'Complete Class')}
             </button>
@@ -180,8 +168,8 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
       case 'Cancelled':
       case 'Completed':
         return (
-          <div className="text-neutral-500 italic text-sm text-center">
-            {t('admin.classes.status.noActionsAvailable', 'No status actions available for this class.')}
+          <div className="text-slate-400 italic text-sm text-center border border-slate-100 py-3 bg-slate-50">
+            {t('admin.classes.status.noActionsAvailable', 'No status actions available.')}
           </div>
         );
       default:
@@ -190,23 +178,26 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   };
 
   return (
-    <div className="flex flex-col gap-12 font-sans text-neutral-800">
+    <div className="flex flex-col gap-12 font-sans text-slate-800">
 
       {/* TOP PART: Metadata & Description */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Column 1: Class Info Card */}
         <div className="lg:col-span-1">
           <div className="relative group">
-            <div className="absolute inset-0 border-2 border-black translate-x-2 translate-y-2 bg-neutral-900" />
+            {/* Shadow Block */}
+            <div className="absolute inset-0 border-2 border-black translate-x-2 translate-y-2 bg-black" />
+            
+            {/* Main Card */}
             <div className="relative border-2 border-black bg-yellow-400 p-6">
               <div className="flex flex-col items-center text-center pt-4">
                 <div className="w-16 h-16 bg-black flex items-center justify-center mb-4">
                   <Users className="w-8 h-8 text-yellow-400" />
                 </div>
-                <span className="text-2xl font-black uppercase tracking-tight text-black mb-2">
+                <span className="text-2xl font-black uppercase tracking-tight text-black mb-2 leading-none">
                   {classItem.name}
                 </span>
-                <div className="text-black font-mono text-sm">
+                <div className="text-black font-mono text-sm font-bold opacity-80 mt-2 border-t border-black pt-2 w-full">
                   {(() => {
                     const code = classItem.classCode?.name || classItem.classCode || classItem.courseCode || classItem.code;
                     return code ? `${code}` : 'CLASS';
@@ -216,17 +207,17 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             </div>
           </div>
 
-          <div className="mt-6 space-y-2 px-2">
+          <div className="mt-8 space-y-3 px-1">
             {classItem.createdAt && (
-              <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
-                <span className="text-neutral-500 font-mono uppercase">{t('common.createdAt', 'Created')}</span>
-                <span className="font-bold"><DayTimeFormat value={classItem.createdAt} /></span>
+              <div className="flex items-center justify-between text-xs border-b border-slate-200 pb-2">
+                <span className="text-slate-500 font-bold uppercase tracking-wide">{t('common.createdAt', 'Created')}</span>
+                <span className="font-mono font-medium text-slate-700"><DayTimeFormat value={classItem.createdAt} /></span>
               </div>
             )}
             {classItem.updatedAt && (
-              <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
-                <span className="text-neutral-500 font-mono uppercase">{t('common.updatedAt', 'Updated')}</span>
-                <span className="font-bold"><DayTimeFormat value={classItem.updatedAt} /></span>
+              <div className="flex items-center justify-between text-xs border-b border-slate-200 pb-2">
+                <span className="text-slate-500 font-bold uppercase tracking-wide">{t('common.updatedAt', 'Updated')}</span>
+                <span className="font-mono font-medium text-slate-700"><DayTimeFormat value={classItem.updatedAt} /></span>
               </div>
             )}
           </div>
@@ -252,13 +243,13 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             />
           </div>
 
-          <div className="relative p-6 border-2 border-neutral-200 bg-neutral-50 hover:bg-white hover:border-black transition-all">
-            <div className="absolute top-0 left-0 bg-black text-white px-2 py-1 text-xs font-bold uppercase tracking-wider flex items-center gap-1 -translate-y-1/2 translate-x-4">
-              <FileText className="w-3 h-3" />
+          <div className="relative p-6 border-2 border-slate-200 bg-slate-50 hover:bg-white hover:border-black transition-all">
+            <div className="absolute top-0 left-0 bg-black text-white px-3 py-1 text-xs font-bold uppercase tracking-wider flex items-center gap-2 -translate-y-1/2 translate-x-4">
+              <FileText className="w-3 h-3 text-yellow-400" />
               {t('common.description')}
             </div>
-            <div className="text-neutral-600 leading-relaxed whitespace-pre-line text-base font-medium">
-              {classItem.description || <span className="text-neutral-400 italic">{t('common.noDescription', 'No description provided.')}</span>}
+            <div className="text-slate-600 leading-relaxed whitespace-pre-line text-sm font-medium mt-2">
+              {classItem.description || <span className="text-slate-400 italic">{t('common.noDescription', 'No description provided.')}</span>}
             </div>
           </div>
         </div>
@@ -272,8 +263,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           
           {/* LEFT: Schedule / Timeslots (Span 8) */}
           <div className="xl:col-span-8">
-            <div id="class-schedule" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow h-full">
-              <SectionHeader icon={CalendarDays} title={t('admin.classes.schedule', 'Schedule')} />
+            <div id="class-schedule" className="p-6 border-2 border-slate-200 bg-white h-full">
               <ClassTimeslotManage 
                 classItem={classItem} 
                 onTimeSlotsChange={setHasTimeSlots} 
@@ -284,31 +274,33 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
 
           {/* RIGHT: Status Management (Span 4) */}
           <div className="xl:col-span-4">
-            <div id="class-status" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow h-full sticky top-6">
+            <div id="class-status" className="p-6 border-2 border-slate-200 bg-white h-full sticky top-6">
               <SectionHeader icon={Activity} title={t('admin.classes.status.title', 'Status Management')} />
 
               <div className="flex flex-col gap-6">
                 {/* Current Status Display */}
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">
-                    {t('admin.classes.status.currentStatus', 'Current Status')}:
+                <div className="flex flex-col gap-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    {t('admin.classes.status.currentStatus', 'Current Status')}
                   </span>
-                  <div className={`px-4 py-3 text-center text-base font-black uppercase tracking-wider border-2 ${statusInfo.key === 'Open' || statusInfo.key === 'Inprogress'
-                    ? 'bg-green-100 border-green-500 text-green-700'
-                    : statusInfo.key === 'Completed'
-                      ? 'bg-blue-100 border-blue-500 text-blue-700'
-                      : statusInfo.key === 'Cancelled'
-                        ? 'bg-red-100 border-red-500 text-red-700'
-                        : 'bg-yellow-100 border-yellow-500 text-yellow-700'
+                  
+                  {/* Industrial Status Badge */}
+                  <div className="relative">
+                    <div className={`px-4 py-4 text-center border-2 border-black flex flex-col items-center justify-center gap-1 ${
+                      statusInfo.key === 'Inprogress' || statusInfo.key === 'Open' ? 'bg-black text-yellow-400' : 'bg-slate-50 text-slate-900'
                     }`}>
-                    {t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}
+                      <span className="text-lg font-black uppercase tracking-widest">
+                        {t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}
+                      </span>
+                      {statusInfo.key === 'Draft' && <span className="text-[10px] uppercase font-bold text-slate-500">Not Published</span>}
+                    </div>
                   </div>
                 </div>
 
                 {/* Status Actions */}
-                <div className="border-t-2 border-neutral-100 pt-6">
-                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 block mb-4">
-                    {t('admin.classes.status.availableActions', 'Available Actions')}:
+                <div className="border-t-2 border-slate-100 pt-6">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-4">
+                    {t('admin.classes.status.availableActions', 'Available Actions')}
                   </span>
                   <div className="flex flex-col gap-3">
                     {renderStatusActions()}
@@ -317,9 +309,9 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
 
                 {/* Loading Indicator */}
                 {statusLoading && (
-                  <div className="flex items-center gap-2 text-neutral-500 justify-center pt-2">
+                  <div className="flex items-center gap-2 text-slate-400 justify-center pt-2">
                     <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-sm">{t('common.processing', 'Processing...')}</span>
+                    <span className="text-xs font-bold uppercase">{t('common.processing', 'Processing...')}</span>
                   </div>
                 )}
               </div>
@@ -332,16 +324,14 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           
           {/* LEFT: Class Members (Span 8) */}
           <div className="xl:col-span-8">
-            <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow h-full">
-              <SectionHeader icon={Users} title={t('admin.classes.members.title', 'Class Members')} />
+            <div className="p-6 border-2 border-slate-200 bg-white h-full">
               <ClassMembersTable classItem={classItem} />
             </div>
           </div>
 
           {/* RIGHT: Instructor (Span 4) */}
           <div className="xl:col-span-4">
-            <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow h-full">
-              <SectionHeader icon={UserCheck} title={t('admin.classes.instructor.title', 'Instructor')} />
+            <div className="p-6 border-2 border-slate-200 bg-white h-full">
               <InstructorCard classItem={classItem} allowAssign={hasTimeSlots} />
             </div>
           </div>
@@ -349,8 +339,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
 
         {/* FULL WIDTH: Parent Course Info */}
         {classItem?.courseId && (
-          <div id="parent-course" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-            <SectionHeader icon={BookOpen} title={t('admin.classes.parentCourse', 'Parent Course')} />
+          <div id="parent-course" className="p-6 border-2 border-slate-200 bg-white">
             <ClassCourseInfo courseId={classItem.courseId} />
           </div>
         )}
@@ -359,8 +348,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
         <ClassExamWeights classId={classItem?.id} readOnly={readOnly} />
 
         {/* FULL WIDTH: Certificates */}
-        <div id="class-certificates" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={Award} title={t('admin.classes.certificates', 'Certificates')} />
+        <div id="class-certificates" className="p-6 border-2 border-slate-200 bg-white">
           <ClassCertificate classId={classItem?.id} />
         </div>
       </div>

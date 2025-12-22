@@ -1,3 +1,6 @@
+// hieuvau198/lssctc-web/lssctc-web-fix-admin-class/src/app/pages/Admin/Course/CourseViewPage.jsx
+
+// ... imports remain the same
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Space, Popconfirm, message, Tag, Skeleton } from 'antd';
@@ -108,8 +111,9 @@ const CourseViewPage = () => {
                 <h1 className="text-4xl md:text-5xl font-black text-white m-0 tracking-tight uppercase shadow-sm">
                   {course.name}
                 </h1>
-                <div className="text-neutral-400 text-sm mt-2 font-mono flex items-center gap-4">
-
+                {/* Added Course Code Display */}
+                <div className="text-neutral-300 text-lg mt-2 font-mono font-bold flex items-center gap-4">
+                   {course.courseCode}
                 </div>
               </div>
             </div>
