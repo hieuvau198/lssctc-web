@@ -2603,7 +2603,17 @@
         "durationMin": "Thời lượng phải lớn hơn 0",
         "urlInvalid": "URL hình ảnh phải là một đường dẫn hợp lệ",
         "validationFailed": "Vui lòng kiểm tra lại thông tin nhập",
-        "preview": "Xem trước"
+        "preview": "Xem trước",
+        "basicInfo": "Thông tin Cơ bản",
+        "classification": "Phân loại",
+        "courseImages": "Hình ảnh Khóa học",
+        "sectionDescription": "Mô tả",
+        "backgroundImageUrl": "URL Ảnh Nền",
+        "backgroundPreview": "Xem trước Ảnh Nền",
+        "noImage": "Không có hình ảnh",
+        "noBackground": "Không có ảnh nền",
+        "fillDetails": "Điền thông tin chi tiết khóa học dưới đây",
+        "durationPlaceholder": "ví dụ: 40"
       },
       "courseSections": "Nội dung khóa học",
       "certificates": "Chứng chỉ",

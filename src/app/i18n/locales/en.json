@@ -2604,7 +2604,17 @@
         "urlInvalid": "Image URL must be a valid URL",
         "descriptionMax": "Description must not exceed 500 characters",
         "validationFailed": "Validation failed",
-        "preview": "Preview"
+        "preview": "Preview",
+        "basicInfo": "Basic Information",
+        "classification": "Classification",
+        "courseImages": "Course Images",
+        "sectionDescription": "Description",
+        "backgroundImageUrl": "Background Image URL",
+        "backgroundPreview": "Background Preview",
+        "noImage": "No image",
+        "noBackground": "No background",
+        "fillDetails": "Fill in the course details below",
+        "durationPlaceholder": "e.g. 40"
       },
       "courseSections": "Course Sections",
       "certificates": "Certificates",

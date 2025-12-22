@@ -17,7 +17,7 @@ const CreateCourse = ({
   embedded = false,
 }) => {
   const { t } = useTranslation();
-  const {message} = App.useApp();
+  const { message } = App.useApp();
   const [form] = Form.useForm();
   const [imagePreview, setImagePreview] = useState("");
   const [bgImagePreview, setBgImagePreview] = useState("");
@@ -142,7 +142,7 @@ const CreateCourse = ({
         scrollToFirstError
       >
         {/* Basic Information Section */}
-        <SectionHeader icon={BookOpen} title="Basic Information" />
+        <SectionHeader icon={BookOpen} title={t('admin.courses.form.basicInfo')} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 mb-6">
           <Form.Item
             label={t('admin.courses.form.name')}
@@ -171,7 +171,7 @@ const CreateCourse = ({
         </div>
 
         {/* Classification Section */}
-        <SectionHeader icon={Tag} title="Classification" />
+        <SectionHeader icon={Tag} title={t('admin.courses.form.classification')} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 mb-6">
           <Form.Item
             label={t('common.category')}
@@ -195,12 +195,12 @@ const CreateCourse = ({
 
           <Form.Item label={t('admin.courses.form.durationHours')} name="durationHours"
             rules={[{ required: true, message: t('admin.courses.form.durationRequired') }]}>
-            <InputNumber style={{ width: "100%" }} min={1} placeholder="e.g. 40" prefix={<Clock className="w-4 h-4 text-neutral-400" />} />
+            <InputNumber style={{ width: "100%" }} min={1} placeholder={t('admin.courses.form.durationPlaceholder')} prefix={<Clock className="w-4 h-4 text-neutral-400" />} />
           </Form.Item>
         </div>
 
         {/* Images Section */}
-        <SectionHeader icon={ImageIcon} title="Course Images" />
+        <SectionHeader icon={ImageIcon} title={t('admin.courses.form.courseImages')} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Main Image */}
           <div className="border-2 border-neutral-200 p-4 bg-white hover:border-yellow-400 transition-colors">
@@ -220,7 +220,7 @@ const CreateCourse = ({
               ) : (
                 <div className="flex flex-col items-center text-neutral-400">
                   <ImageIcon className="w-10 h-10 mb-2 opacity-50" />
-                  <span className="text-xs font-medium">No image</span>
+                  <span className="text-xs font-medium">{t('admin.courses.form.noImage')}</span>
                 </div>
               )}
             </div>
@@ -228,12 +228,12 @@ const CreateCourse = ({
 
           {/* Background Image */}
           <div className="border-2 border-neutral-700 p-4 bg-neutral-900 hover:border-yellow-400 transition-colors">
-            <Form.Item label={<span className="text-white">Background Image URL</span>} name="backgroundImageUrl" className="mb-3"
+            <Form.Item label={<span className="text-white">{t('admin.courses.form.backgroundImageUrl')}</span>} name="backgroundImageUrl" className="mb-3"
               rules={[{ type: 'url', message: t('admin.courses.form.urlInvalid') }]}>
               <Input placeholder="https://example.com/bg-image.jpg" onChange={(e) => setBgImagePreview(e.target.value)} />
             </Form.Item>
             <div className="text-xs font-bold uppercase text-neutral-400 mb-2 flex items-center gap-1">
-              <FileImage className="w-3 h-3" /> Background Preview
+              <FileImage className="w-3 h-3" /> {t('admin.courses.form.backgroundPreview')}
             </div>
             <div className="w-full h-40 flex items-center justify-center bg-neutral-800 border-2 border-neutral-700 overflow-hidden">
               {bgImagePreview ? (
@@ -241,7 +241,7 @@ const CreateCourse = ({
               ) : (
                 <div className="flex flex-col items-center text-neutral-500">
                   <FileImage className="w-10 h-10 mb-2 opacity-50" />
-                  <span className="text-xs font-medium">No background</span>
+                  <span className="text-xs font-medium">{t('admin.courses.form.noBackground')}</span>
                 </div>
               )}
             </div>
@@ -249,7 +249,7 @@ const CreateCourse = ({
         </div>
 
         {/* Description Section */}
-        <SectionHeader icon={Layers} title="Description" />
+        <SectionHeader icon={Layers} title={t('admin.courses.form.sectionDescription')} />
         <Form.Item name="description"
           rules={[
             { required: true, message: t('admin.courses.form.descriptionRequired') },
@@ -303,7 +303,7 @@ const CreateCourse = ({
               <h3 className="text-xl font-black uppercase tracking-wider text-white m-0">
                 {t('admin.courses.addNewCourse')}
               </h3>
-              <p className="text-neutral-400 text-sm m-0 mt-1">Fill in the course details below</p>
+              <p className="text-neutral-400 text-sm m-0 mt-1">{t('admin.courses.form.fillDetails')}</p>
             </div>
           </div>
           <button onClick={onCancel}
