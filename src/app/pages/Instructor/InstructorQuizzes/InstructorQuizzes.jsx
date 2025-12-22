@@ -223,9 +223,9 @@ export default function InstructorQuizzes() {
               <HelpCircle className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+              <span className="text-2xl font-black text-white uppercase tracking-tight">
                 {t('instructor.quizzes.title')}
-              </h1>
+              </span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {t('instructor.quizzes.table.pagination', { start: (page - 1) * pageSize + 1, end: Math.min(page * pageSize, total), total })}
               </p>

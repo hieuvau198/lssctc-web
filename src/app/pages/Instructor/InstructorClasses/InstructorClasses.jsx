@@ -131,7 +131,7 @@ export default function InstructorClasses() {
               <BookOpen className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">{t('instructor.classes.title')}</h1>
+              <span className="text-2xl font-black text-white uppercase tracking-tight">{t('instructor.classes.title')}</span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {t('instructor.classes.table.pagination', { start: (pageNumber - 1) * pageSize + 1, end: Math.min(pageNumber * pageSize, total), total })}
               </p>
