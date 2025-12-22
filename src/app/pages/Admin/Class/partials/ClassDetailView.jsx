@@ -112,7 +112,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             >
               <button
                 disabled={statusLoading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-green-500 border-2 border-green-600 text-white font-bold uppercase tracking-wider hover:bg-green-600 transition-all text-xs disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2.5 bg-green-500 border-2 border-green-600 text-white font-bold uppercase tracking-wider hover:bg-green-600 transition-all text-xs disabled:opacity-50 w-full justify-center"
               >
                 <Send className="w-4 h-4" />
                 {t('class.publishClass', 'Publish')}
@@ -129,7 +129,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             >
               <button
                 disabled={statusLoading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-transparent border-2 border-red-500 text-red-500 font-bold uppercase tracking-wider hover:bg-red-500 hover:text-white transition-all text-xs disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2.5 bg-transparent border-2 border-red-500 text-red-500 font-bold uppercase tracking-wider hover:bg-red-500 hover:text-white transition-all text-xs disabled:opacity-50 w-full justify-center"
               >
                 <XCircle className="w-4 h-4" />
                 {t('class.cancelClass', 'Cancel')}
@@ -150,7 +150,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           >
             <button
               disabled={statusLoading}
-              className="flex items-center gap-2 px-5 py-2.5 bg-blue-500 border-2 border-blue-600 text-white font-bold uppercase tracking-wider hover:bg-blue-600 transition-all text-xs disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 bg-blue-500 border-2 border-blue-600 text-white font-bold uppercase tracking-wider hover:bg-blue-600 transition-all text-xs disabled:opacity-50 w-full justify-center"
             >
               <Play className="w-4 h-4" />
               {t('class.startClass', 'Start Class')}
@@ -170,7 +170,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           >
             <button
               disabled={statusLoading}
-              className="flex items-center gap-2 px-5 py-2.5 bg-yellow-400 border-2 border-black text-black font-bold uppercase tracking-wider hover:bg-yellow-500 transition-all text-xs disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 bg-yellow-400 border-2 border-black text-black font-bold uppercase tracking-wider hover:bg-yellow-500 transition-all text-xs disabled:opacity-50 w-full justify-center"
             >
               <CheckCircle className="w-4 h-4" />
               {t('class.completeClass', 'Complete Class')}
@@ -180,7 +180,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
       case 'Cancelled':
       case 'Completed':
         return (
-          <div className="text-neutral-500 italic text-sm">
+          <div className="text-neutral-500 italic text-sm text-center">
             {t('admin.classes.status.noActionsAvailable', 'No status actions available for this class.')}
           </div>
         );
@@ -192,16 +192,13 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   return (
     <div className="flex flex-col gap-12 font-sans text-neutral-800">
 
-      {/* TOP PART: Metadata & Description (matching CourseDetail layout) */}
+      {/* TOP PART: Metadata & Description */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-
-        {/* Column 1: Class Info Card (no image for Class, so use info summary) */}
+        {/* Column 1: Class Info Card */}
         <div className="lg:col-span-1">
           <div className="relative group">
             <div className="absolute inset-0 border-2 border-black translate-x-2 translate-y-2 bg-neutral-900" />
             <div className="relative border-2 border-black bg-yellow-400 p-6">
-              {/* ID Badge Removed */}
-
               <div className="flex flex-col items-center text-center pt-4">
                 <div className="w-16 h-16 bg-black flex items-center justify-center mb-4">
                   <Users className="w-8 h-8 text-yellow-400" />
@@ -219,7 +216,6 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             </div>
           </div>
 
-          {/* Quick Date Stats beneath */}
           <div className="mt-6 space-y-2 px-2">
             {classItem.createdAt && (
               <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
@@ -238,8 +234,6 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
 
         {/* Column 2: Metadata & Description */}
         <div className="lg:col-span-2 flex flex-col gap-8">
-
-          {/* Metadata Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <InfoCard
               icon={Users}
@@ -258,7 +252,6 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             />
           </div>
 
-          {/* Description Box (matching CourseDetail style) */}
           <div className="relative p-6 border-2 border-neutral-200 bg-neutral-50 hover:bg-white hover:border-black transition-all">
             <div className="absolute top-0 left-0 bg-black text-white px-2 py-1 text-xs font-bold uppercase tracking-wider flex items-center gap-1 -translate-y-1/2 translate-x-4">
               <FileText className="w-3 h-3" />
@@ -271,72 +264,90 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
         </div>
       </div>
 
-      {/* Sections */}
-      <div className="flex flex-col gap-10">
-        {/* Status Management Section */}
-        <div id="class-status" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={Activity} title={t('admin.classes.status.title', 'Status Management')} />
+      {/* SECTIONS */}
+      <div className="flex flex-col gap-8">
 
-          <div className="flex flex-col gap-6">
-            {/* Current Status Display */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-bold uppercase tracking-wider text-neutral-500">
-                {t('admin.classes.status.currentStatus', 'Current Status')}:
-              </span>
-              <div className={`px-4 py-2 text-sm font-black uppercase tracking-wider border-2 ${statusInfo.key === 'Open' || statusInfo.key === 'Inprogress'
-                ? 'bg-green-100 border-green-500 text-green-700'
-                : statusInfo.key === 'Completed'
-                  ? 'bg-blue-100 border-blue-500 text-blue-700'
-                  : statusInfo.key === 'Cancelled'
-                    ? 'bg-red-100 border-red-500 text-red-700'
-                    : 'bg-yellow-100 border-yellow-500 text-yellow-700'
-                }`}>
-                {t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}
+        {/* ROW 1: Schedule (8) + Status (4) */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+          
+          {/* LEFT: Schedule / Timeslots (Span 8) */}
+          <div className="xl:col-span-8">
+            <div id="class-schedule" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow h-full">
+              <SectionHeader icon={CalendarDays} title={t('admin.classes.schedule', 'Schedule')} />
+              <ClassTimeslotManage 
+                classItem={classItem} 
+                onTimeSlotsChange={setHasTimeSlots} 
+                readOnly={readOnly}
+              />
+            </div>
+          </div>
+
+          {/* RIGHT: Status Management (Span 4) */}
+          <div className="xl:col-span-4">
+            <div id="class-status" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow h-full sticky top-6">
+              <SectionHeader icon={Activity} title={t('admin.classes.status.title', 'Status Management')} />
+
+              <div className="flex flex-col gap-6">
+                {/* Current Status Display */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                    {t('admin.classes.status.currentStatus', 'Current Status')}:
+                  </span>
+                  <div className={`px-4 py-3 text-center text-base font-black uppercase tracking-wider border-2 ${statusInfo.key === 'Open' || statusInfo.key === 'Inprogress'
+                    ? 'bg-green-100 border-green-500 text-green-700'
+                    : statusInfo.key === 'Completed'
+                      ? 'bg-blue-100 border-blue-500 text-blue-700'
+                      : statusInfo.key === 'Cancelled'
+                        ? 'bg-red-100 border-red-500 text-red-700'
+                        : 'bg-yellow-100 border-yellow-500 text-yellow-700'
+                    }`}>
+                    {t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}
+                  </div>
+                </div>
+
+                {/* Status Actions */}
+                <div className="border-t-2 border-neutral-100 pt-6">
+                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 block mb-4">
+                    {t('admin.classes.status.availableActions', 'Available Actions')}:
+                  </span>
+                  <div className="flex flex-col gap-3">
+                    {renderStatusActions()}
+                  </div>
+                </div>
+
+                {/* Loading Indicator */}
+                {statusLoading && (
+                  <div className="flex items-center gap-2 text-neutral-500 justify-center pt-2">
+                    <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-sm">{t('common.processing', 'Processing...')}</span>
+                  </div>
+                )}
               </div>
             </div>
-
-            {/* Status Actions */}
-            <div className="border-t-2 border-neutral-100 pt-6">
-              <span className="text-sm font-bold uppercase tracking-wider text-neutral-500 block mb-4">
-                {t('admin.classes.status.availableActions', 'Available Actions')}:
-              </span>
-              {renderStatusActions()}
-            </div>
-
-            {/* Loading Indicator */}
-            {statusLoading && (
-              <div className="flex items-center gap-2 text-neutral-500">
-                <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm">{t('common.processing', 'Processing...')}</span>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Schedule / Timeslots */}
-        <div id="class-schedule" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={CalendarDays} title={t('admin.classes.schedule', 'Schedule')} />
-          {/* PASS READONLY PROP */}
-          <ClassTimeslotManage 
-            classItem={classItem} 
-            onTimeSlotsChange={setHasTimeSlots} 
-            readOnly={readOnly}
-          />
+        {/* ROW 2: Members (8) + Instructor (4) */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+          
+          {/* LEFT: Class Members (Span 8) */}
+          <div className="xl:col-span-8">
+            <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow h-full">
+              <SectionHeader icon={Users} title={t('admin.classes.members.title', 'Class Members')} />
+              <ClassMembersTable classItem={classItem} />
+            </div>
+          </div>
+
+          {/* RIGHT: Instructor (Span 4) */}
+          <div className="xl:col-span-4">
+            <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow h-full">
+              <SectionHeader icon={UserCheck} title={t('admin.classes.instructor.title', 'Instructor')} />
+              <InstructorCard classItem={classItem} allowAssign={hasTimeSlots} />
+            </div>
+          </div>
         </div>
 
-        {/* Instructor Section */}
-        <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={UserCheck} title={t('admin.classes.instructor.title', 'Instructor')} />
-          <InstructorCard classItem={classItem} allowAssign={hasTimeSlots} />
-        </div>
-
-        {/* Members / Trainees Table */}
-        <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={Users} title={t('admin.classes.members.title', 'Class Members')} />
-          <ClassMembersTable classItem={classItem} />
-        </div>
-
-        {/* Parent Course Info */}
+        {/* FULL WIDTH: Parent Course Info */}
         {classItem?.courseId && (
           <div id="parent-course" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
             <SectionHeader icon={BookOpen} title={t('admin.classes.parentCourse', 'Parent Course')} />
@@ -344,10 +355,10 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           </div>
         )}
 
-        {/* NEW EXAM WEIGHTS SECTION - PASS READONLY PROP */}
+        {/* FULL WIDTH: Exam Weights */}
         <ClassExamWeights classId={classItem?.id} readOnly={readOnly} />
 
-        {/* Certificates Section */}
+        {/* FULL WIDTH: Certificates */}
         <div id="class-certificates" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
           <SectionHeader icon={Award} title={t('admin.classes.certificates', 'Certificates')} />
           <ClassCertificate classId={classItem?.id} />
