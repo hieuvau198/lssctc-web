@@ -122,9 +122,11 @@ export default function SEExam({ classId }) {
     },
     {
       title: <span className="uppercase font-black text-xs">Actions</span>,
+      width: 100, // [UPDATED] Added fixed width to match TE/PE
       render: (_, record) => (
         <button
           onClick={() => {
+            if (!isExamNotYet) return;
             setSelectedConfig(record);
             form.setFieldsValue({
               ...record,
@@ -133,8 +135,8 @@ export default function SEExam({ classId }) {
             });
             setCreateModalOpen(true);
           }}
-          disabled={isExamCompleted} // [UPDATED]
-          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${isExamCompleted
+          disabled={!isExamNotYet}
+          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${!isExamNotYet
             ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
             : 'border-black bg-white hover:bg-yellow-400 text-black'
             }`}
@@ -219,7 +221,7 @@ export default function SEExam({ classId }) {
           <ExternalLink className="w-4 h-4" />
           View Detailed Results
         </button>
-        {configs.length === 0 && !isExamCompleted && (
+        {configs.length === 0 && isExamNotYet && (
           <button
             onClick={() => { setSelectedConfig(null); form.resetFields(); setCreateModalOpen(true); }}
             className="h-10 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"

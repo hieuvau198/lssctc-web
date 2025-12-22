@@ -9,7 +9,7 @@ import { getClassExamConfig, updateClassWeights } from '../../../../apis/FinalEx
  */
 const fixFloat = (num) => parseFloat(num.toFixed(2));
 
-const ClassExamWeights = ({ classId }) => {
+const ClassExamWeights = ({ classId, readOnly = false }) => {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [form] = Form.useForm();
@@ -208,28 +208,30 @@ const ClassExamWeights = ({ classId }) => {
                 {!isTotalValid && <span className="text-xs text-red-500 font-bold uppercase">({t('admin.classes.weights.invalid')})</span>}
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-3">
-                <Button
-                  onClick={handleReset}
-                  disabled={!isDirty || loading}
-                  icon={<RotateCcw size={14} />}
-                  className="rounded-none border-neutral-300 text-neutral-500 hover:text-black hover:border-black"
-                >
-                  {t('admin.classes.weights.reset')}
-                </Button>
+              {/* Action Buttons - Hide if readOnly */}
+              {!readOnly && (
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={handleReset}
+                    disabled={!isDirty || loading}
+                    icon={<RotateCcw size={14} />}
+                    className="rounded-none border-neutral-300 text-neutral-500 hover:text-black hover:border-black"
+                  >
+                    {t('admin.classes.weights.reset')}
+                  </Button>
 
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={submitting}
-                  disabled={!isDirty || !isTotalValid || !isPartialValid}
-                  icon={<Save size={16} />}
-                  className="bg-black hover:bg-neutral-800 border-none rounded-none h-10 px-6 font-bold uppercase tracking-wider flex items-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
-                >
-                  {t('admin.classes.weights.saveChanges')}
-                </Button>
-              </div>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={submitting}
+                    disabled={!isDirty || !isTotalValid || !isPartialValid}
+                    icon={<Save size={16} />}
+                    className="bg-black hover:bg-neutral-800 border-none rounded-none h-10 px-6 font-bold uppercase tracking-wider flex items-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
+                  >
+                    {t('admin.classes.weights.saveChanges')}
+                  </Button>
+                </div>
+              )}
             </div>
           </Form>
         </div>

@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import TEExam from './partials/TEExam';
 import SEExam from './partials/SEExam';
 import PEExam from './partials/PEExam';
-import { FileText, Monitor, Award, Trophy, CheckCircle, AlertTriangle, Lock, ChevronRight, Plus } from 'lucide-react';
+import { FileText, Monitor, Award, Trophy, CheckCircle, AlertTriangle, Lock, ChevronRight, Play } from 'lucide-react'; // Added Play icon
 import InstructorFEApi from '../../../apis/Instructor/InstructorFEApi';
 
 const { Panel } = Collapse;
@@ -45,6 +45,44 @@ export default function InstructorFinalExam() {
     };
     fetchStatus();
   }, [classId]);
+
+  const handleOpenExam = () => {
+    modal.confirm({
+      title: <span className="font-bold uppercase">{t('instructor.finalExam.openConfirmTitle', 'Open Final Exam')}</span>,
+      icon: <AlertTriangle className="text-yellow-500 w-6 h-6 mr-2" />,
+      content: (
+        <div className="text-neutral-600 mt-2">
+          <p>{t('instructor.finalExam.openConfirmContent', 'Are you sure you want to open the final exam for this class?')}</p>
+          <p className="font-bold mt-2 text-yellow-600 uppercase text-xs">
+            {t('instructor.finalExam.openWarning', 'Warning: Trainees will be able to start the exam immediately.')}
+          </p>
+        </div>
+      ),
+      okText: t('common.confirm', 'CONFIRM'),
+      cancelText: t('common.cancel', 'CANCEL'),
+      okButtonProps: {
+        className: 'bg-black hover:!bg-neutral-800 border-none font-bold uppercase',
+      },
+      cancelButtonProps: {
+        className: 'font-bold uppercase border-2 border-neutral-300 hover:!border-black hover:!text-black'
+      },
+      onOk: async () => {
+        try {
+          setLoading(true);
+          await InstructorFEApi.openClassExam(classId);
+          message.success(t('instructor.finalExam.openSuccess', 'Final Exam opened successfully!'));
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } catch (error) {
+          console.error("Error in openClassExam:", error);
+          message.error(t('instructor.finalExam.openError', 'Failed to open exam.'));
+        } finally {
+          setLoading(false);
+        }
+      },
+    });
+  };
 
   const handleFinishExam = () => {
     modal.confirm({
@@ -99,8 +137,6 @@ export default function InstructorFinalExam() {
     );
   }
 
-  const isExamCompleted = examStatus === 'Completed';
-
   const examPanels = [
     {
       key: 'te',
@@ -142,25 +178,44 @@ export default function InstructorFinalExam() {
             </div>
           </div>
 
-          {/* Action Button */}
-          <button
-            onClick={handleFinishExam}
-            disabled={loading || isExamCompleted}
-            className={`flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all 
-              ${isExamCompleted
-                ? 'bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed'
-                : 'bg-yellow-400 text-black border-white hover:bg-yellow-500 active:bg-yellow-600 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed'
-              }`}
-          >
-            {isExamCompleted ? <Lock className="w-5 h-5" /> : <CheckCircle className="w-5 h-5" />}
-            <span>
-              {loading
-                ? 'Processing...'
-                : isExamCompleted
-                  ? 'Closed'
-                  : t('instructor.finalExam.finishButton', 'Conclude Exam')}
-            </span>
-          </button>
+          {/* Action Button Section with Conditional Logic */}
+          <div>
+            {examStatus === 'NotYet' && (
+              <Tooltip title="Right now trainees can not do the exam. If we open this final exam, it will allow that, but might cause restriction of editing content exam.">
+                <button
+                  onClick={handleOpenExam}
+                  disabled={loading}
+                  className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-yellow-400 text-black border-white hover:bg-yellow-500 active:bg-yellow-600 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Play className="w-5 h-5 fill-current" />
+                  <span>{loading ? 'Processing...' : 'Open Exam'}</span>
+                </button>
+              </Tooltip>
+            )}
+
+            {examStatus === 'Open' && (
+              <Tooltip title="You cannot change FE results after finishing it.">
+                <button
+                  onClick={handleFinishExam}
+                  disabled={loading}
+                  className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-red-500 text-white border-white hover:bg-red-600 active:bg-red-700 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <CheckCircle className="w-5 h-5" />
+                  <span>{loading ? 'Processing...' : t('instructor.finalExam.finishButton', 'Conclude Exam')}</span>
+                </button>
+              </Tooltip>
+            )}
+
+            {examStatus === 'Completed' && (
+              <button
+                disabled={true}
+                className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed"
+              >
+                <Lock className="w-5 h-5" />
+                <span>Closed</span>
+              </button>
+            )}
+          </div>
 
         </div>
       </div>

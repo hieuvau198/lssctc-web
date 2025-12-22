@@ -1,3 +1,4 @@
+
 import { App, Drawer, Empty, Form, Select, Skeleton } from "antd";
 import { GraduationCap, Plus, AlertCircle, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -77,6 +78,26 @@ const PMClasses = () => {
     setSortDirection(direction);
     setPage(1);
     updateSearchParams({ sortBy: field, sortDirection: direction, page: '1' });
+  };
+
+  // Handle table sort events
+  const handleTableChange = (pagination, filters, sorter) => {
+    if (sorter && sorter.field) {
+      const field = sorter.field;
+      // AntD uses 'ascend'/'descend', API uses 'asc'/'desc'
+      const direction = sorter.order === 'ascend' ? 'asc' : 'desc';
+      
+      // If order is undefined (user cancelled sort), revert to default
+      if (!sorter.order) {
+        setSortBy('startDate');
+        setSortDirection('desc');
+        updateSearchParams({ sortBy: 'startDate', sortDirection: 'desc' });
+      } else {
+        setSortBy(field);
+        setSortDirection(direction);
+        updateSearchParams({ sortBy: field, sortDirection: direction });
+      }
+    }
   };
 
   const handlePageChange = (newPage, newPageSize) => {
@@ -270,20 +291,6 @@ const PMClasses = () => {
                 <Option value="Cancelled">{t('common.classStatus.Cancelled') || "Cancelled"}</Option>
               </Select>
 
-              <Select
-                placeholder={t('admin.classes.filters.sortByDate') || "Sort Date"}
-                value={`${sortBy}_${sortDirection}`}
-                onChange={handleSortChange}
-                className="industrial-select-compact"
-                size="middle"
-                style={{ width: 180 }}
-              >
-                <Option value="startDate_desc">{t('admin.classes.filters.startDateNewest') || "Latest Start Date"}</Option>
-                <Option value="startDate_asc">{t('admin.classes.filters.startDateOldest') || "Earliest Start Date"}</Option>
-                <Option value="endDate_desc">{t('admin.classes.filters.endDateNewest') || "Latest End Date"}</Option>
-                <Option value="endDate_asc">{t('admin.classes.filters.endDateOldest') || "Earliest End Date"}</Option>
-              </Select>
-
               {/* View Mode Toggle */}
               <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
             </div>
@@ -353,7 +360,10 @@ const PMClasses = () => {
                 page={page}
                 pageSize={pageSize}
                 total={total}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
                 onPageChange={handlePageChange}
+                onTableChange={handleTableChange}
                 onView={openView}
                 onEdit={openEdit}
                 onDelete={handleDelete}

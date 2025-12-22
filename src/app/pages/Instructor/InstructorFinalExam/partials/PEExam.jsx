@@ -49,7 +49,7 @@ export default function PEExam({ classId }) {
   // --- Handlers for Config/Template ---
 
   const handleOpenConfig = (config) => {
-    if (isExamCompleted && !config) return; // Prevent creating if closed
+    if (!isExamNotYet) return; // [UPDATED] Only allow if NotYet (Prevent create/edit if open/completed)
 
     setSelectedConfig(config);
     if (config) {
@@ -197,8 +197,8 @@ export default function PEExam({ classId }) {
       render: (_, record) => (
         <button
           onClick={() => handleOpenConfig(record)}
-          disabled={isExamCompleted} // [UPDATED] Disable if completed
-          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${isExamCompleted
+          disabled={!isExamNotYet} // [UPDATED] Disable unless NotYet
+          className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${!isExamNotYet
             ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
             : 'border-black bg-white hover:bg-yellow-400 text-black'
             }`}
@@ -297,7 +297,7 @@ export default function PEExam({ classId }) {
   return (
     <div className="py-4">
       {/* Action Button - Only show when no configs exist */}
-      {configs.length === 0 && !isExamCompleted && (
+      {configs.length === 0 && isExamNotYet && ( // [UPDATED] Only allowed if NotYet
         <div className="mb-4 flex justify-end">
           <button
             onClick={() => handleOpenConfig(null)}
