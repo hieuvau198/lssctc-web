@@ -44,6 +44,19 @@ export async function createSectionForCourse(courseId, sectionData) {
 }
 
 /**
+ * Update an existing section
+ */
+export async function updateSection(sectionId, sectionData) {
+  try {
+    const resp = await apiClient.put(`${BASE_URL}/${sectionId}`, sectionData);
+    return resp.data;
+  } catch (err) {
+    console.error('Error updating section:', err);
+    throw err;
+  }
+}
+
+/**
  * Assign an existing section to a course
  */
 export async function addSectionToCourse(courseId, sectionId) {

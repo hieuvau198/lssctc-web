@@ -1,11 +1,11 @@
-import { App, Button, Select, Tooltip } from 'antd';
+import { App, Button, Select, Tooltip, ConfigProvider } from 'antd';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getInstructors } from '../../../../apis/Admin/AdminUser';
 import { addInstructorToClass, fetchAvailableInstructors } from '../../../../apis/ProgramManager/ClassesApi';
 
-// Component: Add/assign an instructor to a class (similar style to AssignCourse)
+// Component: Add/assign an instructor to a class
 export default function AddInstructor({ classItem, onAssigned, allowAssign = true }) {
   const { t } = useTranslation();
   const { message } = App.useApp();
@@ -14,7 +14,6 @@ export default function AddInstructor({ classItem, onAssigned, allowAssign = tru
   const [loadingInstructors, setLoadingInstructors] = useState(false);
   const [instructors, setInstructors] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [error, setError] = useState(null);
 
   // Load instructors only when entering edit mode
   useEffect(() => {
@@ -22,8 +21,7 @@ export default function AddInstructor({ classItem, onAssigned, allowAssign = tru
     if (!classItem?.id) return;
     let active = true;
     setLoadingInstructors(true);
-    // setError(null);
-    // Prefer available-instructors endpoint using class start/end dates
+    
     (async () => {
       try {
         const start = classItem.startDate ? new Date(classItem.startDate).toISOString().slice(0, 10) : null;
@@ -37,7 +35,6 @@ export default function AddInstructor({ classItem, onAssigned, allowAssign = tru
         }
 
         if (!active) return;
-        // API may return paged object or plain array
         const items = Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : []);
         setInstructors(items);
       } catch (err) {
@@ -53,12 +50,10 @@ export default function AddInstructor({ classItem, onAssigned, allowAssign = tru
 
   const handleSave = async () => {
     if (!selected) {
-      // setError('Please select an instructor');
       message.warning(t('admin.classes.messages.selectInstructor'));
       return;
     }
     setLoading(true);
-    // setError(null);
     try {
       await addInstructorToClass(classItem.id, { instructorId: selected });
       message.success(t('admin.classes.messages.assignInstructorSuccess'));
@@ -78,94 +73,129 @@ export default function AddInstructor({ classItem, onAssigned, allowAssign = tru
   const handleCancel = () => {
     setEditing(false);
     setSelected(null);
-    setError(null);
   };
 
   if (!classItem) return null;
 
+  const industrialTheme = {
+    token: {
+      borderRadius: 0,
+      colorPrimary: '#000000',
+    },
+    components: {
+      Button: {
+        borderRadius: 0,
+        controlHeightLG: 42,
+      },
+      Select: {
+        borderRadius: 0,
+        controlHeightLG: 42,
+        colorBorder: '#000000',
+      },
+    },
+  };
+
   return (
-    <div className="flex justify-end items-center gap-2">
-      {!editing ? (
-        <div className="flex justify-end mb-4">
+    <ConfigProvider theme={industrialTheme}>
+      <div className="w-full flex justify-center">
+        {!editing ? (
           <Tooltip title={!allowAssign ? "Please add schedule timeslots first" : ""}>
             <Button
               icon={<Plus size={16} strokeWidth={2.5} />}
-              onClick={() => { setEditing(true); setError(null); }}
+              onClick={() => { setEditing(true); }}
               disabled={!allowAssign}
-              className="bg-yellow-400 text-black border border-yellow-500 font-bold h-9 px-4 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={!allowAssign ? {} : { backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
+              size="large"
+              className="bg-black text-white border-2 border-black hover:bg-white hover:text-black hover:border-black font-bold uppercase tracking-wider transition-all disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-white"
             >
               {t('admin.classes.buttons.assignInstructor')}
             </Button>
           </Tooltip>
-        </div>
-      ) : (
-        <div className="inline-flex items-center gap-2 mb-4">
-          <div className="w-[350px]">
-            <Select
-              showSearch
-              placeholder={t('admin.classes.placeholders.selectInstructor')}
-              optionFilterProp="label"
-              loading={loadingInstructors}
-              allowClear
-              size="large"
-              onChange={(val) => setSelected(val)}
-              filterOption={(input, option) => {
-                const search = (option?.props?.['data-search'] || '').toString().toLowerCase();
-                return search.includes(input.toLowerCase());
-              }}
-              value={selected}
-              style={{ width: '100%' }}
-            >
-              {instructors.length === 0 && !loadingInstructors ? (
-                <Select.Option disabled value="">
-                  {t('admin.classes.messages.noInstructorsAvailable')}
-                </Select.Option>
-              ) : (
-                instructors.map((i) => {
-                  const avatar = i.avatarUrl || i.avatar || i.imageUrl || '';
-                  const deriveNameFromEmail = (email) => {
-                    if (!email) return '';
-                    const local = email.split('@')[0] || email;
-                    return local
-                      .replace(/[._\-]+/g, ' ')
-                      .split(' ')
-                      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
-                      .join(' ');
-                  };
-                  const fullName = i.fullname || i.fullName || i.name || deriveNameFromEmail(i.email) || '';
-                  const code = i.instructorCode || i.code || i.id || '';
-                  const search = `${fullName} ${code} ${i.email || ''} ${i.phoneNumber || i.phone || ''}`;
-                  return (
-                    <Select.Option key={i.id} value={i.id} data-search={search} label={fullName}>
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={avatar}
-                          alt={fullName}
-                          className="w-8 h-8 rounded-full object-cover"
-                          onError={(e) => { e.currentTarget.src = '/favicon.ico'; }}
-                        />
-                        <div className="truncate">
-                          <div className="font-medium text-sm text-slate-800 truncate">{fullName}</div>
-                          <div className="text-xs text-slate-500">{code}</div>
+        ) : (
+          <div className="w-full flex flex-col gap-3 animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-full">
+              <Select
+                showSearch
+                placeholder={t('admin.classes.placeholders.selectInstructor')}
+                optionFilterProp="label"
+                loading={loadingInstructors}
+                allowClear
+                size="large"
+                onChange={(val) => setSelected(val)}
+                filterOption={(input, option) => {
+                  const search = (option?.props?.['data-search'] || '').toString().toLowerCase();
+                  return search.includes(input.toLowerCase());
+                }}
+                value={selected}
+                className="w-full"
+                popupClassName="industrial-dropdown"
+                dropdownStyle={{ 
+                  borderRadius: 0, 
+                  border: '2px solid #000', 
+                  boxShadow: '4px 4px 0px rgba(0,0,0,0.2)' 
+                }}
+              >
+                {instructors.length === 0 && !loadingInstructors ? (
+                  <Select.Option disabled value="">
+                    {t('admin.classes.messages.noInstructorsAvailable')}
+                  </Select.Option>
+                ) : (
+                  instructors.map((i) => {
+                    const avatar = i.avatarUrl || i.avatar || i.imageUrl || '';
+                    const deriveNameFromEmail = (email) => {
+                      if (!email) return '';
+                      const local = email.split('@')[0] || email;
+                      return local
+                        .replace(/[._\-]+/g, ' ')
+                        .split(' ')
+                        .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+                        .join(' ');
+                    };
+                    const fullName = i.fullname || i.fullName || i.name || deriveNameFromEmail(i.email) || '';
+                    const code = i.instructorCode || i.code || i.id || '';
+                    const search = `${fullName} ${code} ${i.email || ''} ${i.phoneNumber || i.phone || ''}`;
+                    return (
+                      <Select.Option key={i.id} value={i.id} data-search={search} label={fullName}>
+                        <div className="flex items-center gap-3 py-1">
+                          <img
+                            src={avatar}
+                            alt={fullName}
+                            className="w-8 h-8 object-cover border border-slate-200"
+                            style={{ borderRadius: 0 }}
+                            onError={(e) => { e.currentTarget.src = '/favicon.ico'; }}
+                          />
+                          <div className="truncate flex-1">
+                            <div className="font-bold text-sm text-slate-900 truncate uppercase tracking-tight">{fullName}</div>
+                            <div className="text-xs text-slate-500 font-mono">{code}</div>
+                          </div>
                         </div>
-                      </div>
-                    </Select.Option>
-                  );
-                })
-              )}
-            </Select>
+                      </Select.Option>
+                    );
+                  })
+                )}
+              </Select>
+            </div>
+            <div className="flex gap-2 justify-end shrink-0">
+              <Button 
+                onClick={handleCancel} 
+                size="large" 
+                disabled={loadingInstructors}
+                className="bg-white text-slate-500 border-2 border-slate-200 hover:border-black hover:text-black font-bold uppercase tracking-wider"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button 
+                type="primary" 
+                onClick={handleSave} 
+                loading={loading} 
+                size="large"
+                className="bg-black text-white border-2 border-black hover:bg-white hover:text-black font-bold uppercase tracking-wider shadow-none"
+              >
+                {t('common.save')}
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button type="primary" onClick={handleSave} loading={loading} size="large">
-              {t('common.save')}
-            </Button>
-            <Button onClick={handleCancel} size="large" disabled={loadingInstructors}>
-              {t('common.cancel')}
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </ConfigProvider>
   );
 }

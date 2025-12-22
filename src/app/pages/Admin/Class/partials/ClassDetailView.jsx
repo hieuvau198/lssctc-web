@@ -143,10 +143,10 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             cancelText={t('common.no')}
             okButtonProps={{ className: 'bg-black' }}
           >
-            <button disabled={statusLoading} className={primaryBtnClass}>
+            <a disabled={statusLoading} className={primaryBtnClass}>
               <Play className="w-4 h-4" />
               {t('class.startClass', 'Start Class')}
-            </button>
+            </a>
           </Popconfirm>
         );
       case 'Inprogress':
@@ -159,10 +159,10 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             cancelText={t('common.no')}
             okButtonProps={{ className: 'bg-black' }}
           >
-            <button disabled={statusLoading} className={primaryBtnClass}>
+            <a disabled={statusLoading} className={primaryBtnClass}>
               <CheckCircle className="w-4 h-4" />
               {t('class.completeClass', 'Complete Class')}
-            </button>
+            </a>
           </Popconfirm>
         );
       case 'Cancelled':

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Card, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 import { fetchClassesByCourse } from '../../../../apis/ProgramManager/CourseApi';
 import dayjs from 'dayjs';
 import { CalendarOutlined } from '@ant-design/icons';
@@ -8,6 +9,7 @@ import DayTimeFormat from '../../../../components/DayTimeFormat/DayTimeFormat';
 
 const CourseClassList = ({ courseId }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -85,7 +87,12 @@ const CourseClassList = ({ courseId }) => {
         pagination={{ pageSize: 5 }}
         locale={{ emptyText: t('common.noData') || 'No classes found' }}
         className="industrial-table"
-        rowClassName="hover:bg-yellow-50/50 transition-colors"
+        rowClassName="hover:bg-yellow-50/50 transition-colors cursor-pointer"
+        onRow={(record) => ({
+          onClick: () => {
+            navigate(`/admin/class/${record.id}`);
+          },
+        })}
       />
       <style>{`
         .industrial-table .ant-table-thead > tr > th {
