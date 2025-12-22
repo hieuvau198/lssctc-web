@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createTimeslot, getInstructorClassTimeslots, updateTimeslot } from '../../../../apis/TimeSlot/TimeSlot';
 
-export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, readOnly = false }) {
+export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, readOnly }) {
     const { t } = useTranslation();
     const { message } = App.useApp();
     const [timeslots, setTimeslots] = useState([]);
@@ -53,6 +53,12 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
             });
         } else {
             form.resetFields();
+            // Set Default Values for New Slot
+            form.setFieldsValue({
+                locationBuilding: 'Trung Tâm Dạy Xe Cẩu Quận 9',
+                locationRoom: 'P.218',
+                locationDetail: '487A Đ. Lê Văn Việt, Tăng Nhơn Phú A, Quận 9, Thành phố Hồ Chí Minh, Vietnam'
+            });
         }
         setModalVisible(true);
     };
@@ -90,96 +96,136 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
         }
     };
 
-    const baseColumns = [
-        {
-            title: t('common.name') || 'NAME',
-            dataIndex: 'name',
-            key: 'name',
-            render: (text) => <span className="font-bold text-slate-800">{text}</span>
-        },
-        {
-            title: t('class.timeslot.startTime') || 'START TIME',
-            dataIndex: 'startTime',
-            key: 'startTime',
-            render: (val) => val ? (
-                <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
-                    <Calendar size={14} className="text-yellow-600" />
-                    <DayTimeFormat value={val} showTime={true} />
-                </div>
-            ) : '-',
-            width: 180,
-        },
-        {
-            title: t('class.timeslot.endTime') || 'END TIME',
-            dataIndex: 'endTime',
-            key: 'endTime',
-            render: (val) => val ? (
-                <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
-                    <Clock size={14} className="text-yellow-600" />
-                    <DayTimeFormat value={val} showTime={true} />
-                </div>
-            ) : '-',
-            width: 180,
-        },
-        {
-            title: t('class.timeslot.location') || 'LOCATION',
-            key: 'location',
-            render: (_, record) => (
-                <div className="flex items-start gap-2">
-                    <MapPin size={16} className="text-neutral-400 mt-1 shrink-0" />
-                    <div>
-                        <div className="font-bold text-slate-800 uppercase tracking-wide text-xs">{record.locationRoom} - {record.locationBuilding}</div>
-                        <div className="text-xs text-slate-500">{record.locationDetail}</div>
-                    </div>
-                </div>
-            ),
-        },
-        {
-            title: t('common.status') || 'STATUS',
-            dataIndex: 'status',
-            key: 'status',
-            width: 100,
-            render: (status) => (
-                <span className="inline-flex items-center px-2 py-0.5 border border-slate-300 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
-                    {status || t('class.timeslot.scheduled')}
-                </span>
-            ),
-        },
-        {
-            title: '',
-            key: 'action',
-            width: 100,
-            align: 'right',
-            render: (_, record) => (
-                <Button
-                    type="text"
-                    size="small"
-                    icon={<Edit size={16} />}
-                    className="text-slate-400 hover:text-black hover:bg-yellow-400 rounded-none transition-colors"
-                    onClick={() => handleOpenModal(record)}
-                />
-            ),
-        }
-    ];
+    // --- Date/Time Constraint Logic ---
 
-    const columns = readOnly ? baseColumns : [
-        ...baseColumns,
-        {
-            title: '',
-            key: 'action',
-            width: 100,
-            align: 'right',
-            render: (_, record) => (
-                <Button
-                    type="text"
-                    size="small"
-                    icon={<Edit size={16} />}
-                    className="text-slate-400 hover:text-black hover:bg-yellow-400 rounded-none transition-colors"
-                    onClick={() => handleOpenModal(record)}
-                />
-            ),
+    // 1. Disable Dates outside class range
+    const disabledDate = (current) => {
+        if (!classItem?.startDate || !classItem?.endDate) return false;
+        // Can not select days before StartDate or after EndDate
+        return current && (
+            current < dayjs(classItem.startDate).startOf('day') || 
+            current > dayjs(classItem.endDate).endOf('day')
+        );
+    };
+
+    // 2. Disable Times outside class range (if selected date is Start/End date)
+    const disabledTime = (current) => {
+        if (!current || !classItem?.startDate || !classItem?.endDate) return {};
+        
+        const start = dayjs(classItem.startDate);
+        const end = dayjs(classItem.endDate);
+        const isStartDay = current.isSame(start, 'day');
+        const isEndDay = current.isSame(end, 'day');
+
+        return {
+            disabledHours: () => {
+                const hours = [];
+                if (isStartDay) {
+                    // Disable hours before start time
+                    for (let i = 0; i < start.hour(); i++) hours.push(i);
+                }
+                if (isEndDay) {
+                    // Disable hours after end time
+                    for (let i = end.hour() + 1; i < 24; i++) hours.push(i);
+                }
+                return hours;
+            },
+            disabledMinutes: (selectedHour) => {
+                const minutes = [];
+                if (isStartDay && selectedHour === start.hour()) {
+                    // Disable minutes before start minute
+                    for (let i = 0; i < start.minute(); i++) minutes.push(i);
+                }
+                if (isEndDay && selectedHour === end.hour()) {
+                    // Disable minutes after end minute
+                    for (let i = end.minute() + 1; i < 60; i++) minutes.push(i);
+                }
+                return minutes;
+            },
+            disabledSeconds: () => []
+        };
+    };
+
+    // --- Columns Definition (Respects readOnly) ---
+    const getColumns = () => {
+        const cols = [
+            {
+                title: t('common.name') || 'NAME',
+                dataIndex: 'name',
+                key: 'name',
+                render: (text) => <span className="font-bold text-slate-800">{text}</span>
+            },
+            {
+                title: t('class.timeslot.startTime') || 'START TIME',
+                dataIndex: 'startTime',
+                key: 'startTime',
+                render: (val) => val ? (
+                    <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
+                        <Calendar size={14} className="text-yellow-600" />
+                        <DayTimeFormat value={val} showTime={true} />
+                    </div>
+                ) : '-',
+                width: 180,
+            },
+            {
+                title: t('class.timeslot.endTime') || 'END TIME',
+                dataIndex: 'endTime',
+                key: 'endTime',
+                render: (val) => val ? (
+                    <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
+                        <Clock size={14} className="text-yellow-600" />
+                        <DayTimeFormat value={val} showTime={true} />
+                    </div>
+                ) : '-',
+                width: 180,
+            },
+            {
+                title: t('class.timeslot.location') || 'LOCATION',
+                key: 'location',
+                render: (_, record) => (
+                    <div className="flex items-start gap-2">
+                        <MapPin size={16} className="text-neutral-400 mt-1 shrink-0" />
+                        <div>
+                            <div className="font-bold text-slate-800 uppercase tracking-wide text-xs">{record.locationRoom} - {record.locationBuilding}</div>
+                            <div className="text-xs text-slate-500">{record.locationDetail}</div>
+                        </div>
+                    </div>
+                ),
+            },
+            {
+                title: t('common.status') || 'STATUS',
+                dataIndex: 'status',
+                key: 'status',
+                width: 100,
+                render: (status) => (
+                    <span className="inline-flex items-center px-2 py-0.5 border border-slate-300 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
+                        {status || t('class.timeslot.scheduled')}
+                    </span>
+                ),
+            }
+        ];
+
+        // ONLY add the action/edit column if readOnly is FALSE
+        if (!readOnly) {
+            cols.push({
+                title: '',
+                key: 'action',
+                width: 100,
+                align: 'right',
+                render: (_, record) => (
+                    <Button
+                        type="text"
+                        size="small"
+                        icon={<Edit size={16} />}
+                        className="text-slate-400 hover:text-black hover:bg-yellow-400 rounded-none transition-colors"
+                        onClick={() => handleOpenModal(record)}
+                    />
+                ),
+            });
         }
-    ];
+
+        return cols;
+    };
 
     return (
         <div className="mt-12">
@@ -294,6 +340,8 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                     </div>
                     <span className="text-xl font-bold uppercase tracking-wide text-slate-900">{t('class.timeslot.title')}</span>
                 </div>
+                
+                {/* Hide Add button if readOnly is true */}
                 {!readOnly && (
                     <Button
                         icon={<Plus size={16} strokeWidth={3} />}
@@ -308,7 +356,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
 
             <Table
                 rowKey="id"
-                columns={columns}
+                columns={getColumns()}
                 dataSource={timeslots}
                 loading={loading}
                 pagination={{ pageSize: 5 }}
@@ -358,6 +406,8 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                     className="h-11 w-full font-medium"
                                     placeholder="Select start time"
                                     popupClassName="rounded-lg"
+                                    disabledDate={disabledDate}
+                                    disabledTime={disabledTime}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -368,10 +418,16 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                     { required: true, message: t('class.timeslot.required') },
                                     ({ getFieldValue }) => ({
                                         validator(_, value) {
-                                            if (!value || !getFieldValue('startTime') || value.isAfter(getFieldValue('startTime'))) {
+                                            const start = getFieldValue('startTime');
+                                            // 1. Basic check: must have value and start time
+                                            if (!value || !start) {
                                                 return Promise.resolve();
                                             }
-                                            return Promise.reject(new Error(t('class.timeslot.endAfterStart')));
+                                            // 2. Strict check: End time must be at least 15 minutes AFTER start time
+                                            if (value.isBefore(start.add(15, 'minute'))) {
+                                                return Promise.reject(new Error(t('class.timeslot.minDurationError', 'End time must be at least 15 minutes after start time')));
+                                            }
+                                            return Promise.resolve();
                                         },
                                     }),
                                 ]}
@@ -384,6 +440,8 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                     className="h-11 w-full font-medium"
                                     placeholder="Select end time"
                                     popupClassName="rounded-lg"
+                                    disabledDate={disabledDate}
+                                    disabledTime={disabledTime}
                                 />
                             </Form.Item>
                         </div>

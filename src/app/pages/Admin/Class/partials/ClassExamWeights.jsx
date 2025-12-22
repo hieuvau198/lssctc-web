@@ -9,7 +9,7 @@ import { getClassExamConfig, updateClassWeights } from '../../../../apis/FinalEx
  */
 const fixFloat = (num) => parseFloat(num.toFixed(2));
 
-const ClassExamWeights = ({ classId, readOnly = false }) => {
+const ClassExamWeights = ({ classId, readOnly }) => {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const [form] = Form.useForm();
@@ -169,6 +169,7 @@ const ClassExamWeights = ({ classId, readOnly = false }) => {
             onFinish={onFinish}
             onValuesChange={onValuesChange}
             initialValues={{ theoryWeight: 0, simulationWeight: 0, practicalWeight: 0 }}
+            disabled={readOnly} // Disable Form Interactions
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {['Theory', 'Simulation', 'Practical'].map((type) => {
@@ -190,6 +191,7 @@ const ClassExamWeights = ({ classId, readOnly = false }) => {
                       className="w-full font-mono font-bold"
                       style={{ borderRadius: 0 }}
                       placeholder="e.g. 0.3"
+                      disabled={readOnly}
                     />
                   </Form.Item>
                 );

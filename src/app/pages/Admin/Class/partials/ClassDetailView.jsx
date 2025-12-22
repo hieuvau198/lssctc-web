@@ -91,6 +91,8 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
 
 
   const statusInfo = getClassStatus(classItem.status);
+
+  // Determine if the class is editable (Only editable if status is Draft)
   const readOnly = statusInfo.key !== 'Draft';
 
   // Status action buttons based on current status
@@ -314,11 +316,11 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
         {/* Schedule / Timeslots */}
         <div id="class-schedule" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
           <SectionHeader icon={CalendarDays} title={t('admin.classes.schedule', 'Schedule')} />
-          {/* Pass readOnly prop */}
+          {/* PASS READONLY PROP */}
           <ClassTimeslotManage 
             classItem={classItem} 
             onTimeSlotsChange={setHasTimeSlots} 
-            readOnly={readOnly} 
+            readOnly={readOnly}
           />
         </div>
 
@@ -342,7 +344,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           </div>
         )}
 
-        {/* EXAM WEIGHTS SECTION */}
+        {/* NEW EXAM WEIGHTS SECTION - PASS READONLY PROP */}
         <ClassExamWeights classId={classItem?.id} readOnly={readOnly} />
 
         {/* Certificates Section */}
