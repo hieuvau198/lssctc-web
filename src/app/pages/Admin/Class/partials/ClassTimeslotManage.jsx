@@ -97,6 +97,83 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
     };
 
     // --- Date/Time Constraint Logic ---
+    const baseColumns = [
+        {
+            title: t('common.name') || 'NAME',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text) => <span className="font-bold text-slate-800">{text}</span>
+        },
+        {
+            title: t('class.timeslot.startTime') || 'START TIME',
+            dataIndex: 'startTime',
+            key: 'startTime',
+            render: (val) => val ? (
+                <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
+                    <Calendar size={14} className="text-yellow-600" />
+                    <DayTimeFormat value={val} showTime={true} />
+                </div>
+            ) : '-',
+            width: 180,
+        },
+        {
+            title: t('class.timeslot.endTime') || 'END TIME',
+            dataIndex: 'endTime',
+            key: 'endTime',
+            render: (val) => val ? (
+                <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
+                    <Clock size={14} className="text-yellow-600" />
+                    <DayTimeFormat value={val} showTime={true} />
+                </div>
+            ) : '-',
+            width: 180,
+        },
+        {
+            title: t('class.timeslot.location') || 'LOCATION',
+            key: 'location',
+            render: (_, record) => (
+                <div className="flex items-start gap-2">
+                    <MapPin size={16} className="text-neutral-400 mt-1 shrink-0" />
+                    <div>
+                        <div className="font-bold text-slate-800 uppercase tracking-wide text-xs">{record.locationRoom} - {record.locationBuilding}</div>
+                        <div className="text-xs text-slate-500">{record.locationDetail}</div>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            title: t('common.status') || 'STATUS',
+            dataIndex: 'status',
+            key: 'status',
+            width: 100,
+            render: (status) => (
+                <span className="inline-flex items-center px-2 py-0.5 border border-slate-300 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
+                    {status || t('class.timeslot.scheduled')}
+                </span>
+            ),
+        },
+        {
+            title: '',
+            key: 'action',
+            width: 100,
+            align: 'right',
+            render: (_, record) => {
+                const isNotStarted = record.status === 'NotStarted';
+                return (
+                    <Button
+                        type="text"
+                        size="small"
+                        icon={<Edit size={16} />}
+                        className={`rounded-none transition-colors ${isNotStarted
+                            ? 'text-slate-400 hover:text-black hover:bg-yellow-400'
+                            : 'text-slate-300 cursor-not-allowed'}`}
+                        onClick={() => handleOpenModal(record)}
+                        disabled={!isNotStarted}
+                    />
+                );
+            },
+        }
+    ];
 
     // 1. Disable Dates outside class range
     const disabledDate = (current) => {
@@ -392,6 +469,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                             <Input placeholder="e.g. Session 1: Safety Introduction" className="h-11 font-medium text-slate-700" />
                         </Form.Item>
 
+
                         <div className="grid grid-cols-2 gap-5">
                             <Form.Item
                                 label={t('class.timeslot.startTime')}
@@ -401,7 +479,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                             >
                                 <DatePicker
                                     showTime={{ format: 'HH:mm' }}
-                                    format="YYYY-MM-DD HH:mm"
+                                    format="DD-MM-YYYY HH:mm:ss"
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
                                     placeholder="Select start time"
@@ -435,7 +513,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                             >
                                 <DatePicker
                                     showTime={{ format: 'HH:mm' }}
-                                    format="YYYY-MM-DD HH:mm"
+                                    format="DD-MM-YYYY HH:mm:ss"
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
                                     placeholder="Select end time"

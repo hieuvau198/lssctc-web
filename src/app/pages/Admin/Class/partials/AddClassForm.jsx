@@ -287,7 +287,7 @@ const AddClassForm = ({
           name="startDate"
           rules={[{ required: true, message: t('admin.classes.form.startDateRequired') }]}
         >
-          <DatePicker className="w-full" disabledDate={disabledStartDate} />
+          <DatePicker className="w-full" format="DD-MM-YYYY" disabledDate={disabledStartDate} />
         </Form.Item>
 
         <Form.Item
@@ -305,7 +305,7 @@ const AddClassForm = ({
             })
           ]}
         >
-          <DatePicker className="w-full" disabledDate={disabledEndDate} />
+          <DatePicker className="w-full" format="DD-MM-YYYY" disabledDate={disabledEndDate} />
         </Form.Item>
 
         <Form.Item

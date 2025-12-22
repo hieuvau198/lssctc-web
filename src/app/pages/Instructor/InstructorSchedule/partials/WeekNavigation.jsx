@@ -69,9 +69,9 @@ export default function WeekNavigation({
           {/* Previous week button */}
           <button
             onClick={onPreviousWeek}
-            className="w-10 h-10 flex items-center justify-center bg-neutral-800 border-2 border-neutral-700 hover:bg-yellow-400 hover:border-black hover:text-black text-white transition-all"
+            className="w-10 h-10 flex items-center justify-center bg-neutral-800 border-2 hover:bg-yellow-400 hover:border-black hover:text-black text-white transition-all"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft color="white" className="w-5 h-5" />
           </button>
 
           {/* Today button */}
@@ -85,9 +85,9 @@ export default function WeekNavigation({
           {/* Next week button */}
           <button
             onClick={onNextWeek}
-            className="w-10 h-10 flex items-center justify-center bg-neutral-800 border-2 border-neutral-700 hover:bg-yellow-400 hover:border-black hover:text-black text-white transition-all"
+            className="w-10 h-10 flex items-center justify-center bg-neutral-800 border-2 hover:bg-yellow-400 hover:border-black hover:text-black text-white transition-all"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight color="white" className="w-5 h-5" />
           </button>
 
           {/* Date picker */}

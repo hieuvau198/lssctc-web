@@ -195,7 +195,7 @@ export default function InstructorSchedule() {
     // Show loading state
     if (loading) {
         return (
-            <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+            <div className="max-w-7xl mx-auto">
                 <div className="bg-black border-2 border-black p-6 mb-6">
                     <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
                     <div className="flex items-center gap-4">
@@ -217,7 +217,7 @@ export default function InstructorSchedule() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-6 min-h-screen bg-neutral-100">
+        <div className="max-w-7xl mx-auto">
             {/* Navigation Card */}
             <WeekNavigation
                 currentWeekStart={currentWeekStart}
