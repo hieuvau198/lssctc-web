@@ -11,11 +11,36 @@ export default function DrawerView({ visible, onClose, material }) {
   const isVideo = Number(material.typeId) === 1;
   const isDoc = Number(material.typeId) === 2;
 
+  const getYouTubeId = (url) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const youtubeId = getYouTubeId(material.url);
+
   const content = isVideo ? (
-    // render HTML5 video player if url is a direct video
-    <div className="border-2 border-black overflow-hidden">
-      <video controls style={{ width: '100%' }} src={material.url} />
-    </div>
+    youtubeId ? (
+      <div className="border-2 border-black overflow-hidden h-full bg-black">
+        <iframe
+          width="100%"
+          height="100%"
+          src={`https://www.youtube.com/embed/${youtubeId}`}
+          title={material.name}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    ) : (
+      // render HTML5 video player if url is a direct video
+      <div className="border-2 border-black overflow-hidden h-full bg-black flex items-center justify-center">
+        <video controls style={{ width: '100%', maxHeight: '100%' }} src={material.url}>
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    )
   ) : isDoc ? (
     // embed pdf in iframe when possible
     <div className="border-2 border-black overflow-hidden h-full">
@@ -56,6 +81,7 @@ export default function DrawerView({ visible, onClose, material }) {
       width={800}
       onClose={onClose}
       open={visible}
+      destroyOnClose={true}
       styles={{
         header: {
           borderBottom: '2px solid #000',
