@@ -102,7 +102,7 @@ export default function InstructorMaterials() {
   return (
     <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
       {/* Header - Black background with yellow accent (matching MY CLASSES) */}
-      <div className="flex-none bg-black border-2 border-black p-5 mb-4">
+      <div className="flex-none bg-neutral-800 border-2 border-black p-5 mb-4">
         <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -110,9 +110,9 @@ export default function InstructorMaterials() {
               <BookOpen className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+              <span className="text-2xl font-black text-white uppercase tracking-tight">
                 {t('instructor.materials.title')}
-              </h1>
+              </span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {docs.length + videos.length} {t('instructor.materials.totalMaterials')}
               </p>

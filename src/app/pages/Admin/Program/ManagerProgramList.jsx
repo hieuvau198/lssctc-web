@@ -123,7 +123,7 @@ const ManagerProgramList = () => {
   return (
     <div className="max-w-7xl mx-auto h-[calc(100vh-64px)] flex flex-col pb-2">
       {/* Header - Industrial Theme */}
-      <div className="bg-black border-2 border-black px-4 py-3 mb-0 flex-none z-10">
+      <div className="bg-neutral-800 border-2 border-black px-4 py-3 mb-0 flex-none z-10">
         <div className="h-1 bg-yellow-400 -mx-4 -mt-3 mb-3" />
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">

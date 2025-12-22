@@ -1,9 +1,9 @@
 // src/app/pages/Admin/Course/partials/CourseCertificate.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Button, Skeleton, message, Empty, Modal, Select, Tag, Space, Typography } from 'antd';
-import { SafetyCertificateOutlined, SwapOutlined, ThunderboltOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { X, Award } from 'lucide-react';
+import { SafetyCertificateOutlined, SwapOutlined, ThunderboltOutlined, CheckCircleOutlined, EyeOutlined, ExpandOutlined, CloseOutlined } from '@ant-design/icons';
+import { X, Award, Eye, Maximize2, FileText } from 'lucide-react';
 import { fetchCertificateByCourse, fetchCertificateTemplates, assignCertificateToCourse, autoAssignCertificateToCourse } from '../../../../apis/ProgramManager/CertificateApi';
 
 const { Text, Title } = Typography;
@@ -20,6 +20,15 @@ const CourseCertificate = ({ courseId }) => {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState(null);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
+
+  // Preview State
+  const [showCertPreview, setShowCertPreview] = useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+
+  // Get selected template details
+  const selectedTemplate = useMemo(() => {
+    return templates.find(t => t.id === selectedTemplateId);
+  }, [templates, selectedTemplateId]);
 
   useEffect(() => {
     if (courseId) {
@@ -52,6 +61,7 @@ const CourseCertificate = ({ courseId }) => {
   };
 
   const handleOpenAssignModal = () => {
+    setSelectedTemplateId(null);
     setIsModalOpen(true);
     loadTemplates();
   };
@@ -67,6 +77,7 @@ const CourseCertificate = ({ courseId }) => {
       await assignCertificateToCourse(courseId, selectedTemplateId);
       message.success("Certificate assigned successfully.");
       setIsModalOpen(false);
+      setSelectedTemplateId(null);
       loadCertificate();
     } catch (error) {
       message.error(error?.response?.data || "Failed to assign certificate.");
@@ -88,6 +99,65 @@ const CourseCertificate = ({ courseId }) => {
     }
   };
 
+  // Template Preview Component
+  const TemplatePreview = ({ template, height = 200, showTitle = true }) => {
+    if (!template) return null;
+
+    return (
+      <div className="border-2 border-neutral-200 bg-white">
+        {showTitle && (
+          <div className="bg-neutral-100 px-4 py-2 border-b-2 border-neutral-200 flex items-center justify-between">
+            <span className="font-bold uppercase text-xs tracking-wider text-neutral-600">
+              Template Preview
+            </span>
+            <span className="text-xs font-mono text-neutral-400">ID: {template.id}</span>
+          </div>
+        )}
+        <div className="p-4">
+          {template.templateHtml ? (
+            <div
+              className="w-full overflow-auto bg-white border border-neutral-200"
+              style={{ height: `${height}px` }}
+            >
+              <div
+                className="certificate-html-preview p-4"
+                dangerouslySetInnerHTML={{ __html: template.templateHtml }}
+              />
+              <style>{`
+                .certificate-html-preview {
+                  font-family: 'Times New Roman', serif;
+                }
+                .certificate-html-preview * {
+                  max-width: 100%;
+                }
+                .certificate-html-preview img {
+                  max-width: 100%;
+                  height: auto;
+                }
+              `}</style>
+            </div>
+          ) : (
+            <div
+              className="bg-gradient-to-br from-neutral-50 to-neutral-100 flex flex-col items-center justify-center gap-4 border-2 border-dashed border-neutral-300"
+              style={{ height: `${height}px` }}
+            >
+              <div className="w-16 h-16 bg-yellow-400 flex items-center justify-center">
+                <Award className="w-8 h-8 text-black" />
+              </div>
+              <div className="text-center">
+                <p className="font-black uppercase text-neutral-900 text-lg">{template.name}</p>
+                <p className="text-xs text-neutral-500 mt-1">Template ID: {template.id}</p>
+              </div>
+              <span className="px-3 py-1 bg-neutral-200 text-neutral-600 text-xs font-bold uppercase tracking-wider">
+                No Template Content Available
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   if (loading) return <Skeleton active paragraph={{ rows: 3 }} />;
 
   return (
@@ -95,30 +165,56 @@ const CourseCertificate = ({ courseId }) => {
       {/* Explicit Extra Content from Header if needed can go here, but logic suggests handling per state */}
 
       {certificate ? (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 border-2 border-neutral-200 bg-neutral-50 hover:border-black transition-colors">
-          <div className="flex items-start gap-5">
-            <div className="p-4 bg-yellow-400 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              <SafetyCertificateOutlined className="text-3xl text-black" />
+        <div className="space-y-4">
+          {/* Certificate Info Card */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 border-2 border-neutral-200 bg-neutral-50 hover:border-black transition-colors">
+            <div className="flex items-start gap-5">
+              <div className="p-4 bg-yellow-400 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <SafetyCertificateOutlined className="text-3xl text-black" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-lg font-black uppercase text-neutral-900 m-0 leading-tight">{certificate.name}</span>
+                <Space direction="vertical" size={2} className="mt-1">
+                  <Text type="secondary" className="text-xs font-mono uppercase tracking-wider">Template ID: {certificate.id}</Text>
+                  <div className="mt-1 flex gap-2">
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold uppercase border border-green-200">Active</span>
+                    {certificate.courseName && <span className="px-2 py-0.5 bg-neutral-200 text-neutral-600 text-xs font-bold uppercase border border-neutral-300">{certificate.courseName}</span>}
+                  </div>
+                </Space>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-black uppercase text-neutral-900 m-0 leading-tight">{certificate.name}</span>
-              <Space direction="vertical" size={2} className="mt-1">
-                <Text type="secondary" className="text-xs font-mono uppercase tracking-wider">Template ID: {certificate.id}</Text>
-                <div className="mt-1 flex gap-2">
-                  <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold uppercase border border-green-200">Active</span>
-                  {certificate.courseName && <span className="px-2 py-0.5 bg-neutral-200 text-neutral-600 text-xs font-bold uppercase border border-neutral-300">{certificate.courseName}</span>}
-                </div>
-              </Space>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowCertPreview(!showCertPreview)}
+                className="flex items-center gap-2 h-10 px-5 bg-white border-2 border-neutral-300 text-neutral-700 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all"
+              >
+                <EyeOutlined />
+                {showCertPreview ? 'Hide Preview' : 'Preview'}
+              </button>
+              <button
+                onClick={() => setPreviewModalOpen(true)}
+                className="flex items-center gap-2 h-10 px-4 bg-white border-2 border-neutral-300 text-neutral-700 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all"
+                title="View Full Screen"
+              >
+                <ExpandOutlined />
+              </button>
+              <button
+                onClick={handleOpenAssignModal}
+                className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-black text-black font-bold uppercase tracking-wider hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none"
+              >
+                <SwapOutlined />
+                Change Template
+              </button>
             </div>
           </div>
 
-          <button
-            onClick={handleOpenAssignModal}
-            className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-black text-black font-bold uppercase tracking-wider hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-username"
-          >
-            <SwapOutlined />
-            Change Template
-          </button>
+          {/* Collapsible Preview Section */}
+          {showCertPreview && (
+            <div className="animate-in slide-in-from-top-2 duration-200">
+              <TemplatePreview template={certificate} height={350} showTitle={true} />
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-neutral-300 bg-neutral-50 hover:bg-white hover:border-neutral-400 transition-all gap-4 text-center">
@@ -154,7 +250,7 @@ const CourseCertificate = ({ courseId }) => {
         onCancel={() => setIsModalOpen(false)}
         footer={null}
         closable={false}
-        width={500}
+        width={650}
         styles={{
           content: { padding: 0, borderRadius: 0 },
           body: { padding: 0 },
@@ -171,7 +267,7 @@ const CourseCertificate = ({ courseId }) => {
                 ASSIGN CERTIFICATE TEMPLATE
               </h3>
               <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
-                Select template
+                Select and preview template
               </p>
             </div>
           </div>
@@ -207,6 +303,7 @@ const CourseCertificate = ({ courseId }) => {
             placeholder="Select a certificate template"
             loading={loadingTemplates}
             onChange={(value) => setSelectedTemplateId(value)}
+            value={selectedTemplateId}
             optionFilterProp="children"
             showSearch
             listHeight={200}
@@ -219,6 +316,13 @@ const CourseCertificate = ({ courseId }) => {
             ))}
           </Select>
 
+          {/* Template Preview Section */}
+          {selectedTemplate && (
+            <div className="mt-5">
+              <TemplatePreview template={selectedTemplate} height={250} showTitle={true} />
+            </div>
+          )}
+
           {/* Footer Actions */}
           <div className="flex justify-end gap-3 pt-6 mt-2">
             <button
@@ -229,13 +333,56 @@ const CourseCertificate = ({ courseId }) => {
             </button>
             <button
               onClick={handleAssign}
-              disabled={assignLoading}
+              disabled={assignLoading || !selectedTemplateId}
               className="px-5 py-2.5 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all text-xs flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {assignLoading && <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />}
-              Assign
+              Assign Template
             </button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Fullscreen Preview Modal */}
+      <Modal
+        open={previewModalOpen}
+        onCancel={() => setPreviewModalOpen(false)}
+        footer={null}
+        closable={false}
+        width="90%"
+        style={{ maxWidth: 1000, top: 20 }}
+        styles={{
+          content: { padding: 0, borderRadius: 0 },
+          body: { padding: 0 },
+        }}
+      >
+        {/* Industrial Header */}
+        <div className="bg-black p-4 flex items-center justify-between border-b-4 border-yellow-400">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
+              <Award className="w-5 h-5 text-black" />
+            </div>
+            <div>
+              <h3 className="text-white font-black uppercase text-lg leading-none m-0">
+                CERTIFICATE TEMPLATE PREVIEW
+              </h3>
+              <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
+                {certificate?.name} - ID: {certificate?.id}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setPreviewModalOpen(false)}
+            className="text-neutral-400 hover:text-white transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="p-6 bg-neutral-100">
+          {certificate && (
+            <TemplatePreview template={certificate} height={600} showTitle={false} />
+          )}
         </div>
       </Modal>
     </div>

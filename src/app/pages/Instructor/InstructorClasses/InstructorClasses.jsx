@@ -123,7 +123,7 @@ export default function InstructorClasses() {
   return (
     <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
       {/* Light Wire Header */}
-      <div className="flex-none bg-black border-2 border-black p-5 mb-4">
+      <div className="flex-none bg-neutral-800 border-2 border-black p-5 mb-4">
         <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -131,7 +131,7 @@ export default function InstructorClasses() {
               <BookOpen className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">{t('instructor.classes.title')}</h1>
+              <span className="text-2xl font-black text-white uppercase tracking-tight">{t('instructor.classes.title')}</span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {t('instructor.classes.table.pagination', { start: (pageNumber - 1) * pageSize + 1, end: Math.min(pageNumber * pageSize, total), total })}
               </p>

@@ -163,7 +163,7 @@ export default function InstructorFinalExam() {
       {contextHolder}
 
       {/* Light Wire Header */}
-      <div className="bg-black border-2 border-black p-6 mb-6">
+      <div className="bg-neutral-800 border-2 border-black p-6 mb-6">
         <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
 

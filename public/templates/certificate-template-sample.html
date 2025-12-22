@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LSSCTC Certificate Template</title>
+  <style>
+    /* Reset & Base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', Georgia, serif;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+
+    /* Certificate Container */
+    .certificate {
+      width: 800px;
+      min-height: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 4px solid #171717;
+      position: relative;
+      padding: 0;
+    }
+
+    /* Yellow Accent Bar */
+    .accent-bar {
+      height: 8px;
+      background: #facc15;
+      width: 100%;
+    }
+
+    /* Inner Border */
+    .certificate-inner {
+      border: 2px solid #e5e5e5;
+      margin: 20px;
+      padding: 40px;
+      min-height: 520px;
+      position: relative;
+    }
+
+    /* Logo Section */
+    .logo-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      background: #facc15;
+      margin-bottom: 15px;
+    }
+
+    .logo-box svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .org-name {
+      font-size: 14px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #525252;
+      font-weight: bold;
+    }
+
+    /* Title */
+    .certificate-title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .certificate-title h1 {
+      font-size: 36px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #171717;
+      margin-bottom: 5px;
+    }
+
+    .certificate-title .subtitle {
+      font-size: 14px;
+      color: #737373;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Recipient Section */
+    .recipient-section {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .presented-to {
+      font-size: 14px;
+      color: #737373;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .recipient-name {
+      font-size: 32px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #171717;
+      border-bottom: 3px solid #facc15;
+      display: inline-block;
+      padding-bottom: 5px;
+      min-width: 400px;
+    }
+
+    /* Course Section */
+    .course-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .completed-text {
+      font-size: 14px;
+      color: #737373;
+      margin-bottom: 10px;
+    }
+
+    .course-name {
+      font-size: 24px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #171717;
+      letter-spacing: 1px;
+    }
+
+    /* Details Section */
+    .details-section {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .detail-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+    }
+
+    .detail-box.highlight {
+      background: #facc15;
+      border-color: #facc15;
+    }
+
+    .detail-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #737373;
+    }
+
+    .detail-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #171717;
+    }
+
+    /* Grade Section */
+    .grade-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .grade-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #737373;
+      margin-bottom: 5px;
+    }
+
+    .grade-value {
+      font-size: 48px;
+      font-weight: 900;
+      color: #171717;
+    }
+
+    .grade-value span {
+      font-size: 20px;
+      color: #a3a3a3;
+    }
+
+    /* Signature Section */
+    .signature-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #e5e5e5;
+    }
+
+    .cert-info {
+      text-align: left;
+    }
+
+    .cert-info-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #737373;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 3px;
+    }
+
+    .cert-info-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #171717;
+      font-family: 'Courier New', monospace;
+    }
+
+    .signature-box {
+      text-align: center;
+    }
+
+    .signature-line {
+      width: 200px;
+      border-top: 3px solid #171717;
+      padding-top: 8px;
+    }
+
+    .signer-name {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #171717;
+    }
+
+    .signer-title {
+      font-size: 11px;
+      color: #737373;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Placeholder Variables - Replace with actual data */
+    /* 
+      {{recipientName}} - Tên học viên
+      {{courseName}} - Tên khóa học
+      {{issueDate}} - Ngày cấp
+      {{expireDate}} - Ngày hết hạn (optional)
+      {{grade}} - Điểm số
+      {{certificateCode}} - Mã chứng chỉ
+      {{issuerName}} - Tên người ký
+      {{issuerTitle}} - Chức danh người ký
+    */
+  </style>
+</head>
+<body>
+  <div class="certificate">
+    <!-- Yellow Accent Bar -->
+    <div class="accent-bar"></div>
+    
+    <div class="certificate-inner">
+      <!-- Logo Section -->
+      <div class="logo-section">
+        <div class="logo-box">
+          <!-- Award Icon SVG -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="6"/>
+            <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+          </svg>
+        </div>
+        <div class="org-name">LSSCTC Academy</div>
+      </div>
+
+      <!-- Title -->
+      <div class="certificate-title">
+        <h1>Certificate of Completion</h1>
+        <div class="subtitle">Chứng nhận hoàn thành khóa học</div>
+      </div>
+
+      <!-- Recipient -->
+      <div class="recipient-section">
+        <div class="presented-to">This is to certify that</div>
+        <div class="recipient-name">{{recipientName}}</div>
+      </div>
+
+      <!-- Course -->
+      <div class="course-section">
+        <div class="completed-text">has successfully completed the training course</div>
+        <div class="course-name">{{courseName}}</div>
+      </div>
+
+      <!-- Details -->
+      <div class="details-section">
+        <div class="detail-box highlight">
+          <div>
+            <div class="detail-label">Issue Date</div>
+            <div class="detail-value">{{issueDate}}</div>
+          </div>
+        </div>
+        <div class="detail-box">
+          <div>
+            <div class="detail-label">Valid Until</div>
+            <div class="detail-value">{{expireDate}}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grade -->
+      <div class="grade-section">
+        <div class="grade-label">Final Score</div>
+        <div class="grade-value">{{grade}}<span>/100</span></div>
+      </div>
+
+      <!-- Signature -->
+      <div class="signature-section">
+        <div class="cert-info">
+          <div class="cert-info-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            Certificate ID
+          </div>
+          <div class="cert-info-value">{{certificateCode}}</div>
+        </div>
+        
+        <div class="signature-box">
+          <div class="signature-line">
+            <div class="signer-name">{{issuerName}}</div>
+            <div class="signer-title">{{issuerTitle}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 
+  ===============================================
+  HƯỚNG DẪN SỬ DỤNG TEMPLATE
+  ===============================================
+  
+  Các placeholder variables cần thay thế:
+  
+  {{recipientName}}   - Tên học viên (VD: Nguyễn Văn A)
+  {{courseName}}      - Tên khóa học (VD: Seaport Crane Operations)
+  {{issueDate}}       - Ngày cấp (VD: Dec 22, 2025)
+  {{expireDate}}      - Ngày hết hạn (VD: Dec 22, 2027)
+  {{grade}}           - Điểm số (VD: 95)
+  {{certificateCode}} - Mã chứng chỉ (VD: LSS-2025-0001)
+  {{issuerName}}      - Tên người ký (VD: John Anderson)
+  {{issuerTitle}}     - Chức danh (VD: Training Director)
+  
+  Lưu ý:
+  - Template sử dụng style inline để đảm bảo hiển thị đúng
+  - Màu vàng accent: #facc15 (Yellow-400)
+  - Màu đen chính: #171717 (Neutral-900)
+  - Font chính: Times New Roman (formal certificate style)
+  
+  ===============================================
+  -->
+</body>
+</html>
