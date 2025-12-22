@@ -1,3 +1,4 @@
+
 import { useTranslation } from 'react-i18next';
 import { Pagination } from "antd";
 import { ExternalLink, GraduationCap } from "lucide-react";
@@ -12,7 +13,10 @@ const ClassTableView = ({
   page,
   pageSize,
   total,
+  sortBy,
+  sortDirection,
   onPageChange,
+  onTableChange,
   onView,
   onEdit,
   onDelete,
@@ -20,6 +24,14 @@ const ClassTableView = ({
   ...rest
 }) => {
   const { t } = useTranslation();
+
+  // Helper to determine sort order for a column
+  const getSortOrder = (columnKey) => {
+    if (sortBy === columnKey) {
+      return sortDirection === 'asc' ? 'ascend' : 'descend';
+    }
+    return null;
+  };
 
   const tableColumns = [
     {
@@ -38,6 +50,8 @@ const ClassTableView = ({
       dataIndex: "name",
       key: "name",
       width: 250,
+      sorter: true,
+      sortOrder: getSortOrder('name'),
       render: (name, record) => (
         <span
           onClick={() => onView(record)}
@@ -53,6 +67,8 @@ const ClassTableView = ({
       dataIndex: "classCode",
       key: "classCode",
       width: 150,
+      sorter: true,
+      sortOrder: getSortOrder('classCode'),
       render: (classCode) => (
         <span className="font-medium text-neutral-700">{classCode?.name || classCode || "-"}</span>
       ),
@@ -62,6 +78,8 @@ const ClassTableView = ({
       dataIndex: "startDate",
       key: "startDate",
       width: 180,
+      sorter: true,
+      sortOrder: getSortOrder('startDate'),
       render: (date) => (
         <span className="text-neutral-600">
           <DayTimeFormat value={date} />
@@ -73,6 +91,8 @@ const ClassTableView = ({
       dataIndex: "endDate",
       key: "endDate",
       width: 180,
+      sorter: true,
+      sortOrder: getSortOrder('endDate'),
       render: (date) => (
         <span className="text-neutral-600">
           <DayTimeFormat value={date} />
@@ -85,6 +105,8 @@ const ClassTableView = ({
       key: "status",
       width: 150,
       align: 'center',
+      sorter: true,
+      sortOrder: getSortOrder('status'),
       render: (status) => {
         const s = getClassStatus(status);
         // Map status colors to industrial style
@@ -121,6 +143,7 @@ const ClassTableView = ({
       dataSource={classes}
       rowKey="id"
       emptyContent={emptyContent}
+      onChange={onTableChange}
       pagination={{
         current: page,
         pageSize: pageSize,
@@ -206,7 +229,10 @@ const ClassList = ({
   page = 1,
   pageSize = 10,
   total = 0,
+  sortBy,
+  sortDirection,
   onPageChange,
+  onTableChange,
   onView,
   onEdit,
   onDelete,
@@ -233,7 +259,10 @@ const ClassList = ({
         page={page}
         pageSize={pageSize}
         total={total}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
         onPageChange={onPageChange}
+        onTableChange={onTableChange}
         onView={onView}
         onEdit={onEdit}
         onDelete={onDelete}
