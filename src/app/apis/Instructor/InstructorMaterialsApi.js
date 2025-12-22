@@ -93,6 +93,17 @@ export const getMaterialsByActivityId = async (activityId) => {
   }
 };
 
+export const getMaterialsByInstructorId = async () => {
+  try {
+    const response = await apiClient.get(`/Materials/instructor`);
+    const data = Array.isArray(response.data) ? response.data : [];
+    return data.map(mapMaterialFromApi);
+  } catch (error) {
+    console.error(`Error fetching materials for instructor:`, error.response || error);
+    return [];
+  }
+};
+
 export const assignMaterialToActivity = async (activityId, materialId) => {
   if (!activityId || !materialId) {
     return Promise.reject(new Error('Activity ID and Material ID are required.'));

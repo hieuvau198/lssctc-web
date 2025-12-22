@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Alert, Select, Spin, Empty, Typography, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
 import {
-  getMaterials,
+  getMaterialsByInstructorId,
   getMaterialsByActivityId,
   assignMaterialToActivity,
   removeMaterialFromActivity,
@@ -13,6 +13,7 @@ const { Option } = Select;
 
 const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
   const { t } = useTranslation();
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [assignedMaterial, setAssignedMaterial] = useState(null);
@@ -29,9 +30,11 @@ const ManageMaterialModal = ({ activity, isVisible, onClose, onUpdate }) => {
       const assigned = await getMaterialsByActivityId(activity.id);
       setAssignedMaterial(assigned[0] || null); // Assuming one material per activity
 
-      // 2. Fetch all available materials
-      const library = await getMaterials({ page: 1, pageSize: 1000 });
-      setMaterialLibrary(library.items || []);
+      // 2. Fetch all available materials for the current instructor
+      // No ID needed, backend handles context via token
+      const library = await getMaterialsByInstructorId();
+      setMaterialLibrary(library || []);
+      
     } catch (err) {
       setError(err.message || t('instructor.classes.manageMaterialModal.loadFailed'));
     } finally {
