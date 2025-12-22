@@ -60,9 +60,9 @@ export default function InstructorPractices() {
               <Settings className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+              <span className="text-2xl font-black text-white uppercase tracking-tight">
                 {t('instructor.practices.title')}
-              </h1>
+              </span>
               <p className="text-yellow-400 text-sm mt-1 font-medium">
                 {t('instructor.practices.table.pagination', {
                   start: (pageNumber - 1) * pageSize + 1,
