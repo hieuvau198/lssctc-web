@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createTimeslot, getInstructorClassTimeslots, updateTimeslot } from '../../../../apis/TimeSlot/TimeSlot';
 
-export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
+export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, readOnly = false }) {
     const { t } = useTranslation();
     const { message } = App.useApp();
     const [timeslots, setTimeslots] = useState([]);
@@ -90,7 +90,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
         }
     };
 
-    const columns = [
+    const baseColumns = [
         {
             title: t('common.name') || 'NAME',
             dataIndex: 'name',
@@ -145,6 +145,25 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
                 </span>
             ),
         },
+        {
+            title: '',
+            key: 'action',
+            width: 100,
+            align: 'right',
+            render: (_, record) => (
+                <Button
+                    type="text"
+                    size="small"
+                    icon={<Edit size={16} />}
+                    className="text-slate-400 hover:text-black hover:bg-yellow-400 rounded-none transition-colors"
+                    onClick={() => handleOpenModal(record)}
+                />
+            ),
+        }
+    ];
+
+    const columns = readOnly ? baseColumns : [
+        ...baseColumns,
         {
             title: '',
             key: 'action',
@@ -275,14 +294,16 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange }) {
                     </div>
                     <span className="text-xl font-bold uppercase tracking-wide text-slate-900">{t('class.timeslot.title')}</span>
                 </div>
-                <Button
-                    icon={<Plus size={16} strokeWidth={3} />}
-                    onClick={() => handleOpenModal(null)}
-                    className="bg-yellow-400 text-black border border-yellow-500 font-bold h-10 px-6 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all"
-                    style={{ backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
-                >
-                    {t('class.timeslot.add')}
-                </Button>
+                {!readOnly && (
+                    <Button
+                        icon={<Plus size={16} strokeWidth={3} />}
+                        onClick={() => handleOpenModal(null)}
+                        className="bg-yellow-400 text-black border border-yellow-500 font-bold h-10 px-6 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all"
+                        style={{ backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
+                    >
+                        {t('class.timeslot.add')}
+                    </Button>
+                )}
             </div>
 
             <Table

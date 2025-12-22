@@ -91,6 +91,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
 
 
   const statusInfo = getClassStatus(classItem.status);
+  const readOnly = statusInfo.key !== 'Draft';
 
   // Status action buttons based on current status
   const renderStatusActions = () => {
@@ -313,7 +314,12 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
         {/* Schedule / Timeslots */}
         <div id="class-schedule" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
           <SectionHeader icon={CalendarDays} title={t('admin.classes.schedule', 'Schedule')} />
-          <ClassTimeslotManage classItem={classItem} onTimeSlotsChange={setHasTimeSlots} />
+          {/* Pass readOnly prop */}
+          <ClassTimeslotManage 
+            classItem={classItem} 
+            onTimeSlotsChange={setHasTimeSlots} 
+            readOnly={readOnly} 
+          />
         </div>
 
         {/* Instructor Section */}
@@ -336,8 +342,8 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           </div>
         )}
 
-        {/* NEW EXAM WEIGHTS SECTION */}
-        <ClassExamWeights classId={classItem?.id} />
+        {/* EXAM WEIGHTS SECTION */}
+        <ClassExamWeights classId={classItem?.id} readOnly={readOnly} />
 
         {/* Certificates Section */}
         <div id="class-certificates" className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
