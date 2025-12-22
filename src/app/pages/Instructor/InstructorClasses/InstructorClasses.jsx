@@ -123,7 +123,7 @@ export default function InstructorClasses() {
   return (
     <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
       {/* Light Wire Header */}
-      <div className="flex-none bg-black border-2 border-black p-5 mb-4">
+      <div className="flex-none bg-neutral-800 border-2 border-black p-5 mb-4">
         <div className="h-1 bg-yellow-400 -mx-5 -mt-5 mb-4" />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
