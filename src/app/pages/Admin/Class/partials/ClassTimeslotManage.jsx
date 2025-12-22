@@ -16,6 +16,9 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
     const [editingSlot, setEditingSlot] = useState(null);
     const [form] = Form.useForm();
 
+    // Watch startTime to update endTime constraints in real-time
+    const startTime = Form.useWatch('startTime', form);
+
     useEffect(() => {
         if (onTimeSlotsChange) {
             onTimeSlotsChange(timeslots.length > 0);
@@ -96,132 +99,95 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
         }
     };
 
-    // --- Date/Time Constraint Logic ---
-    const baseColumns = [
-        {
-            title: t('common.name') || 'NAME',
-            dataIndex: 'name',
-            key: 'name',
-            render: (text) => <span className="font-bold text-slate-800">{text}</span>
-        },
-        {
-            title: t('class.timeslot.startTime') || 'START TIME',
-            dataIndex: 'startTime',
-            key: 'startTime',
-            render: (val) => val ? (
-                <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
-                    <Calendar size={14} className="text-yellow-600" />
-                    <DayTimeFormat value={val} showTime={true} />
-                </div>
-            ) : '-',
-            width: 180,
-        },
-        {
-            title: t('class.timeslot.endTime') || 'END TIME',
-            dataIndex: 'endTime',
-            key: 'endTime',
-            render: (val) => val ? (
-                <div className="flex items-center gap-2 font-mono text-sm text-slate-600">
-                    <Clock size={14} className="text-yellow-600" />
-                    <DayTimeFormat value={val} showTime={true} />
-                </div>
-            ) : '-',
-            width: 180,
-        },
-        {
-            title: t('class.timeslot.location') || 'LOCATION',
-            key: 'location',
-            render: (_, record) => (
-                <div className="flex items-start gap-2">
-                    <MapPin size={16} className="text-neutral-400 mt-1 shrink-0" />
-                    <div>
-                        <div className="font-bold text-slate-800 uppercase tracking-wide text-xs">{record.locationRoom} - {record.locationBuilding}</div>
-                        <div className="text-xs text-slate-500">{record.locationDetail}</div>
-                    </div>
-                </div>
-            ),
-        },
-        {
-            title: t('common.status') || 'STATUS',
-            dataIndex: 'status',
-            key: 'status',
-            width: 100,
-            render: (status) => (
-                <span className="inline-flex items-center px-2 py-0.5 border border-slate-300 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
-                    {status || t('class.timeslot.scheduled')}
-                </span>
-            ),
-        },
-        {
-            title: '',
-            key: 'action',
-            width: 100,
-            align: 'right',
-            render: (_, record) => {
-                const isNotStarted = record.status === 'NotStarted';
-                return (
-                    <Button
-                        type="text"
-                        size="small"
-                        icon={<Edit size={16} />}
-                        className={`rounded-none transition-colors ${isNotStarted
-                            ? 'text-slate-400 hover:text-black hover:bg-yellow-400'
-                            : 'text-slate-300 cursor-not-allowed'}`}
-                        onClick={() => handleOpenModal(record)}
-                        disabled={!isNotStarted}
-                    />
-                );
-            },
-        }
-    ];
+    // --- Constraints Logic ---
 
-    // 1. Disable Dates outside class range
-    const disabledDate = (current) => {
+    // 1. Start Time Date Constraints
+    const disabledStartDate = (current) => {
         if (!classItem?.startDate || !classItem?.endDate) return false;
-        // Can not select days before StartDate or after EndDate
+        // Restrict to Class Duration
         return current && (
             current < dayjs(classItem.startDate).startOf('day') || 
             current > dayjs(classItem.endDate).endOf('day')
         );
     };
 
-    // 2. Disable Times outside class range (if selected date is Start/End date)
-    const disabledTime = (current) => {
+    // 2. Start Time Time Constraints
+    const disabledStartTime = (current) => {
         if (!current || !classItem?.startDate || !classItem?.endDate) return {};
         
-        const start = dayjs(classItem.startDate);
-        const end = dayjs(classItem.endDate);
-        const isStartDay = current.isSame(start, 'day');
-        const isEndDay = current.isSame(end, 'day');
+        const clsStart = dayjs(classItem.startDate);
+        const clsEnd = dayjs(classItem.endDate);
+        const isClassStartDay = current.isSame(clsStart, 'day');
+        const isClassEndDay = current.isSame(clsEnd, 'day');
 
         return {
             disabledHours: () => {
                 const hours = [];
-                if (isStartDay) {
-                    // Disable hours before start time
-                    for (let i = 0; i < start.hour(); i++) hours.push(i);
+                if (isClassStartDay) for (let i = 0; i < clsStart.hour(); i++) hours.push(i);
+                if (isClassEndDay) for (let i = clsEnd.hour() + 1; i < 24; i++) hours.push(i);
+                return hours;
+            },
+            disabledMinutes: (h) => {
+                const minutes = [];
+                if (isClassStartDay && h === clsStart.hour()) for (let i = 0; i < clsStart.minute(); i++) minutes.push(i);
+                if (isClassEndDay && h === clsEnd.hour()) for (let i = clsEnd.minute() + 1; i < 60; i++) minutes.push(i);
+                return minutes;
+            }
+        };
+    };
+
+    // 3. End Time Date Constraints (Dependent on Selected Start Time)
+    const disabledEndDate = (current) => {
+        // Basic class range check
+        if (disabledStartDate(current)) return true;
+        
+        // Dependency Check: Cannot be before the "Min End Time" day
+        if (startTime) {
+            const minEndTime = startTime.add(15, 'minute');
+            if (current < minEndTime.startOf('day')) return true;
+        }
+        return false;
+    };
+
+    // 4. End Time Time Constraints (Dependent on Selected Start Time + 15m)
+    const disabledEndTime = (current) => {
+        if (!current) return {};
+
+        // Calculate Boundaries
+        const minEnd = startTime ? startTime.add(15, 'minute') : null;
+        const clsEnd = classItem?.endDate ? dayjs(classItem.endDate) : null;
+
+        const isMinEndDay = minEnd && current.isSame(minEnd, 'day');
+        const isClassEndDay = clsEnd && current.isSame(clsEnd, 'day');
+
+        return {
+            disabledHours: () => {
+                const hours = [];
+                // Block hours before (Start + 15m)
+                if (isMinEndDay) {
+                    for (let i = 0; i < minEnd.hour(); i++) hours.push(i);
                 }
-                if (isEndDay) {
-                    // Disable hours after end time
-                    for (let i = end.hour() + 1; i < 24; i++) hours.push(i);
+                // Block hours after Class End
+                if (isClassEndDay) {
+                    for (let i = clsEnd.hour() + 1; i < 24; i++) hours.push(i);
                 }
                 return hours;
             },
-            disabledMinutes: (selectedHour) => {
+            disabledMinutes: (h) => {
                 const minutes = [];
-                if (isStartDay && selectedHour === start.hour()) {
-                    // Disable minutes before start minute
-                    for (let i = 0; i < start.minute(); i++) minutes.push(i);
+                // Block minutes before (Start + 15m)
+                if (isMinEndDay && h === minEnd.hour()) {
+                    for (let i = 0; i < minEnd.minute(); i++) minutes.push(i);
                 }
-                if (isEndDay && selectedHour === end.hour()) {
-                    // Disable minutes after end minute
-                    for (let i = end.minute() + 1; i < 60; i++) minutes.push(i);
+                // Block minutes after Class End
+                if (isClassEndDay && h === clsEnd.hour()) {
+                    for (let i = clsEnd.minute() + 1; i < 60; i++) minutes.push(i);
                 }
                 return minutes;
-            },
-            disabledSeconds: () => []
+            }
         };
     };
+
 
     // --- Columns Definition (Respects readOnly) ---
     const getColumns = () => {
@@ -469,7 +435,6 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                             <Input placeholder="e.g. Session 1: Safety Introduction" className="h-11 font-medium text-slate-700" />
                         </Form.Item>
 
-
                         <div className="grid grid-cols-2 gap-5">
                             <Form.Item
                                 label={t('class.timeslot.startTime')}
@@ -479,13 +444,13 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                             >
                                 <DatePicker
                                     showTime={{ format: 'HH:mm' }}
-                                    format="DD-MM-YYYY HH:mm:ss"
+                                    format="YYYY-MM-DD HH:mm"
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
                                     placeholder="Select start time"
                                     popupClassName="rounded-lg"
-                                    disabledDate={disabledDate}
-                                    disabledTime={disabledTime}
+                                    disabledDate={disabledStartDate}
+                                    disabledTime={disabledStartTime}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -497,7 +462,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                     ({ getFieldValue }) => ({
                                         validator(_, value) {
                                             const start = getFieldValue('startTime');
-                                            // 1. Basic check: must have value and start time
+                                            // 1. Basic check
                                             if (!value || !start) {
                                                 return Promise.resolve();
                                             }
@@ -513,13 +478,13 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                             >
                                 <DatePicker
                                     showTime={{ format: 'HH:mm' }}
-                                    format="DD-MM-YYYY HH:mm:ss"
+                                    format="YYYY-MM-DD HH:mm"
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
                                     placeholder="Select end time"
                                     popupClassName="rounded-lg"
-                                    disabledDate={disabledDate}
-                                    disabledTime={disabledTime}
+                                    disabledDate={disabledEndDate}
+                                    disabledTime={disabledEndTime}
                                 />
                             </Form.Item>
                         </div>
