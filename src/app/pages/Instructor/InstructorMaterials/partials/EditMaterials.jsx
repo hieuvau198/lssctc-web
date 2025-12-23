@@ -1,9 +1,9 @@
-import { ArrowLeft, FileText, Video, Save } from 'lucide-react';
-import { Form, Input, Radio, App, Drawer, Skeleton } from 'antd';
+import { ArrowLeft, FileText, Video, Save, Link as LinkIcon, Upload as UploadIcon } from 'lucide-react';
+import { Form, Input, Radio, App, Drawer, Skeleton, Upload, Button } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { updateMaterial, getMaterials } from '../../../../apis/Instructor/InstructorMaterialsApi';
+import { updateMaterial, getMaterials, updateMaterialWithFile } from '../../../../apis/Instructor/InstructorMaterialsApi';
 
 function useQuery() {
   const { search } = useLocation();
@@ -23,35 +23,41 @@ export default function EditMaterials({ onSuccess, open, onClose, initialData = 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [sourceType, setSourceType] = useState('url'); // 'url' | 'file'
+
+  // Helper to normalize file upload event
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
 
   useEffect(() => {
     const loadMaterial = async () => {
       try {
         setLoading(true);
-        if (initialData) {
-          const material = initialData;
-          const learningMaterialType = material.learningMaterialType || material.learningMaterialTypeName || material.typeName || '';
-          form.setFieldsValue({
-            title: material.name,
-            description: material.description || '',
-            url: material.url || material.materialUrl,
-            learningMaterialType,
-          });
-          setLoading(false);
-          return;
-        }
+        let material = initialData;
 
-        const res = await getMaterials({ page: 1, pageSize: 1000 });
-        const materials = Array.isArray(res.items) ? res.items : [];
-        const material = materials.find(m => Number(m.id) === Number(id));
+        if (!material) {
+          const res = await getMaterials({ page: 1, pageSize: 1000 });
+          const materials = Array.isArray(res.items) ? res.items : [];
+          material = materials.find(m => Number(m.id) === Number(id));
+        }
 
         if (material) {
           const learningMaterialType = material.learningMaterialType || material.learningMaterialTypeName || material.typeName || '';
+          
+          // Determine initial source type
+          const isFirebaseUrl = material.url && material.url.includes('firebasestorage');
+          setSourceType(isFirebaseUrl ? 'file' : 'url');
+
           form.setFieldsValue({
             title: material.name,
             description: material.description || '',
             url: material.url || material.materialUrl,
             learningMaterialType,
+            sourceType: isFirebaseUrl ? 'file' : 'url'
           });
         } else {
           if (!open) navigate('/instructor/materials');
@@ -72,16 +78,41 @@ export default function EditMaterials({ onSuccess, open, onClose, initialData = 
   const onFinish = async (values) => {
     try {
       setSubmitting(true);
-      const payload = {
-        name: values.title,
-        description: values.description,
-        materialUrl: values.url,
-        learningMaterialType: values.learningMaterialType,
-        sectionId: sectionId || undefined,
-        classId: classId || undefined,
-      };
+      const typeString = values.learningMaterialType === 'Document' || values.learningMaterialType === 'Video' 
+        ? values.learningMaterialType 
+        : (values.learningMaterialType === '1' ? 'Document' : 'Video'); // Handling potential mismatch if values are IDs
 
-      await updateMaterial(id, payload);
+      if (sourceType === 'url') {
+        const payload = {
+          name: values.title,
+          description: values.description,
+          materialUrl: values.url,
+          learningMaterialType: values.learningMaterialType,
+          sectionId: sectionId || undefined,
+          classId: classId || undefined,
+        };
+        await updateMaterial(id, payload);
+      } else {
+        const formData = new FormData();
+        formData.append('Name', values.title);
+        formData.append('Description', values.description || '');
+        formData.append('LearningMaterialType', values.learningMaterialType);
+
+        // Handle File
+        let fileObj = null;
+        if (Array.isArray(values.file) && values.file.length > 0) {
+            fileObj = values.file[0].originFileObj;
+        } else if (values.file && values.file.fileList && values.file.fileList.length > 0) {
+            fileObj = values.file.fileList[0].originFileObj;
+        }
+
+        // Only append file if a new one is selected
+        if (fileObj) {
+          formData.append('File', fileObj);
+        }
+        
+        await updateMaterialWithFile(id, formData);
+      }
 
       modal.success({
         title: t('instructor.materials.modal.success'),
@@ -181,19 +212,64 @@ export default function EditMaterials({ onSuccess, open, onClose, initialData = 
               </Radio.Group>
             </Form.Item>
 
+            {/* Source Type Selector */}
             <Form.Item
-              label={<span className="font-bold uppercase text-sm tracking-wider">{t('instructor.materials.form.url')}</span>}
-              name="url"
-              rules={[
-                { required: true, message: t('instructor.materials.form.urlRequired') },
-                { type: 'url', message: t('instructor.materials.form.urlInvalid') },
-              ]}
+              label={<span className="font-bold uppercase text-sm tracking-wider">Material Source</span>}
+              name="sourceType"
             >
-              <Input
-                placeholder={t('instructor.materials.form.urlPlaceholderEdit')}
-                className="border-2 border-black focus:border-yellow-400 h-11"
-              />
+              <Radio.Group 
+                className="flex gap-4" 
+                onChange={(e) => setSourceType(e.target.value)}
+                value={sourceType}
+              >
+                <label className={`flex items-center gap-3 px-4 py-3 border-2 border-black cursor-pointer transition-all ${sourceType === 'url' ? 'bg-blue-100 ring-1 ring-blue-500' : 'bg-white hover:bg-neutral-50'}`}>
+                  <Radio value="url" className="hidden" />
+                  <LinkIcon className="w-4 h-4" />
+                  <span className="font-bold">External URL</span>
+                </label>
+                <label className={`flex items-center gap-3 px-4 py-3 border-2 border-black cursor-pointer transition-all ${sourceType === 'file' ? 'bg-blue-100 ring-1 ring-blue-500' : 'bg-white hover:bg-neutral-50'}`}>
+                  <Radio value="file" className="hidden" />
+                  <UploadIcon className="w-4 h-4" />
+                  <span className="font-bold">Upload File</span>
+                </label>
+              </Radio.Group>
             </Form.Item>
+
+            {sourceType === 'url' ? (
+              <Form.Item
+                label={<span className="font-bold uppercase text-sm tracking-wider">{t('instructor.materials.form.url')}</span>}
+                name="url"
+                rules={[
+                  { required: true, message: t('instructor.materials.form.urlRequired') },
+                  { type: 'url', message: t('instructor.materials.form.urlInvalid') },
+                ]}
+              >
+                <Input
+                  placeholder={t('instructor.materials.form.urlPlaceholderEdit')}
+                  className="border-2 border-black focus:border-yellow-400 h-11"
+                />
+              </Form.Item>
+            ) : (
+              <Form.Item
+                label={<span className="font-bold uppercase text-sm tracking-wider">Replace File (Optional)</span>}
+                name="file"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+              >
+                <Upload 
+                  maxCount={1} 
+                  beforeUpload={() => false}
+                  listType="text"
+                >
+                  <Button 
+                    className="h-11 border-2 border-black flex items-center gap-2 font-bold uppercase"
+                    icon={<UploadIcon className="w-4 h-4" />}
+                  >
+                    Click to Upload New File
+                  </Button>
+                </Upload>
+              </Form.Item>
+            )}
 
             <Form.Item
               label={<span className="font-bold uppercase text-sm tracking-wider">{t('instructor.materials.form.description')}</span>}

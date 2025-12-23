@@ -88,6 +88,23 @@ export const updateMaterial = async (materialId, payload) => {
   }
 };
 
+export const updateMaterialWithFile = async (materialId, formData) => {
+  if (!materialId) {
+    return Promise.reject(new Error('Material ID is required.'));
+  }
+  try {
+    const response = await apiClient.put(`/Materials/upload/${materialId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating material with file ${materialId}:`, error.response || error);
+    throw error.response?.data || error;
+  }
+};
+
 //#endregion
 
 //#region Activity-Material Methods
