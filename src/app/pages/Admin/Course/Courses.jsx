@@ -3,7 +3,6 @@ import {
   Drawer,
   Empty,
   Form,
-  Select,
   Skeleton
 } from "antd";
 import { BookOpen, Plus, AlertCircle, Search, X } from "lucide-react";
@@ -20,12 +19,9 @@ import {
   updateCourse,
 } from "../../../apis/ProgramManager/CourseApi";
 import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
-import CourseDetail from "./partials/CourseDetail";
 import CourseList from "./partials/CourseList";
 import CreateCourse from "./partials/CreateCourse";
 import EditCourse from "./partials/EditCourse";
-
-const { Option } = Select;
 
 const Courses = () => {
   const { t } = useTranslation();
@@ -35,16 +31,24 @@ const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Search State
   const [searchValue, setSearchValue] = useState(searchParams.get('searchTerm') || "");
   const [searchTerm, setSearchTerm] = useState(searchParams.get('searchTerm') || "");
-  const [sortOrder, setSortOrder] = useState(searchParams.get('sortOrder') || undefined);
+  
+  // Sort State
+  const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || undefined);
+  const [sortDirection, setSortDirection] = useState(searchParams.get('sortDirection') || undefined);
+
+  // Pagination State
   const [pageNumber, setPageNumber] = useState(parseInt(searchParams.get('page')) || 1);
   const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [total, setTotal] = useState(0);
+  
   const [deletingId, setDeletingId] = useState(null);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
 
-  // Filter states
+  // Filter states (kept for future use or if passed to API)
   const [categoryId, setCategoryId] = useState(undefined);
   const [levelId, setLevelId] = useState(undefined);
   const [isActive, setIsActive] = useState(undefined);
@@ -89,7 +93,6 @@ const Courses = () => {
 
   useEffect(() => {
     setLoading(true);
-    const [sortBy, sortDirection] = sortOrder ? sortOrder.split('_') : [undefined, undefined];
     fetchCourses({ pageNumber, pageSize, searchTerm, sortBy, sortDirection })
       .then((data) => {
         setCourses(data.items || []);
@@ -100,17 +103,31 @@ const Courses = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [pageNumber, pageSize, searchTerm, sortOrder]);
+  }, [pageNumber, pageSize, searchTerm, sortBy, sortDirection]);
 
-  const handleSortChange = (value) => {
-    setSortOrder(value);
-    setPageNumber(1);
-    setSearchParams({
+  // Handle Table Changes (Sorting)
+  const handleTableChange = (pagination, filters, sorter) => {
+    const field = Array.isArray(sorter) ? undefined : sorter.field;
+    const order = Array.isArray(sorter) ? undefined : sorter.order;
+
+    let newSortDirection = undefined;
+    if (order === 'ascend') newSortDirection = 'asc';
+    else if (order === 'descend') newSortDirection = 'desc';
+
+    setSortBy(field);
+    setSortDirection(newSortDirection);
+    setPageNumber(1); // Reset to first page on sort change
+
+    // Update URL params
+    const params = {
       page: '1',
       pageSize: pageSize.toString(),
-      searchTerm: searchTerm || "",
-      sortOrder: value || ""
-    });
+      searchTerm: searchTerm || ""
+    };
+    if (field) params.sortBy = field;
+    if (newSortDirection) params.sortDirection = newSortDirection;
+    
+    setSearchParams(params);
   };
 
   const handleSearch = (value) => {
@@ -120,7 +137,8 @@ const Courses = () => {
       page: '1',
       pageSize: pageSize.toString(),
       searchTerm: value || "",
-      sortOrder: sortOrder || ""
+      sortBy: sortBy || "",
+      sortDirection: sortDirection || ""
     });
   };
 
@@ -131,7 +149,8 @@ const Courses = () => {
       page: page.toString(),
       pageSize: size.toString(),
       searchTerm: searchTerm || "",
-      sortOrder: sortOrder || ""
+      sortBy: sortBy || "",
+      sortDirection: sortDirection || ""
     });
   };
 
@@ -141,19 +160,13 @@ const Courses = () => {
       const res = await deleteCourse(id);
       message.success((res && res.message) || t('admin.courses.deleteSuccess'));
       // Refresh list after delete
-      const params = {
-        pageNumber,
-        pageSize,
-        searchTerm,
-        sortOrder,
-        categoryId,
-        levelId,
-        isActive: isActive === undefined ? undefined : String(isActive).toLowerCase(),
-      };
-      Object.keys(params).forEach((key) =>
-        params[key] === undefined || params[key] === null ? delete params[key] : null
-      );
-      const data = await fetchCourses(params);
+      const data = await fetchCourses({ 
+        pageNumber, 
+        pageSize, 
+        searchTerm, 
+        sortBy, 
+        sortDirection 
+      });
       setCourses(data.items || []);
       setTotal(data.totalCount || 0);
       closeDrawer();
@@ -173,7 +186,6 @@ const Courses = () => {
   };
 
   const openView = (course) => {
-    // Navigate to the detail page instead of opening drawer
     navigate(`/admin/courses/${course.id}`);
   };
 
@@ -234,7 +246,6 @@ const Courses = () => {
       const res = await addCourse(values);
       message.success((res && res.message) || t('admin.courses.createSuccess'));
       // Refresh list
-      const [sortBy, sortDirection] = sortOrder ? sortOrder.split('_') : [undefined, undefined];
       const data = await fetchCourses({ pageNumber, pageSize, searchTerm, sortBy, sortDirection });
       setCourses(data.items || []);
       setTotal(data.totalCount || 0);
@@ -257,7 +268,6 @@ const Courses = () => {
       const res = await updateCourse(currentCourse.id, values);
       message.success((res && res.message) || t('admin.courses.updateSuccess'));
       // Refresh list
-      const [sortBy, sortDirection] = sortOrder ? sortOrder.split('_') : [undefined, undefined];
       const data = await fetchCourses({ pageNumber, pageSize, searchTerm, sortBy, sortDirection });
       setCourses(data.items || []);
       setTotal(data.totalCount || 0);
@@ -353,20 +363,6 @@ const Courses = () => {
               </button>
             </div>
 
-            {/* Sort Filter */}
-            <Select
-              placeholder={t('admin.courses.sortBy') || "Sort by"}
-              value={sortOrder}
-              onChange={handleSortChange}
-              style={{ width: 160 }}
-              allowClear
-              className="industrial-select-compact"
-              size="middle"
-            >
-              <Option value="price_asc">{t('admin.courses.priceLowToHigh') || "Price: Low to High"}</Option>
-              <Option value="price_desc">{t('admin.courses.priceHighToLow') || "Price: High to Low"}</Option>
-            </Select>
-
             {/* View Mode Toggle */}
             <ViewModeToggle
               viewMode={viewMode}
@@ -374,53 +370,6 @@ const Courses = () => {
             />
           </div>
         </div>
-
-        {/* Industrial Select Styles */}
-        <style>{`
-          .industrial-select .ant-select-selector {
-            border: 2px solid #000 !important;
-            height: 48px !important;
-            border-radius: 0 !important;
-          }
-          .industrial-select .ant-select-selection-item,
-          .industrial-select .ant-select-selection-placeholder {
-            line-height: 44px !important;
-            font-weight: 500 !important;
-          }
-          .industrial-select:hover .ant-select-selector {
-            border-color: #000 !important;
-          }
-          .industrial-select.ant-select-focused .ant-select-selector {
-            border-color: #000 !important;
-            box-shadow: none !important;
-          }
-        `}</style>
-
-        {/* Industrial Select Styles (Compact) */}
-        <style>{`
-          .industrial-select-compact .ant-select-selector {
-            border: 1px solid #d4d4d4 !important;
-            height: 36px !important;
-            border-radius: 0 !important;
-            background-color: #fafafa !important;
-          }
-          .industrial-select-compact .ant-select-selection-item,
-          .industrial-select-compact .ant-select-selection-placeholder {
-            line-height: 34px !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
-            color: #000 !important;
-          }
-          .industrial-select-compact:hover .ant-select-selector {
-            border-color: #000 !important;
-            background-color: #fff !important;
-          }
-          .industrial-select-compact.ant-select-focused .ant-select-selector {
-            border-color: #000 !important;
-            box-shadow: none !important;
-            background-color: #fff !important;
-          }
-        `}</style>
 
         {/* Content Area */}
         <div className={`flex-1 ${viewMode === 'table' ? 'overflow-hidden' : 'overflow-y-auto'} bg-white relative`}>
@@ -443,6 +392,11 @@ const Courses = () => {
                 onEdit={openEdit}
                 onDelete={handleDelete}
                 deletingId={deletingId}
+                // Sorting props
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onTableChange={handleTableChange}
+                // Scroll settings
                 scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
               />
             </div>
