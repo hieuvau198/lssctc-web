@@ -84,8 +84,12 @@ export default function PEExam({ classId }) {
       setCreateModalOpen(false);
       fetchConfig();
     } catch (err) {
+      if (err.errorFields) {
+        message.warning('Vui lòng kiểm tra lại các trường thông tin báo lỗi!');
+        return;
+      }
       console.error(err);
-      message.error('Failed to save configuration');
+      message.error(err.response?.data?.message || 'Lưu cấu hình thất bại');
     }
   };
 
@@ -383,6 +387,29 @@ export default function PEExam({ classId }) {
           <Form.Item
             name="timeRange"
             label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Khung giờ</span>}
+            dependencies={['duration']}
+            rules={[
+              { required: true, message: 'Vui lòng chọn khung giờ' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || value.length < 2) {
+                    return Promise.resolve();
+                  }
+                  const [start, end] = value;
+                  const duration = getFieldValue('duration');
+
+                  if (duration === undefined || duration === null) {
+                    return Promise.resolve();
+                  }
+
+                  const diff = end.diff(start, 'minute');
+                  if (diff !== duration) {
+                    return Promise.reject(new Error(`Khung giờ phải bằng đúng ${duration} phút`));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
           >
             <DatePicker.RangePicker
               showTime
