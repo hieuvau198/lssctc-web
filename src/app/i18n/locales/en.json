@@ -1706,7 +1706,17 @@
       "updateSuccess": "Exam updated successfully",
       "deleteSuccess": "Exam deleted successfully",
       "deleteConfirm": "Delete Exam",
-      "deleteConfirmDesc": "Are you sure you want to delete this exam? This action cannot be undone."
+      "deleteConfirmDesc": "Are you sure you want to delete this exam? This action cannot be undone.",
+      "selectPractice": "Select Practice",
+      "selectPracticePlaceholder": "Select a practice",
+      "selectPracticeRequired": "Please select a practice",
+      "selectQuiz": "Select Quiz",
+      "selectQuizPlaceholder": "Select a quiz",
+      "selectQuizRequired": "Please select a quiz",
+      "timeRangeRequired": "Please select time range",
+      "timeRangeMustMatchDuration": "Time range must match exactly {{duration}} minutes",
+      "required": "Required",
+      "checkValidationErrors": "Please check the error fields!"
     }
   },
   "notification": {

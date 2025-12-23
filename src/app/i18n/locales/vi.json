@@ -1708,7 +1708,17 @@
       "updateSuccess": "Cập nhật bài thi thành công",
       "deleteSuccess": "Xóa bài thi thành công",
       "deleteConfirm": "Xóa bài thi",
-      "deleteConfirmDesc": "Bạn có chắc chắn muốn xóa bài thi này? Hành động này không thể hoàn tác."
+      "deleteConfirmDesc": "Bạn có chắc chắn muốn xóa bài thi này? Hành động này không thể hoàn tác.",
+      "selectPractice": "Chọn bài thực hành",
+      "selectPracticePlaceholder": "Chọn một bài thực hành",
+      "selectPracticeRequired": "Vui lòng chọn bài thực hành",
+      "selectQuiz": "Chọn bài kiểm tra",
+      "selectQuizPlaceholder": "Chọn một bài kiểm tra",
+      "selectQuizRequired": "Vui lòng chọn bài kiểm tra",
+      "timeRangeRequired": "Vui lòng chọn khung giờ",
+      "timeRangeMustMatchDuration": "Khung giờ phải bằng đúng {{duration}} phút",
+      "required": "Bắt buộc",
+      "checkValidationErrors": "Vui lòng kiểm tra lại các trường thông tin báo lỗi!"
     }
   },
   "notification": {

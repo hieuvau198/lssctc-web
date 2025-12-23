@@ -286,6 +286,8 @@ export default function SEExam({ classId }) {
             name="practiceId"
             label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Chọn bài thực hành</span>}
             rules={[{ required: true, message: 'Vui lòng chọn bài thực hành' }]}
+            className="[&_.ant-form-item-explain]:relative [&_.ant-form-item-explain]:z-10 [&_.ant-form-item-explain-error]:!text-red-500 [&_.ant-form-item-explain-error]:!font-semibold [&_.ant-form-item-explain-error]:!text-sm [&_.ant-form-item-explain]:!mt-2"
+            style={{ marginBottom: 24 }}
           >
             <Select
               options={practices.map(p => ({ label: p.practiceName, value: p.id }))}
