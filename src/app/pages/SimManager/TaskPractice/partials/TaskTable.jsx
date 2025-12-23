@@ -196,7 +196,7 @@ const TaskTable = ({
           dataSource={data}
           rowKey="id"
           pagination={false}
-          scroll={{ y: 450 }}
+          scroll={{ y: 400 }}
           size="middle"
           loading={loading}
         />
