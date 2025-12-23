@@ -62,7 +62,7 @@ export default function ClassSimulationResults() {
       }
     } catch (error) {
       console.error(error);
-      message.error('Failed to load simulation results');
+      message.error(t('instructor.finalExam.loadSimulationFailed'));
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ export default function ClassSimulationResults() {
   // Define Table Columns
   const columns = [
     {
-      title: 'Trainee',
+      title: t('instructor.finalExam.trainee'),
       key: 'trainee',
       fixed: 'left',
       width: 250,
@@ -100,40 +100,40 @@ export default function ClassSimulationResults() {
       )
     },
     {
-      title: 'Start Time',
+      title: t('instructor.finalExam.startTime'),
       dataIndex: ['simulationResult', 'startTime'],
       key: 'startTime',
       width: 160,
       render: (text) => <span className="text-neutral-600 text-sm font-medium">{formatDate(text)}</span>
     },
     {
-      title: 'Complete Time',
+      title: t('instructor.finalExam.completeTime'),
       dataIndex: ['simulationResult', 'completeTime'],
       key: 'completeTime',
       width: 160,
       render: (text) => <span className="text-neutral-600 text-sm font-medium">{formatDate(text)}</span>
     },
     {
-      title: 'Status',
+      title: t('instructor.finalExam.status'),
       key: 'status',
       width: 140,
       render: (_, record) => {
         const result = record.simulationResult;
-        if (!result) return <span className="px-3 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">No Data</span>;
+        if (!result) return <span className="px-3 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">{t('instructor.finalExam.noData')}</span>;
 
         let bgColor = 'bg-neutral-100 text-neutral-600';
         let text = result.status || 'Pending';
 
         if (result.status === 'NotYet') {
-          text = 'NOT STARTED';
+          text = t('instructor.finalExam.notStarted');
           bgColor = 'bg-neutral-100 text-neutral-600';
         } else if (result.status === 'Submitted') {
           if (result.isPass === true) {
             bgColor = 'bg-yellow-400 text-black';
-            text = 'PASSED';
+            text = t('instructor.finalExam.passed');
           } else if (result.isPass === false) {
             bgColor = 'bg-red-500 text-white';
-            text = 'FAILED';
+            text = t('instructor.finalExam.failed');
           } else {
             bgColor = 'bg-neutral-800 text-yellow-400';
           }
@@ -143,7 +143,7 @@ export default function ClassSimulationResults() {
       }
     },
     {
-      title: 'Mark',
+      title: t('instructor.finalExam.mark'),
       dataIndex: ['simulationResult', 'marks'],
       key: 'mark',
       width: 100,
@@ -160,7 +160,7 @@ export default function ClassSimulationResults() {
       title: (
         <Tooltip title={taskMeta.name || taskMeta.code}>
           <div className="text-center font-black uppercase text-xs">
-            <span>Task {index + 1}</span>
+            <span>{t('instructor.finalExam.task')} {index + 1}</span>
           </div>
         </Tooltip>
       ),
@@ -205,7 +205,7 @@ export default function ClassSimulationResults() {
               <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
                 <Trophy className="w-5 h-5 text-black" />
               </div>
-              Simulation Results
+              {t('instructor.finalExam.simulationResults')}
               {practiceInfo && (
                 <span className="px-3 py-1 bg-black text-yellow-400 text-sm font-bold uppercase ml-2">
                   {practiceInfo.practiceName}
@@ -214,9 +214,9 @@ export default function ClassSimulationResults() {
             </h1>
             {!isFullScreen && practiceInfo && (
               <div className="text-neutral-500 text-sm mt-2 flex gap-3 font-medium">
-                <span>Code: <span className="text-black font-bold">{practiceInfo.practiceCode}</span></span>
+                <span>{t('instructor.finalExam.code')}: <span className="text-black font-bold">{practiceInfo.practiceCode}</span></span>
                 <span className="text-neutral-300">|</span>
-                <span>Difficulty: <span className="text-black font-bold">{practiceInfo.difficultyLevel}</span></span>
+                <span>{t('instructor.finalExam.difficulty')}: <span className="text-black font-bold">{practiceInfo.difficultyLevel}</span></span>
               </div>
             )}
           </div>
@@ -229,17 +229,17 @@ export default function ClassSimulationResults() {
             className="h-10 px-4 flex items-center gap-2 border-2 border-black bg-white text-black font-bold uppercase text-sm hover:bg-neutral-100 transition-all disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+            {t('instructor.finalExam.refresh')}
           </button>
           <button
             onClick={() => setIsFullScreen(!isFullScreen)}
             className={`h-10 px-4 flex items-center gap-2 border-2 border-black font-bold uppercase text-sm transition-all ${isFullScreen
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-yellow-400 text-black hover:bg-yellow-500'
+              ? 'bg-red-500 text-white hover:bg-red-600'
+              : 'bg-yellow-400 text-black hover:bg-yellow-500'
               }`}
           >
             {isFullScreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            {isFullScreen ? 'Exit Full Screen' : 'Full Screen'}
+            {isFullScreen ? t('instructor.finalExam.exitFullScreen') : t('instructor.finalExam.fullScreen')}
           </button>
         </div>
       </div>
@@ -257,7 +257,7 @@ export default function ClassSimulationResults() {
             pagination={isFullScreen ? false : { pageSize: 20, showSizeChanger: true }}
             className="flex-1 [&_.ant-table-thead>tr>th]:bg-neutral-900 [&_.ant-table-thead>tr>th]:text-white [&_.ant-table-thead>tr>th]:font-bold [&_.ant-table-thead>tr>th]:uppercase [&_.ant-table-thead>tr>th]:text-xs [&_.ant-table-thead>tr>th]:tracking-wider [&_.ant-table-thead>tr>th]:border-black [&_.ant-table-tbody>tr>td]:border-neutral-200"
             bordered
-            locale={{ emptyText: 'No simulation data found' }}
+            locale={{ emptyText: t('instructor.finalExam.noSimulationData') }}
             size={isFullScreen ? "middle" : "middle"}
           />
         </div>
