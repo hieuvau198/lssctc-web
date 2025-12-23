@@ -317,9 +317,9 @@ export default function SimulationPlatform() {
                       <span className="px-2 py-0.5 bg-neutral-900 text-white text-xs font-bold uppercase tracking-wider">
                         Bước {item.step}
                       </span>
-                      <h3 className="text-xl font-black uppercase text-neutral-900">
+                      <span className="text-xl uppercase text-neutral-900">
                         {item.title}
-                      </h3>
+                      </span>
                     </div>
                     <p
                       className="text-neutral-600 leading-relaxed"
@@ -362,7 +362,7 @@ export default function SimulationPlatform() {
               <ArrowRight className="w-4 h-4 text-yellow-400" />
               <span className="px-3 py-1.5 bg-neutral-800 text-white font-bold border border-neutral-600">Chọn Bài mô phỏng</span>
               <ArrowRight className="w-4 h-4 text-yellow-400" />
-              <span className="px-3 py-1.5 bg-green-500 text-white font-bold">Bắt đầu!</span>
+              <span className="px-3 py-1.5 bg-green-400 text-black font-bold">Bắt đầu!</span>
             </div>
           </div>
         </div>
