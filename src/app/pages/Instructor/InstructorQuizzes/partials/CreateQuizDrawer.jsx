@@ -7,7 +7,7 @@ import {
   Checkbox,
   App,
 } from 'antd';
-import { Plus, Trash2, X, Save, HelpCircle, FileText, Target, Star, List } from 'lucide-react';
+import { Plus, Trash2, X, Save, HelpCircle, FileText, Target, Star, List, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { createQuizWithQuestions, updateQuizWithQuestions } from '../../../../apis/Instructor/InstructorQuiz';
 
@@ -17,6 +17,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const [scoreErrors, setScoreErrors] = useState({});
+  const [collapsedQuestions, setCollapsedQuestions] = useState({}); // New state for collapse
   const [questions, setQuestions] = useState([
     {
       id: 1,
@@ -32,13 +33,14 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
   useEffect(() => {
     if (open) {
       setScoreErrors({});
+      setCollapsedQuestions({});
       if (mode === 'edit' && initialData) {
         form.setFieldsValue({
           name: initialData.name,
           description: initialData.description,
           passScoreCriteria: initialData.passScoreCriteria,
           timelimitMinute: initialData.timelimitMinute,
-          maxAttempts: initialData.maxAttempts || 1, // Set maxAttempts
+          maxAttempts: initialData.maxAttempts || 1,
         });
 
         const mappedQuestions = (initialData.questions || []).map((q, qIdx) => ({
@@ -111,6 +113,13 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     });
   };
 
+  const toggleCollapse = (qId) => {
+    setCollapsedQuestions(prev => ({
+      ...prev,
+      [qId]: !prev[qId]
+    }));
+  };
+
   const addQuestion = () => {
     const newId = Math.max(...questions.map((q) => q.id || 0)) + 1;
     setQuestions([
@@ -131,12 +140,19 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
       message.warning(t('instructor.quizzes.questions.atLeastOneQuestion'));
       return;
     }
+    const qToRemove = questions[qIdx];
     const newQuestions = questions.filter((_, idx) => idx !== qIdx);
     setQuestions(newQuestions);
 
     const newErrors = { ...scoreErrors };
     delete newErrors[qIdx];
     setScoreErrors(newErrors);
+
+    if (qToRemove.id) {
+        const newCollapsed = { ...collapsedQuestions };
+        delete newCollapsed[qToRemove.id];
+        setCollapsedQuestions(newCollapsed);
+    }
   };
 
   const updateQuestion = (qIdx, field, value) => {
@@ -251,7 +267,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         description: values.description?.trim() || '',
         passScoreCriteria: values.passScoreCriteria,
         timelimitMinute: values.timelimitMinute,
-        maxAttempts: values.maxAttempts, // Added maxAttempts
+        maxAttempts: values.maxAttempts,
         questions: questions.map((q) => ({
           name: q.name.trim(),
           description: q.description?.trim() || '',
@@ -540,155 +556,173 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
 
         {/* Questions List - Industrial Theme */}
         <div className="space-y-4">
-          {questions.map((question, qIdx) => (
-            <div key={question.id} className="bg-white border-2 border-black">
-              <div className="h-1 bg-yellow-400" />
+          {questions.map((question, qIdx) => {
+            const isCollapsed = collapsedQuestions[question.id];
 
-              {/* Question Header */}
-              <div className="px-4 py-3 border-b-2 border-black bg-neutral-50 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-black text-yellow-400 flex items-center justify-center font-black text-sm">
-                    {qIdx + 1}
-                  </span>
-                  <span className="font-bold uppercase text-sm">
-                    {t('instructor.quizzes.questions.question')} {qIdx + 1}
-                  </span>
-                  <span className="px-3 py-1 bg-yellow-400 text-black text-xs font-bold border border-black">
-                    {question.questionScore || 0} {t('instructor.quizzes.questions.pts')}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeQuestion(qIdx)}
-                  className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:bg-neutral-800 transition-colors text-white"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
+            return (
+              <div key={question.id} className="bg-white border-2 border-black">
+                <div className="h-1 bg-yellow-400" />
 
-              <div className="p-4 space-y-4">
-                {/* Question text and score */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="col-span-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.questionText')} *</label>
-                    <Input
-                      value={question.name}
-                      onChange={(e) => updateQuestion(qIdx, 'name', e.target.value)}
-                      placeholder={t('instructor.quizzes.questions.enterQuestion')}
-                      className="border-2 border-black h-10"
-                    />
+                {/* Question Header */}
+                <div className="px-4 py-3 border-b-2 border-black bg-neutral-50 flex items-center justify-between">
+                  <div className="flex items-center gap-3 select-none cursor-pointer" onClick={() => toggleCollapse(question.id)}>
+                    <div className="text-neutral-500 hover:text-black transition-colors">
+                      {isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+                    </div>
+
+                    <span className="w-8 h-8 bg-black text-yellow-400 flex items-center justify-center font-black text-sm">
+                      {qIdx + 1}
+                    </span>
+                    <span className="font-bold uppercase text-sm flex items-center gap-2">
+                      {t('instructor.quizzes.questions.question')} {qIdx + 1}
+                      {isCollapsed && question.name && (
+                        <span className="text-neutral-400 font-medium normal-case text-xs truncate max-w-[150px]">
+                          — {question.name}
+                        </span>
+                      )}
+                    </span>
+                    <span className="px-3 py-1 bg-yellow-400 text-black text-xs font-bold border border-black">
+                      {question.questionScore || 0} {t('instructor.quizzes.questions.pts')}
+                    </span>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.score')} *</label>
-                    <InputNumber
-                      className="w-full h-10 border-2 border-black"
-                      value={question.questionScore}
-                      onChange={(value) => updateQuestion(qIdx, 'questionScore', value)}
-                      min={0.1}
-                      max={10}
-                      step={0.1}
-                      status={scoreErrors[qIdx] ? 'error' : ''}
-                    />
-                    {scoreErrors[qIdx] && (
-                      <p className="text-xs text-black bg-yellow-400 p-1 mt-1 border border-black font-bold">{scoreErrors[qIdx]}</p>
-                    )}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeQuestion(qIdx)}
+                    className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:bg-neutral-800 transition-colors text-white"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
 
-                {/* Description */}
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.description')}</label>
-                  <Input.TextArea
-                    rows={1}
-                    value={question.description}
-                    onChange={(e) => updateQuestion(qIdx, 'description', e.target.value)}
-                    placeholder={t('instructor.quizzes.questions.descriptionPlaceholder')}
-                    className="border-2 border-black"
-                  />
-                </div>
+                {/* Content - Collapsible */}
+                {!isCollapsed && (
+                  <div className="p-4 space-y-4">
+                    {/* Question text and score */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="col-span-2">
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.questionText')} *</label>
+                        <Input
+                          value={question.name}
+                          onChange={(e) => updateQuestion(qIdx, 'name', e.target.value)}
+                          placeholder={t('instructor.quizzes.questions.enterQuestion')}
+                          className="border-2 border-black h-10"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.score')} *</label>
+                        <InputNumber
+                          className="w-full h-10 border-2 border-black"
+                          value={question.questionScore}
+                          onChange={(value) => updateQuestion(qIdx, 'questionScore', value)}
+                          min={0.1}
+                          max={10}
+                          step={0.1}
+                          status={scoreErrors[qIdx] ? 'error' : ''}
+                        />
+                        {scoreErrors[qIdx] && (
+                          <p className="text-xs text-black bg-yellow-400 p-1 mt-1 border border-black font-bold">{scoreErrors[qIdx]}</p>
+                        )}
+                      </div>
+                    </div>
 
-                {/* Options */}
-                <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-xs font-bold uppercase tracking-wider text-black">{t('instructor.quizzes.options.title')}</label>
-                    <button
-                      type="button"
-                      onClick={() => addOption(qIdx)}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-white text-black font-bold text-xs uppercase border-2 border-black hover:bg-neutral-100 transition-colors"
-                    >
-                      <Plus className="w-3 h-3" />
-                      {t('common.add')}
-                    </button>
-                  </div>
+                    {/* Description */}
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.description')}</label>
+                      <Input.TextArea
+                        rows={1}
+                        value={question.description}
+                        onChange={(e) => updateQuestion(qIdx, 'description', e.target.value)}
+                        placeholder={t('instructor.quizzes.questions.descriptionPlaceholder')}
+                        className="border-2 border-black"
+                      />
+                    </div>
 
-                  <div className="space-y-3">
-                    {question.options.map((option, oIdx) => {
-                      const optionScore = getOptionScore(qIdx, option.isCorrect);
-                      return (
-                        <div
-                          key={option.id}
-                          className={`p-3 border-2 transition-all ${option.isCorrect
-                            ? 'bg-white border-black shadow-[4px_4px_0px_0px_#000]'
-                            : 'bg-white border-neutral-300 hover:border-black'
-                            }`}
+                    {/* Options */}
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <label className="text-xs font-bold uppercase tracking-wider text-black">{t('instructor.quizzes.options.title')}</label>
+                        <button
+                          type="button"
+                          onClick={() => addOption(qIdx)}
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-white text-black font-bold text-xs uppercase border-2 border-black hover:bg-neutral-100 transition-colors"
                         >
-                          <div className="flex gap-2 items-center mb-2">
-                            <span className={`flex-shrink-0 w-7 h-7 flex items-center justify-center text-xs font-black ${option.isCorrect ? 'bg-black text-white' : 'bg-neutral-200 text-black'
-                              }`}>
-                              {String.fromCharCode(65 + oIdx)}
-                            </span>
-                            <Input
-                              value={option.name}
-                              onChange={(e) => updateOption(qIdx, oIdx, 'name', e.target.value)}
-                              placeholder={`${t('instructor.quizzes.options.option')} ${oIdx + 1}`}
-                              className="flex-1 border-2 border-neutral-300 focus:border-black h-9"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeOption(qIdx, oIdx)}
-                              className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:bg-neutral-800 transition-colors text-white"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                          <div className="flex justify-between items-center mb-2">
-                            <Checkbox
-                              checked={option.isCorrect}
-                              onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
-                              className="font-medium industrial-checkbox"
-                            >
-                              <span className="text-xs font-bold uppercase text-black">{option.isCorrect ? '✓ ' : ''}{t('instructor.quizzes.options.correctAnswer')}</span>
-                            </Checkbox>
-                            <span className={`text-xs px-3 py-1 font-bold border ${option.isCorrect ? 'bg-yellow-400 text-black border-black' : 'bg-neutral-100 text-neutral-600 border-neutral-200'}`}>
-                              {optionScore.toFixed(1)} {t('instructor.quizzes.questions.pts')}
-                            </span>
-                          </div>
-                          <Input.TextArea
-                            rows={1}
-                            value={option.explanation}
-                            onChange={(e) => updateOption(qIdx, oIdx, 'explanation', e.target.value)}
-                            placeholder={t('instructor.quizzes.options.explanationPlaceholder')}
-                            className="border-2 border-neutral-300 focus:border-black"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+                          <Plus className="w-3 h-3" />
+                          {t('common.add')}
+                        </button>
+                      </div>
 
-        {/* Add Question Button */}
+                      <div className="space-y-3">
+                        {question.options.map((option, oIdx) => {
+                          const optionScore = getOptionScore(qIdx, option.isCorrect);
+                          return (
+                            <div
+                              key={option.id}
+                              className={`p-3 border-2 transition-all ${option.isCorrect
+                                ? 'bg-white border-black shadow-[4px_4px_0px_0px_#000]'
+                                : 'bg-white border-neutral-300 hover:border-black'
+                                }`}
+                            >
+                              <div className="flex gap-2 items-center mb-2">
+                                <span className={`flex-shrink-0 w-7 h-7 flex items-center justify-center text-xs font-black ${option.isCorrect ? 'bg-black text-white' : 'bg-neutral-200 text-black'
+                                  }`}>
+                                  {String.fromCharCode(65 + oIdx)}
+                                </span>
+                                <Input
+                                  value={option.name}
+                                  onChange={(e) => updateOption(qIdx, oIdx, 'name', e.target.value)}
+                                  placeholder={`${t('instructor.quizzes.options.option')} ${oIdx + 1}`}
+                                  className="flex-1 border-2 border-neutral-300 focus:border-black h-9"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removeOption(qIdx, oIdx)}
+                                  className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:bg-neutral-800 transition-colors text-white"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                              <div className="flex justify-between items-center mb-2">
+                                <Checkbox
+                                  checked={option.isCorrect}
+                                  onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
+                                  className="font-medium industrial-checkbox"
+                                >
+                                  <span className="text-xs font-bold uppercase text-black">{option.isCorrect ? '✓ ' : ''}{t('instructor.quizzes.options.correctAnswer')}</span>
+                                </Checkbox>
+                                <span className={`text-xs px-3 py-1 font-bold border ${option.isCorrect ? 'bg-yellow-400 text-black border-black' : 'bg-neutral-100 text-neutral-600 border-neutral-200'}`}>
+                                  {optionScore.toFixed(1)} {t('instructor.quizzes.questions.pts')}
+                                </span>
+                              </div>
+                              <Input.TextArea
+                                rows={1}
+                                value={option.explanation}
+                                onChange={(e) => updateOption(qIdx, oIdx, 'explanation', e.target.value)}
+                                placeholder={t('instructor.quizzes.options.explanationPlaceholder')}
+                                className="border-2 border-neutral-300 focus:border-black"
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+          <div className='mt-12'>
+
         <button
           type="button"
           onClick={addQuestion}
-          className="mt-4 w-full py-3 border-2 border-dashed border-black bg-white text-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:border-yellow-400 transition-all flex items-center justify-center gap-2"
+          className="w-full py-3 border-2 border-dashed border-black bg-white text-black font-bold uppercase tracking-wider flex items-center justify-center gap-2"
         >
           <Plus className="w-5 h-5" />
           {t('instructor.quizzes.questions.addQuestion')}
         </button>
+          </div>
+        {/* Add Question Button */}
       </Form>
     </Drawer>
   );
