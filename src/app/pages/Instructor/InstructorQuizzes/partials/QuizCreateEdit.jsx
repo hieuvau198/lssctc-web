@@ -15,7 +15,7 @@ import {
   App,
 } from 'antd';
 import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { ArrowLeft, Trash2, Plus, Save, FileText, Target, Star, List, HelpCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Trash2, Plus, Save, FileText, Target, Star, List, HelpCircle, AlertCircle, Check } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { createQuizWithQuestions, updateQuizWithQuestions, getQuizDetail } from '../../../../apis/Instructor/InstructorQuiz';
@@ -55,6 +55,7 @@ export default function QuizCreateEdit() {
         passScoreCriteria: data.passScoreCriteria,
         timelimitMinute: data.timelimitMinute,
         totalScore: data.totalScore,
+        maxAttempts: data.maxAttempts || 1, // Add maxAttempts
       });
 
       // Set questions
@@ -87,10 +88,11 @@ export default function QuizCreateEdit() {
   const showErrorModal = (title, errorMessage) => {
     modal.error({
       title,
-      icon: <ExclamationCircleOutlined />,
+      icon: <ExclamationCircleOutlined style={{ color: '#000' }} />,
       content: errorMessage,
       okText: t('common.close'),
       centered: true,
+      okButtonProps: { className: 'bg-black text-white border-2 border-black hover:bg-neutral-800' }
     });
   };
 
@@ -172,8 +174,6 @@ export default function QuizCreateEdit() {
             return;
           }
         }
-
-        // Validate at least one correct option (already validated above)
       }
 
       // Validate total score equals 10
@@ -193,6 +193,7 @@ export default function QuizCreateEdit() {
         description: values.description?.trim() || '',
         passScoreCriteria: values.passScoreCriteria,
         timelimitMinute: values.timelimitMinute,
+        maxAttempts: values.maxAttempts, // Added maxAttempts to payload
         questions: questions.map(q => ({
           name: q.name.trim(),
           description: q.description?.trim() || '',
@@ -214,38 +215,24 @@ export default function QuizCreateEdit() {
         : await createQuizWithQuestions(payload);
 
       // Handle success response
-      if (response?.status === 200) {
-        modal.success({
-          title: t('common.success'),
-          content: response?.message || (isEditMode ? t('instructor.quizzes.messages.updateQuizSuccess') : t('instructor.quizzes.messages.createQuizSuccess')),
-          okText: t('common.ok'),
-          centered: true,
-          onOk: () => {
-            navigate('/instructor/quizzes');
-          }
-        });
-      } else {
-        modal.success({
-          title: t('common.success'),
-          content: isEditMode ? t('instructor.quizzes.messages.updateQuizSuccess') : t('instructor.quizzes.messages.createQuizSuccess'),
-          okText: t('common.ok'),
-          centered: true,
-          onOk: () => {
-            navigate('/instructor/quizzes');
-          }
-        });
-      }
+      modal.success({
+        title: t('common.success'),
+        content: response?.message || (isEditMode ? t('instructor.quizzes.messages.updateQuizSuccess') : t('instructor.quizzes.messages.createQuizSuccess')),
+        okText: t('common.ok'),
+        centered: true,
+        icon: <Check style={{ color: '#000' }} />,
+        okButtonProps: { className: 'bg-yellow-400 text-black border-2 border-black hover:bg-yellow-500' },
+        onOk: () => {
+          navigate('/instructor/quizzes');
+        }
+      });
     } catch (e) {
       console.error('Error saving quiz:', e);
-
       let errorMsg = t('instructor.quizzes.messages.saveQuizFailed');
       let errorTitle = t('instructor.quizzes.modal.errorCreating');
 
-      // Handle server error responses
       if (e?.response?.data) {
         const data = e.response.data;
-
-        // Type 1: Validation errors with errors object
         if (data.errors && typeof data.errors === 'object') {
           const errorList = [];
           for (const [field, messages] of Object.entries(data.errors)) {
@@ -256,21 +243,14 @@ export default function QuizCreateEdit() {
           if (errorList.length > 0) {
             errorMsg = errorList.join('\n');
           }
-        }
-        // Type 2: Direct message in response
-        else if (data.message) {
+        } else if (data.message) {
           errorMsg = data.message;
-        }
-        // Type 3: Title field (standard error format)
-        else if (data.title) {
+        } else if (data.title) {
           errorMsg = data.title;
         }
-      }
-      // Client error
-      else if (e?.message) {
+      } else if (e?.message) {
         errorMsg = e.message;
       }
-
       showErrorModal(errorTitle, errorMsg);
     } finally {
       setSubmitting(false);
@@ -304,7 +284,6 @@ export default function QuizCreateEdit() {
     const newQuestions = [...questions];
     newQuestions[qIdx][field] = value;
 
-    // If updating score or isMultipleAnswers, validate and update error state
     if (field === 'questionScore' || field === 'isMultipleAnswers') {
       const warning = validateQuestionScore(qIdx, newQuestions[qIdx].questionScore);
       setScoreErrors(prev => ({
@@ -312,7 +291,6 @@ export default function QuizCreateEdit() {
         [qIdx]: warning
       }));
     }
-
     setQuestions(newQuestions);
   };
 
@@ -335,8 +313,7 @@ export default function QuizCreateEdit() {
       return;
     }
     newQuestions[qIdx].options = newQuestions[qIdx].options.filter((_, idx) => idx !== oIdx);
-
-    // Re-validate score after changing options
+    
     const warning = validateQuestionScore(qIdx, newQuestions[qIdx].questionScore);
     setScoreErrors(prev => ({
       ...prev,
@@ -348,8 +325,6 @@ export default function QuizCreateEdit() {
 
   const updateOption = (qIdx, oIdx, field, value) => {
     const newQuestions = [...questions];
-
-    // If marking as correct answer, uncheck all other options in same question
     if (field === 'isCorrect' && value === true) {
       newQuestions[qIdx].options = newQuestions[qIdx].options.map((opt, idx) => ({
         ...opt,
@@ -359,7 +334,6 @@ export default function QuizCreateEdit() {
       newQuestions[qIdx].options[oIdx][field] = value;
     }
 
-    // If updating isCorrect, re-validate score
     if (field === 'isCorrect') {
       const warning = validateQuestionScore(qIdx, newQuestions[qIdx].questionScore);
       setScoreErrors(prev => ({
@@ -367,7 +341,6 @@ export default function QuizCreateEdit() {
         [qIdx]: warning
       }));
     }
-
     setQuestions(newQuestions);
   };
 
@@ -400,9 +373,9 @@ export default function QuizCreateEdit() {
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           {t('instructor.quizzes.backToQuizzes')}
         </button>
-        <div className="bg-red-50 border-2 border-red-500 p-6 flex flex-col items-center justify-center gap-4">
-          <AlertCircle className="w-12 h-12 text-red-500" />
-          <span className="font-bold text-red-600 text-lg uppercase tracking-wider">{t('common.error')}: {error}</span>
+        <div className="bg-neutral-100 border-2 border-black p-6 flex flex-col items-center justify-center gap-4">
+          <AlertCircle className="w-12 h-12 text-black" />
+          <span className="font-bold text-black text-lg uppercase tracking-wider">{t('common.error')}: {error}</span>
         </div>
       </div>
     );
@@ -414,7 +387,7 @@ export default function QuizCreateEdit() {
           .industrial-form .ant-input, 
           .industrial-form .ant-input-number, 
           .industrial-form .ant-input-textarea {
-            border: 2px solid #e5e5e5 !important;
+            border: 2px solid #000 !important;
             border-radius: 0 !important;
             font-weight: 500;
           }
@@ -424,17 +397,39 @@ export default function QuizCreateEdit() {
           .industrial-form .ant-input:hover,
           .industrial-form .ant-input-number:hover {
             border-color: #000 !important;
-            box-shadow: none !important;
+            box-shadow: 4px 4px 0 0 #facc15 !important;
           }
           .industrial-form .ant-input-number-handler-wrap {
             border-radius: 0 !important;
             border-left: 2px solid #000 !important;
+            background: #000 !important;
+          }
+          .industrial-form .ant-input-number-handler {
+             border-bottom: 1px solid #fff !important;
+             color: #fff !important;
+          }
+          .industrial-form .ant-input-number-handler:hover {
+             background: #333 !important;
+             height: 50% !important;
+          }
+          .industrial-form .ant-input-number-handler-up-inner, 
+          .industrial-form .ant-input-number-handler-down-inner {
+             color: #fff !important;
           }
           .industrial-form .ant-form-item-label label {
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            font-size: 0.75rem; /* 12px */
+            font-size: 0.75rem; 
             letter-spacing: 0.05em;
+            color: #000 !important;
+          }
+          .industrial-checkbox .ant-checkbox-inner {
+            border: 2px solid #000 !important;
+            border-radius: 0 !important;
+          }
+          .industrial-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+            background-color: #000 !important;
+            border-color: #000 !important;
           }
       `}</style>
 
@@ -482,6 +477,7 @@ export default function QuizCreateEdit() {
         initialValues={{
           passScoreCriteria: 5,
           timelimitMinute: 20,
+          maxAttempts: 1,
         }}
       >
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -489,7 +485,7 @@ export default function QuizCreateEdit() {
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white border-2 border-black">
               <div className="h-1 bg-yellow-400" />
-              <div className="p-4 border-b-2 border-neutral-100 flex items-center gap-2">
+              <div className="p-4 border-b-2 border-black flex items-center gap-2 bg-neutral-50">
                 <HelpCircle className="w-4 h-4" />
                 <span className="font-bold uppercase text-sm">{t('instructor.quizzes.form.quizName')}</span>
               </div>
@@ -510,7 +506,7 @@ export default function QuizCreateEdit() {
                     rules={[{ required: true, message: t('instructor.quizzes.validation.passScoreRequired') }]}
                     className="mb-0"
                   >
-                    <InputNumber min={1} max={100} className="w-full h-10 pt-1" />
+                    <InputNumber min={1} max={10} className="w-full h-10 pt-1" />
                   </Form.Item>
 
                   <Form.Item
@@ -522,6 +518,15 @@ export default function QuizCreateEdit() {
                     <InputNumber min={1} max={180} className="w-full h-10 pt-1" />
                   </Form.Item>
                 </div>
+
+                <Form.Item
+                  label={t('instructor.quizzes.form.maxAttempts', 'Max Attempts')}
+                  name="maxAttempts"
+                  rules={[{ required: true, message: t('common.required') }]}
+                  className="mb-0"
+                >
+                  <InputNumber min={1} max={100} className="w-full h-10 pt-1" />
+                </Form.Item>
 
                 <Form.Item
                   label={t('instructor.quizzes.form.description')}
@@ -551,16 +556,20 @@ export default function QuizCreateEdit() {
                 </div>
                 <div className="flex justify-between items-end">
                   <span className="text-xs uppercase font-bold text-neutral-400">{t('instructor.quizzes.totalQuizScore')}</span>
-                  <span className={`text-2xl font-black ${isScoreValid ? 'text-green-400' : 'text-red-500'}`}>{totalScore.toFixed(2)}</span>
+                  <span className={`text-2xl font-black ${isScoreValid ? 'text-white' : 'text-yellow-400'}`}>
+                    {totalScore.toFixed(2)}
+                  </span>
                 </div>
                 <div className="w-full h-px bg-neutral-800 my-2" />
                 <div className="flex justify-between items-end">
                   <span className="text-xs uppercase font-bold text-neutral-400">{t('instructor.quizzes.scoreSummary.remaining')}</span>
-                  <span className={`text-2xl font-black ${isScoreValid ? 'text-green-400' : 'text-yellow-400'}`}>{remainingScore.toFixed(2)}</span>
+                  <span className={`text-2xl font-black ${isScoreValid ? 'text-white' : 'text-yellow-400'}`}>
+                    {remainingScore.toFixed(2)}
+                  </span>
                 </div>
 
                 {!isScoreValid && (
-                  <div className="mt-4 p-2 bg-red-900/50 border border-red-500 text-red-200 text-xs font-medium flex gap-2">
+                  <div className="mt-4 p-2 bg-yellow-400 border border-black text-black text-xs font-bold flex gap-2">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     {t('instructor.quizzes.scoreSummary.mustEqual10')}
                   </div>
@@ -586,7 +595,7 @@ export default function QuizCreateEdit() {
 
             <div className="space-y-6">
               {questions.map((question, qIdx) => (
-                <div key={question.id} className="bg-white border-2 border-black group transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)]">
+                <div key={question.id} className="bg-white border-2 border-black group transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                   <div className="h-1 bg-neutral-200 group-hover:bg-yellow-400 transition-colors" />
                   <div className="p-4 border-b-2 border-neutral-100 flex justify-between items-start bg-neutral-50">
                     <div className="flex items-center gap-3">
@@ -594,7 +603,7 @@ export default function QuizCreateEdit() {
                       <div>
                         <h4 className="font-bold uppercase text-sm">{t('instructor.quizzes.questions.question')} {qIdx + 1}</h4>
                         <div className="flex gap-2 mt-1">
-                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 bg-neutral-200 border border-neutral-300">
+                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 bg-neutral-200 border border-black">
                             {question.questionScore} pts
                           </span>
                         </div>
@@ -603,7 +612,7 @@ export default function QuizCreateEdit() {
                     <button
                       type="button"
                       onClick={() => removeQuestion(qIdx)}
-                      className="p-2 text-neutral-400 hover:text-red-500 hover:bg-neutral-100 transition-colors"
+                      className="p-2 text-neutral-400 hover:text-black hover:bg-neutral-200 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -612,7 +621,7 @@ export default function QuizCreateEdit() {
                   <div className="p-5 space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="md:col-span-2">
-                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-neutral-500">{t('instructor.quizzes.questions.questionText')} *</label>
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.questionText')} *</label>
                         <Input
                           value={question.name}
                           onChange={(e) => updateQuestion(qIdx, 'name', e.target.value)}
@@ -621,7 +630,7 @@ export default function QuizCreateEdit() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-neutral-500">{t('instructor.quizzes.questions.score')} *</label>
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.score')} *</label>
                         <InputNumber
                           className="w-full h-10 pt-1"
                           value={question.questionScore}
@@ -631,12 +640,12 @@ export default function QuizCreateEdit() {
                           step={0.1}
                           status={scoreErrors[qIdx] ? 'error' : ''}
                         />
-                        {scoreErrors[qIdx] && <p className="text-xs text-red-500 mt-1 font-bold">{scoreErrors[qIdx]}</p>}
+                        {scoreErrors[qIdx] && <p className="text-xs text-black bg-yellow-400 p-1 mt-1 font-bold">{scoreErrors[qIdx]}</p>}
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-neutral-500">{t('instructor.quizzes.questions.description')}</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.description')}</label>
                       <Input.TextArea
                         rows={1}
                         value={question.description}
@@ -645,7 +654,7 @@ export default function QuizCreateEdit() {
                       />
                     </div>
 
-                    <div className="bg-neutral-50 border-2 border-neutral-100 p-4">
+                    <div className="bg-neutral-50 border-2 border-black p-4">
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-xs font-black uppercase tracking-wider flex items-center gap-2">
                           <Target className="w-3 h-3" /> {t('instructor.quizzes.answerOptions', { count: question.options.length })}
@@ -653,7 +662,7 @@ export default function QuizCreateEdit() {
                         <button
                           type="button"
                           onClick={() => addOption(qIdx)}
-                          className="text-xs font-bold uppercase text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                          className="text-xs font-bold uppercase text-black hover:bg-yellow-400 px-2 py-1 transition-colors flex items-center gap-1 border-2 border-transparent hover:border-black"
                         >
                           <Plus className="w-3 h-3" /> {t('instructor.quizzes.options.addOption')}
                         </button>
@@ -663,10 +672,11 @@ export default function QuizCreateEdit() {
                         {question.options.map((option, oIdx) => {
                           const optionScore = getOptionScore(qIdx, option.isCorrect);
                           return (
-                            <div key={option.id || oIdx} className={`p-3 bg-white border-2 transition-all group/opt ${option.isCorrect ? 'border-green-500 shadow-[4px_4px_0px_0px_#22c55e]' : 'border-neutral-200 hover:border-black'}`}>
+                            <div key={option.id || oIdx} className={`p-3 bg-white border-2 transition-all group/opt ${option.isCorrect ? 'border-black shadow-[4px_4px_0px_0px_#000]' : 'border-neutral-200 hover:border-black'}`}>
                               <div className="flex gap-3 items-start">
                                 <div className="mt-1">
                                   <Checkbox
+                                    className="industrial-checkbox"
                                     checked={option.isCorrect}
                                     onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
                                   />
@@ -676,7 +686,7 @@ export default function QuizCreateEdit() {
                                     value={option.name}
                                     onChange={(e) => updateOption(qIdx, oIdx, 'name', e.target.value)}
                                     placeholder={`${t('instructor.quizzes.options.option')} ${oIdx + 1}`}
-                                    className={`h-9 ${option.isCorrect ? 'border-green-200 focus:border-green-500' : ''}`}
+                                    className="h-9"
                                   />
                                   <Input.TextArea
                                     rows={1}
@@ -690,12 +700,12 @@ export default function QuizCreateEdit() {
                                   <button
                                     type="button"
                                     onClick={() => removeOption(qIdx, oIdx)}
-                                    className="w-6 h-6 flex items-center justify-center text-neutral-300 hover:text-red-500 transition-colors"
+                                    className="w-6 h-6 flex items-center justify-center text-neutral-300 hover:text-black transition-colors"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                   </button>
                                   {option.isCorrect && (
-                                    <span className="text-[10px] uppercase font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-none border border-green-200">
+                                    <span className="text-[10px] uppercase font-bold text-black bg-yellow-400 px-2 py-0.5 border border-black">
                                       +{optionScore.toFixed(1)} pts
                                     </span>
                                   )}
@@ -713,10 +723,10 @@ export default function QuizCreateEdit() {
               <button
                 type="button"
                 onClick={addQuestion}
-                className="w-full py-4 border-2 border-dashed border-neutral-300 hover:border-yellow-400 hover:bg-yellow-50 text-neutral-400 hover:text-yellow-700 font-bold uppercase transition-all flex items-center justify-center gap-2 group"
+                className="w-full py-4 border-2 border-dashed border-black hover:bg-yellow-50 text-neutral-400 hover:text-black font-bold uppercase transition-all flex items-center justify-center gap-2 group"
               >
-                <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                {t('instructor.quizzes.questions.addQuestion')}
+                <Plus className="w-5 h-5 group-hover:scale-110 transition-transform text-black" />
+                <span className="text-black">{t('instructor.quizzes.questions.addQuestion')}</span>
               </button>
             </div>
           </div>
@@ -725,4 +735,3 @@ export default function QuizCreateEdit() {
     </div>
   );
 }
-

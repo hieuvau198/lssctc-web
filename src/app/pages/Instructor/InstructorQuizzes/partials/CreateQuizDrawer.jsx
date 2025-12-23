@@ -38,6 +38,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           description: initialData.description,
           passScoreCriteria: initialData.passScoreCriteria,
           timelimitMinute: initialData.timelimitMinute,
+          maxAttempts: initialData.maxAttempts || 1, // Set maxAttempts
         });
 
         const mappedQuestions = (initialData.questions || []).map((q, qIdx) => ({
@@ -106,6 +107,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
       content: errorMessage,
       okText: t('instructor.quizzes.modal.close'),
       centered: true,
+      okButtonProps: { className: 'bg-black text-white border-2 border-black hover:bg-neutral-800' }
     });
   };
 
@@ -249,6 +251,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         description: values.description?.trim() || '',
         passScoreCriteria: values.passScoreCriteria,
         timelimitMinute: values.timelimitMinute,
+        maxAttempts: values.maxAttempts, // Added maxAttempts
         questions: questions.map((q) => ({
           name: q.name.trim(),
           description: q.description?.trim() || '',
@@ -277,9 +280,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
       onClose();
     } catch (e) {
       console.error('Error creating quiz:', e);
-
       let errorMsg = t('instructor.quizzes.messages.createFailed');
-
       if (e?.response?.data) {
         const data = e.response.data;
         if (data.errors && typeof data.errors === 'object') {
@@ -300,7 +301,6 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
       } else if (e?.message) {
         errorMsg = e.message;
       }
-
       showErrorModal(t('instructor.quizzes.modal.errorCreating'), errorMsg);
     } finally {
       setSubmitting(false);
@@ -364,7 +364,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           .industrial-form .ant-input, 
           .industrial-form .ant-input-number, 
           .industrial-form .ant-input-textarea {
-            border: 2px solid #e5e5e5 !important;
+            border: 2px solid #000 !important;
             border-radius: 0 !important;
             font-weight: 500;
           }
@@ -374,11 +374,31 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           .industrial-form .ant-input:hover,
           .industrial-form .ant-input-number:hover {
             border-color: #000 !important;
-            box-shadow: none !important;
+            box-shadow: 4px 4px 0 0 #facc15 !important;
           }
           .industrial-form .ant-input-number-handler-wrap {
             border-radius: 0 !important;
             border-left: 2px solid #000 !important;
+            background: #000 !important;
+          }
+          .industrial-form .ant-input-number-handler {
+             border-bottom: 1px solid #fff !important;
+             color: #fff !important;
+          }
+          .industrial-form .ant-input-number-handler:hover {
+             background: #333 !important;
+             height: 50% !important;
+          }
+          .industrial-checkbox .ant-checkbox-inner {
+            border: 2px solid #000 !important;
+            border-radius: 0 !important;
+          }
+          .industrial-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+            background-color: #000 !important;
+            border-color: #000 !important;
+          }
+          .industrial-form .ant-form-item-label label {
+            color: #000 !important;
           }
         `}</style>
       <Form
@@ -389,12 +409,13 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         initialValues={{
           passScoreCriteria: 5,
           timelimitMinute: 20,
+          maxAttempts: 1,
         }}
       >
         {/* Quiz Information Card */}
         <div className="bg-white border-2 border-black mb-6">
           <div className="h-1 bg-yellow-400" />
-          <div className="px-4 py-3 border-b-2 border-neutral-200 bg-neutral-50">
+          <div className="px-4 py-3 border-b-2 border-black bg-neutral-50">
             <span className="font-bold uppercase text-sm tracking-wider">Quiz Information</span>
           </div>
           <div className="p-4">
@@ -412,7 +433,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                 label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.scoreSummary.totalScore')}</span>}
                 className="col-span-1"
               >
-                <div className="h-10 bg-neutral-100 border-2 border-neutral-300 flex items-center px-3 font-bold text-neutral-500">
+                <div className="h-10 bg-neutral-100 border-2 border-black flex items-center px-3 font-bold text-black">
                   {totalScore.toFixed(2)}
                 </div>
               </Form.Item>
@@ -434,6 +455,14 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
               </Form.Item>
 
               <Form.Item
+                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.maxAttempts', 'Max Attempts')}</span>}
+                name="maxAttempts"
+                rules={[{ required: true, message: t('common.required') }]}
+              >
+                <InputNumber min={1} max={100} className="w-full h-10 border-2 border-black" />
+              </Form.Item>
+
+              <Form.Item
                 label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.description')}</span>}
                 name="description"
                 className="col-span-2"
@@ -447,7 +476,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         {/* Score Summary Card - Industrial Theme */}
         <div className="bg-white border-2 border-black mb-6">
           <div className="h-1 bg-yellow-400" />
-          <div className="px-4 py-3 border-b-2 border-neutral-200 bg-neutral-50">
+          <div className="px-4 py-3 border-b-2 border-black bg-neutral-50">
             <span className="font-bold uppercase text-sm tracking-wider">{t('instructor.quizzes.questions.title')}</span>
           </div>
           <div className="p-4">
@@ -469,7 +498,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                     <Star className="w-4 h-4 text-yellow-400" />
                   </div>
                 </div>
-                <p className={`text-2xl font-black ${isScoreValid ? 'text-green-600' : 'text-red-600'}`}>{totalScore.toFixed(2)}</p>
+                <p className={`text-2xl font-black ${isScoreValid ? 'text-black' : 'text-neutral-400'}`}>{totalScore.toFixed(2)}</p>
               </div>
               <div className="border-2 border-black p-3">
                 <div className="flex items-center justify-between mb-2">
@@ -489,7 +518,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                     <List className="w-4 h-4 text-yellow-400" />
                   </div>
                 </div>
-                <p className={`text-2xl font-black ${isScoreValid ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-2xl font-black ${isScoreValid ? 'text-black' : 'text-neutral-400'}`}>
                   {remainingScore.toFixed(2)}
                 </p>
               </div>
@@ -497,8 +526,8 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
 
             {/* Status Message */}
             <div className={`p-3 text-center text-sm font-bold uppercase border-2 ${isScoreValid
-              ? 'bg-green-100 text-green-800 border-green-500'
-              : 'bg-red-100 text-red-800 border-red-500'
+              ? 'bg-black text-white border-black'
+              : 'bg-yellow-400 text-black border-black'
               }`}>
               {isScoreValid ? (
                 <span>✓ {t('instructor.quizzes.scoreSummary.mustEqual10')}</span>
@@ -516,7 +545,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
               <div className="h-1 bg-yellow-400" />
 
               {/* Question Header */}
-              <div className="px-4 py-3 border-b-2 border-neutral-200 bg-neutral-50 flex items-center justify-between">
+              <div className="px-4 py-3 border-b-2 border-black bg-neutral-50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="w-8 h-8 bg-black text-yellow-400 flex items-center justify-center font-black text-sm">
                     {qIdx + 1}
@@ -531,7 +560,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                 <button
                   type="button"
                   onClick={() => removeQuestion(qIdx)}
-                  className="w-8 h-8 bg-red-500 border-2 border-red-600 flex items-center justify-center hover:bg-red-600 transition-colors text-white"
+                  className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:bg-neutral-800 transition-colors text-white"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -541,7 +570,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                 {/* Question text and score */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="col-span-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider mb-1">{t('instructor.quizzes.questions.questionText')} *</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.questionText')} *</label>
                     <Input
                       value={question.name}
                       onChange={(e) => updateQuestion(qIdx, 'name', e.target.value)}
@@ -550,7 +579,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider mb-1">{t('instructor.quizzes.questions.score')} *</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.score')} *</label>
                     <InputNumber
                       className="w-full h-10 border-2 border-black"
                       value={question.questionScore}
@@ -561,14 +590,14 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                       status={scoreErrors[qIdx] ? 'error' : ''}
                     />
                     {scoreErrors[qIdx] && (
-                      <p className="text-xs text-red-600 mt-1">{scoreErrors[qIdx]}</p>
+                      <p className="text-xs text-black bg-yellow-400 p-1 mt-1 border border-black font-bold">{scoreErrors[qIdx]}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-1">{t('instructor.quizzes.questions.description')}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.description')}</label>
                   <Input.TextArea
                     rows={1}
                     value={question.description}
@@ -581,7 +610,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                 {/* Options */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="text-xs font-bold uppercase tracking-wider">{t('instructor.quizzes.options.title')}</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-black">{t('instructor.quizzes.options.title')}</label>
                     <button
                       type="button"
                       onClick={() => addOption(qIdx)}
@@ -599,12 +628,12 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                         <div
                           key={option.id}
                           className={`p-3 border-2 transition-all ${option.isCorrect
-                            ? 'bg-green-50 border-green-500'
+                            ? 'bg-white border-black shadow-[4px_4px_0px_0px_#000]'
                             : 'bg-white border-neutral-300 hover:border-black'
                             }`}
                         >
                           <div className="flex gap-2 items-center mb-2">
-                            <span className={`flex-shrink-0 w-7 h-7 flex items-center justify-center text-xs font-black ${option.isCorrect ? 'bg-green-500 text-white' : 'bg-neutral-200 text-black'
+                            <span className={`flex-shrink-0 w-7 h-7 flex items-center justify-center text-xs font-black ${option.isCorrect ? 'bg-black text-white' : 'bg-neutral-200 text-black'
                               }`}>
                               {String.fromCharCode(65 + oIdx)}
                             </span>
@@ -617,7 +646,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                             <button
                               type="button"
                               onClick={() => removeOption(qIdx, oIdx)}
-                              className="w-8 h-8 bg-red-500 border border-red-600 flex items-center justify-center hover:bg-red-600 transition-colors text-white"
+                              className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:bg-neutral-800 transition-colors text-white"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -626,11 +655,11 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                             <Checkbox
                               checked={option.isCorrect}
                               onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
-                              className="font-medium"
+                              className="font-medium industrial-checkbox"
                             >
-                              <span className="text-xs font-bold uppercase">{option.isCorrect ? '✓ ' : ''}{t('instructor.quizzes.options.correctAnswer')}</span>
+                              <span className="text-xs font-bold uppercase text-black">{option.isCorrect ? '✓ ' : ''}{t('instructor.quizzes.options.correctAnswer')}</span>
                             </Checkbox>
-                            <span className={`text-xs px-3 py-1 font-bold ${option.isCorrect ? 'bg-green-500 text-white' : 'bg-neutral-200 text-neutral-600'}`}>
+                            <span className={`text-xs px-3 py-1 font-bold border ${option.isCorrect ? 'bg-yellow-400 text-black border-black' : 'bg-neutral-100 text-neutral-600 border-neutral-200'}`}>
                               {optionScore.toFixed(1)} {t('instructor.quizzes.questions.pts')}
                             </span>
                           </div>
