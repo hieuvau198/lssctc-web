@@ -1,9 +1,10 @@
-import { ArrowLeft, FileText, Video, Plus } from 'lucide-react';
-import { Form, Input, Radio, Space, App, Drawer } from 'antd';
-import React, { useMemo } from 'react';
+import { ArrowLeft, FileText, Video, Plus, Link as LinkIcon, Upload as UploadIcon } from 'lucide-react';
+import { Form, Input, Radio, Space, App, Drawer, Upload, Button } from 'antd';
+import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { createMaterial } from '../../../../apis/Instructor/InstructorMaterialsApi';
+import { createMaterial, createMaterialWithFile } from '../../../../apis/Instructor/InstructorMaterialsApi';
+import { UploadOutlined } from '@ant-design/icons';
 
 function useQuery() {
   const { search } = useLocation();
@@ -19,19 +20,49 @@ export default function AddMaterials({ onSuccess, open, onClose, initialSectionI
   const classId = initialClassId || query.get('classId') || '';
 
   const [form] = Form.useForm();
+  const [sourceType, setSourceType] = useState('url'); // 'url' | 'file'
 
   const onFinish = async (values) => {
     try {
-      const payload = {
-        name: values.title,
-        description: values.description,
-        materialUrl: values.url,
-        learningMaterialType: values.typeId === 1 ? 'Document' : 'Video',
-        sectionId: sectionId || undefined,
-        classId: classId || undefined,
-      };
+      const typeString = values.typeId === 1 ? 'Document' : 'Video';
 
-      await createMaterial(payload);
+      if (sourceType === 'url') {
+        // --- Existing URL Logic ---
+        const payload = {
+          name: values.title,
+          description: values.description,
+          materialUrl: values.url,
+          learningMaterialType: typeString,
+          sectionId: sectionId || undefined,
+          classId: classId || undefined,
+        };
+        await createMaterial(payload);
+
+      } else {
+        // --- New File Upload Logic ---
+        const formData = new FormData();
+        formData.append('Name', values.title);
+        formData.append('Description', values.description || '');
+        formData.append('LearningMaterialType', typeString);
+
+        // FIX: Handle values.file directly as an array because of normFile
+        let fileObj = null;
+        if (Array.isArray(values.file) && values.file.length > 0) {
+            fileObj = values.file[0].originFileObj;
+        } else if (values.file && values.file.fileList && values.file.fileList.length > 0) {
+            // Fallback for different ant versions or if normFile wasn't applied
+            fileObj = values.file.fileList[0].originFileObj;
+        }
+
+        if (fileObj) {
+          formData.append('File', fileObj);
+        } else {
+           throw new Error(t('instructor.materials.messages.fileRequired') || 'File is required for upload.');
+        }
+
+        // Note: sectionId and classId are NOT sent here as per previous request
+        await createMaterialWithFile(formData);
+      }
 
       modal.success({
         title: t('instructor.materials.modal.success'),
@@ -80,6 +111,14 @@ export default function AddMaterials({ onSuccess, open, onClose, initialSectionI
     return navigate(-1);
   };
 
+  // Helper to normalize file upload event for Antd Form
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
+
   const content = (
     <div className="space-y-6">
       {/* Form Card */}
@@ -89,7 +128,7 @@ export default function AddMaterials({ onSuccess, open, onClose, initialSectionI
           <Form
             form={form}
             layout="vertical"
-            initialValues={{ typeId: 1 }}
+            initialValues={{ typeId: 1, sourceType: 'url' }}
             onFinish={onFinish}
           >
             <Form.Item
@@ -125,16 +164,63 @@ export default function AddMaterials({ onSuccess, open, onClose, initialSectionI
               </Radio.Group>
             </Form.Item>
 
+            {/* Source Type Selector */}
             <Form.Item
-              label={<span className="font-bold uppercase text-sm tracking-wider">{t('instructor.materials.form.url')}</span>}
-              name="url"
-              rules={[{ required: true, message: t('instructor.materials.form.urlRequired') }]}
+              label={<span className="font-bold uppercase text-sm tracking-wider">Material Source</span>}
+              name="sourceType"
             >
-              <Input
-                placeholder={t('instructor.materials.form.urlPlaceholder')}
-                className="border-2 border-black focus:border-yellow-400 h-11"
-              />
+              <Radio.Group 
+                className="flex gap-4" 
+                onChange={(e) => setSourceType(e.target.value)}
+                value={sourceType}
+              >
+                <label className={`flex items-center gap-3 px-4 py-3 border-2 border-black cursor-pointer transition-all ${sourceType === 'url' ? 'bg-blue-100 ring-1 ring-blue-500' : 'bg-white hover:bg-neutral-50'}`}>
+                  <Radio value="url" className="hidden" />
+                  <LinkIcon className="w-4 h-4" />
+                  <span className="font-bold">External URL</span>
+                </label>
+                <label className={`flex items-center gap-3 px-4 py-3 border-2 border-black cursor-pointer transition-all ${sourceType === 'file' ? 'bg-blue-100 ring-1 ring-blue-500' : 'bg-white hover:bg-neutral-50'}`}>
+                  <Radio value="file" className="hidden" />
+                  <UploadIcon className="w-4 h-4" />
+                  <span className="font-bold">Upload File</span>
+                </label>
+              </Radio.Group>
             </Form.Item>
+
+            {/* Conditional Fields based on Source Type */}
+            {sourceType === 'url' ? (
+              <Form.Item
+                label={<span className="font-bold uppercase text-sm tracking-wider">{t('instructor.materials.form.url')}</span>}
+                name="url"
+                rules={[{ required: true, message: t('instructor.materials.form.urlRequired') }]}
+              >
+                <Input
+                  placeholder={t('instructor.materials.form.urlPlaceholder')}
+                  className="border-2 border-black focus:border-yellow-400 h-11"
+                />
+              </Form.Item>
+            ) : (
+              <Form.Item
+                label={<span className="font-bold uppercase text-sm tracking-wider">Upload File</span>}
+                name="file"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+                rules={[{ required: true, message: 'Please select a file to upload' }]}
+              >
+                <Upload 
+                  maxCount={1} 
+                  beforeUpload={() => false} // Prevent auto-upload
+                  listType="text"
+                >
+                  <Button 
+                    className="h-11 border-2 border-black flex items-center gap-2 font-bold uppercase"
+                    icon={<UploadIcon className="w-4 h-4" />}
+                  >
+                    Click to Select File
+                  </Button>
+                </Upload>
+              </Form.Item>
+            )}
 
             <Form.Item
               label={<span className="font-bold uppercase text-sm tracking-wider">{t('instructor.materials.form.description')}</span>}

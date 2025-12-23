@@ -48,6 +48,20 @@ export const createMaterial = async (payload) => {
   }
 };
 
+export const createMaterialWithFile = async (formData) => {
+  try {
+    const response = await apiClient.post('/Materials/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating material with file:', error.response || error);
+    throw error.response?.data || error;
+  }
+};
+
 export const deleteMaterial = async (materialId) => {
   if (!materialId) {
     return Promise.reject(new Error('Material ID is required.'));
