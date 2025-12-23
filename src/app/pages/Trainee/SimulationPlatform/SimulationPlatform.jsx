@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Skeleton, Alert, Tabs } from 'antd';
-import { Download, Info, Laptop2, Settings, PlayCircle, ExternalLink, Monitor, Cpu, HardDrive, Gamepad2, ChevronRight } from 'lucide-react';
+import { Download, Info, Laptop2, Settings, PlayCircle, ExternalLink, Monitor, Cpu, HardDrive, Gamepad2, ChevronRight, User, BookOpen, GraduationCap, Layers, CheckCircle, ArrowRight } from 'lucide-react';
 import PageNav from '../../../components/PageNav/PageNav';
 import { useTranslation } from 'react-i18next';
 
@@ -39,6 +39,64 @@ export default function SimulationPlatform() {
     { icon: Cpu, label: 'Processor', value: 'Intel i5 or AMD equivalent' },
     { icon: HardDrive, label: 'Storage', value: '2GB available space' },
     { icon: Gamepad2, label: 'GPU', value: 'DirectX 11 compatible' },
+  ];
+
+  // Installation steps - Download and run EXE
+  const installationSteps = [
+    {
+      step: 1,
+      icon: Download,
+      title: 'Tải ứng dụng mô phỏng',
+      description: 'Nhấn nút <strong>"Tải Xuống"</strong> ở trên để tải file cài đặt về máy tính. Hoặc sử dụng link Google Drive để tải backup.',
+    },
+    {
+      step: 2,
+      icon: PlayCircle,
+      title: 'Chạy file EXE',
+      description: 'Sau khi tải xong, tìm file <strong>.exe</strong> trong thư mục Downloads và nhấn đúp để chạy ứng dụng.',
+    },
+    {
+      step: 3,
+      icon: Settings,
+      title: 'Cho phép chạy ứng dụng',
+      description: 'Nếu Windows hiển thị cảnh báo, nhấn <strong>"More info"</strong> rồi chọn <strong>"Run anyway"</strong> để tiếp tục.',
+    },
+  ];
+
+  // Usage steps - Login and select simulation
+  const usageSteps = [
+    {
+      step: 1,
+      icon: User,
+      title: 'Đăng nhập tài khoản',
+      description: 'Sau khi ứng dụng khởi động, màn hình đăng nhập sẽ hiển thị. Nhập <strong>tài khoản</strong> và <strong>mật khẩu</strong> của bạn để đăng nhập.',
+      image: '/images/sim-login.png',
+    },
+    {
+      step: 2,
+      icon: BookOpen,
+      title: 'Chọn Bài tập hoặc Bài thi',
+      description: 'Sau khi đăng nhập thành công, bạn sẽ thấy 2 tùy chọn: <strong>"Bài tập"</strong> (Practice) để luyện tập hoặc <strong>"Bài thi"</strong> (Exam) để làm bài kiểm tra.',
+      options: ['Bài tập (Practice)', 'Bài thi (Exam)'],
+    },
+    {
+      step: 3,
+      icon: GraduationCap,
+      title: 'Chọn lớp học',
+      description: 'Danh sách các lớp bạn đang tham gia sẽ hiển thị. Chọn <strong>lớp học</strong> mà bạn muốn thực hành hoặc thi.',
+    },
+    {
+      step: 4,
+      icon: Layers,
+      title: 'Chọn bài mô phỏng',
+      description: 'Cuối cùng, chọn <strong>bài mô phỏng</strong> cụ thể mà bạn cần thực hiện từ danh sách các bài được giao.',
+    },
+    {
+      step: 5,
+      icon: CheckCircle,
+      title: 'Bắt đầu mô phỏng',
+      description: 'Nhấn <strong>"Bắt đầu"</strong> để vào môi trường mô phỏng 3D và thực hiện các thao tác theo yêu cầu bài.',
+    },
   ];
 
   return (
@@ -177,10 +235,10 @@ export default function SimulationPlatform() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-10">
             <span className="text-sm tracking-widest text-neutral-500 uppercase font-bold block mb-2">
-              Hướng dẫn
+              Bước 1
             </span>
             <h2 className="text-4xl font-black uppercase tracking-tight mb-2">
-              {t('simulator.installation.title')}
+              Cài đặt ứng dụng
             </h2>
             <div className="h-1 w-24 bg-yellow-400" />
           </div>
@@ -188,15 +246,31 @@ export default function SimulationPlatform() {
           {metaLoading ? (
             <Skeleton active paragraph={{ rows: 4 }} />
           ) : (
-            <div className="space-y-4 max-w-3xl">
-              {[1, 2, 3, 4, 5].map((step) => (
-                <div key={step} className="flex items-start gap-4 p-4 bg-neutral-50 border-2 border-neutral-900 hover:border-yellow-400 transition-all group">
-                  <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center flex-shrink-0 text-black font-black text-lg">
-                    {step}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {installationSteps.map((item) => (
+                <div
+                  key={item.step}
+                  className="relative p-6 bg-neutral-50 border-2 border-neutral-900 hover:border-yellow-400 transition-all group"
+                >
+                  {/* Step number badge */}
+                  <div className="absolute -top-4 -left-4 w-12 h-12 bg-yellow-400 flex items-center justify-center text-black font-black text-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    {item.step}
                   </div>
+
+                  {/* Icon */}
+                  <div className="mt-4 mb-4 flex justify-center">
+                    <div className="w-16 h-16 bg-neutral-900 flex items-center justify-center">
+                      <item.icon className="w-8 h-8 text-yellow-400" />
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <h3 className="text-lg font-black uppercase text-neutral-900 mb-2 text-center">
+                    {item.title}
+                  </h3>
                   <p
-                    className="text-neutral-700 pt-2 text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: t(`simulator.installation.step${step}`) }}
+                    className="text-neutral-600 text-sm text-center leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: item.description }}
                   />
                 </div>
               ))}
@@ -205,40 +279,92 @@ export default function SimulationPlatform() {
         </div>
       </section>
 
-      {/* Usage Guide */}
+      {/* Usage Guide - New Flow */}
       <section className="py-16 bg-neutral-50 border-y border-neutral-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-10">
             <span className="text-sm tracking-widest text-neutral-500 uppercase font-bold block mb-2">
-              Cách sử dụng
+              Bước 2
             </span>
             <h2 className="text-4xl font-black uppercase tracking-tight mb-2">
-              {t('simulator.usage.title')}
+              Hướng dẫn sử dụng
             </h2>
             <div className="h-1 w-24 bg-yellow-400" />
           </div>
 
           {metaLoading ? (
-            <Skeleton active paragraph={{ rows: 4 }} />
+            <Skeleton active paragraph={{ rows: 6 }} />
           ) : (
-            <div className="max-w-3xl">
-              <p className="text-neutral-700 leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: t('simulator.usage.intro') }} />
-              <ul className="space-y-3">
-                {['controlsMapping', 'telemetryPanel', 'assessmentMode', 'replay'].map((key) => (
-                  <li key={key} className="flex items-start gap-3 p-3 bg-white border-l-4 border-yellow-400">
-                    <div className="w-6 h-6 bg-yellow-400 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <ChevronRight className="w-4 h-4 text-black" />
+            <div className="space-y-6">
+              {usageSteps.map((item, index) => (
+                <div
+                  key={item.step}
+                  className="relative flex items-start gap-6 p-6 bg-white border-2 border-neutral-200 hover:border-yellow-400 transition-all group"
+                >
+                  {/* Step indicator */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-14 h-14 bg-yellow-400 flex items-center justify-center flex-shrink-0 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <item.icon className="w-7 h-7 text-black" />
                     </div>
-                    <span className="text-neutral-700" dangerouslySetInnerHTML={{ __html: t(`simulator.usage.${key}`) }} />
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-6 p-6 bg-black text-white">
-                <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-4" />
-                <p dangerouslySetInnerHTML={{ __html: t('simulator.usage.advanced') }} />
-              </div>
+                    {index < usageSteps.length - 1 && (
+                      <div className="w-0.5 h-full bg-neutral-300 mt-4 min-h-[40px]" />
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 pt-2">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="px-2 py-0.5 bg-neutral-900 text-white text-xs font-bold uppercase tracking-wider">
+                        Bước {item.step}
+                      </span>
+                      <h3 className="text-xl font-black uppercase text-neutral-900">
+                        {item.title}
+                      </h3>
+                    </div>
+                    <p
+                      className="text-neutral-600 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: item.description }}
+                    />
+
+                    {/* Options if available */}
+                    {item.options && (
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        {item.options.map((option, i) => (
+                          <span
+                            key={i}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-100 border border-neutral-300 text-neutral-700 font-semibold text-sm"
+                          >
+                            <ArrowRight className="w-4 h-4 text-yellow-500" />
+                            {option}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
+
+          {/* Flow Summary */}
+          <div className="mt-10 p-6 bg-black text-white">
+            <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-6" />
+            <h4 className="text-lg font-black uppercase mb-4 flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-yellow-400" />
+              Tóm tắt quy trình
+            </h4>
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <span className="px-3 py-1.5 bg-yellow-400 text-black font-bold">Đăng nhập</span>
+              <ArrowRight className="w-4 h-4 text-yellow-400" />
+              <span className="px-3 py-1.5 bg-neutral-800 text-white font-bold border border-neutral-600">Chọn Bài tập/Thi</span>
+              <ArrowRight className="w-4 h-4 text-yellow-400" />
+              <span className="px-3 py-1.5 bg-neutral-800 text-white font-bold border border-neutral-600">Chọn Lớp</span>
+              <ArrowRight className="w-4 h-4 text-yellow-400" />
+              <span className="px-3 py-1.5 bg-neutral-800 text-white font-bold border border-neutral-600">Chọn Bài mô phỏng</span>
+              <ArrowRight className="w-4 h-4 text-yellow-400" />
+              <span className="px-3 py-1.5 bg-green-500 text-white font-bold">Bắt đầu!</span>
+            </div>
+          </div>
         </div>
       </section>
 

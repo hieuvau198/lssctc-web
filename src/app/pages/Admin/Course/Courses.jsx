@@ -431,7 +431,7 @@ const Courses = () => {
           ) : courses.length === 0 ? (
             <Empty description={t('admin.courses.noCourses')} className="py-20" />
           ) : (
-            <div className="p-6">
+            <div>
               <CourseList
                 courses={courses}
                 viewMode={viewMode}
