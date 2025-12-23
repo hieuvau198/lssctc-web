@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Upload, Button, message, Input, InputNumber, Row, Col, Collapse, Typography, Card, Divider } from 'antd';
+import { Modal, Upload, Button, Input, InputNumber, Row, Col, Collapse, Typography, Card, Divider, App } from 'antd';
 import { FileSpreadsheet, Upload as UploadIcon, Download, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { downloadQuizTemplate, importQuizFromExcel } from '../../../../apis/Instructor/InstructorQuiz';
@@ -8,6 +8,7 @@ const { Text } = Typography;
 
 const ImportQuizModal = ({ visible, onCancel, onSuccess }) => {
     const { t } = useTranslation();
+    const { message } = App.useApp();
     const [uploading, setUploading] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [quizName, setQuizName] = useState('');
@@ -71,7 +72,12 @@ const ImportQuizModal = ({ visible, onCancel, onSuccess }) => {
             onSuccess();
         } catch (error) {
             console.error('Import error:', error);
-            message.error(error.response?.data?.message || error.message || t('instructor.quizzes.messages.importFailed'));
+            const errorMsg = error.response?.data?.message ||
+                error.response?.data?.title ||
+                (typeof error.response?.data === 'string' ? error.response.data : '') ||
+                error.message ||
+                t('instructor.quizzes.messages.importFailed');
+            message.error(errorMsg);
         } finally {
             setUploading(false);
         }
