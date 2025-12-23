@@ -13,8 +13,6 @@ import InstructorSections from "../../../pages/Instructor/InstructorSections/Ins
 import InstructorMaterials from "../../../pages/Instructor/InstructorMaterials/InstructorMaterials";
 import InstructorQuizzes from "../../../pages/Instructor/InstructorQuizzes/InstructorQuizzes";
 import QuizDetailView from "../../../pages/Instructor/InstructorQuizzes/partials/QuizDetailView";
-import QuizCreateEdit from "../../../pages/Instructor/InstructorQuizzes/partials/QuizCreateEdit";
-import QuizEdit from "../../../pages/Instructor/InstructorQuizzes/partials/QuizEdit";
 import InstructorPractices from "../../../pages/Instructor/InstructorPractices/InstructorPractices";
 import InstructorProfile from "../../../pages/Instructor/InstructorProfile/InstructorProfile";
 import EditInstructorProfile from "../../../pages/Instructor/InstructorProfile/EditInstructorProfile";
@@ -51,9 +49,7 @@ export default function InstructorRoutes() {
         <Route path="/materials" element={<InstructorMaterials />} />
         <Route path="/materials/edit/:id" element={<InstructorMaterials />} />
         <Route path="/quizzes" element={<InstructorQuizzes />} />
-        <Route path="/quizzes/create" element={<QuizCreateEdit />} />
         <Route path="/quizzes/:id" element={<QuizDetailView />} />
-        <Route path="/quizzes/:id/edit" element={<QuizCreateEdit />} />
         <Route path="/practices" element={<InstructorPractices />} />
         <Route path="/practices/:id" element={<PracticeDetail />} />
         <Route path="/profile" element={<InstructorProfile />} />

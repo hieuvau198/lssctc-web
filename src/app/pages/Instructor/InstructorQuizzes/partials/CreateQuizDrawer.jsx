@@ -711,7 +711,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
             );
           })}
         </div>
-          <div className='mt-12'>
+          <div className=''>
 
         <button
           type="button"
