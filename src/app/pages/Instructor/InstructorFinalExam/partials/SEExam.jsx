@@ -91,7 +91,7 @@ export default function SEExam({ classId }) {
 
   const columns = [
     {
-      title: <span className="uppercase font-black text-xs">Exam Name</span>,
+      title: <span className="uppercase font-black text-xs">Tên bài thi</span>,
       key: 'name',
       render: (_, record) => (
         <button
@@ -104,24 +104,24 @@ export default function SEExam({ classId }) {
       ),
     },
     {
-      title: <span className="uppercase font-black text-xs">Duration</span>,
+      title: <span className="uppercase font-black text-xs">Thời lượng</span>,
       dataIndex: 'duration',
       align: 'center',
-      render: (val) => <span className="font-bold">{val} min</span>
+      render: (val) => <span className="font-bold">{val} phút</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Weight</span>,
+      title: <span className="uppercase font-black text-xs">Trọng số</span>,
       dataIndex: 'examWeight',
       align: 'center',
       render: (val) => <span className="font-bold">{val}%</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Start Time</span>,
+      title: <span className="uppercase font-black text-xs">Thời gian bắt đầu</span>,
       dataIndex: 'startTime',
       render: (val) => val ? <span className="text-neutral-600"><DayTimeFormat value={val} showTime /></span> : '-',
     },
     {
-      title: <span className="uppercase font-black text-xs">Actions</span>,
+      title: <span className="uppercase font-black text-xs">Hành động</span>,
       width: 100, // [UPDATED] Added fixed width to match TE/PE
       render: (_, record) => (
         <button
@@ -149,17 +149,17 @@ export default function SEExam({ classId }) {
 
   const studentColumns = [
     {
-      title: <span className="uppercase font-black text-xs">Trainee</span>,
+      title: <span className="uppercase font-black text-xs">Học viên</span>,
       dataIndex: 'traineeName',
       render: (val) => <span className="font-bold">{val}</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Student Code</span>,
+      title: <span className="uppercase font-black text-xs">Mã học viên</span>,
       dataIndex: 'traineeCode',
       render: (val) => <span className="text-neutral-600 font-medium">{val}</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Exam Code</span>,
+      title: <span className="uppercase font-black text-xs">Mã đề</span>,
       key: 'examCode',
       render: (_, record) => {
         const partial = record.partials?.find(p => p.type === 'Simulation');
@@ -172,7 +172,7 @@ export default function SEExam({ classId }) {
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Score</span>,
+      title: <span className="uppercase font-black text-xs">Điểm</span>,
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Simulation');
         return p?.marks !== null ? (
@@ -181,20 +181,20 @@ export default function SEExam({ classId }) {
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Result</span>,
+      title: <span className="uppercase font-black text-xs">Kết quả</span>,
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Simulation');
         if (!p) return '-';
 
-        if (p.status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">Not Yet</span>;
+        if (p.status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">CHƯA LÀM</span>;
 
-        if (p.isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase">PASS</span>;
-        if (p.isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase">FAIL</span>;
+        if (p.isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase">ĐẠT</span>;
+        if (p.isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase">KHÔNG ĐẠT</span>;
         return '-';
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Status</span>,
+      title: <span className="uppercase font-black text-xs">Trạng thái</span>,
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Simulation');
         let statusText = p?.status || 'Pending';
@@ -203,7 +203,7 @@ export default function SEExam({ classId }) {
         if (p?.status === 'Approved') bgColor = 'bg-yellow-400 text-black';
         else if (p?.status === 'Submitted') bgColor = 'bg-neutral-800 text-yellow-400';
 
-        if (statusText === 'NotYet') statusText = 'NOT YET';
+        if (statusText === 'NotYet') statusText = 'CHƯA LÀM';
 
         return <span className={`px-2 py-1 text-xs font-bold uppercase ${bgColor}`}>{statusText}</span>;
       }
@@ -219,7 +219,7 @@ export default function SEExam({ classId }) {
           className="h-10 px-4 flex items-center gap-2 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-all"
         >
           <ExternalLink className="w-4 h-4" />
-          View Detailed Results
+          Xem chi tiết kết quả
         </button>
         {configs.length === 0 && isExamNotYet && (
           <button
@@ -227,7 +227,7 @@ export default function SEExam({ classId }) {
             className="h-10 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all"
           >
             <Plus className="w-4 h-4" />
-            {t('instructor.finalExam.createExam')}
+            {t('instructor.finalExam.createExam', 'Tạo bài thi')}
           </button>
         )}
       </div>
@@ -255,7 +255,7 @@ export default function SEExam({ classId }) {
               <Monitor className="w-4 h-4 text-black" />
             </div>
             <span className="font-black uppercase tracking-tight">
-              Configure Simulation Exam
+              Cấu hình bài thi mô phỏng
             </span>
           </div>
         }
@@ -265,13 +265,13 @@ export default function SEExam({ classId }) {
               onClick={() => setCreateModalOpen(false)}
               className="px-6 py-2.5 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-colors"
             >
-              Cancel
+              Hủy
             </button>
             <button
               onClick={handleSave}
               className="px-6 py-2.5 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-colors"
             >
-              Save
+              Lưu
             </button>
           </div>
         }
@@ -280,20 +280,20 @@ export default function SEExam({ classId }) {
         <Form form={form} layout="vertical" className="pt-4">
           <Form.Item
             name="practiceId"
-            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Select Practice</span>}
-            rules={[{ required: true, message: 'Please select a practice' }]}
+            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Chọn bài thực hành</span>}
+            rules={[{ required: true, message: 'Vui lòng chọn bài thực hành' }]}
           >
             <Select
               options={practices.map(p => ({ label: p.practiceName, value: p.id }))}
-              placeholder="Choose a practice"
+              placeholder="Chọn một bài thực hành"
               className="[&_.ant-select-selector]:!border-2 [&_.ant-select-selector]:!border-neutral-300 [&_.ant-select-selector]:!h-11 [&_.ant-select-selector]:hover:!border-black [&_.ant-select-focused_.ant-select-selector]:!border-yellow-400 [&_.ant-select-focused_.ant-select-selector]:!shadow-none"
             />
           </Form.Item>
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
               name="duration"
-              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Duration (minutes)</span>}
-              rules={[{ required: true, message: 'Required' }]}
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Thời lượng (phút)</span>}
+              rules={[{ required: true, message: 'Bắt buộc' }]}
             >
               <InputNumber
                 min={1}
@@ -302,8 +302,8 @@ export default function SEExam({ classId }) {
             </Form.Item>
             <Form.Item
               name="examWeight"
-              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Weight (%)</span>}
-              rules={[{ required: true, message: 'Required' }]}
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Trọng số (%)</span>}
+              rules={[{ required: true, message: 'Bắt buộc' }]}
             >
               <InputNumber
                 min={0}
@@ -315,7 +315,7 @@ export default function SEExam({ classId }) {
           </div>
           <Form.Item
             name="timeRange"
-            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Time Range</span>}
+            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Khung giờ</span>}
           >
             <DatePicker.RangePicker
               showTime
@@ -339,7 +339,7 @@ export default function SEExam({ classId }) {
               <Users className="w-4 h-4 text-black" />
             </div>
             <span className="font-black uppercase tracking-tight">
-              Student Details
+              Chi tiết học viên
             </span>
           </div>
         }

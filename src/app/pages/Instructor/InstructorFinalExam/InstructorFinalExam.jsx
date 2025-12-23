@@ -48,13 +48,13 @@ export default function InstructorFinalExam() {
 
   const handleOpenExam = () => {
     modal.confirm({
-      title: <span className="font-bold uppercase">{t('instructor.finalExam.openConfirmTitle', 'Open Final Exam')}</span>,
+      title: <span className="font-bold uppercase">{t('instructor.finalExam.openConfirmTitle', 'Mở bài kiểm tra cuối kỳ')}</span>,
       icon: <AlertTriangle className="text-yellow-500 w-6 h-6 mr-2" />,
       content: (
         <div className="text-neutral-600 mt-2">
-          <p>{t('instructor.finalExam.openConfirmContent', 'Are you sure you want to open the final exam for this class?')}</p>
+          <p>{t('instructor.finalExam.openConfirmContent', 'Bạn có chắc chắn muốn mở bài kiểm tra cuối kỳ cho lớp học này không?')}</p>
           <p className="font-bold mt-2 text-yellow-600 uppercase text-xs">
-            {t('instructor.finalExam.openWarning', 'Warning: Trainees will be able to start the exam immediately.')}
+            {t('instructor.finalExam.openWarning', 'Cảnh báo: Học viên sẽ có thể bắt đầu bài kiểm tra ngay lập tức.')}
           </p>
         </div>
       ),
@@ -70,13 +70,13 @@ export default function InstructorFinalExam() {
         try {
           setLoading(true);
           await InstructorFEApi.openClassExam(classId);
-          message.success(t('instructor.finalExam.openSuccess', 'Final Exam opened successfully!'));
+          message.success(t('instructor.finalExam.openSuccess', 'Mở bài kiểm tra cuối kỳ thành công!'));
           setTimeout(() => {
             window.location.reload();
           }, 1000);
         } catch (error) {
           console.error("Error in openClassExam:", error);
-          message.error(t('instructor.finalExam.openError', 'Failed to open exam.'));
+          message.error(t('instructor.finalExam.openError', 'Mở bài kiểm tra thất bại.'));
         } finally {
           setLoading(false);
         }
@@ -86,13 +86,13 @@ export default function InstructorFinalExam() {
 
   const handleFinishExam = () => {
     modal.confirm({
-      title: <span className="font-bold uppercase">{t('instructor.finalExam.finishConfirmTitle', 'Finish Exam')}</span>,
+      title: <span className="font-bold uppercase">{t('instructor.finalExam.finishConfirmTitle', 'Kết thúc bài kiểm tra')}</span>,
       icon: <AlertTriangle className="text-yellow-500 w-6 h-6 mr-2" />,
       content: (
         <div className="text-neutral-600 mt-2">
-          <p>{t('instructor.finalExam.finishConfirmContent', 'Are you sure you want to finish the final exam for this class?')}</p>
+          <p>{t('instructor.finalExam.finishConfirmContent', 'Bạn có chắc chắn muốn kết thúc bài kiểm tra cuối kỳ cho lớp học này không?')}</p>
           <p className="font-bold mt-2 text-red-600 uppercase text-xs">
-            {t('instructor.finalExam.warning', 'Warning: This will calculate all scores and finalize the results. This action cannot be undone.')}
+            {t('instructor.finalExam.warning', 'Cảnh báo: Hành động này sẽ tính toán tất cả điểm số và chốt kết quả. Thao tác này không thể hoàn tác.')}
           </p>
         </div>
       ),
@@ -109,13 +109,13 @@ export default function InstructorFinalExam() {
         try {
           setLoading(true);
           await InstructorFEApi.finishClassExam(classId);
-          message.success(t('instructor.finalExam.finishSuccess', 'Final Exam concluded successfully!'));
+          message.success(t('instructor.finalExam.finishSuccess', 'Kết thúc bài kiểm tra thành công!'));
           setTimeout(() => {
             window.location.reload();
           }, 1000);
         } catch (error) {
           console.error("Error in finishClassExam:", error);
-          message.error(t('instructor.finalExam.finishError', 'Failed to conclude exam.'));
+          message.error(t('instructor.finalExam.finishError', 'Kết thúc bài kiểm tra thất bại.'));
         } finally {
           setLoading(false);
         }
@@ -181,27 +181,27 @@ export default function InstructorFinalExam() {
           {/* Action Button Section with Conditional Logic */}
           <div>
             {examStatus === 'NotYet' && (
-              <Tooltip title="Right now trainees can not do the exam. If we open this final exam, it will allow that, but might cause restriction of editing content exam.">
+              <Tooltip title="Hiện tại học viên chưa thể làm bài. Nếu mở bài kiểm tra này, học viên có thể làm bài nhưng sẽ hạn chế việc chỉnh sửa nội dung.">
                 <button
                   onClick={handleOpenExam}
                   disabled={loading}
                   className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-yellow-400 text-black border-white hover:bg-yellow-500 active:bg-yellow-600 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Play className="w-5 h-5 fill-current" />
-                  <span>{loading ? 'Processing...' : 'Open Exam'}</span>
+                  <span>{loading ? 'Đang xử lý...' : 'Mở bài thi'}</span>
                 </button>
               </Tooltip>
             )}
 
             {examStatus === 'Open' && (
-              <Tooltip title="You cannot change FE results after finishing it.">
+              <Tooltip title="Bạn không thể thay đổi kết quả sau khi kết thúc.">
                 <button
                   onClick={handleFinishExam}
                   disabled={loading}
                   className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-red-500 text-white border-white hover:bg-red-600 active:bg-red-700 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CheckCircle className="w-5 h-5" />
-                  <span>{loading ? 'Processing...' : t('instructor.finalExam.finishButton', 'Conclude Exam')}</span>
+                  <span>{loading ? 'Đang xử lý...' : t('instructor.finalExam.finishButton', 'Kết thúc bài thi')}</span>
                 </button>
               </Tooltip>
             )}
@@ -212,7 +212,7 @@ export default function InstructorFinalExam() {
                 className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed"
               >
                 <Lock className="w-5 h-5" />
-                <span>Closed</span>
+                <span>Đã đóng</span>
               </button>
             )}
           </div>
