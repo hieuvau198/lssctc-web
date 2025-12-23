@@ -1,6 +1,3 @@
-// hieuvau198/lssctc-web/lssctc-web-fix-admin-class/src/app/pages/Admin/Course/partials/CourseList.jsx
-
-// ... imports remain the same
 import React from "react";
 import { useTranslation } from 'react-i18next';
 import { Avatar, Pagination } from "antd";
@@ -28,27 +25,27 @@ const CourseTableView = ({
   onEdit,
   onDelete,
   deletingId,
+  sortBy,
+  sortDirection,
+  onTableChange,
   ...rest
 }) => {
   const { t } = useTranslation();
 
+  // Helper to determine sort order for columns
+  const getSortOrder = (columnKey) => {
+    if (sortBy === columnKey) {
+      return sortDirection === 'asc' ? 'ascend' : 'descend';
+    }
+    return null;
+  };
+
   const tableColumns = [
-    {
-      title: "#",
-      key: "index",
-      width: 60,
-      align: "center",
-      render: (_, __, index) => (
-        <span className="font-bold text-neutral-500">
-          {(pageNumber - 1) * pageSize + index + 1}
-        </span>
-      ),
-    },
     {
       title: t('admin.courses.columns.image'),
       dataIndex: "imageUrl",
       key: "imageUrl",
-      width: 90,
+      width: 120,
       align: "center",
       render: (imageUrl, record) => (
         <Avatar
@@ -68,6 +65,8 @@ const CourseTableView = ({
       title: t('admin.courses.columns.courseName'),
       dataIndex: "name",
       key: "name",
+      sorter: true,
+      sortOrder: getSortOrder("name"),
       render: (name, record) => (
         <div
           onClick={() => onView(record)}
@@ -90,6 +89,8 @@ const CourseTableView = ({
       dataIndex: "category",
       key: "category",
       width: 200,
+      sorter: true,
+      sortOrder: getSortOrder("category"),
       render: (text) => <span className="text-neutral-600">{text || '-'}</span>
     },
     {
@@ -97,6 +98,8 @@ const CourseTableView = ({
       dataIndex: "level",
       key: "level",
       width: 120,
+      sorter: true,
+      sortOrder: getSortOrder("level"),
       render: (text) => <span className="font-medium">{text || '-'}</span>
     },
     {
@@ -104,6 +107,8 @@ const CourseTableView = ({
       dataIndex: "isActive",
       key: "isActive",
       width: 150,
+      sorter: true,
+      sortOrder: getSortOrder("isActive"),
       render: (isActive) => (
         <span className={`px-3 py-1 text-xs font-bold uppercase border ${isActive
           ? 'bg-green-100 text-green-800 border-green-300'
@@ -130,6 +135,7 @@ const CourseTableView = ({
       dataSource={courses}
       rowKey="id"
       emptyContent={emptyContent}
+      onChange={onTableChange} // Pass table change handler for sorting
       pagination={{
         current: pageNumber,
         pageSize: pageSize,
@@ -142,8 +148,6 @@ const CourseTableView = ({
   );
 };
 
-// ... Rest of the file (CourseCardView and CourseList component) remains the same
-// Copy the rest of the file content from the original CourseList.jsx here
 const CourseCardView = ({
   courses,
   pageNumber,
@@ -221,6 +225,9 @@ const CourseList = ({
   onEdit,
   onDelete,
   deletingId,
+  sortBy,
+  sortDirection,
+  onTableChange,
   ...rest
 }) => {
   const { t } = useTranslation();
@@ -248,6 +255,9 @@ const CourseList = ({
         onEdit={onEdit}
         onDelete={onDelete}
         deletingId={deletingId}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
+        onTableChange={onTableChange}
         {...rest}
       />
     );
