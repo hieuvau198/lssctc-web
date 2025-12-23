@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 // Import APIs and Stores
 import { loginEmail, loginUsername } from '../../../apis/Auth/LoginApi';
+import { sendResetCode, verifyResetCode, resetPassword } from '../../../apis/Auth/ForgotPasswordApi';
 import {
   clearRememberedCredentials,
   loadRememberedCredentials,
@@ -107,7 +108,7 @@ export default function Login() {
   const { handleLoginGoogle, isPendingGoogle } = useLoginGoogle();
 
   // --- Forgot Password Handlers ---
-  const handleSendCode = (e) => {
+  const handleSendCode = async (e) => {
     e.preventDefault();
     setSending(true);
     if (!resetEmail) {
@@ -115,12 +116,18 @@ export default function Login() {
       setSending(false);
       return;
     }
-    message.success(t('auth.otpSent', { email: resetEmail }));
-    setForgotStep(2);
-    setSending(false);
+    try {
+      await sendResetCode(resetEmail);
+      message.success(t('auth.otpSent', { email: resetEmail }));
+      setForgotStep(2);
+    } catch (err) {
+      message.error(err?.response?.data?.message || err.message || t('auth.failedToRequestReset'));
+    } finally {
+      setSending(false);
+    }
   };
 
-  const handleVerifyOtp = (e) => {
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setSending(true);
     if (otpCode.length !== 6) {
@@ -128,14 +135,24 @@ export default function Login() {
       setSending(false);
       return;
     }
-    message.success(t('auth.passwordResetSuccess'));
+    try {
+      // First verify the code
+      await verifyResetCode(resetEmail, otpCode);
+      // If successful, reset the password
+      await resetPassword(resetEmail, newPassword);
 
-    setForgotStep(1);
-    setResetEmail('');
-    setOtpCode('');
-    setNewPassword('');
-    setShowForgot(false);
-    setSending(false);
+      message.success(t('auth.passwordResetSuccess'));
+
+      setForgotStep(1);
+      setResetEmail('');
+      setOtpCode('');
+      setNewPassword('');
+      setShowForgot(false);
+    } catch (err) {
+      message.error(err?.response?.data?.message || err.message || t('auth.failedToChangePassword'));
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleGoogleLogin = (e) => {
