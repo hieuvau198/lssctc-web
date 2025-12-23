@@ -37,10 +37,13 @@ export default function Login() {
   const [showForgot, setShowForgot] = useState(false);
 
   // --- States for Forgot Password Logic ---
+  // --- States for Forgot Password Logic ---
   const [forgotStep, setForgotStep] = useState(1);
   const [resetEmail, setResetEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [resetToken, setResetToken] = useState('');
 
   // --- Redirect Logic ---
   const redirectByRole = (role) => {
@@ -106,8 +109,6 @@ export default function Login() {
   };
 
   const { handleLoginGoogle, isPendingGoogle } = useLoginGoogle();
-
-  // --- Forgot Password Handlers ---
   const handleSendCode = async (e) => {
     e.preventDefault();
     setSending(true);
@@ -136,17 +137,52 @@ export default function Login() {
       return;
     }
     try {
-      // First verify the code
-      await verifyResetCode(resetEmail, otpCode);
-      // If successful, reset the password
-      await resetPassword(resetEmail, newPassword);
+      // First verify the code and get the token
+      const res = await verifyResetCode(resetEmail, otpCode);
+      if (res && res.resetToken) {
+        setResetToken(res.resetToken);
+        message.success(res.message || t('auth.codeVerified'));
+        setForgotStep(3); // Move to password reset step
+      } else {
+        throw new Error('No reset token returned');
+      }
+    } catch (err) {
+      message.error(err?.response?.data?.message || err.message || t('auth.invalidOrExpiredCode'));
+    } finally {
+      setSending(false);
+    }
+  };
 
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    if (newPassword.length < 6) {
+      message.error(t('auth.passwordMinLength'));
+      setSending(false);
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      message.error(t('auth.passwordsDoNotMatch'));
+      setSending(false);
+      return;
+    }
+
+    try {
+      await resetPassword({
+        email: resetEmail,
+        resetToken: resetToken,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword
+      });
       message.success(t('auth.passwordResetSuccess'));
 
+      // Reset all states and go back to login
       setForgotStep(1);
       setResetEmail('');
       setOtpCode('');
       setNewPassword('');
+      setConfirmPassword('');
+      setResetToken('');
       setShowForgot(false);
     } catch (err) {
       message.error(err?.response?.data?.message || err.message || t('auth.failedToChangePassword'));
@@ -163,8 +199,11 @@ export default function Login() {
   };
 
   const handleBackFromForgot = () => {
-    setShowForgot(false);
-    setForgotStep(1);
+    if (forgotStep === 1) {
+      setShowForgot(false);
+    } else {
+      setForgotStep(forgotStep - 1);
+    }
   };
 
   return (
@@ -204,9 +243,12 @@ export default function Login() {
                 setOtpCode={setOtpCode}
                 newPassword={newPassword}
                 setNewPassword={setNewPassword}
+                confirmPassword={confirmPassword}
+                setConfirmPassword={setConfirmPassword}
                 sending={sending}
                 onSendCode={handleSendCode}
                 onVerifyOtp={handleVerifyOtp}
+                onResetPassword={handleResetPassword}
                 onBack={handleBackFromForgot}
               />
             )}

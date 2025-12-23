@@ -12,33 +12,25 @@ export async function sendResetCode(email) {
 }
 
 /**
- * Verify the reset code sent to the email.
- * POST /Authens/verify-reset-code (Presumed, waiting for confirmation if incorrect)
+ * Verify the OTP code.
+ * POST /Password/verify-otp
  * @param {string} email
- * @param {string} code
- * @returns {Promise<any>}
+ * @param {string} otpCode
+ * @returns {Promise<{success: boolean, message: string, email: string, resetToken: string, expiresIn: number}>}
  */
-export async function verifyResetCode(email, code) {
-    // Use existing path until user provides new one, or leave as mock if unknown.
-    // Using /Authens/verify-reset-code for now as placeholder or if it still works.
-    // If user complains about verify specifically, I will ask.
-    // But likely, if forgot is under `/Password/forgot`, verify might be `/Password/verify`.
-    // I'll try /Password/verify-otp as a guess or stick to Previous one?
-    // Let's stick to the PREVIOUS one for verify/reset because the user ONLY corrected the 'forgot' endpoint.
-    // However, I will comment that it might need update.
-    const response = await apiClient.post('/Authens/verify-reset-code', { email, code });
+export async function verifyResetCode(email, otpCode) {
+    const response = await apiClient.post('/Password/verify-otp', { email, otpCode });
     return response.data;
 }
 
 /**
- * Reset the password using the new password.
- * POST /Authens/reset-password
- * @param {string} email
- * @param {string} password
+ * Reset the password using the token.
+ * POST /Password/reset
+ * @param {object} data - { email, resetToken, newPassword, confirmPassword }
  * @returns {Promise<any>}
  */
-export async function resetPassword(email, password) {
-    const response = await apiClient.post('/Authens/reset-password', { email, password });
+export async function resetPassword(data) {
+    const response = await apiClient.post('/Password/reset', data);
     return response.data;
 }
 
