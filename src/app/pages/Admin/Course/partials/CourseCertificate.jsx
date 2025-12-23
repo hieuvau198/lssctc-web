@@ -99,7 +99,7 @@ const CourseCertificate = ({ courseId }) => {
     }
   };
 
-  // Template Preview Component
+  // Template Preview Component - Uses iframe for proper CSS isolation
   const TemplatePreview = ({ template, height = 200, showTitle = true }) => {
     if (!template) return null;
 
@@ -116,25 +116,21 @@ const CourseCertificate = ({ courseId }) => {
         <div className="p-4">
           {template.templateHtml ? (
             <div
-              className="w-full overflow-auto bg-white border border-neutral-200"
+              className="w-full overflow-hidden bg-white border border-neutral-200"
               style={{ height: `${height}px` }}
             >
-              <div
-                className="certificate-html-preview p-4"
-                dangerouslySetInnerHTML={{ __html: template.templateHtml }}
+              <iframe
+                srcDoc={template.templateHtml}
+                title={`Certificate Template Preview - ${template.name}`}
+                className="w-full h-full border-0"
+                sandbox="allow-same-origin"
+                style={{
+                  transform: height < 400 ? 'scale(0.5)' : 'scale(0.8)',
+                  transformOrigin: 'top left',
+                  width: height < 400 ? '200%' : '125%',
+                  height: height < 400 ? '200%' : '125%',
+                }}
               />
-              <style>{`
-                .certificate-html-preview {
-                  font-family: 'Times New Roman', serif;
-                }
-                .certificate-html-preview * {
-                  max-width: 100%;
-                }
-                .certificate-html-preview img {
-                  max-width: 100%;
-                  height: auto;
-                }
-              `}</style>
             </div>
           ) : (
             <div
@@ -349,21 +345,21 @@ const CourseCertificate = ({ courseId }) => {
         onCancel={() => setPreviewModalOpen(false)}
         footer={null}
         closable={false}
-        width="90%"
-        style={{ maxWidth: 1000, top: 20 }}
+        centered
+        width={900}
         styles={{
           content: { padding: 0, borderRadius: 0 },
-          body: { padding: 0 },
+          body: { padding: 0, maxHeight: 'calc(100vh - 100px)', overflow: 'hidden' },
         }}
       >
         {/* Industrial Header */}
-        <div className="bg-black p-4 flex items-center justify-between border-b-4 border-yellow-400">
+        <div className="bg-black p-3 flex items-center justify-between border-b-4 border-yellow-400">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
-              <Award className="w-5 h-5 text-black" />
+            <div className="w-8 h-8 bg-yellow-400 flex items-center justify-center">
+              <Award className="w-4 h-4 text-black" />
             </div>
             <div>
-              <h3 className="text-white font-black uppercase text-lg leading-none m-0">
+              <h3 className="text-white font-black uppercase text-base leading-none m-0">
                 CERTIFICATE TEMPLATE PREVIEW
               </h3>
               <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
@@ -375,13 +371,13 @@ const CourseCertificate = ({ courseId }) => {
             onClick={() => setPreviewModalOpen(false)}
             className="text-neutral-400 hover:text-white transition-colors"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 bg-neutral-100">
+        <div className="p-4 bg-neutral-100">
           {certificate && (
-            <TemplatePreview template={certificate} height={600} showTitle={false} />
+            <TemplatePreview template={certificate} height={450} showTitle={false} />
           )}
         </div>
       </Modal>
