@@ -136,18 +136,18 @@ export default function TEExam({ classId }) {
     } catch (err) {
       if (err.errorFields) {
         // Validation failed
-        message.warning('Vui lòng kiểm tra lại các trường thông tin báo lỗi!');
+        message.warning(t('instructor.finalExam.checkValidationErrors'));
         return;
       }
       // API error
-      message.error(err.response?.data?.message || 'Thao tác thất bại');
+      message.error(err.response?.data?.message || t('instructor.finalExam.operationFailed'));
     }
   };
 
   // Main Table Columns (Config)
   const columns = [
     {
-      title: <span className="uppercase font-black text-xs">Tên bài thi</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.examName')}</span>,
       key: 'name',
       render: (_, record) => (
         <button
@@ -160,30 +160,30 @@ export default function TEExam({ classId }) {
       ),
     },
     {
-      title: <span className="uppercase font-black text-xs">Thời lượng</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.duration')}</span>,
       dataIndex: 'duration',
       align: 'center',
-      render: (val) => <span className="font-bold">{val ? `${val} phút` : '-'}</span>,
+      render: (val) => <span className="font-bold">{val ? `${val} ${t('instructor.finalExam.minutes')}` : '-'}</span>,
     },
     {
-      title: <span className="uppercase font-black text-xs">Trọng số</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.weight')}</span>,
       dataIndex: 'examWeight',
       align: 'center',
       render: (val) => <span className="font-bold">{val}%</span>,
     },
     {
-      title: <span className="uppercase font-black text-xs">Thời gian bắt đầu</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.startTime')}</span>,
       dataIndex: 'startTime',
       render: (val) => val ? <span className="text-neutral-600"><DayTimeFormat value={val} showTime /></span> : '-',
     },
     {
-      title: <span className="uppercase font-black text-xs">Hành động</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.action')}</span>,
       key: 'actions',
       width: 100,
       render: (_, record) => (
         <button
           onClick={() => handleEdit(record)}
-          disabled={!isExamNotYet} // [UPDATED] Disabled unless NotYet
+          disabled={!isExamNotYet}
           className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${!isExamNotYet
             ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
             : 'border-black bg-white hover:bg-yellow-400 text-black'
@@ -198,20 +198,19 @@ export default function TEExam({ classId }) {
   // Student Detail Table Columns
   const studentColumns = [
     {
-      title: <span className="uppercase font-black text-xs">Học viên</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.trainee')}</span>,
       dataIndex: 'traineeName',
       render: (val) => <span className="font-bold">{val}</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Mã học viên</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.traineeCode')}</span>,
       dataIndex: 'traineeCode',
       render: (val) => <span className="text-neutral-600 font-medium">{val}</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Mã đề</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.examCode')}</span>,
       key: 'examCode',
       render: (_, record) => {
-        // Try to get examCode from partials first, then from record directly
         const partial = record.partials?.find(p => p.type === 'Theory');
         const code = partial?.examCode || record.examCode;
         return code ? (
@@ -222,7 +221,7 @@ export default function TEExam({ classId }) {
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Điểm</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.score')}</span>,
       key: 'score',
       render: (_, record) => {
         const partial = record.partials?.find(p => p.type === 'Theory');
@@ -233,22 +232,22 @@ export default function TEExam({ classId }) {
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Kết quả</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.result')}</span>,
       key: 'result',
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Theory');
         const status = p?.status || r.status;
         const isPass = p?.isPass ?? r.isPass;
 
-        if (status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">Not Yet</span>;
+        if (status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase">{t('instructor.finalExam.notYet')}</span>;
 
-        if (isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase">ĐẠT</span>;
-        if (isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase">KHÔNG ĐẠT</span>;
+        if (isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase">{t('instructor.finalExam.pass')}</span>;
+        if (isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase">{t('instructor.finalExam.fail')}</span>;
         return <span className="text-neutral-400">-</span>;
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Trạng thái</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.status')}</span>,
       key: 'status',
       render: (_, record) => {
         const p = record.partials?.find(p => p.type === 'Theory');
@@ -258,7 +257,7 @@ export default function TEExam({ classId }) {
         if (statusText === 'Approved') bgColor = 'bg-yellow-400 text-black';
         else if (statusText === 'Submitted') bgColor = 'bg-neutral-800 text-yellow-400';
 
-        if (statusText === 'NotYet') statusText = 'CHƯA LÀM';
+        if (statusText === 'NotYet') statusText = t('instructor.finalExam.notYet');
 
         return <span className={`px-2 py-1 text-xs font-bold uppercase ${bgColor}`}>{statusText}</span>;
       }
@@ -301,7 +300,7 @@ export default function TEExam({ classId }) {
               <FileText className="w-4 h-4 text-black" />
             </div>
             <span className="font-black uppercase tracking-tight">
-              {selectedConfig ? "Cập nhật cấu hình" : "Tạo bài thi lý thuyết"}
+              {selectedConfig ? t('instructor.finalExam.editExam') : t('instructor.finalExam.configModalTitleTE')}
             </span>
           </div>
         }
@@ -313,13 +312,13 @@ export default function TEExam({ classId }) {
               onClick={() => setCreateModalOpen(false)}
               className="px-6 py-2.5 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-colors"
             >
-              Hủy
+              {t('instructor.finalExam.cancel')}
             </button>
             <button
               onClick={handleSave}
               className="px-6 py-2.5 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-colors"
             >
-              Lưu
+              {t('instructor.finalExam.save')}
             </button>
           </div>
         }
@@ -328,20 +327,20 @@ export default function TEExam({ classId }) {
         <Form form={form} layout="vertical" className="pt-4">
           <Form.Item
             name="quizId"
-            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Chọn bài kiểm tra</span>}
-            rules={[{ required: true, message: 'Vui lòng chọn bài kiểm tra' }]}
+            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.selectQuiz')}</span>}
+            rules={[{ required: true, message: t('instructor.finalExam.selectQuizRequired') }]}
           >
             <Select
               options={quizzes.map(q => ({ label: q.name, value: q.id }))}
-              placeholder="Chọn một bài kiểm tra"
+              placeholder={t('instructor.finalExam.selectQuizPlaceholder')}
               className="[&_.ant-select-selector]:!border-2 [&_.ant-select-selector]:!border-neutral-300 [&_.ant-select-selector]:!h-11 [&_.ant-select-selector]:hover:!border-black [&_.ant-select-focused_.ant-select-selector]:!border-yellow-400 [&_.ant-select-focused_.ant-select-selector]:!shadow-none"
             />
           </Form.Item>
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
               name="duration"
-              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Thời lượng (phút)</span>}
-              rules={[{ required: true, message: 'Bắt buộc' }]}
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.durationMinutes')}</span>}
+              rules={[{ required: true, message: t('instructor.finalExam.required') }]}
             >
               <InputNumber
                 min={1}
@@ -350,8 +349,8 @@ export default function TEExam({ classId }) {
             </Form.Item>
             <Form.Item
               name="examWeight"
-              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Trọng số (%)</span>}
-              rules={[{ required: true, message: 'Bắt buộc' }]}
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.weightPercent')}</span>}
+              rules={[{ required: true, message: t('instructor.finalExam.required') }]}
             >
               <InputNumber
                 min={0}
@@ -363,10 +362,10 @@ export default function TEExam({ classId }) {
           </div>
           <Form.Item
             name="timeRange"
-            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Khung giờ</span>}
+            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.timeRange')}</span>}
             dependencies={['duration']}
             rules={[
-              { required: true, message: 'Vui lòng chọn khung giờ' },
+              { required: true, message: t('instructor.finalExam.timeRangeRequired') },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || value.length < 2) {
@@ -381,7 +380,7 @@ export default function TEExam({ classId }) {
 
                   const diff = end.diff(start, 'minute');
                   if (diff !== duration) {
-                    return Promise.reject(new Error(`Khung giờ phải bằng đúng ${duration} phút`));
+                    return Promise.reject(new Error(t('instructor.finalExam.timeRangeMustMatchDuration', { duration })));
                   }
                   return Promise.resolve();
                 },
@@ -406,7 +405,7 @@ export default function TEExam({ classId }) {
               <Users className="w-4 h-4 text-black" />
             </div>
             <span className="font-black uppercase tracking-tight">
-              Mã đề & Trạng thái học viên
+              {t('instructor.finalExam.examCodeStatus')}
             </span>
           </div>
         }

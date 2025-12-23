@@ -80,16 +80,16 @@ export default function PEExam({ classId }) {
       if (selectedConfig) await InstructorFEApi.updateClassPartialConfig(payload);
       else await InstructorFEApi.createClassPartial(payload);
 
-      message.success('Configuration saved successfully');
+      message.success(t('instructor.finalExam.updateSuccess'));
       setCreateModalOpen(false);
       fetchConfig();
     } catch (err) {
       if (err.errorFields) {
-        message.warning('Vui lòng kiểm tra lại các trường thông tin báo lỗi!');
+        message.warning(t('instructor.finalExam.checkValidationErrors'));
         return;
       }
       console.error(err);
-      message.error(err.response?.data?.message || 'Lưu cấu hình thất bại');
+      message.error(err.response?.data?.message || t('instructor.finalExam.saveFailed'));
     }
   };
 
@@ -166,7 +166,7 @@ export default function PEExam({ classId }) {
 
   const configColumns = [
     {
-      title: <span className="uppercase font-black text-xs">Tên bài thi</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.examName')}</span>,
       key: 'name',
       render: (_, record) => (
         <button
@@ -174,34 +174,34 @@ export default function PEExam({ classId }) {
           className="font-bold text-black hover:text-yellow-600 uppercase flex items-center gap-2"
         >
           <ClipboardList className="w-4 h-4" />
-          Bài thi thực hành {record.checklist?.length > 0 ? `(${record.checklist.length} tiêu chí)` : ''}
+          {t('instructor.finalExam.practicalExamWith')} {record.checklist?.length > 0 ? `(${record.checklist.length} ${t('instructor.finalExam.criteria')})` : ''}
         </button>
       ),
     },
     {
-      title: <span className="uppercase font-black text-xs">Thời lượng</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.duration')}</span>,
       dataIndex: 'duration',
       align: 'center',
-      render: (val) => <span className="font-bold">{val} phút</span>
+      render: (val) => <span className="font-bold">{val} {t('instructor.finalExam.minutes')}</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Trọng số</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.weight')}</span>,
       dataIndex: 'examWeight',
       align: 'center',
       render: (val) => <span className="font-bold">{val}%</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Thời gian bắt đầu</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.startTime')}</span>,
       dataIndex: 'startTime',
       render: (val) => val ? <span className="text-neutral-600"><DayTimeFormat value={val} showTime /></span> : '-',
     },
     {
-      title: <span className="uppercase font-black text-xs">Hành động</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.action')}</span>,
       width: 100,
       render: (_, record) => (
         <button
           onClick={() => handleOpenConfig(record)}
-          disabled={!isExamNotYet} // [UPDATED] Disable unless NotYet
+          disabled={!isExamNotYet}
           className={`w-8 h-8 border-2 flex items-center justify-center transition-all ${!isExamNotYet
             ? 'bg-neutral-200 border-neutral-400 text-neutral-400 cursor-not-allowed'
             : 'border-black bg-white hover:bg-yellow-400 text-black'
@@ -215,29 +215,29 @@ export default function PEExam({ classId }) {
 
   const studentColumns = [
     {
-      title: <span className="uppercase font-black text-xs">Học viên</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.trainee')}</span>,
       dataIndex: 'traineeName',
       width: '25%',
       render: (val) => <span className="font-bold">{val}</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Mã học viên</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.traineeCode')}</span>,
       dataIndex: 'traineeCode',
       width: '15%',
       render: (val) => <span className="text-neutral-600 font-medium">{val}</span>
     },
     {
-      title: <span className="uppercase font-black text-xs">Thực hiện</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.checklistExecution')}</span>,
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Practical');
         if (!p?.checklists) return '-';
         const passedCount = p.checklists.filter(c => c.isPass).length;
         const totalCount = p.checklists.length;
-        return <span className="font-bold">{passedCount} / {totalCount} <span className="text-neutral-500 font-medium">đạt</span></span>;
+        return <span className="font-bold">{passedCount} / {totalCount} <span className="text-neutral-500 font-medium">{t('instructor.finalExam.pass')}</span></span>;
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Điểm</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.score')}</span>,
       width: '10%',
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Practical');
@@ -247,21 +247,21 @@ export default function PEExam({ classId }) {
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Result</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.result')}</span>,
       width: 100,
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Practical');
         if (!p) return '-';
 
-        if (p.status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase whitespace-nowrap">Not Yet</span>;
+        if (p.status === 'NotYet') return <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs font-bold uppercase whitespace-nowrap">{t('instructor.finalExam.notYet')}</span>;
 
-        if (p.isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase whitespace-nowrap">PASS</span>;
-        if (p.isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase whitespace-nowrap">FAIL</span>;
+        if (p.isPass === true) return <span className="px-2 py-1 bg-yellow-400 text-black text-xs font-bold uppercase whitespace-nowrap">{t('instructor.finalExam.pass')}</span>;
+        if (p.isPass === false) return <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold uppercase whitespace-nowrap">{t('instructor.finalExam.fail')}</span>;
         return '-';
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Status</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.status')}</span>,
       width: '15%',
       render: (_, r) => {
         const p = r.partials?.find(p => p.type === 'Practical');
@@ -271,13 +271,13 @@ export default function PEExam({ classId }) {
         if (p?.status === 'Approved') bgColor = 'bg-yellow-400 text-black';
         else if (p?.status === 'Submitted') bgColor = 'bg-neutral-800 text-yellow-400';
 
-        if (statusText === 'NotYet') statusText = 'CHƯA LÀM';
+        if (statusText === 'NotYet') statusText = t('instructor.finalExam.notYet');
 
         return <span className={`px-2 py-1 text-xs font-bold uppercase ${bgColor}`}>{statusText}</span>;
       }
     },
     {
-      title: <span className="uppercase font-black text-xs">Hành động</span>,
+      title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.action')}</span>,
       key: 'action',
       width: '10%',
       render: (_, record) => {
@@ -291,7 +291,7 @@ export default function PEExam({ classId }) {
               : 'bg-yellow-400 text-black border-black hover:bg-yellow-500'
               }`}
           >
-            Chấm điểm
+            {t('instructor.finalExam.grading')}
           </button>
         );
       }
@@ -336,7 +336,7 @@ export default function PEExam({ classId }) {
               <ClipboardList className="w-4 h-4 text-black" />
             </div>
             <span className="font-black uppercase tracking-tight">
-              Cấu hình bài thi thực hành
+              {t('instructor.finalExam.configModalTitlePE')}
             </span>
           </div>
         }
@@ -347,13 +347,13 @@ export default function PEExam({ classId }) {
               onClick={() => setCreateModalOpen(false)}
               className="px-6 py-2.5 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-colors"
             >
-              Hủy
+              {t('instructor.finalExam.cancel')}
             </button>
             <button
               onClick={handleSaveConfig}
               className="px-6 py-2.5 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-colors"
             >
-              Lưu cấu hình
+              {t('instructor.finalExam.saveConfig')}
             </button>
           </div>
         }
@@ -363,8 +363,8 @@ export default function PEExam({ classId }) {
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
               name="duration"
-              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Thời lượng (phút)</span>}
-              rules={[{ required: true, message: 'Bắt buộc' }]}
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.durationMinutes')}</span>}
+              rules={[{ required: true, message: t('instructor.finalExam.required') }]}
             >
               <InputNumber
                 min={1}
@@ -373,8 +373,8 @@ export default function PEExam({ classId }) {
             </Form.Item>
             <Form.Item
               name="examWeight"
-              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Trọng số (%)</span>}
-              rules={[{ required: true, message: 'Bắt buộc' }]}
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.weightPercent')}</span>}
+              rules={[{ required: true, message: t('instructor.finalExam.required') }]}
             >
               <InputNumber
                 min={0}
@@ -386,10 +386,10 @@ export default function PEExam({ classId }) {
           </div>
           <Form.Item
             name="timeRange"
-            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">Khung giờ</span>}
+            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.timeRange')}</span>}
             dependencies={['duration']}
             rules={[
-              { required: true, message: 'Vui lòng chọn khung giờ' },
+              { required: true, message: t('instructor.finalExam.timeRangeRequired') },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || value.length < 2) {
@@ -404,7 +404,7 @@ export default function PEExam({ classId }) {
 
                   const diff = end.diff(start, 'minute');
                   if (diff !== duration) {
-                    return Promise.reject(new Error(`Khung giờ phải bằng đúng ${duration} phút`));
+                    return Promise.reject(new Error(t('instructor.finalExam.timeRangeMustMatchDuration', { duration })));
                   }
                   return Promise.resolve();
                 },
@@ -423,7 +423,7 @@ export default function PEExam({ classId }) {
           <div className="mt-6 mb-4">
             <div className="flex items-center gap-2">
               <div className="h-0.5 flex-1 bg-neutral-200"></div>
-              <span className="font-bold uppercase text-xs tracking-wider text-neutral-600 px-2 bg-white">Mẫu tiêu chí chấm điểm</span>
+              <span className="font-bold uppercase text-xs tracking-wider text-neutral-600 px-2 bg-white">{t('instructor.finalExam.checklistTemplate')}</span>
               <div className="h-0.5 flex-1 bg-neutral-200"></div>
             </div>
           </div>
@@ -436,11 +436,11 @@ export default function PEExam({ classId }) {
                     <Form.Item
                       {...restField}
                       name={[name, 'name']}
-                      rules={[{ required: true, message: 'Bắt buộc' }]}
+                      rules={[{ required: true, message: t('instructor.finalExam.required') }]}
                       className="flex-1 mb-0"
                     >
                       <Input
-                        placeholder="Tên tiêu chí (Vd: Kiểm tra an toàn)"
+                        placeholder={t('instructor.finalExam.criteriaNamePlaceholder')}
                         className="!h-10 !border-2 !border-neutral-300 hover:!border-black focus:!border-yellow-400 focus:!shadow-none"
                       />
                     </Form.Item>
@@ -450,7 +450,7 @@ export default function PEExam({ classId }) {
                       className="flex-1 mb-0"
                     >
                       <Input
-                        placeholder="Mô tả (Tùy chọn)"
+                        placeholder={t('instructor.finalExam.criteriaDescription')}
                         className="!h-10 !border-2 !border-neutral-300 hover:!border-black focus:!border-yellow-400 focus:!shadow-none"
                       />
                     </Form.Item>
@@ -470,7 +470,7 @@ export default function PEExam({ classId }) {
                     className="w-full py-2.5 border-2 border-dashed border-neutral-400 text-neutral-600 font-bold uppercase text-sm hover:border-yellow-400 hover:text-black hover:bg-yellow-50 flex items-center justify-center gap-2 transition-all"
                   >
                     <Plus className="w-4 h-4" />
-                    Thêm tiêu chí
+                    {t('instructor.finalExam.addCriteria')}
                   </button>
                 </Form.Item>
               </>
@@ -491,7 +491,7 @@ export default function PEExam({ classId }) {
               <Users className="w-4 h-4 text-black" />
             </div>
             <span className="font-black uppercase tracking-tight">
-              Bài thi thực hành học viên
+              {t('instructor.finalExam.studentDetails')}
             </span>
           </div>
         }
@@ -518,7 +518,7 @@ export default function PEExam({ classId }) {
               <Award className="w-4 h-4 text-black" />
             </div>
             <span className="font-black uppercase tracking-tight">
-              Chấm điểm: <span className="text-yellow-600">{currentTraineeName}</span>
+              {t('instructor.finalExam.gradingFor')} <span className="text-yellow-600">{currentTraineeName}</span>
             </span>
           </div>
         }
@@ -529,13 +529,13 @@ export default function PEExam({ classId }) {
               onClick={() => setGradingModalOpen(false)}
               className="px-6 py-2.5 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-colors"
             >
-              Hủy
+              {t('instructor.finalExam.cancel')}
             </button>
             <button
               onClick={handleSubmitGrade}
               className="px-6 py-2.5 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-colors"
             >
-              Nộp điểm
+              {t('instructor.finalExam.submitGrade')}
             </button>
           </div>
         }
@@ -546,7 +546,7 @@ export default function PEExam({ classId }) {
           <div className="mb-4">
             <div className="flex items-center gap-2">
               <div className="h-0.5 flex-1 bg-neutral-200"></div>
-              <span className="font-bold uppercase text-xs tracking-wider text-neutral-600 px-2 bg-white">Bảng kiểm tra thực hiện</span>
+              <span className="font-bold uppercase text-xs tracking-wider text-neutral-600 px-2 bg-white">{t('instructor.finalExam.checklistExecution')}</span>
               <div className="h-0.5 flex-1 bg-neutral-200"></div>
             </div>
           </div>
@@ -592,12 +592,12 @@ export default function PEExam({ classId }) {
           <Form.Item
             name="isOverallPass"
             valuePropName="checked"
-            label={<span className="font-black text-lg uppercase">Kết quả chung</span>}
+            label={<span className="font-black text-lg uppercase">{t('instructor.finalExam.overallResult')}</span>}
             className="bg-yellow-50 p-4 border-2 border-yellow-400"
           >
             <Switch
-              checkedChildren="ĐẠT"
-              unCheckedChildren="KHÔNG ĐẠT"
+              checkedChildren={t('instructor.finalExam.pass')}
+              unCheckedChildren={t('instructor.finalExam.fail')}
               className="bg-neutral-400"
               style={{ width: 110 }}
             />
