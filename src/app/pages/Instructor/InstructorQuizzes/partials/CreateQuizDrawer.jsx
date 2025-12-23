@@ -33,7 +33,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
   useEffect(() => {
     if (open) {
       setScoreErrors({});
-      setCollapsedQuestions({});
+      
       if (mode === 'edit' && initialData) {
         form.setFieldsValue({
           name: initialData.name,
@@ -57,6 +57,12 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           })),
         }));
 
+        const initialCollapsed = {};
+        mappedQuestions.forEach(q => {
+             initialCollapsed[q.id] = true;
+        });
+        setCollapsedQuestions(initialCollapsed);
+
         setQuestions(mappedQuestions.length ? mappedQuestions : [
           {
             id: 1,
@@ -69,6 +75,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         ]);
       } else {
         form.resetFields();
+        setCollapsedQuestions({ 1: true });
         setQuestions([
           {
             id: 1,
@@ -109,7 +116,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
       content: errorMessage,
       okText: t('instructor.quizzes.modal.close'),
       centered: true,
-      okButtonProps: { className: 'bg-black text-white border-2 border-black hover:bg-neutral-800' }
+      okButtonProps: { className: 'bg-gray-800 text-white border-2 border-gray-800 hover:bg-gray-700' }
     });
   };
 
@@ -327,10 +334,10 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     <Drawer
       title={
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center">
-            <HelpCircle className="w-5 h-5 text-black" />
+          <div className="w-10 h-10 bg-gray-100 border-2 border-gray-300 flex items-center justify-center">
+            <HelpCircle className="w-5 h-5 text-gray-700" />
           </div>
-          <span className="font-black text-black uppercase tracking-tight">
+          <span className="font-black text-gray-800 uppercase tracking-tight">
             {mode === 'edit' ? t('instructor.quizzes.drawer.editTitle') : t('instructor.quizzes.drawer.createTitle')}
           </span>
         </div>
@@ -343,35 +350,35 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
       maskClosable={false}
       styles={{
         header: {
-          borderBottom: '2px solid #000',
+          borderBottom: '2px solid #d1d5db',
           padding: '16px 24px',
         },
         body: {
           padding: 24,
-          background: '#f5f5f5',
+          background: '#f9fafb', // gray-50
         },
       }}
       extra={
         <div className="flex gap-2">
           <button
             onClick={onClose}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black font-bold uppercase text-sm border-2 border-black hover:bg-neutral-100 transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-bold uppercase text-sm border-2 border-gray-300 hover:bg-gray-50 transition-all"
           >
             <X className="w-4 h-4" />
             {t('instructor.quizzes.drawer.cancel')}
           </button>
-          <button
+          <div
             onClick={() => form.submit()}
             disabled={submitting}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black font-bold uppercase text-sm border-2 border-black hover:bg-yellow-500 transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 text-white font-bold uppercase text-sm border-2 border-gray-800 hover:bg-gray-900 transition-all disabled:opacity-50"
           >
             {submitting ? (
-              <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <Save className="w-4 h-4" />
             )}
             {mode === 'edit' ? t('instructor.quizzes.drawer.save') : t('instructor.quizzes.drawer.create')}
-          </button>
+          </div>
         </div>
       }
     >
@@ -380,7 +387,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           .industrial-form .ant-input, 
           .industrial-form .ant-input-number, 
           .industrial-form .ant-input-textarea {
-            border: 2px solid #000 !important;
+            border: 2px solid #d1d5db !important; /* gray-300 */
             border-radius: 0 !important;
             font-weight: 500;
           }
@@ -389,32 +396,32 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           .industrial-form .ant-input-textarea:focus,
           .industrial-form .ant-input:hover,
           .industrial-form .ant-input-number:hover {
-            border-color: #000 !important;
-            box-shadow: 4px 4px 0 0 #facc15 !important;
+            border-color: #9ca3af !important; /* gray-400 */
+            box-shadow: 4px 4px 0 0 #e5e7eb !important; /* gray-200 */
           }
           .industrial-form .ant-input-number-handler-wrap {
             border-radius: 0 !important;
-            border-left: 2px solid #000 !important;
-            background: #000 !important;
+            border-left: 2px solid #d1d5db !important;
+            background: #f3f4f6 !important; /* gray-100 */
           }
           .industrial-form .ant-input-number-handler {
-             border-bottom: 1px solid #fff !important;
-             color: #fff !important;
+             border-bottom: 1px solid #d1d5db !important;
+             color: #374151 !important; /* gray-700 */
           }
           .industrial-form .ant-input-number-handler:hover {
-             background: #333 !important;
+             background: #e5e7eb !important;
              height: 50% !important;
           }
           .industrial-checkbox .ant-checkbox-inner {
-            border: 2px solid #000 !important;
+            border: 2px solid #d1d5db !important;
             border-radius: 0 !important;
           }
           .industrial-checkbox .ant-checkbox-checked .ant-checkbox-inner {
-            background-color: #000 !important;
-            border-color: #000 !important;
+            background-color: #374151 !important; /* gray-700 */
+            border-color: #374151 !important;
           }
           .industrial-form .ant-form-item-label label {
-            color: #000 !important;
+            color: #374151 !important; /* gray-700 */
           }
         `}</style>
       <Form
@@ -429,112 +436,112 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         }}
       >
         {/* Quiz Information Card */}
-        <div className="bg-white border-2 border-black mb-6">
-          <div className="h-1 bg-yellow-400" />
-          <div className="px-4 py-3 border-b-2 border-black bg-neutral-50">
-            <span className="font-bold uppercase text-sm tracking-wider">Quiz Information</span>
+        <div className="bg-white border-2 border-gray-300 mb-6">
+          <div className="h-1 bg-gray-300" />
+          <div className="px-4 py-3 border-b-2 border-gray-300 bg-gray-50">
+            <span className="font-bold uppercase text-sm tracking-wider text-gray-700">Quiz Information</span>
           </div>
           <div className="p-4">
             <div className="grid grid-cols-2 gap-4">
               <Form.Item
-                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.quizName')}</span>}
+                label={<span className="font-bold uppercase text-xs tracking-wider text-gray-700">{t('instructor.quizzes.form.quizName')}</span>}
                 name="name"
                 rules={[{ required: true, message: t('instructor.quizzes.form.quizNameRequired') }]}
                 className="col-span-1"
               >
-                <Input placeholder={t('instructor.quizzes.form.quizNamePlaceholder')} className="border-2 border-black h-10" />
+                <Input placeholder={t('instructor.quizzes.form.quizNamePlaceholder')} className="border-2 border-gray-300 h-10" />
               </Form.Item>
 
               <Form.Item
-                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.scoreSummary.totalScore')}</span>}
+                label={<span className="font-bold uppercase text-xs tracking-wider text-gray-700">{t('instructor.quizzes.scoreSummary.totalScore')}</span>}
                 className="col-span-1"
               >
-                <div className="h-10 bg-neutral-100 border-2 border-black flex items-center px-3 font-bold text-black">
+                <div className="h-10 bg-gray-50 border-2 border-gray-300 flex items-center px-3 font-bold text-gray-800">
                   {totalScore.toFixed(2)}
                 </div>
               </Form.Item>
 
               <Form.Item
-                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.passScore')}</span>}
+                label={<span className="font-bold uppercase text-xs tracking-wider text-gray-700">{t('instructor.quizzes.form.passScore')}</span>}
                 name="passScoreCriteria"
                 rules={[{ required: true, message: t('common.required') }]}
               >
-                <InputNumber min={1} max={10} className="w-full h-10 border-2 border-black" />
+                <InputNumber min={1} max={10} className="w-full h-10 border-2 border-gray-300" />
               </Form.Item>
 
               <Form.Item
-                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.timeLimit')}</span>}
+                label={<span className="font-bold uppercase text-xs tracking-wider text-gray-700">{t('instructor.quizzes.form.timeLimit')}</span>}
                 name="timelimitMinute"
                 rules={[{ required: true, message: t('common.required') }]}
               >
-                <InputNumber min={1} max={180} className="w-full h-10 border-2 border-black" />
+                <InputNumber min={1} max={180} className="w-full h-10 border-2 border-gray-300" />
               </Form.Item>
 
               <Form.Item
-                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.maxAttempts', 'Max Attempts')}</span>}
+                label={<span className="font-bold uppercase text-xs tracking-wider text-gray-700">{t('instructor.quizzes.form.maxAttempts', 'Max Attempts')}</span>}
                 name="maxAttempts"
                 rules={[{ required: true, message: t('common.required') }]}
               >
-                <InputNumber min={1} max={100} className="w-full h-10 border-2 border-black" />
+                <InputNumber min={1} max={100} className="w-full h-10 border-2 border-gray-300" />
               </Form.Item>
 
               <Form.Item
-                label={<span className="font-bold uppercase text-xs tracking-wider">{t('instructor.quizzes.form.description')}</span>}
+                label={<span className="font-bold uppercase text-xs tracking-wider text-gray-700">{t('instructor.quizzes.form.description')}</span>}
                 name="description"
                 className="col-span-2"
               >
-                <Input.TextArea rows={2} placeholder={t('instructor.quizzes.form.descriptionPlaceholder')} className="border-2 border-black" />
+                <Input.TextArea rows={2} placeholder={t('instructor.quizzes.form.descriptionPlaceholder')} className="border-2 border-gray-300" />
               </Form.Item>
             </div>
           </div>
         </div>
 
         {/* Score Summary Card - Industrial Theme */}
-        <div className="bg-white border-2 border-black mb-6">
-          <div className="h-1 bg-yellow-400" />
-          <div className="px-4 py-3 border-b-2 border-black bg-neutral-50">
-            <span className="font-bold uppercase text-sm tracking-wider">{t('instructor.quizzes.questions.title')}</span>
+        <div className="bg-white border-2 border-gray-300 mb-6">
+          <div className="h-1 bg-gray-300" />
+          <div className="px-4 py-3 border-b-2 border-gray-300 bg-gray-50">
+            <span className="font-bold uppercase text-sm tracking-wider text-gray-700">{t('instructor.quizzes.questions.title')}</span>
           </div>
           <div className="p-4">
             {/* Stats Grid */}
             <div className="grid grid-cols-4 gap-3 mb-4">
-              <div className="border-2 border-black p-3">
+              <div className="border-2 border-gray-300 p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold uppercase text-neutral-500">{t('instructor.quizzes.scoreSummary.questions')}</span>
-                  <div className="w-8 h-8 bg-yellow-400 border border-black flex items-center justify-center">
-                    <FileText className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase text-gray-500">{t('instructor.quizzes.scoreSummary.questions')}</span>
+                  <div className="w-8 h-8 bg-gray-100 border border-gray-300 flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-gray-600" />
                   </div>
                 </div>
-                <p className="text-2xl font-black text-black">{questions.length}</p>
+                <p className="text-2xl font-black text-gray-800">{questions.length}</p>
               </div>
-              <div className="border-2 border-black p-3">
+              <div className="border-2 border-gray-300 p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold uppercase text-neutral-500">{t('instructor.quizzes.scoreSummary.totalScore')}</span>
-                  <div className="w-8 h-8 bg-black flex items-center justify-center">
-                    <Star className="w-4 h-4 text-yellow-400" />
+                  <span className="text-xs font-bold uppercase text-gray-500">{t('instructor.quizzes.scoreSummary.totalScore')}</span>
+                  <div className="w-8 h-8 bg-gray-800 flex items-center justify-center">
+                    <Star className="w-4 h-4 text-white" />
                   </div>
                 </div>
-                <p className={`text-2xl font-black ${isScoreValid ? 'text-black' : 'text-neutral-400'}`}>{totalScore.toFixed(2)}</p>
+                <p className={`text-2xl font-black ${isScoreValid ? 'text-gray-800' : 'text-gray-400'}`}>{totalScore.toFixed(2)}</p>
               </div>
-              <div className="border-2 border-black p-3">
+              <div className="border-2 border-gray-300 p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold uppercase text-neutral-500">{t('instructor.quizzes.scoreSummary.perQuestionAvg')}</span>
-                  <div className="w-8 h-8 bg-yellow-400 border border-black flex items-center justify-center">
-                    <Target className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase text-gray-500">{t('instructor.quizzes.scoreSummary.perQuestionAvg')}</span>
+                  <div className="w-8 h-8 bg-gray-100 border border-gray-300 flex items-center justify-center">
+                    <Target className="w-4 h-4 text-gray-600" />
                   </div>
                 </div>
-                <p className="text-2xl font-black text-black">
+                <p className="text-2xl font-black text-gray-800">
                   {questions.length > 0 ? (totalScore / questions.length).toFixed(2) : '0'}
                 </p>
               </div>
-              <div className="border-2 border-black p-3">
+              <div className="border-2 border-gray-300 p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold uppercase text-neutral-500">{t('instructor.quizzes.scoreSummary.remainingScore')}</span>
-                  <div className="w-8 h-8 bg-black flex items-center justify-center">
-                    <List className="w-4 h-4 text-yellow-400" />
+                  <span className="text-xs font-bold uppercase text-gray-500">{t('instructor.quizzes.scoreSummary.remainingScore')}</span>
+                  <div className="w-8 h-8 bg-gray-800 flex items-center justify-center">
+                    <List className="w-4 h-4 text-white" />
                   </div>
                 </div>
-                <p className={`text-2xl font-black ${isScoreValid ? 'text-black' : 'text-neutral-400'}`}>
+                <p className={`text-2xl font-black ${isScoreValid ? 'text-gray-800' : 'text-gray-400'}`}>
                   {remainingScore.toFixed(2)}
                 </p>
               </div>
@@ -542,8 +549,8 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
 
             {/* Status Message */}
             <div className={`p-3 text-center text-sm font-bold uppercase border-2 ${isScoreValid
-              ? 'bg-black text-white border-black'
-              : 'bg-yellow-400 text-black border-black'
+              ? 'bg-gray-800 text-white border-gray-800'
+              : 'bg-gray-200 text-gray-800 border-gray-300'
               }`}>
               {isScoreValid ? (
                 <span>✓ {t('instructor.quizzes.scoreSummary.mustEqual10')}</span>
@@ -560,35 +567,35 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
             const isCollapsed = collapsedQuestions[question.id];
 
             return (
-              <div key={question.id} className="bg-white border-2 border-black">
-                <div className="h-1 bg-yellow-400" />
+              <div key={question.id} className="bg-white border-2 border-gray-300">
+                <div className="h-1 bg-gray-300" />
 
                 {/* Question Header */}
-                <div className="px-4 py-3 border-b-2 border-black bg-neutral-50 flex items-center justify-between">
+                <div className="px-4 py-3 border-b-2 border-gray-300 bg-gray-50 flex items-center justify-between">
                   <div className="flex items-center gap-3 select-none cursor-pointer" onClick={() => toggleCollapse(question.id)}>
-                    <div className="text-neutral-500 hover:text-black transition-colors">
+                    <div className="text-gray-500 hover:text-gray-800 transition-colors">
                       {isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
                     </div>
 
-                    <span className="w-8 h-8 bg-black text-yellow-400 flex items-center justify-center font-black text-sm">
+                    <span className="w-8 h-8 bg-gray-700 text-white flex items-center justify-center font-black text-sm">
                       {qIdx + 1}
                     </span>
-                    <span className="font-bold uppercase text-sm flex items-center gap-2">
+                    <span className="font-bold uppercase text-sm flex items-center gap-2 text-gray-800">
                       {t('instructor.quizzes.questions.question')} {qIdx + 1}
                       {isCollapsed && question.name && (
-                        <span className="text-neutral-400 font-medium normal-case text-xs truncate max-w-[150px]">
+                        <span className="text-gray-400 font-medium normal-case text-xs truncate max-w-[150px]">
                           — {question.name}
                         </span>
                       )}
                     </span>
-                    <span className="px-3 py-1 bg-yellow-400 text-black text-xs font-bold border border-black">
+                    <span className="px-3 py-1 bg-gray-200 text-gray-800 text-xs font-bold border border-gray-300">
                       {question.questionScore || 0} {t('instructor.quizzes.questions.pts')}
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => removeQuestion(qIdx)}
-                    className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:bg-neutral-800 transition-colors text-white"
+                    className="w-8 h-8 bg-gray-700 border-2 border-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors text-white"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -600,18 +607,18 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                     {/* Question text and score */}
                     <div className="grid grid-cols-3 gap-3">
                       <div className="col-span-2">
-                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.questionText')} *</label>
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-gray-800">{t('instructor.quizzes.questions.questionText')} *</label>
                         <Input
                           value={question.name}
                           onChange={(e) => updateQuestion(qIdx, 'name', e.target.value)}
                           placeholder={t('instructor.quizzes.questions.enterQuestion')}
-                          className="border-2 border-black h-10"
+                          className="border-2 border-gray-300 h-10"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.score')} *</label>
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-gray-800">{t('instructor.quizzes.questions.score')} *</label>
                         <InputNumber
-                          className="w-full h-10 border-2 border-black"
+                          className="w-full h-10 border-2 border-gray-300"
                           value={question.questionScore}
                           onChange={(value) => updateQuestion(qIdx, 'questionScore', value)}
                           min={0.1}
@@ -620,31 +627,31 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                           status={scoreErrors[qIdx] ? 'error' : ''}
                         />
                         {scoreErrors[qIdx] && (
-                          <p className="text-xs text-black bg-yellow-400 p-1 mt-1 border border-black font-bold">{scoreErrors[qIdx]}</p>
+                          <p className="text-xs text-gray-800 bg-gray-200 p-1 mt-1 border border-gray-300 font-bold">{scoreErrors[qIdx]}</p>
                         )}
                       </div>
                     </div>
 
                     {/* Description */}
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-black">{t('instructor.quizzes.questions.description')}</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-gray-800">{t('instructor.quizzes.questions.description')}</label>
                       <Input.TextArea
                         rows={1}
                         value={question.description}
                         onChange={(e) => updateQuestion(qIdx, 'description', e.target.value)}
                         placeholder={t('instructor.quizzes.questions.descriptionPlaceholder')}
-                        className="border-2 border-black"
+                        className="border-2 border-gray-300"
                       />
                     </div>
 
                     {/* Options */}
                     <div>
                       <div className="flex justify-between items-center mb-3">
-                        <label className="text-xs font-bold uppercase tracking-wider text-black">{t('instructor.quizzes.options.title')}</label>
+                        <label className="text-xs font-bold uppercase tracking-wider text-gray-800">{t('instructor.quizzes.options.title')}</label>
                         <button
                           type="button"
                           onClick={() => addOption(qIdx)}
-                          className="inline-flex items-center gap-1 px-3 py-1 bg-white text-black font-bold text-xs uppercase border-2 border-black hover:bg-neutral-100 transition-colors"
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-white text-gray-800 font-bold text-xs uppercase border-2 border-gray-300 hover:bg-gray-100 transition-colors"
                         >
                           <Plus className="w-3 h-3" />
                           {t('common.add')}
@@ -658,12 +665,12 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                             <div
                               key={option.id}
                               className={`p-3 border-2 transition-all ${option.isCorrect
-                                ? 'bg-white border-black shadow-[4px_4px_0px_0px_#000]'
-                                : 'bg-white border-neutral-300 hover:border-black'
+                                ? 'bg-white border-gray-700 shadow-[4px_4px_0px_0px_#374151]'
+                                : 'bg-white border-gray-300 hover:border-gray-500'
                                 }`}
                             >
                               <div className="flex gap-2 items-center mb-2">
-                                <span className={`flex-shrink-0 w-7 h-7 flex items-center justify-center text-xs font-black ${option.isCorrect ? 'bg-black text-white' : 'bg-neutral-200 text-black'
+                                <span className={`flex-shrink-0 w-7 h-7 flex items-center justify-center text-xs font-black ${option.isCorrect ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'
                                   }`}>
                                   {String.fromCharCode(65 + oIdx)}
                                 </span>
@@ -671,12 +678,12 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                                   value={option.name}
                                   onChange={(e) => updateOption(qIdx, oIdx, 'name', e.target.value)}
                                   placeholder={`${t('instructor.quizzes.options.option')} ${oIdx + 1}`}
-                                  className="flex-1 border-2 border-neutral-300 focus:border-black h-9"
+                                  className="flex-1 border-2 border-gray-300 focus:border-gray-500 h-9"
                                 />
                                 <button
                                   type="button"
                                   onClick={() => removeOption(qIdx, oIdx)}
-                                  className="w-8 h-8 bg-black border-2 border-black flex items-center justify-center hover:bg-neutral-800 transition-colors text-white"
+                                  className="w-8 h-8 bg-gray-700 border-2 border-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors text-white"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -687,9 +694,9 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                                   onChange={(e) => updateOption(qIdx, oIdx, 'isCorrect', e.target.checked)}
                                   className="font-medium industrial-checkbox"
                                 >
-                                  <span className="text-xs font-bold uppercase text-black">{option.isCorrect ? '✓ ' : ''}{t('instructor.quizzes.options.correctAnswer')}</span>
+                                  <span className="text-xs font-bold uppercase text-gray-800">{option.isCorrect ? '✓ ' : ''}{t('instructor.quizzes.options.correctAnswer')}</span>
                                 </Checkbox>
-                                <span className={`text-xs px-3 py-1 font-bold border ${option.isCorrect ? 'bg-yellow-400 text-black border-black' : 'bg-neutral-100 text-neutral-600 border-neutral-200'}`}>
+                                <span className={`text-xs px-3 py-1 font-bold border ${option.isCorrect ? 'bg-gray-700 text-white border-gray-700' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
                                   {optionScore.toFixed(1)} {t('instructor.quizzes.questions.pts')}
                                 </span>
                               </div>
@@ -698,7 +705,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                                 value={option.explanation}
                                 onChange={(e) => updateOption(qIdx, oIdx, 'explanation', e.target.value)}
                                 placeholder={t('instructor.quizzes.options.explanationPlaceholder')}
-                                className="border-2 border-neutral-300 focus:border-black"
+                                className="border-2 border-gray-300 focus:border-gray-500"
                               />
                             </div>
                           );
@@ -711,12 +718,12 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
             );
           })}
         </div>
-          <div className=''>
+          <div className='mt-12'>
 
         <button
           type="button"
           onClick={addQuestion}
-          className="w-full py-3 border-2 border-dashed border-black bg-white text-black font-bold uppercase tracking-wider flex items-center justify-center gap-2"
+          className="mt-12 w-full py-3 border-2 border-dashed border-gray-300 bg-white text-gray-600 font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:border-gray-500 hover:text-gray-800 transition-colors"
         >
           <Plus className="w-5 h-5" />
           {t('instructor.quizzes.questions.addQuestion')}
