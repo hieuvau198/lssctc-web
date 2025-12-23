@@ -1775,7 +1775,22 @@
       "finishSuccess": "Exam finished successfully!",
       "finishError": "Failed to finish exam.",
       "tooltipNotYet": "Trainees cannot take the exam yet. Opening will allow them to start but will limit content editing.",
-      "tooltipFinish": "You cannot change results after finishing."
+      "tooltipFinish": "You cannot change results after finishing.",
+      "simulationResults": "Simulation Results",
+      "code": "Code",
+      "difficulty": "Difficulty",
+      "completeTime": "Complete Time",
+      "mark": "Mark",
+      "task": "Task",
+      "refresh": "Refresh",
+      "fullScreen": "Full Screen",
+      "exitFullScreen": "Exit Full Screen",
+      "notStarted": "Not Started",
+      "passed": "Passed",
+      "failed": "Failed",
+      "noData": "No Data",
+      "noSimulationData": "No simulation data found",
+      "loadSimulationFailed": "Failed to load simulation results"
     }
   },
   "notification": {

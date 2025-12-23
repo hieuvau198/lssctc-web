@@ -1777,7 +1777,22 @@
       "finishSuccess": "Kết thúc bài kiểm tra thành công!",
       "finishError": "Kết thúc bài kiểm tra thất bại.",
       "tooltipNotYet": "Hiện tại học viên chưa thể làm bài. Nếu mở bài kiểm tra này, học viên có thể làm bài nhưng sẽ hạn chế việc chỉnh sửa nội dung.",
-      "tooltipFinish": "Bạn không thể thay đổi kết quả sau khi kết thúc."
+      "tooltipFinish": "Bạn không thể thay đổi kết quả sau khi kết thúc.",
+      "simulationResults": "Kết Quả Mô Phỏng",
+      "code": "Mã",
+      "difficulty": "Độ khó",
+      "completeTime": "Thời gian hoàn thành",
+      "mark": "Điểm",
+      "task": "Task",
+      "refresh": "Làm mới",
+      "fullScreen": "Toàn màn hình",
+      "exitFullScreen": "Thoát toàn màn hình",
+      "notStarted": "Chưa bắt đầu",
+      "passed": "Đạt",
+      "failed": "Không đạt",
+      "noData": "Không có dữ liệu",
+      "noSimulationData": "Không tìm thấy dữ liệu mô phỏng",
+      "loadSimulationFailed": "Không thể tải kết quả mô phỏng"
     }
   },
   "notification": {
