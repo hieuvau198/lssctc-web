@@ -181,27 +181,27 @@ export default function InstructorFinalExam() {
           {/* Action Button Section with Conditional Logic */}
           <div>
             {examStatus === 'NotYet' && (
-              <Tooltip title="Hiện tại học viên chưa thể làm bài. Nếu mở bài kiểm tra này, học viên có thể làm bài nhưng sẽ hạn chế việc chỉnh sửa nội dung.">
+              <Tooltip title={t('instructor.finalExam.tooltipNotYet')}>
                 <button
                   onClick={handleOpenExam}
                   disabled={loading}
                   className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-yellow-400 text-black border-white hover:bg-yellow-500 active:bg-yellow-600 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Play className="w-5 h-5 fill-current" />
-                  <span>{loading ? 'Đang xử lý...' : 'Mở bài thi'}</span>
+                  <span>{loading ? t('instructor.finalExam.processing') : t('instructor.finalExam.openButton')}</span>
                 </button>
               </Tooltip>
             )}
 
             {examStatus === 'Open' && (
-              <Tooltip title="Bạn không thể thay đổi kết quả sau khi kết thúc.">
+              <Tooltip title={t('instructor.finalExam.tooltipFinish')}>
                 <button
                   onClick={handleFinishExam}
                   disabled={loading}
                   className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-red-500 text-white border-white hover:bg-red-600 active:bg-red-700 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CheckCircle className="w-5 h-5" />
-                  <span>{loading ? 'Đang xử lý...' : t('instructor.finalExam.finishButton', 'Kết thúc bài thi')}</span>
+                  <span>{loading ? t('instructor.finalExam.processing') : t('instructor.finalExam.finishButton')}</span>
                 </button>
               </Tooltip>
             )}
@@ -212,7 +212,7 @@ export default function InstructorFinalExam() {
                 className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed"
               >
                 <Lock className="w-5 h-5" />
-                <span>Đã đóng</span>
+                <span>{t('instructor.finalExam.closed')}</span>
               </button>
             )}
           </div>
