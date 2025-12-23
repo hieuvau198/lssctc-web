@@ -85,24 +85,7 @@ const ClassTable = ({
           </span>
         );
       },
-    },
-    {
-      title: <span className="font-black uppercase text-xs">{t('instructor.classes.table.actions')}</span>,
-      key: 'actions',
-      width: 100,
-      fixed: 'right',
-      align: 'center',
-      render: (_, record) => (
-        <Tooltip title={t('instructor.classes.table.viewDetails')}>
-          <button
-            onClick={() => onView(record)}
-            className="w-8 h-8 border-2 border-black bg-white hover:bg-yellow-400 flex items-center justify-center transition-all mx-auto"
-          >
-            <Eye className="w-4 h-4 text-black" />
-          </button>
-        </Tooltip>
-      ),
-    },
+    }
   ];
 
   return (
