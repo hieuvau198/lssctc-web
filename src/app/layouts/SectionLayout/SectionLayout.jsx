@@ -75,7 +75,7 @@ export default function SectionLayout({
                     <div className="bg-yellow-50 border-2 border-black p-4 mb-6"><h3 className="text-xl font-black text-black uppercase">{completedCourseTitle || courseTitle}</h3></div>
                     <div className="flex items-center justify-center gap-2 text-black mb-6"><CheckCircle2 className="w-6 h-6" /><span className="text-lg font-black uppercase">100% {t('sectionLayout.complete')}</span></div>
                     <div className="flex gap-3 justify-center">
-                        <button onClick={() => { closeCompletionModal(); navigate(`/my-classes/${classId}`); }} className="px-6 py-3 bg-white text-black font-bold uppercase border-2 border-black hover:bg-neutral-100">{t('sectionLayout.backToClass')}</button>
+                        <button onClick={() => { closeCompletionModal(); navigate(`/my-classes`); }} className="px-6 py-3 bg-white text-black font-bold uppercase border-2 border-black hover:bg-neutral-100">{t('sectionLayout.backToClass')}</button>
                         <button onClick={closeCompletionModal} className="px-6 py-3 bg-yellow-400 text-black font-bold uppercase border-2 border-black hover:scale-[1.02]">{t('sectionLayout.continueLearning')}</button>
                     </div>
                 </div>

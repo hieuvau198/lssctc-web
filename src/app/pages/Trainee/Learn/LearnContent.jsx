@@ -3,6 +3,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useTranslation } from 'react-i18next';
 import { useParams } from "react-router-dom";
+import { Modal } from "antd";
+import { CheckCircle2, PartyPopper, X, Sparkles } from "lucide-react";
 import VideoContent from "./partials/VideoContent";
 import ReadingContent from "./partials/ReadingContent";
 import QuizContent from "./partials/QuizContent";
@@ -51,6 +53,10 @@ export default function LearnContent() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // State for beautiful notification modal
+  const [showCompletedModal, setShowCompletedModal] = useState(false);
+  const [completedModalMessage, setCompletedModalMessage] = useState('');
 
   useEffect(() => {
     const token = getAuthToken();
@@ -143,7 +149,7 @@ export default function LearnContent() {
       } else if (activityType === 'Practice') {
         // Updated to handle { practice, sessionStatus } response
         const { practice, sessionStatus } = await getPracticeByActivityRecordId(matchedRecord.activityRecordId);
-        
+
         if (practice) {
           const combinedPracticeData = {
             ...practice,
@@ -201,7 +207,8 @@ export default function LearnContent() {
     if (!activityRecord || activityRecord.activityType !== 'Material') return;
 
     if (sessionStatus && !sessionStatus.isOpen) {
-      alert(t('trainee.learn.sessionNotOpenAlert'));
+      setCompletedModalMessage(t('trainee.learn.sessionNotOpenAlert'));
+      setShowCompletedModal(true);
       return;
     }
 
@@ -218,8 +225,31 @@ export default function LearnContent() {
     } catch (err) {
       console.error("Error submitting activity:", err);
       const msg = err.response?.data?.message || "Failed to mark as complete.";
-      alert(msg);
+
+      // Check if error message indicates activity already completed
+      const isAlreadyCompleted = msg.toLowerCase().includes('already') ||
+        msg.toLowerCase().includes('completed') ||
+        msg.toLowerCase().includes('đã hoàn thành');
+
+      if (isAlreadyCompleted) {
+        // Không hiển thị modal khi activity đã hoàn thành
+        // Chỉ refresh data và sidebar
+        await fetchPartitionData();
+        refreshSidebar();
+      } else {
+        // For other errors, still use the beautiful modal
+        setCompletedModalMessage(msg);
+        setShowCompletedModal(true);
+      }
     }
+  };
+
+  // Handler for closing the notification modal and optionally reloading
+  const handleCloseCompletedModal = () => {
+    setShowCompletedModal(false);
+    // Refresh data after closing modal
+    fetchPartitionData();
+    refreshSidebar();
   };
 
   const handleMarkAsNotComplete = async () => {
@@ -283,6 +313,64 @@ export default function LearnContent() {
     case "Material":
       return (
         <div className="space-y-6">
+          {/* Beautiful Notification Modal */}
+          <Modal
+            open={showCompletedModal}
+            onCancel={handleCloseCompletedModal}
+            footer={null}
+            centered
+            width={420}
+            closable={false}
+            className="completion-notification-modal"
+          >
+            <div className="text-center py-6 px-2">
+              {/* Animated Icon Container */}
+              <div className="relative inline-block mb-6">
+                <div className="w-24 h-24 border-4 border-black bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-500 flex items-center justify-center mx-auto shadow-lg transform transition-transform hover:scale-105">
+                  <CheckCircle2 className="w-12 h-12 text-black animate-bounce" />
+                </div>
+                {/* Sparkle decorations */}
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-black flex items-center justify-center animate-pulse">
+                  <Sparkles className="w-5 h-5 text-yellow-400" />
+                </div>
+                <div className="absolute -bottom-1 -left-1 w-6 h-6 bg-yellow-400 border-2 border-black flex items-center justify-center">
+                  <PartyPopper className="w-3 h-3 text-black" />
+                </div>
+              </div>
+
+              {/* Title with celebration emoji */}
+              <h2 className="text-2xl font-black text-black uppercase mb-3 tracking-tight">
+                {t('trainee.learn.activityAlreadyCompleted')}
+              </h2>
+
+              {/* Description */}
+              <p className="text-lg text-neutral-600 mb-2">
+                {t('trainee.learn.activityAlreadyCompletedDesc')}
+              </p>
+
+              {/* Message dịch từ i18n */}
+              <div className="bg-yellow-50 border-2 border-yellow-400 p-3 mb-6 mx-4">
+                <p className="text-sm text-yellow-800 font-medium">
+                  {t('trainee.learn.activityAlreadyCompletedNote')}
+                </p>
+              </div>
+
+              {/* Progress indicator */}
+              <div className="flex items-center justify-center gap-2 text-black mb-6">
+                <CheckCircle2 className="w-5 h-5 text-yellow-500" />
+                <span className="text-sm font-bold uppercase tracking-wide">{t('trainee.learn.completed')}</span>
+              </div>
+
+              {/* Action Button */}
+              <button
+                onClick={handleCloseCompletedModal}
+                className="px-8 py-3 bg-yellow-400 text-black font-black text-base uppercase tracking-wider border-4 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+              >
+                {t('trainee.learn.gotIt')}
+              </button>
+            </div>
+          </Modal>
+
           {materialsList.length > 0 ? (
             materialsList.map((material) => {
               const url = (material.materialUrl || '').toLowerCase();

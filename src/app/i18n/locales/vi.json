@@ -908,7 +908,11 @@
       "averageScore": "Điểm trung bình",
       "sessionNotStarted": "Phiên học chưa bắt đầu",
       "sessionExpired": "Phiên học đã kết thúc",
-      "sessionNotOpenAlert": "Hoạt động này hiện không trong phiên mở. Bạn không thể đánh dấu hoàn thành lúc này."
+      "sessionNotOpenAlert": "Hoạt động này hiện không trong phiên mở. Bạn không thể đánh dấu hoàn thành lúc này.",
+      "activityAlreadyCompleted": "Hoạt động đã hoàn thành!",
+      "activityAlreadyCompletedDesc": "Tuyệt vời! Bạn đã hoàn thành hoạt động này rồi.",
+      "activityAlreadyCompletedNote": "Hoạt động này đã được hoàn thành trước đó.",
+      "gotIt": "Đã hiểu!"
     },
     "classes": {
       "code": "Mã lớp",

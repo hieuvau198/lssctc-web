@@ -855,7 +855,11 @@
       "averageScore": "Average Score",
       "sessionNotStarted": "Session has not started yet",
       "sessionExpired": "Session has expired",
-      "sessionNotOpenAlert": "This activity session is not currently open. You cannot mark it as complete right now."
+      "sessionNotOpenAlert": "This activity session is not currently open. You cannot mark it as complete right now.",
+      "activityAlreadyCompleted": "Activity Already Completed!",
+      "activityAlreadyCompletedDesc": "Great job! You have already completed this activity.",
+      "activityAlreadyCompletedNote": "This activity has already been completed.",
+      "gotIt": "Got It!"
     },
     "classes": {
       "code": "Code",
