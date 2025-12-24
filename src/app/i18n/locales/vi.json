@@ -1085,7 +1085,9 @@
         "durationRequired": "Vui lòng nhập thời lượng",
         "cancel": "Hủy",
         "addActivity": "Thêm Hoạt động",
-        "addFailed": "Thêm hoạt động thất bại. Vui lòng thử lại."
+        "addFailed": "Thêm hoạt động thất bại. Vui lòng thử lại.",
+        "durationExceedsLimit": "Thời lượng vượt quá giới hạn! Còn lại: {{remaining}} phút (Chương: {{sectionDuration}} phút, Đã dùng: {{usedDuration}} phút)",
+        "durationInfo": "Thời gian còn lại: {{remaining}} phút (Chương: {{sectionDuration}} phút, Đã dùng: {{usedDuration}} phút)"
       },
       "manageMaterialModal": {
         "title": "Quản lý Tài liệu cho: {{title}}",

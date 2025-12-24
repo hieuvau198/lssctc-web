@@ -34,6 +34,7 @@ const ClassSections = ({ courseId, classId }) => {
 
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [currentSectionId, setCurrentSectionId] = useState(null);
+  const [currentSectionDuration, setCurrentSectionDuration] = useState(0);
 
   const [activityRefreshKeys, setActivityRefreshKeys] = useState({});
 
@@ -69,8 +70,9 @@ const ClassSections = ({ courseId, classId }) => {
     };
   }, [courseId]);
 
-  const openAddActivityModal = (sectionId) => {
+  const openAddActivityModal = (sectionId, sectionDuration) => {
     setCurrentSectionId(sectionId);
+    setCurrentSectionDuration(sectionDuration || 0);
     setIsAddModalVisible(true);
   };
 
@@ -154,7 +156,7 @@ const ClassSections = ({ courseId, classId }) => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        openAddActivityModal(section.id);
+                        openAddActivityModal(section.id, section.duration);
                       }}
                       className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center hover:bg-yellow-500 transition-all"
                     >
@@ -180,6 +182,7 @@ const ClassSections = ({ courseId, classId }) => {
 
       <AddActivityModal
         sectionId={currentSectionId}
+        sectionDuration={currentSectionDuration}
         isVisible={isAddModalVisible}
         onClose={() => setIsAddModalVisible(false)}
         onActivityAdded={handleActivityAdded}

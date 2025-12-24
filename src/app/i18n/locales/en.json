@@ -1083,7 +1083,9 @@
         "durationRequired": "Please enter a duration",
         "cancel": "Cancel",
         "addActivity": "Add Activity",
-        "addFailed": "Failed to add activity. Please try again."
+        "addFailed": "Failed to add activity. Please try again.",
+        "durationExceedsLimit": "Duration exceeds limit! Remaining: {{remaining}} minutes (Section: {{sectionDuration}} min, Used: {{usedDuration}} min)",
+        "durationInfo": "Remaining time: {{remaining}} minutes (Section: {{sectionDuration}} min, Used: {{usedDuration}} min)"
       },
       "manageMaterialModal": {
         "title": "Manage Material for: {{title}}",
