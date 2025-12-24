@@ -1,3 +1,5 @@
+// src/app/pages/Instructor/InstructorClasses/partials/Sections/ActivityDetail/ActivitySessionManager.jsx
+
 import React, { useEffect, useState } from 'react';
 import { Card, Switch, DatePicker, Button, Typography, message, Spin, Alert, Form } from 'antd';
 import { ClockCircleOutlined, SaveOutlined } from '@ant-design/icons';
@@ -58,10 +60,12 @@ const ActivitySessionManager = ({ classId, activityId }) => {
     try {
       const { isActive, timeRange } = values;
       
+      // Use .format('YYYY-MM-DDTHH:mm:ss') to send the local time string directly
+      // instead of .toISOString() which converts to UTC.
       const payload = {
         isActive: isActive,
-        startTime: timeRange && timeRange[0] ? timeRange[0].toISOString() : null,
-        endTime: timeRange && timeRange[1] ? timeRange[1].toISOString() : null
+        startTime: timeRange && timeRange[0] ? timeRange[0].format('YYYY-MM-DDTHH:mm:ss') : null,
+        endTime: timeRange && timeRange[1] ? timeRange[1].format('YYYY-MM-DDTHH:mm:ss') : null
       };
 
       const updated = await updateActivitySession(session.id, payload);
