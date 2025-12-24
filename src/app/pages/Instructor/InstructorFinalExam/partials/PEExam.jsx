@@ -416,6 +416,34 @@ export default function PEExam({ classId }) {
               showTime
               format="DD-MM-YYYY HH:mm:ss"
               disabledDate={(current) => current && current < dayjs().startOf('day')}
+              disabledTime={(current, type) => {
+                if (!current) return {};
+                const now = dayjs();
+
+                // Only disable past times for today
+                if (current.isSame(now, 'day')) {
+                  const currentHour = now.hour();
+                  const currentMinute = now.minute();
+                  const currentSecond = now.second();
+
+                  return {
+                    disabledHours: () => Array.from({ length: currentHour }, (_, i) => i),
+                    disabledMinutes: (selectedHour) => {
+                      if (selectedHour === currentHour) {
+                        return Array.from({ length: currentMinute }, (_, i) => i);
+                      }
+                      return [];
+                    },
+                    disabledSeconds: (selectedHour, selectedMinute) => {
+                      if (selectedHour === currentHour && selectedMinute === currentMinute) {
+                        return Array.from({ length: currentSecond + 1 }, (_, i) => i);
+                      }
+                      return [];
+                    }
+                  };
+                }
+                return {};
+              }}
               className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
             />
           </Form.Item>
