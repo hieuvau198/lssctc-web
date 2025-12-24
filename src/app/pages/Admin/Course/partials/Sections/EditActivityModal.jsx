@@ -43,9 +43,10 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
   // Watch activity type to conditionally show Material/Quiz/Practice Select
   const activityType = Form.useWatch('activityType', form);
 
+  // 1. Initialize Form on Visible/Activity Change
   useEffect(() => {
     if (visible && activity) {
-      // 1. Set basic activity fields
+      // Set basic activity fields
       form.setFieldsValue({
         activityTitle: activity.activityTitle || activity.title,
         activityDescription: activity.activityDescription || activity.description,
@@ -53,8 +54,8 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
         estimatedDurationMinutes: activity.estimatedDurationMinutes || activity.duration
       });
 
-      // 2. Fetch Resources Data (Materials, Quizzes, Practices)
-      fetchResourcesData();
+      // Note: We do NOT call fetchResourcesData here anymore.
+      // The second useEffect watching 'activityType' will trigger the specific fetch.
     } else {
       form.resetFields();
       setInitialMaterialId(null);
@@ -66,54 +67,76 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
     }
   }, [visible, activity, form]);
 
-  const fetchResourcesData = async () => {
+  // 2. Fetch Data specifically when Activity Type is set or changes
+  useEffect(() => {
+    if (visible && activity && activityType) {
+      fetchResourcesData(activityType);
+    }
+  }, [activityType, visible, activity]);
+
+  const fetchResourcesData = async (type) => {
     try {
       // --- MATERIALS ---
-      const materialsResp = await getMaterials({ page: 1, pageSize: 1000 });
-      setMaterials(materialsResp.items || []);
-
-      const attachedMaterials = await getMaterialsByActivityId(activity.id);
-      if (attachedMaterials && attachedMaterials.length > 0) {
-        const currentMatId = attachedMaterials[0].id;
-        setInitialMaterialId(currentMatId);
-        if (activity.activityType === 'Material' || !activity.activityType) {
-             form.setFieldValue('materialId', currentMatId);
+      if (type === 'Material') {
+        // Only fetch materials if list is empty or strictly necessary
+        if (materials.length === 0) {
+            const materialsResp = await getMaterials({ page: 1, pageSize: 1000 });
+            setMaterials(materialsResp.items || []);
         }
-      } else {
-        setInitialMaterialId(null);
-        form.setFieldValue('materialId', null);
+
+        const attachedMaterials = await getMaterialsByActivityId(activity.id);
+        if (attachedMaterials && attachedMaterials.length > 0) {
+          // FIX: Use learningMaterialId (the actual material ID) instead of id (the assignment ID)
+          const currentMatId = attachedMaterials[0].learningMaterialId;
+          setInitialMaterialId(currentMatId);
+          
+          if (form.getFieldValue('activityType') === 'Material') {
+               form.setFieldValue('materialId', currentMatId);
+          }
+        } else {
+          setInitialMaterialId(null);
+          form.setFieldValue('materialId', null);
+        }
       }
 
       // --- QUIZZES ---
-      const quizzesList = await fetchAllQuizzes();
-      setQuizzes(quizzesList || []);
-
-      const attachedQuizzes = await fetchQuizzesByActivity(activity.id);
-      if (attachedQuizzes && attachedQuizzes.length > 0) {
-        const currentQuizId = attachedQuizzes[0].id;
-        setInitialQuizId(currentQuizId);
-        if (activity.activityType === 'Quiz') {
-            form.setFieldValue('quizId', currentQuizId);
+      else if (type === 'Quiz') {
+        if (quizzes.length === 0) {
+            const quizzesList = await fetchAllQuizzes();
+            setQuizzes(quizzesList || []);
         }
-      } else {
-        setInitialQuizId(null);
-        form.setFieldValue('quizId', null);
+
+        const attachedQuizzes = await fetchQuizzesByActivity(activity.id);
+        if (attachedQuizzes && attachedQuizzes.length > 0) {
+          const currentQuizId = attachedQuizzes[0].id;
+          setInitialQuizId(currentQuizId);
+          if (form.getFieldValue('activityType') === 'Quiz') {
+              form.setFieldValue('quizId', currentQuizId);
+          }
+        } else {
+          setInitialQuizId(null);
+          form.setFieldValue('quizId', null);
+        }
       }
 
       // --- PRACTICES ---
-      const practicesList = await fetchAllPractices();
-      setPractices(practicesList || []);
-
-      const attachedPractices = await fetchPracticesByActivity(activity.id);
-      if (attachedPractices && attachedPractices.length > 0) {
-        const currentPracticeId = attachedPractices[0].id;
-        setInitialPracticeId(currentPracticeId);
-        if (activity.activityType === 'Practice') {
-            form.setFieldValue('practiceId', currentPracticeId);
+      else if (type === 'Practice') {
+        if (practices.length === 0) {
+            const practicesList = await fetchAllPractices();
+            setPractices(practicesList || []);
         }
-      } else {
-        setInitialPracticeId(null);
-        form.setFieldValue('practiceId', null);
+
+        const attachedPractices = await fetchPracticesByActivity(activity.id);
+        if (attachedPractices && attachedPractices.length > 0) {
+          const currentPracticeId = attachedPractices[0].id;
+          setInitialPracticeId(currentPracticeId);
+          if (form.getFieldValue('activityType') === 'Practice') {
+              form.setFieldValue('practiceId', currentPracticeId);
+          }
+        } else {
+          setInitialPracticeId(null);
+          form.setFieldValue('practiceId', null);
+        }
       }
 
     } catch (error) {
@@ -138,6 +161,7 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
       if (values.activityType === 'Material') {
         const newMaterialId = values.materialId;
         if (initialMaterialId !== newMaterialId) {
+          // Use initialMaterialId which now correctly holds the learningMaterialId
           if (initialMaterialId) await removeMaterialFromActivity(activity.id, initialMaterialId);
           if (newMaterialId) await assignMaterialToActivity(activity.id, newMaterialId);
         }
