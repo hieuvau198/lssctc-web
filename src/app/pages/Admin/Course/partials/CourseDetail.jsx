@@ -143,7 +143,7 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
         {/* Sections List */}
         <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
           <SectionHeader icon={Layers} title={t('admin.courses.courseSections') || "Course Sections"} />
-          <SectionList courseId={course.id} />
+          <SectionList courseId={course.id} courseDurationHours={course.durationHours} />
         </div>
 
         {/* Certificates */}

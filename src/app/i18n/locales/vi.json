@@ -2742,7 +2742,10 @@
           "description": "Mô tả",
           "descriptionPlaceholder": "Nhập mô tả chương",
           "durationMinutes": "Thời lượng (Phút)",
-          "durationMinutesPlaceholder": "Nhập thời lượng tính bằng phút"
+          "durationMinutesPlaceholder": "Nhập thời lượng tính bằng phút",
+          "durationRequired": "Vui lòng nhập thời lượng",
+          "durationExceedsLimit": "Thời lượng vượt quá giới hạn! Còn lại: {{remaining}} phút (Khóa học: {{courseDuration}} phút, Đã dùng: {{usedDuration}} phút)",
+          "durationInfo": "Thời gian còn lại: {{remaining}} phút (Khóa học: {{courseDuration}} phút, Đã dùng: {{usedDuration}} phút)"
         }
       }
     },

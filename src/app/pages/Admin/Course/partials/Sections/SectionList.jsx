@@ -9,7 +9,7 @@ import AddSectionModal from './AddSectionModal';
 import EditSectionModal from './EditSectionModal';
 import ImportSectionsModal from './ImportSectionsModal';
 
-const SectionList = ({ courseId }) => {
+const SectionList = ({ courseId, courseDurationHours = 0 }) => {
   const { t } = useTranslation();
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ const SectionList = ({ courseId }) => {
   const loadData = async () => {
     if (!courseId) return;
     setLoading(true);
-    
+
     // 1. Fetch Sections (Critical for display)
     try {
       const sectionsData = await fetchSectionsByCourse(courseId);
@@ -96,30 +96,30 @@ const SectionList = ({ courseId }) => {
       width: 120,
       render: (_, record) => (
         <div className="flex gap-2">
-            <Tooltip title={t('common.edit')}>
-                <Button 
-                    type="text" 
-                    icon={<EditOutlined />} 
-                    onClick={() => handleEdit(record)}
-                />
+          <Tooltip title={t('common.edit')}>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => handleEdit(record)}
+            />
+          </Tooltip>
+
+          {hasClasses ? (
+            <Tooltip title={t('admin.courses.sections.cannotRemoveWithClasses') || "Cannot remove section when classes exist"}>
+              <Button type="text" disabled icon={<LockOutlined />} />
             </Tooltip>
-            
-            {hasClasses ? (
-                <Tooltip title={t('admin.courses.sections.cannotRemoveWithClasses') || "Cannot remove section when classes exist"}>
-                    <Button type="text" disabled icon={<LockOutlined />} />
-                </Tooltip>
-            ) : (
-                <Popconfirm
-                    title={t('admin.courses.sections.removeTitle')}
-                    description={t('admin.courses.sections.removeDescription')}
-                    onConfirm={() => handleRemove(record.id)}
-                    okText={t('common.yes')}
-                    cancelText={t('common.no')}
-                    okButtonProps={{ danger: true }}
-                >
-                    <Button type="text" danger icon={<DeleteOutlined />} />
-                </Popconfirm>
-            )}
+          ) : (
+            <Popconfirm
+              title={t('admin.courses.sections.removeTitle')}
+              description={t('admin.courses.sections.removeDescription')}
+              onConfirm={() => handleRemove(record.id)}
+              okText={t('common.yes')}
+              cancelText={t('common.no')}
+              okButtonProps={{ danger: true }}
+            >
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          )}
         </div>
       ),
     },
@@ -129,41 +129,41 @@ const SectionList = ({ courseId }) => {
     <div className="w-full">
       <div className="flex justify-end gap-3 mb-4">
         {hasClasses ? (
-            <Tooltip title={t('admin.courses.sections.cannotModifyWithClasses') || "Cannot add/import sections when classes exist"}>
-                <div className="flex gap-3">
-                     <button
-                        disabled
-                        className="flex items-center gap-2 h-10 px-6 bg-neutral-100 border-2 border-neutral-200 text-neutral-400 cursor-not-allowed font-bold uppercase text-xs tracking-wider"
-                    >
-                        <UploadOutlined />
-                        {t('admin.courses.sections.importExcel')}
-                    </button>
-                    <button
-                        disabled
-                        className="flex items-center gap-2 h-10 px-6 bg-neutral-100 border-2 border-neutral-200 text-neutral-400 cursor-not-allowed font-black uppercase text-xs tracking-wider"
-                    >
-                        <PlusOutlined />
-                        {t('admin.courses.sections.addSection')}
-                    </button>
-                </div>
-            </Tooltip>
+          <Tooltip title={t('admin.courses.sections.cannotModifyWithClasses') || "Cannot add/import sections when classes exist"}>
+            <div className="flex gap-3">
+              <button
+                disabled
+                className="flex items-center gap-2 h-10 px-6 bg-neutral-100 border-2 border-neutral-200 text-neutral-400 cursor-not-allowed font-bold uppercase text-xs tracking-wider"
+              >
+                <UploadOutlined />
+                {t('admin.courses.sections.importExcel')}
+              </button>
+              <button
+                disabled
+                className="flex items-center gap-2 h-10 px-6 bg-neutral-100 border-2 border-neutral-200 text-neutral-400 cursor-not-allowed font-black uppercase text-xs tracking-wider"
+              >
+                <PlusOutlined />
+                {t('admin.courses.sections.addSection')}
+              </button>
+            </div>
+          </Tooltip>
         ) : (
-            <>
-                <button
-                    onClick={() => setIsImportModalVisible(true)}
-                    className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-neutral-300 text-neutral-700 hover:border-black hover:text-black hover:bg-neutral-50 transition-all font-bold uppercase text-xs tracking-wider"
-                >
-                    <UploadOutlined />
-                    {t('admin.courses.sections.importExcel')}
-                </button>
-                <button
-                    onClick={() => setIsAddModalVisible(true)}
-                    className="flex items-center gap-2 h-10 px-6 bg-yellow-400 border-2 border-yellow-400 text-black hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all font-black uppercase text-xs tracking-wider"
-                >
-                    <PlusOutlined />
-                    {t('admin.courses.sections.addSection')}
-                </button>
-            </>
+          <>
+            <button
+              onClick={() => setIsImportModalVisible(true)}
+              className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-neutral-300 text-neutral-700 hover:border-black hover:text-black hover:bg-neutral-50 transition-all font-bold uppercase text-xs tracking-wider"
+            >
+              <UploadOutlined />
+              {t('admin.courses.sections.importExcel')}
+            </button>
+            <button
+              onClick={() => setIsAddModalVisible(true)}
+              className="flex items-center gap-2 h-10 px-6 bg-yellow-400 border-2 border-yellow-400 text-black hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all font-black uppercase text-xs tracking-wider"
+            >
+              <PlusOutlined />
+              {t('admin.courses.sections.addSection')}
+            </button>
+          </>
         )}
       </div>
 
@@ -196,24 +196,26 @@ const SectionList = ({ courseId }) => {
       <AddSectionModal
         visible={isAddModalVisible}
         courseId={courseId}
+        courseDurationMinutes={courseDurationHours * 60}
+        existingSections={sections}
         onCancel={() => setIsAddModalVisible(false)}
         onSuccess={() => {
           setIsAddModalVisible(false);
           loadData();
         }}
       />
-      
+
       <EditSectionModal
         visible={isEditModalVisible}
         section={selectedSection}
         onCancel={() => {
-            setIsEditModalVisible(false);
-            setSelectedSection(null);
+          setIsEditModalVisible(false);
+          setSelectedSection(null);
         }}
         onSuccess={() => {
-            setIsEditModalVisible(false);
-            setSelectedSection(null);
-            loadData();
+          setIsEditModalVisible(false);
+          setSelectedSection(null);
+          loadData();
         }}
       />
 
