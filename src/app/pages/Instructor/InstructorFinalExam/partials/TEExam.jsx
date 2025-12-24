@@ -86,13 +86,12 @@ export default function TEExam({ classId }) {
   const handleEdit = (record) => {
     if (!isExamNotYet) return; // [UPDATED] Only allowed if NotYet
     setSelectedConfig(record);
+    // [UPDATED] Set startTime and endTime separately instead of timeRange
     form.setFieldsValue({
       ...record,
       quizId: record.quizId,
-      timeRange: [
-        record.startTime ? dayjs(record.startTime) : null,
-        record.endTime ? dayjs(record.endTime) : null
-      ]
+      startTime: record.startTime ? dayjs(record.startTime) : null,
+      endTime: record.endTime ? dayjs(record.endTime) : null
     });
     setCreateModalOpen(true);
   };
@@ -117,9 +116,9 @@ export default function TEExam({ classId }) {
         examWeight: values.examWeight,
         duration: values.duration,
         quizId: values.quizId,
-        // FIX: Send local time format instead of UTC
-        startTime: values.timeRange?.[0]?.format('YYYY-MM-DDTHH:mm:ss'),
-        endTime: values.timeRange?.[1]?.format('YYYY-MM-DDTHH:mm:ss'),
+        // [UPDATED] Read from startTime and endTime fields
+        startTime: values.startTime?.format('YYYY-MM-DDTHH:mm:ss'),
+        endTime: values.endTime?.format('YYYY-MM-DDTHH:mm:ss'),
       };
 
       if (selectedConfig) {
@@ -325,7 +324,21 @@ export default function TEExam({ classId }) {
         }
         className="[&_.ant-modal-header]:border-b-4 [&_.ant-modal-header]:border-yellow-400 [&_.ant-modal-header]:pb-4"
       >
-        <Form form={form} layout="vertical" className="pt-4">
+        <Form
+          form={form}
+          layout="vertical"
+          className="pt-4"
+          // [UPDATED] Auto-calculate End Time when Start Time or Duration changes
+          onValuesChange={(changedValues, allValues) => {
+            if (changedValues.startTime || changedValues.duration) {
+              const { startTime, duration } = allValues;
+              if (startTime && duration) {
+                const endTime = dayjs(startTime).add(duration, 'minute');
+                form.setFieldValue('endTime', endTime);
+              }
+            }
+          }}
+        >
           <Form.Item
             name="quizId"
             label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.selectQuiz')}</span>}
@@ -361,68 +374,51 @@ export default function TEExam({ classId }) {
               />
             </Form.Item>
           </div>
-          <Form.Item
-            name="timeRange"
-            label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.timeRange')}</span>}
-            dependencies={['duration']}
-            rules={[
-              { required: true, message: t('instructor.finalExam.timeRangeRequired') },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || value.length < 2) {
-                    return Promise.resolve();
-                  }
-                  const [start, end] = value;
-                  const duration = getFieldValue('duration');
 
-                  if (duration === undefined || duration === null) {
-                    return Promise.resolve();
-                  }
-
-                  const diff = end.diff(start, 'minute');
-                  if (diff !== duration) {
-                    return Promise.reject(new Error(t('instructor.finalExam.timeRangeMustMatchDuration', { duration })));
-                  }
-                  return Promise.resolve();
-                },
-              }),
-            ]}
-          >
-            <DatePicker.RangePicker
-              showTime
-              format="DD-MM-YYYY HH:mm:ss"
-              disabledDate={(current) => current && current < dayjs().startOf('day')}
-              disabledTime={(current, type) => {
-                if (!current) return {};
-                const now = dayjs();
-
-                // Only disable past times for today
-                if (current.isSame(now, 'day')) {
-                  const currentHour = now.hour();
-                  const currentMinute = now.minute();
-                  const currentSecond = now.second();
-
-                  return {
-                    disabledHours: () => Array.from({ length: currentHour }, (_, i) => i),
-                    disabledMinutes: (selectedHour) => {
-                      if (selectedHour === currentHour) {
-                        return Array.from({ length: currentMinute }, (_, i) => i);
+          {/* [UPDATED] Split RangePicker into Start and End DatePickers */}
+          <div className="grid grid-cols-2 gap-4">
+            <Form.Item
+              name="startTime"
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.startTime')}</span>}
+              rules={[{ required: true, message: t('instructor.finalExam.startTimeRequired', 'Start Time is required') }]}
+            >
+              <DatePicker
+                showTime={{ format: 'HH:mm' }}
+                format="DD-MM-YYYY HH:mm"
+                disabledDate={(current) => current && current < dayjs().startOf('day')}
+                disabledTime={(current) => {
+                  if (!current) return {};
+                  const now = dayjs();
+                  if (current.isSame(now, 'day')) {
+                    const currentHour = now.hour();
+                    return {
+                      disabledHours: () => Array.from({ length: currentHour }, (_, i) => i),
+                      disabledMinutes: (selectedHour) => {
+                        if (selectedHour === currentHour) {
+                          return Array.from({ length: now.minute() }, (_, i) => i);
+                        }
+                        return [];
                       }
-                      return [];
-                    },
-                    disabledSeconds: (selectedHour, selectedMinute) => {
-                      if (selectedHour === currentHour && selectedMinute === currentMinute) {
-                        return Array.from({ length: currentSecond + 1 }, (_, i) => i);
-                      }
-                      return [];
-                    }
-                  };
-                }
-                return {};
-              }}
-              className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
-            />
-          </Form.Item>
+                    };
+                  }
+                  return {};
+                }}
+                className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-300 hover:!border-black focus-within:!border-yellow-400 focus-within:!shadow-none"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="endTime"
+              label={<span className="font-bold uppercase text-xs tracking-wider text-neutral-600">{t('instructor.finalExam.endTime', 'End Time')}</span>}
+            >
+              <DatePicker
+                showTime={{ format: 'HH:mm' }}
+                format="DD-MM-YYYY HH:mm"
+                disabled
+                className="!w-full [&_.ant-picker-input>input]:!h-9 !border-2 !border-neutral-200 bg-neutral-100 text-neutral-500 cursor-not-allowed"
+              />
+            </Form.Item>
+          </div>
         </Form>
       </Modal>
 
