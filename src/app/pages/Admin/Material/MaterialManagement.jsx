@@ -255,7 +255,7 @@ const MaterialManagement = () => {
         </div>
 
         {/* Content Area */}
-        <div className="bg-white border-x-2 border-b-2 border-black overflow-hidden flex-1 flex flex-col min-h-0">
+        <div className="bg-white  flex-1 flex flex-col min-h-0">
             
              {/* Search Bar */}
              <div className="px-4 py-2 bg-white border-b-2 border-neutral-200 flex-none shadow-sm z-10">
@@ -284,7 +284,7 @@ const MaterialManagement = () => {
             </div>
 
             {/* Table */}
-            <div className="flex-1 overflow-hidden bg-white relative p-0">
+            <div className="mt-6 flex-1 overflow-hidden bg-white relative p-0 ">
                 <IndustrialTable
                     loading={loading}
                     dataSource={paginatedData}
