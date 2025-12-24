@@ -1,10 +1,9 @@
 // src\app\pages\Trainee\Profile\Profile.jsx
 import React, { useState, useEffect } from 'react';
-import { Spin, Alert, Button } from 'antd';
+import { Alert } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { EditOutlined } from '@ant-design/icons';
-import { User, Mail, Phone, IdCard, GraduationCap, Car, Calendar, MapPin, Shield } from 'lucide-react';
+import { User, Mail, Phone, IdCard, GraduationCap, Car, Calendar, MapPin, Shield, Edit } from 'lucide-react';
 import PageNav from '../../../components/PageNav/PageNav';
 import useAuthStore from '../../../store/authStore';
 import { getAuthToken } from '../../../libs/cookies';
@@ -135,21 +134,21 @@ export default function Profile() {
     ? fullName.trim().charAt(0).toUpperCase()
     : 'U';
 
-  // Info Item Component
-  const InfoItem = ({ icon: Icon, label, value, iconColor = "text-cyan-500" }) => (
+  // Info Item Component - Industrial Style with Emerald accent
+  const InfoItem = ({ icon: Icon, label, value }) => (
     <div className="flex items-start gap-3">
-      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center shadow-sm flex-shrink-0`}>
-        <Icon className={`w-5 h-5 ${iconColor}`} />
+      <div className="w-10 h-10 bg-emerald-500 border-2 border-emerald-700 flex items-center justify-center flex-shrink-0">
+        <Icon className="w-5 h-5 text-white" />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</div>
-        <div className="text-slate-700 font-semibold mt-0.5 truncate">{value || '-'}</div>
+        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{label}</div>
+        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{value || '-'}</div>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-neutral-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <PageNav nameMap={{ profile: t('trainee.profile.title') }} />
@@ -157,8 +156,8 @@ export default function Profile() {
         {/* Loading State */}
         {loading && (
           <div className="min-h-[400px] flex flex-col items-center justify-center">
-            <div className="w-12 h-12 border-4 border-cyan-200 border-t-cyan-500 rounded-full animate-spin mb-4"></div>
-            <p className="text-slate-500">Đang tải thông tin...</p>
+            <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
+            <p className="text-neutral-600 font-medium">Đang tải thông tin...</p>
           </div>
         )}
 
@@ -177,31 +176,33 @@ export default function Profile() {
         {/* Profile Content */}
         {!loading && !error && (
           <div className="mt-6 space-y-6">
-            {/* Hero Card */}
-            <div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50">
-              {/* Gradient Top Bar */}
-              <div className="h-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
+            {/* Hero Card - Industrial Style */}
+            <div className="relative bg-white border-2 border-neutral-200 overflow-hidden">
+              {/* Industrial Top Bar */}
+              <div className="h-2 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-500" />
 
               <div className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                  {/* Avatar with Ring */}
+                  {/* Avatar with Industrial Ring */}
                   <div className="relative">
-                    <div className="w-28 h-28 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 p-1 shadow-lg shadow-cyan-500/25">
+                    <div className="w-28 h-28 border-4 border-emerald-600 p-1 bg-emerald-500">
                       {avatarUrl ? (
                         <img
                           src={avatarUrl}
                           alt={fullName}
-                          className="w-full h-full rounded-full object-cover bg-white"
+                          className="w-full h-full object-cover bg-white"
                           onError={() => setImgErr(true)}
                         />
                       ) : (
-                        <div className="w-full h-full rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                          <span className="text-3xl font-bold text-white">{initial}</span>
+                        <div className="w-full h-full bg-emerald-700 flex items-center justify-center">
+                          <span className="text-3xl font-black text-white">{initial}</span>
                         </div>
                       )}
                     </div>
                     {/* Status Badge */}
-                    <div className={`absolute -bottom-1 -right-1 px-3 py-1 rounded-full text-xs font-semibold shadow-md ${status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                    <div className={`absolute -bottom-2 -right-2 px-3 py-1 text-xs font-black uppercase tracking-wider border-2 ${status === 'Active'
+                        ? 'bg-emerald-400 border-emerald-600 text-emerald-900'
+                        : 'bg-neutral-200 border-neutral-400 text-neutral-700'
                       }`}>
                       {status}
                     </div>
@@ -209,74 +210,116 @@ export default function Profile() {
 
                   {/* User Info */}
                   <div className="flex-1 text-center sm:text-left">
-                    <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
+                    <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-tight">
                       {fullName}
                     </h1>
-                    <p className="text-slate-500 mt-1">{email}</p>
+                    <p className="text-neutral-600 mt-1 font-medium">{email}</p>
                     <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
-                      <span className="px-3 py-1 rounded-full bg-cyan-100 text-cyan-700 text-sm font-semibold">
+                      <span className="px-3 py-1 bg-emerald-500 border-2 border-emerald-700 text-white text-sm font-bold uppercase">
                         {userRole}
                       </span>
-                      <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-sm font-medium">
+                      <span className="px-3 py-1 bg-neutral-100 border-2 border-neutral-300 text-neutral-700 text-sm font-mono font-bold">
                         ID: {studentId}
                       </span>
                     </div>
                   </div>
 
-                  {/* Edit Button */}
-                  <Button
-                    type="primary"
-                    size="large"
-                    icon={<EditOutlined />}
+                  {/* Edit Button - Industrial Style */}
+                  <button
                     onClick={() => navigate('/profile/edit')}
-                    className="!rounded-xl !font-semibold"
+                    className="px-5 py-2.5 bg-emerald-500 border-2 border-emerald-700 text-white font-black uppercase text-xs tracking-wider hover:bg-emerald-600 hover:shadow-[4px_4px_0px_0px_rgba(5,150,105,1)] transition-all flex items-center gap-2"
                   >
+                    <Edit className="w-4 h-4" />
                     {t('trainee.profile.editProfile')}
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
 
-            {/* Personal Information */}
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-              <div className="h-1 bg-gradient-to-r from-cyan-400 to-blue-500" />
+            {/* Personal Information - Industrial Style */}
+            <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+              <div className="h-1 bg-emerald-500" />
               <div className="p-6">
-                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                  <User className="w-5 h-5 text-cyan-500" />
+                <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                  <div className="w-8 h-8 bg-emerald-500 border-2 border-emerald-700 flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
                   {t('trainee.profile.title')}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <InfoItem icon={User} label={t('trainee.profile.fullName')} value={fullName} iconColor="text-cyan-500" />
-                  <InfoItem icon={Mail} label={t('trainee.profile.email')} value={email} iconColor="text-blue-500" />
-                  <InfoItem icon={Phone} label={t('trainee.profile.phone')} value={phone} iconColor="text-indigo-500" />
-                  <InfoItem icon={Shield} label={t('trainee.profile.role')} value={userRole} iconColor="text-emerald-500" />
+                  <InfoItem icon={User} label={t('trainee.profile.fullName')} value={fullName} />
+                  <InfoItem icon={Mail} label={t('trainee.profile.email')} value={email} />
+                  <InfoItem icon={Phone} label={t('trainee.profile.phone')} value={phone} />
+                  <InfoItem icon={Shield} label={t('trainee.profile.role')} value={userRole} />
                 </div>
               </div>
             </div>
 
-            {/* Driver License Section */}
+            {/* Driver License Section - Industrial Style */}
             {profileData && (
-              <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-                <div className="h-1 bg-gradient-to-r from-amber-400 to-orange-500" />
+              <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+                <div className="h-1 bg-amber-500" />
                 <div className="p-6">
-                  <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                    <Car className="w-5 h-5 text-amber-500" />
+                  <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                    <div className="w-8 h-8 bg-amber-500 border-2 border-amber-700 flex items-center justify-center">
+                      <Car className="w-4 h-4 text-white" />
+                    </div>
                     {t('trainee.profile.driverLicense')}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <InfoItem icon={IdCard} label={t('trainee.profile.licenseNumber')} value={profileData.driverLicenseNumber} iconColor="text-amber-500" />
-                    <InfoItem icon={Shield} label={t('trainee.profile.licenseLevel')} value={profileData.driverLicenseLevel} iconColor="text-orange-500" />
-                    <InfoItem icon={Calendar} label={t('trainee.profile.issuedDate')} value={fmtDate(profileData.driverLicenseIssuedDate)} iconColor="text-amber-500" />
-                    <InfoItem icon={Calendar} label={t('trainee.profile.validFrom')} value={fmtDate(profileData.driverLicenseValidStartDate)} iconColor="text-orange-500" />
-                    <InfoItem icon={Calendar} label={t('trainee.profile.validTo')} value={fmtDate(profileData.driverLicenseValidEndDate)} iconColor="text-red-500" />
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-amber-500 border-2 border-amber-700 flex items-center justify-center flex-shrink-0">
+                        <IdCard className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('trainee.profile.licenseNumber')}</div>
+                        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{profileData.driverLicenseNumber || '-'}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-amber-500 border-2 border-amber-700 flex items-center justify-center flex-shrink-0">
+                        <Shield className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('trainee.profile.licenseLevel')}</div>
+                        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{profileData.driverLicenseLevel || '-'}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-amber-500 border-2 border-amber-700 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('trainee.profile.issuedDate')}</div>
+                        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{fmtDate(profileData.driverLicenseIssuedDate)}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-amber-500 border-2 border-amber-700 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('trainee.profile.validFrom')}</div>
+                        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{fmtDate(profileData.driverLicenseValidStartDate)}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-red-500 border-2 border-red-700 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('trainee.profile.validTo')}</div>
+                        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{fmtDate(profileData.driverLicenseValidEndDate)}</div>
+                      </div>
+                    </div>
                   </div>
                   {profileData.driverLicenseImageUrl && (
-                    <div className="mt-5 pt-5 border-t border-slate-100">
-                      <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Ảnh bằng lái</div>
+                    <div className="mt-5 pt-5 border-t-2 border-neutral-100">
+                      <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">Ảnh bằng lái</div>
                       <img
                         src={profileData.driverLicenseImageUrl}
                         alt="Driver License"
-                        className="max-w-[250px] rounded-xl border border-slate-200 shadow-sm"
+                        className="max-w-[250px] border-2 border-neutral-200"
                       />
                     </div>
                   )}
@@ -284,25 +327,35 @@ export default function Profile() {
               </div>
             )}
 
-            {/* Education Section */}
+            {/* Education Section - Industrial Style */}
             {profileData && (
-              <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-                <div className="h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
+              <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+                <div className="h-1 bg-sky-500" />
                 <div className="p-6">
-                  <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-emerald-500" />
+                  <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                    <div className="w-8 h-8 bg-sky-500 border-2 border-sky-700 flex items-center justify-center">
+                      <GraduationCap className="w-4 h-4 text-white" />
+                    </div>
                     {t('trainee.profile.education')}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <InfoItem icon={GraduationCap} label={t('trainee.profile.educationLevel')} value={profileData.educationLevel} iconColor="text-emerald-500" />
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-sky-500 border-2 border-sky-700 flex items-center justify-center flex-shrink-0">
+                        <GraduationCap className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('trainee.profile.educationLevel')}</div>
+                        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{profileData.educationLevel || '-'}</div>
+                      </div>
+                    </div>
                   </div>
                   {profileData.educationImageUrl && (
-                    <div className="mt-5 pt-5 border-t border-slate-100">
-                      <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Chứng chỉ học vấn</div>
+                    <div className="mt-5 pt-5 border-t-2 border-neutral-100">
+                      <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">Chứng chỉ học vấn</div>
                       <img
                         src={profileData.educationImageUrl}
                         alt="Education Certificate"
-                        className="max-w-[250px] rounded-xl border border-slate-200 shadow-sm"
+                        className="max-w-[250px] border-2 border-neutral-200"
                       />
                     </div>
                   )}
@@ -310,27 +363,53 @@ export default function Profile() {
               </div>
             )}
 
-            {/* Citizen ID Section */}
+            {/* Citizen ID Section - Industrial Style */}
             {profileData && (
-              <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-                <div className="h-1 bg-gradient-to-r from-violet-400 to-purple-500" />
+              <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+                <div className="h-1 bg-violet-500" />
                 <div className="p-6">
-                  <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                    <IdCard className="w-5 h-5 text-violet-500" />
+                  <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                    <div className="w-8 h-8 bg-violet-500 border-2 border-violet-700 flex items-center justify-center">
+                      <IdCard className="w-4 h-4 text-white" />
+                    </div>
                     {t('trainee.profile.citizenId')}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <InfoItem icon={IdCard} label={t('trainee.profile.citizenCardId')} value={profileData.citizenCardId} iconColor="text-violet-500" />
-                    <InfoItem icon={Calendar} label={t('trainee.profile.issuedDate')} value={fmtDate(profileData.citizenCardIssuedDate)} iconColor="text-purple-500" />
-                    <InfoItem icon={MapPin} label={t('trainee.profile.placeOfIssue')} value={profileData.citizenCardPlaceOfIssue} iconColor="text-violet-500" />
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-violet-500 border-2 border-violet-700 flex items-center justify-center flex-shrink-0">
+                        <IdCard className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('trainee.profile.citizenCardId')}</div>
+                        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{profileData.citizenCardId || '-'}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-violet-500 border-2 border-violet-700 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('trainee.profile.issuedDate')}</div>
+                        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{fmtDate(profileData.citizenCardIssuedDate)}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-violet-500 border-2 border-violet-700 flex items-center justify-center flex-shrink-0">
+                        <MapPin className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('trainee.profile.placeOfIssue')}</div>
+                        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{profileData.citizenCardPlaceOfIssue || '-'}</div>
+                      </div>
+                    </div>
                   </div>
                   {profileData.citizenCardImageUrl && (
-                    <div className="mt-5 pt-5 border-t border-slate-100">
-                      <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Ảnh CCCD</div>
+                    <div className="mt-5 pt-5 border-t-2 border-neutral-100">
+                      <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">Ảnh CCCD</div>
                       <img
                         src={profileData.citizenCardImageUrl}
                         alt="Citizen Card"
-                        className="max-w-[250px] rounded-xl border border-slate-200 shadow-sm"
+                        className="max-w-[250px] border-2 border-neutral-200"
                       />
                     </div>
                   )}
@@ -343,5 +422,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
