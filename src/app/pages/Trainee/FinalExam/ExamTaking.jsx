@@ -312,15 +312,24 @@ export default function ExamTaking() {
                 }
             } catch (e) { }
 
+            // Filter to get the specific partial result if the API returns the full Final Exam object
+            let specificResult = result;
+            if (result.partials && Array.isArray(result.partials)) {
+                const found = result.partials.find(p => String(p.id) === String(id));
+                if (found) {
+                    specificResult = found;
+                }
+            }
+
             // Navigate to result page with API result
             navigate(`/final-exam/${id}/result`, {
                 state: {
                     examData,
-                    resultData: result, // Pass the full API result
-                    score: result.totalMarks, // or use result.partials[0]?.marks if structure matches
-                    isPass: result.isPass,
+                    resultData: specificResult, // Pass the specific partial object
+                    score: specificResult.marks !== undefined ? specificResult.marks : specificResult.totalMarks,
+                    isPass: specificResult.isPass,
                     // keep these for fallback display if needed
-                    correctCount: result.partials?.[0]?.marks || 0, // approximation if count not returned
+                    correctCount: specificResult.marks || 0,
                     totalQuestions: questions.length,
                 },
             });
