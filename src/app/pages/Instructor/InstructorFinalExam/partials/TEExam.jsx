@@ -117,8 +117,9 @@ export default function TEExam({ classId }) {
         examWeight: values.examWeight,
         duration: values.duration,
         quizId: values.quizId,
-        startTime: values.timeRange?.[0]?.toISOString(),
-        endTime: values.timeRange?.[1]?.toISOString(),
+        // FIX: Send local time format instead of UTC
+        startTime: values.timeRange?.[0]?.format('YYYY-MM-DDTHH:mm:ss'),
+        endTime: values.timeRange?.[1]?.format('YYYY-MM-DDTHH:mm:ss'),
       };
 
       if (selectedConfig) {

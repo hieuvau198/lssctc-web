@@ -72,8 +72,9 @@ export default function PEExam({ classId }) {
         type: 'Practical',
         examWeight: values.examWeight,
         duration: values.duration,
-        startTime: values.timeRange?.[0]?.toISOString(),
-        endTime: values.timeRange?.[1]?.toISOString(),
+        // FIX: Send local time format instead of UTC
+        startTime: values.timeRange?.[0]?.format('YYYY-MM-DDTHH:mm:ss'),
+        endTime: values.timeRange?.[1]?.format('YYYY-MM-DDTHH:mm:ss'),
         checklistConfig: values.checklistConfig
       };
 
