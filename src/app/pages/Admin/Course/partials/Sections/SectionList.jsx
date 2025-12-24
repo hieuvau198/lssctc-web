@@ -1,29 +1,53 @@
 // src/app/pages/Admin/Course/partials/Sections/SectionList.jsx
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Button, Popconfirm, message, Tooltip } from 'antd';
-import { PlusOutlined, DeleteOutlined, UploadOutlined, EditOutlined, LockOutlined } from '@ant-design/icons';
-import { fetchSectionsByCourse, removeSectionFromCourse } from '../../../../../apis/ProgramManager/SectionApi';
+import { Table, Button, Popconfirm, message, Tooltip, Tag, Spin } from 'antd';
+import { 
+  PlusOutlined, DeleteOutlined, UploadOutlined, EditOutlined, LockOutlined, 
+  DownOutlined, RightOutlined, FileTextOutlined, RocketOutlined, ExperimentOutlined 
+} from '@ant-design/icons';
+import { 
+  fetchSectionsByCourse, 
+  removeSectionFromCourse, 
+  fetchActivitiesBySection, // Import this
+  deleteActivity // Import this
+} from '../../../../../apis/ProgramManager/SectionApi';
 import { fetchClassesByCourse } from '../../../../../apis/ProgramManager/CourseApi';
+
 import AddSectionModal from './AddSectionModal';
 import EditSectionModal from './EditSectionModal';
 import ImportSectionsModal from './ImportSectionsModal';
+import AddActivityModal from './AddActivityModal'; // Import this
+import EditActivityModal from './EditActivityModal'; // Import this
 
 const SectionList = ({ courseId }) => {
   const { t } = useTranslation();
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasClasses, setHasClasses] = useState(false);
+
+  // Section Modals
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isImportModalVisible, setIsImportModalVisible] = useState(false);
   const [selectedSection, setSelectedSection] = useState(null);
-  const [hasClasses, setHasClasses] = useState(false);
+
+  // Activity Modals
+  const [isAddActivityModalVisible, setIsAddActivityModalVisible] = useState(false);
+  const [isEditActivityModalVisible, setIsEditActivityModalVisible] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [targetSectionId, setTargetSectionId] = useState(null);
+  
+  // Expanded Rows State (to cache activities)
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]);
+  const [activitiesCache, setActivitiesCache] = useState({}); // { sectionId: [activities] }
+  const [loadingActivities, setLoadingActivities] = useState({}); // { sectionId: bool }
 
   const loadData = async () => {
     if (!courseId) return;
     setLoading(true);
     
-    // 1. Fetch Sections (Critical for display)
+    // 1. Fetch Sections
     try {
       const sectionsData = await fetchSectionsByCourse(courseId);
       setSections(sectionsData);
@@ -32,13 +56,11 @@ const SectionList = ({ courseId }) => {
       message.error(t('admin.courses.sections.loadError'));
     }
 
-    // 2. Fetch Classes (Validation for add/remove)
-    // Run independently so errors (like 404/400) don't block section display
+    // 2. Fetch Classes
     try {
       const classesData = await fetchClassesByCourse(courseId);
       setHasClasses(classesData && classesData.length > 0);
     } catch (error) {
-      console.warn("Failed to check for classes (defaulting to allowing edits):", error);
       setHasClasses(false);
     } finally {
       setLoading(false);
@@ -49,19 +71,112 @@ const SectionList = ({ courseId }) => {
     loadData();
   }, [courseId]);
 
-  const handleRemove = async (sectionId) => {
+  // --- Activity Logic ---
+  const loadActivitiesForSection = async (sectionId) => {
+    setLoadingActivities(prev => ({ ...prev, [sectionId]: true }));
     try {
-      await removeSectionFromCourse(courseId, sectionId);
-      message.success(t('admin.courses.sections.removeSuccess'));
-      loadData();
+      const activities = await fetchActivitiesBySection(sectionId);
+      setActivitiesCache(prev => ({ ...prev, [sectionId]: activities }));
     } catch (error) {
-      message.error(error.response?.data?.message || t('admin.courses.sections.removeError'));
+      message.error("Failed to load activities");
+    } finally {
+      setLoadingActivities(prev => ({ ...prev, [sectionId]: false }));
     }
   };
 
-  const handleEdit = (record) => {
-    setSelectedSection(record);
-    setIsEditModalVisible(true);
+  const handleExpand = (expanded, record) => {
+    if (expanded && !activitiesCache[record.id]) {
+      loadActivitiesForSection(record.id);
+    }
+    setExpandedRowKeys(expanded ? [...expandedRowKeys, record.id] : expandedRowKeys.filter(k => k !== record.id));
+  };
+
+  const handleDeleteActivity = async (activityId, sectionId) => {
+    try {
+      await deleteActivity(activityId);
+      message.success("Activity removed");
+      loadActivitiesForSection(sectionId); // Refresh list
+    } catch (error) {
+      message.error("Failed to remove activity");
+    }
+  };
+
+  // --- Renderers ---
+  
+  const expandedRowRender = (section) => {
+    const isLoading = loadingActivities[section.id];
+    const activities = activitiesCache[section.id] || [];
+
+    const activityColumns = [
+      { 
+        title: '', 
+        key: 'icon', 
+        width: 40,
+        render: (_, r) => {
+          if (r.activityType === 'Quiz') return <RocketOutlined className="text-blue-500" />;
+          if (r.activityType === 'Practice') return <ExperimentOutlined className="text-purple-500" />;
+          return <FileTextOutlined className="text-neutral-500" />;
+        }
+      },
+      { title: 'Activity Title', dataIndex: 'activityTitle', key: 'title', render: (t) => <span className="font-semibold">{t}</span> },
+      { title: 'Type', dataIndex: 'activityType', key: 'type', width: 100, render: (t) => <Tag>{t}</Tag> },
+      { title: 'Duration', dataIndex: 'estimatedDurationMinutes', key: 'duration', width: 100, render: (m) => `${m} mins` },
+      {
+        title: 'Actions',
+        key: 'actions',
+        width: 100,
+        render: (_, record) => (
+          <div className="flex gap-2">
+            <Button 
+                size="small"
+                type="text" 
+                icon={<EditOutlined />} 
+                onClick={() => {
+                  setSelectedActivity(record);
+                  setTargetSectionId(section.id); // Track which section we are editing in
+                  setIsEditActivityModalVisible(true);
+                }}
+            />
+            <Popconfirm title="Remove activity?" onConfirm={() => handleDeleteActivity(record.id, section.id)}>
+              <Button size="small" type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </div>
+        ),
+      },
+    ];
+
+    return (
+      <div className="bg-neutral-50 p-4 border-t-2 border-neutral-200">
+        <div className="flex justify-between items-center mb-3">
+            <span className="text-xs font-bold uppercase text-neutral-500 tracking-wider">
+                {activities.length} Activities
+            </span>
+            <Button 
+                size="small" 
+                type="dashed" 
+                icon={<PlusOutlined />}
+                onClick={() => {
+                    setTargetSectionId(section.id);
+                    setIsAddActivityModalVisible(true);
+                }}
+            >
+                Add Activity
+            </Button>
+        </div>
+        
+        {isLoading ? <Spin className="w-full py-4" /> : (
+            <Table 
+                columns={activityColumns} 
+                dataSource={activities} 
+                pagination={false} 
+                rowKey="id"
+                size="small"
+                locale={{ emptyText: "No activities in this section" }}
+                className="border border-neutral-200 bg-white"
+            />
+        )}
+      </div>
+    );
   };
 
   const columns = [
@@ -100,7 +215,10 @@ const SectionList = ({ courseId }) => {
                 <Button 
                     type="text" 
                     icon={<EditOutlined />} 
-                    onClick={() => handleEdit(record)}
+                    onClick={() => {
+                        setSelectedSection(record);
+                        setIsEditModalVisible(true);
+                    }}
                 />
             </Tooltip>
             
@@ -112,7 +230,15 @@ const SectionList = ({ courseId }) => {
                 <Popconfirm
                     title={t('admin.courses.sections.removeTitle')}
                     description={t('admin.courses.sections.removeDescription')}
-                    onConfirm={() => handleRemove(record.id)}
+                    onConfirm={async () => {
+                         try {
+                            await removeSectionFromCourse(courseId, record.id);
+                            message.success(t('admin.courses.sections.removeSuccess'));
+                            loadData();
+                          } catch (error) {
+                            message.error(error.response?.data?.message || t('admin.courses.sections.removeError'));
+                          }
+                    }}
                     okText={t('common.yes')}
                     cancelText={t('common.no')}
                     okButtonProps={{ danger: true }}
@@ -131,37 +257,21 @@ const SectionList = ({ courseId }) => {
         {hasClasses ? (
             <Tooltip title={t('admin.courses.sections.cannotModifyWithClasses') || "Cannot add/import sections when classes exist"}>
                 <div className="flex gap-3">
-                     <button
-                        disabled
-                        className="flex items-center gap-2 h-10 px-6 bg-neutral-100 border-2 border-neutral-200 text-neutral-400 cursor-not-allowed font-bold uppercase text-xs tracking-wider"
-                    >
-                        <UploadOutlined />
-                        {t('admin.courses.sections.importExcel')}
+                     <button disabled className="flex items-center gap-2 h-10 px-6 bg-neutral-100 border-2 border-neutral-200 text-neutral-400 cursor-not-allowed font-bold uppercase text-xs tracking-wider">
+                        <UploadOutlined /> {t('admin.courses.sections.importExcel')}
                     </button>
-                    <button
-                        disabled
-                        className="flex items-center gap-2 h-10 px-6 bg-neutral-100 border-2 border-neutral-200 text-neutral-400 cursor-not-allowed font-black uppercase text-xs tracking-wider"
-                    >
-                        <PlusOutlined />
-                        {t('admin.courses.sections.addSection')}
+                    <button disabled className="flex items-center gap-2 h-10 px-6 bg-neutral-100 border-2 border-neutral-200 text-neutral-400 cursor-not-allowed font-black uppercase text-xs tracking-wider">
+                        <PlusOutlined /> {t('admin.courses.sections.addSection')}
                     </button>
                 </div>
             </Tooltip>
         ) : (
             <>
-                <button
-                    onClick={() => setIsImportModalVisible(true)}
-                    className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-neutral-300 text-neutral-700 hover:border-black hover:text-black hover:bg-neutral-50 transition-all font-bold uppercase text-xs tracking-wider"
-                >
-                    <UploadOutlined />
-                    {t('admin.courses.sections.importExcel')}
+                <button onClick={() => setIsImportModalVisible(true)} className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-neutral-300 text-neutral-700 hover:border-black hover:text-black hover:bg-neutral-50 transition-all font-bold uppercase text-xs tracking-wider">
+                    <UploadOutlined /> {t('admin.courses.sections.importExcel')}
                 </button>
-                <button
-                    onClick={() => setIsAddModalVisible(true)}
-                    className="flex items-center gap-2 h-10 px-6 bg-yellow-400 border-2 border-yellow-400 text-black hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all font-black uppercase text-xs tracking-wider"
-                >
-                    <PlusOutlined />
-                    {t('admin.courses.sections.addSection')}
+                <button onClick={() => setIsAddModalVisible(true)} className="flex items-center gap-2 h-10 px-6 bg-yellow-400 border-2 border-yellow-400 text-black hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all font-black uppercase text-xs tracking-wider">
+                    <PlusOutlined /> {t('admin.courses.sections.addSection')}
                 </button>
             </>
         )}
@@ -176,6 +286,17 @@ const SectionList = ({ courseId }) => {
         locale={{ emptyText: t('admin.courses.sections.noSections') }}
         className="industrial-table"
         rowClassName="hover:bg-yellow-50/50 transition-colors"
+        expandable={{
+            expandedRowRender,
+            onExpand: handleExpand,
+            expandedRowKeys,
+            expandIcon: ({ expanded, onExpand, record }) =>
+                expanded ? (
+                  <DownOutlined onClick={e => onExpand(record, e)} />
+                ) : (
+                  <RightOutlined onClick={e => onExpand(record, e)} />
+                )
+        }}
       />
 
       <style>{`
@@ -193,39 +314,48 @@ const SectionList = ({ courseId }) => {
         }
       `}</style>
 
+      {/* Section Modals */}
       <AddSectionModal
         visible={isAddModalVisible}
         courseId={courseId}
         onCancel={() => setIsAddModalVisible(false)}
-        onSuccess={() => {
-          setIsAddModalVisible(false);
-          loadData();
-        }}
+        onSuccess={() => { setIsAddModalVisible(false); loadData(); }}
       />
-      
       <EditSectionModal
         visible={isEditModalVisible}
         section={selectedSection}
-        onCancel={() => {
-            setIsEditModalVisible(false);
-            setSelectedSection(null);
-        }}
-        onSuccess={() => {
-            setIsEditModalVisible(false);
-            setSelectedSection(null);
-            loadData();
-        }}
+        onCancel={() => { setIsEditModalVisible(false); setSelectedSection(null); }}
+        onSuccess={() => { setIsEditModalVisible(false); setSelectedSection(null); loadData(); }}
       />
-
       <ImportSectionsModal
         visible={isImportModalVisible}
         courseId={courseId}
         onCancel={() => setIsImportModalVisible(false)}
+        onSuccess={() => { setIsImportModalVisible(false); loadData(); }}
+      />
+
+      {/* Activity Modals */}
+      <AddActivityModal
+        visible={isAddActivityModalVisible}
+        sectionId={targetSectionId}
+        onCancel={() => setIsAddActivityModalVisible(false)}
         onSuccess={() => {
-          setIsImportModalVisible(false);
-          loadData();
+            setIsAddActivityModalVisible(false);
+            loadActivitiesForSection(targetSectionId);
         }}
       />
+      
+      <EditActivityModal
+        visible={isEditActivityModalVisible}
+        activity={selectedActivity}
+        onCancel={() => { setIsEditActivityModalVisible(false); setSelectedActivity(null); }}
+        onSuccess={() => { 
+            setIsEditActivityModalVisible(false); 
+            setSelectedActivity(null);
+            loadActivitiesForSection(targetSectionId);
+        }}
+      />
+
     </div>
   );
 };

@@ -6,12 +6,18 @@ import { message } from 'antd';
 import QuizAttempt from './QuizAttempt/QuizAttempt';
 import QuizAttemptsHistory from './QuizAttemptsHistory'; 
 import { getQuizAttempts } from '../../../../apis/Trainee/TraineeQuizApi'; 
-import { ClipboardList, Clock, Target, HelpCircle, CheckCircle2, XCircle, Trophy, Play, AlertCircle } from 'lucide-react';
+import { ClipboardList, Clock, Target, HelpCircle, CheckCircle2, XCircle, Trophy, Play, AlertCircle, RotateCcw } from 'lucide-react';
 import dayjs from 'dayjs';
 
 // Child component for quiz start screen - Light Wire Theme
 const QuizStartScreen = ({ quiz, onStart, t, sessionStatus, attempts }) => {
     const isSessionOpen = sessionStatus ? sessionStatus.isOpen : true;
+
+    // Logic for max attempts
+    const maxAttempts = quiz.maxAttempts || 0;
+    const attemptsCount = attempts ? attempts.length : 0;
+    const hasLimit = maxAttempts > 0;
+    const isAttemptsExhausted = hasLimit && attemptsCount >= maxAttempts;
 
     return (
         <div className="space-y-6">
@@ -59,7 +65,7 @@ const QuizStartScreen = ({ quiz, onStart, t, sessionStatus, attempts }) => {
 
                 {/* Quiz Info Grid */}
                 <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         {/* Time Limit */}
                         <div className="border-2 border-black p-4">
                             <div className="flex items-center gap-3">
@@ -98,6 +104,21 @@ const QuizStartScreen = ({ quiz, onStart, t, sessionStatus, attempts }) => {
                                 </div>
                             </div>
                         </div>
+
+                         {/* Max Attempts */}
+                         <div className="border-2 border-black p-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 border-2 border-black flex items-center justify-center bg-gray-100">
+                                    <RotateCcw className="w-5 h-5 text-black" />
+                                </div>
+                                <div>
+                                    <div className="text-xs text-neutral-500 uppercase font-bold tracking-wider">{t('trainee.quizContent.maxAttempts', 'Attempts')}</div>
+                                    <div className="text-lg font-black text-black">
+                                        {hasLimit ? `${attemptsCount}/${maxAttempts}` : 'Unlimited'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Instructions */}
@@ -110,13 +131,27 @@ const QuizStartScreen = ({ quiz, onStart, t, sessionStatus, attempts }) => {
                             <li>• {t('trainee.quizContent.instruction4', 'Make sure you have a stable internet connection')}</li>
                         </ul>
                     </div>
+                    
+                    {/* Max Attempts Warning */}
+                    {isAttemptsExhausted && (
+                        <div className="mb-6 p-4 bg-red-50 border-2 border-red-400 flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <div className="font-bold text-red-800 uppercase">{t('trainee.quizContent.limitReached', 'Attempt Limit Reached')}</div>
+                                <div className="text-sm text-red-700">{t('trainee.quizContent.limitReachedDesc', 'You have used all available attempts for this quiz.')}</div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Start Button */}
                     <div className="text-center">
                         <button
                             onClick={onStart}
-                            disabled={!isSessionOpen}
-                            className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:scale-[1.02] hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={!isSessionOpen || isAttemptsExhausted}
+                            className={`inline-flex items-center gap-2 px-8 py-3 font-bold uppercase tracking-wider border-2 border-black transition-all duration-200 
+                                ${!isSessionOpen || isAttemptsExhausted 
+                                    ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed' 
+                                    : 'bg-yellow-400 text-black hover:scale-[1.02] hover:shadow-lg'}`}
                         >
                             <Play className="w-5 h-5" />
                             {t('trainee.quizContent.startQuiz', 'Start Quiz')}
@@ -135,6 +170,12 @@ const QuizStartScreen = ({ quiz, onStart, t, sessionStatus, attempts }) => {
 const QuizResultScreen = ({ quiz, onRestart, t, attempts }) => {
     const isPass = (quiz.attemptScore || 0) >= (quiz.passScoreCriteria || 0);
     const scorePercent = (quiz.totalScore > 0) ? Math.round((quiz.attemptScore / quiz.totalScore) * 100) : 0;
+    
+    // Logic for max attempts re-check
+    const maxAttempts = quiz.maxAttempts || 0;
+    const attemptsCount = attempts ? attempts.length : 0;
+    const hasLimit = maxAttempts > 0;
+    const isAttemptsExhausted = hasLimit && attemptsCount >= maxAttempts;
 
     return (
         <div className="space-y-6">
@@ -210,15 +251,27 @@ const QuizResultScreen = ({ quiz, onRestart, t, attempts }) => {
                         </div>
                     </div>
 
-                    {/* Retake Button */}
+                    {/* Retake Button or Max Attempts Warning */}
                     <div className="text-center">
-                        <button
-                            onClick={onRestart}
-                            className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:scale-[1.02] hover:shadow-lg transition-all duration-200"
-                        >
-                            <Play className="w-5 h-5" />
-                            {t('trainee.quizContent.retakeQuiz', 'Retake Quiz')}
-                        </button>
+                        {isAttemptsExhausted ? (
+                            <div className="p-4 bg-red-50 border-2 border-red-400 inline-block text-left">
+                                <div className="flex items-center gap-2 text-red-800 font-bold uppercase mb-1">
+                                    <AlertCircle className="w-5 h-5" />
+                                    <span>{t('trainee.quizContent.limitReached', 'Attempt Limit Reached')}</span>
+                                </div>
+                                <p className="text-red-700 text-sm">
+                                    {t('trainee.quizContent.limitReachedDesc', 'You have used all available attempts for this quiz.')}
+                                </p>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={onRestart}
+                                className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:scale-[1.02] hover:shadow-lg transition-all duration-200"
+                            >
+                                <Play className="w-5 h-5" />
+                                {t('trainee.quizContent.retakeQuiz', 'Retake Quiz')}
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -246,10 +299,6 @@ export default function QuizContent({ sectionQuiz, partition, onReload, onSubmit
         console.log("Partition Obj:", partition);
         console.log("SectionQuiz Obj:", sectionQuiz);
         
-        // Try to get activityRecordId. 
-        // 1. Check partition (unlikely to have activityRecordId based on your parent code)
-        // 2. Check sectionQuiz.activityRecordId (might be undefined if not at top level)
-        // 3. Check sectionQuiz.activityRecord.activityRecordId (most likely correct place)
         const activityRecordId = 
             partition?.activityRecordId || 
             sectionQuiz?.activityRecordId || 

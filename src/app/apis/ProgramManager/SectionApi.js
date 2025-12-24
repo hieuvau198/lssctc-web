@@ -4,6 +4,7 @@ import apiClient from '../../libs/axios';
 // Assumes VITE_API_Program_Service_URL points to '.../api'
 const BASE_URL = `${import.meta.env.VITE_API_Program_Service_URL}/Sections`;
 
+//#region  Section APIs
 /**
  * Fetch all sections assigned to a specific course
  */
@@ -118,3 +119,59 @@ export async function updateSectionOrder(courseId, sectionId, newOrder) {
     throw err;
   }
 }
+//#endregion
+
+
+//#region Activity APIs
+/**
+ * Fetch all activities for a specific section
+ */
+export async function fetchActivitiesBySection(sectionId) {
+  try {
+    const resp = await apiClient.get(`/Activities/section/${sectionId}`);
+    return resp.data;
+  } catch (err) {
+    console.error(`Error fetching activities for section ${sectionId}:`, err);
+    throw err;
+  }
+}
+
+/**
+ * Create a new activity and assign it to a section
+ */
+export async function createActivity(sectionId, activityData) {
+  try {
+    const resp = await apiClient.post(`/Activities/section/${sectionId}/activity/create`, activityData);
+    return resp.data;
+  } catch (err) {
+    console.error('Error creating activity:', err);
+    throw err;
+  }
+}
+
+/**
+ * Update an existing activity
+ */
+export async function updateActivity(activityId, activityData) {
+  try {
+    const resp = await apiClient.put(`/Activities/${activityId}`, activityData);
+    return resp.data;
+  } catch (err) {
+    console.error('Error updating activity:', err);
+    throw err;
+  }
+}
+
+/**
+ * Delete an activity
+ */
+export async function deleteActivity(activityId) {
+  try {
+    await apiClient.delete(`/Activities/${activityId}`);
+    return true;
+  } catch (err) {
+    console.error('Error deleting activity:', err);
+    throw err;
+  }
+}
+//#endregion
