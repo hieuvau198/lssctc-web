@@ -28,7 +28,7 @@ export default function LoginBranding() {
                 </div>
 
                 <div className="space-y-4">
-                    {['Chương trình đào tạo chuyên nghiệp', 'Mô phỏng 3D thực tế', 'Chứng nhận quốc tế'].map((item, i) => (
+                    {['Chương trình đào tạo chuyên nghiệp', 'Mô phỏng 3D thực tế', 'Cơ hội việc làm 98%'].map((item, i) => (
                         <div key={i} className="flex items-center gap-3">
                             <div className="w-2 h-2 bg-yellow-400" />
                             <span className="text-neutral-300 uppercase tracking-wider text-sm font-semibold">{item}</span>

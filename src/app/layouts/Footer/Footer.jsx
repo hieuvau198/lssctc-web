@@ -19,7 +19,7 @@ export default function Footer() {
     { to: "/program", label: t('footer.advancedCrane', 'Vận hành cần cẩu nâng cao') },
     { to: "/program", label: t('footer.laborSafety', 'An toàn lao động') },
     { to: "/program", label: t('footer.logistics', 'Logistics & Kho vận') },
-    { to: "/program", label: t('footer.internationalCert', 'Chứng nhận quốc tế') },
+    { to: "/program", label: t('footer.internationalCert', 'Cơ hội việc làm 98%') },
   ];
 
   return (
@@ -131,13 +131,13 @@ export default function Footer() {
                 <div className="w-8 h-8 bg-neutral-900 border border-neutral-700 flex items-center justify-center flex-shrink-0">
                   <Phone className="w-4 h-4 text-yellow-400" />
                 </div>
-                <span className="text-neutral-400">+84 123 456 789</span>
+                <span className="text-neutral-400">+84 704 585 671</span>
               </li>
               <li className="flex items-center gap-3 text-sm">
                 <div className="w-8 h-8 bg-neutral-900 border border-neutral-700 flex items-center justify-center flex-shrink-0">
                   <Mail className="w-4 h-4 text-yellow-400" />
                 </div>
-                <span className="text-neutral-400">info@lssctc.com</span>
+                <span className="text-neutral-400">nhatdmse182236@fpt.edu.vn</span>
               </li>
             </ul>
 

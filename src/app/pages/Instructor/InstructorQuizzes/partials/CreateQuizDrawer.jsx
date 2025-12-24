@@ -367,7 +367,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
             <X className="w-4 h-4" />
             {t('instructor.quizzes.drawer.cancel')}
           </button>
-          <div
+          <button
             onClick={() => form.submit()}
             disabled={submitting}
             className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 text-white font-bold uppercase text-sm border-2 border-gray-800 hover:bg-gray-900 transition-all disabled:opacity-50"
@@ -375,10 +375,13 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
             {submitting ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Save className="w-4 h-4" />
+              <Save className="w-4 h-4 text-white " />
             )}
+            <span className='text-white'>
             {mode === 'edit' ? t('instructor.quizzes.drawer.save') : t('instructor.quizzes.drawer.create')}
-          </div>
+            </span>
+            
+          </button>
         </div>
       }
     >
@@ -504,7 +507,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
           </div>
           <div className="p-4">
             {/* Stats Grid */}
-            <div className="grid grid-cols-4 gap-3 mb-4">
+            <div className="grid grid-cols-3 gap-3 mb-4">
               <div className="border-2 border-gray-300 p-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold uppercase text-gray-500">{t('instructor.quizzes.scoreSummary.questions')}</span>
@@ -517,8 +520,8 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
               <div className="border-2 border-gray-300 p-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold uppercase text-gray-500">{t('instructor.quizzes.scoreSummary.totalScore')}</span>
-                  <div className="w-8 h-8 bg-gray-800 flex items-center justify-center">
-                    <Star className="w-4 h-4 text-white" />
+                  <div className="w-8 h-8 bg-gray-100 border border-gray-300 flex items-center justify-center">
+                    <Star className="w-4 h-4 text-gray-600" />
                   </div>
                 </div>
                 <p className={`text-2xl font-black ${isScoreValid ? 'text-gray-800' : 'text-gray-400'}`}>{totalScore.toFixed(2)}</p>
@@ -534,17 +537,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                   {questions.length > 0 ? (totalScore / questions.length).toFixed(2) : '0'}
                 </p>
               </div>
-              <div className="border-2 border-gray-300 p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold uppercase text-gray-500">{t('instructor.quizzes.scoreSummary.remainingScore')}</span>
-                  <div className="w-8 h-8 bg-gray-800 flex items-center justify-center">
-                    <List className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-                <p className={`text-2xl font-black ${isScoreValid ? 'text-gray-800' : 'text-gray-400'}`}>
-                  {remainingScore.toFixed(2)}
-                </p>
-              </div>
+              
             </div>
 
             {/* Status Message */}
@@ -597,7 +590,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                     onClick={() => removeQuestion(qIdx)}
                     className="w-8 h-8 bg-gray-700 border-2 border-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors text-white"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 text-white" />
                   </button>
                 </div>
 
