@@ -12,7 +12,8 @@ import InstructorTable from '../../../pages/Admin/ManageUser/partials/Instructor
 import SimulationManagerTable from '../../../pages/Admin/ManageUser/partials/SimulationManagerTable'
 import TraineeTable from '../../../pages/Admin/ManageUser/partials/TraineeTable'
 import ManagerProgramList from '../../../pages/Admin/Program/ManagerProgramList'
-import ProgramDetailPage from '../../../pages/Admin/Program/ProgramDetailPage' // Import new page
+import ProgramDetailPage from '../../../pages/Admin/Program/ProgramDetailPage'
+import MaterialManagement from '../../../pages/Admin/Material/MaterialManagement' // Import new page
 import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
 
 export default function AdminRoutes() {
@@ -38,7 +39,6 @@ export default function AdminRoutes() {
           <Route path=":id" element={<CourseViewPage />} />
         </Route>
 
-        {/* Updated Program Routes */}
         <Route path="programs">
             <Route index element={<ManagerProgramList />} />
             <Route path=":id" element={<ProgramDetailPage />} />
@@ -49,6 +49,10 @@ export default function AdminRoutes() {
           <Route path=":id" element={<ClassViewPage />} />
           <Route path=":id/edit" element={<ClassEditPage />} />
         </Route>
+
+        {/* Added Material Route */}
+        <Route path="materials" element={<MaterialManagement />} />
+
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

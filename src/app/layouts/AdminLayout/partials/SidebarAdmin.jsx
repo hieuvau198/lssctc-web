@@ -1,6 +1,6 @@
 import { Tooltip, App, Avatar, Dropdown, Menu, Switch } from 'antd';
 import { NavLink, useNavigate, useLocation } from 'react-router';
-import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, MoreVertical } from 'lucide-react';
+import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, MoreVertical, FileText } from 'lucide-react'; // Added FileText
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
 import useAuthStore from '../../../store/authStore';
@@ -14,9 +14,11 @@ const getItems = (t) => [
   { to: '/admin/programs', label: t('sidebar.programs'), icon: <Layers className="w-5 h-5" />, matchPath: '/admin/programs' },
   { to: '/admin/courses', label: t('sidebar.courses'), icon: <BookOpen className="w-5 h-5" />, matchPath: '/admin/courses' },
   { to: '/admin/class', label: t('sidebar.class'), icon: <Calendar className="w-5 h-5" />, matchPath: '/admin/class' },
+  { to: '/admin/materials', label: t('sidebar.materials'), icon: <FileText className="w-5 h-5" />, matchPath: '/admin/materials' }, // Added Materials Item
 ];
 
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
+  // ... rest of the component remains the same
   const { message } = App.useApp();
   const navigate = useNavigate();
   const location = useLocation();
