@@ -141,7 +141,7 @@ export default function EditInstructorProfile() {
           <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 shadow-lg shadow-slate-200/50">
             <div className="flex flex-col justify-center items-center py-12">
               <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-              <p className="text-slate-500">{t('instructor.profile.loadingProfileData')}</p>
+              <p className="text-slate-500">{t('instructor.profile.loadingProfile')}</p>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function EditInstructorProfile() {
                 <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
                   {t('instructor.profile.updateProfile')}
                 </h1>
-                <p className="text-sm text-slate-500 mt-1">{t('instructor.profile.updateProfileDescription')}</p>
+                <p className="text-sm text-slate-500 mt-1">{t('instructor.profile.updateDescription')}</p>
               </div>
             </div>
           </div>
@@ -212,50 +212,50 @@ export default function EditInstructorProfile() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.fullName')}</span>}
+                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.fullName')}</span>}
                   name="fullname"
-                  rules={[{ required: true, message: t('instructor.profile.validation.fullNameRequired') }]}
+                  rules={[{ required: true, message: t('instructor.profile.form.fullNameRequired') }]}
                 >
                   <Input
-                    placeholder={t('instructor.profile.placeholder.fullName')}
+                    placeholder={t('instructor.profile.form.fullNamePlaceholder')}
                     className="!rounded-xl !py-2.5"
                   />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.email')}</span>}
+                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.email')}</span>}
                   name="email"
                   rules={[
-                    { required: true, message: t('instructor.profile.validation.emailRequired') },
-                    { type: 'email', message: t('instructor.profile.validation.emailInvalid') }
+                    { required: true, message: t('instructor.profile.form.emailRequired') },
+                    { type: 'email', message: t('instructor.profile.form.emailInvalid') }
                   ]}
                 >
                   <Input
-                    placeholder={t('instructor.profile.placeholder.email')}
+                    placeholder={t('instructor.profile.form.emailPlaceholder')}
                     className="!rounded-xl !py-2.5"
                   />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.phoneNumber')}</span>}
+                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.phone')}</span>}
                   name="phoneNumber"
                   rules={[
-                    { required: true, message: t('instructor.profile.validation.phoneRequired') },
-                    { pattern: /^[0-9]{4,15}$/, message: t('instructor.profile.validation.phoneInvalid') }
+                    { required: true, message: t('instructor.profile.form.phoneRequired') },
+                    { pattern: /^[0-9]{4,15}$/, message: t('instructor.profile.form.phoneInvalid') }
                   ]}
                 >
                   <Input
-                    placeholder={t('instructor.profile.placeholder.phoneNumber')}
+                    placeholder={t('instructor.profile.form.phonePlaceholder')}
                     className="!rounded-xl !py-2.5"
                   />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.instructorCode')}</span>}
+                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.instructorCode')}</span>}
                   name="instructorCode"
                 >
                   <Input
-                    placeholder={t('instructor.profile.placeholder.instructorCode')}
+                    placeholder={t('instructor.profile.form.instructorCodePlaceholder')}
                     disabled
                     className="!rounded-xl !py-2.5 !bg-slate-50"
                   />
@@ -263,14 +263,14 @@ export default function EditInstructorProfile() {
               </div>
 
               <Form.Item
-                label={<span className="text-slate-700 font-medium">{t('instructor.profile.avatarUrl')}</span>}
+                label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.avatarUrl')}</span>}
                 name="avatarUrl"
                 rules={[
-                  { type: 'url', message: t('instructor.profile.validation.urlInvalid') }
+                  { type: 'url', message: t('instructor.profile.form.avatarUrlInvalid') }
                 ]}
               >
                 <Input
-                  placeholder={t('instructor.profile.placeholder.avatarUrl')}
+                  placeholder={t('instructor.profile.form.avatarUrlPlaceholder')}
                   className="!rounded-xl !py-2.5"
                 />
               </Form.Item>
@@ -300,15 +300,15 @@ export default function EditInstructorProfile() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.experienceYears')}</span>}
+                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.experienceYears')}</span>}
                   name="experienceYears"
                   rules={[
-                    { required: true, message: t('instructor.profile.validation.experienceYearsRequired') },
-                    { type: 'number', min: 0, max: 50, message: t('instructor.profile.validation.experienceYearsRange') }
+                    { required: true, message: t('instructor.profile.form.experienceYearsRequired') },
+                    { type: 'number', min: 0, max: 50, message: t('instructor.profile.form.experienceYearsRange') }
                   ]}
                 >
                   <InputNumber
-                    placeholder={t('instructor.profile.placeholder.experienceYears')}
+                    placeholder={t('instructor.profile.form.experienceYearsPlaceholder')}
                     className="!w-full !rounded-xl"
                     min={0}
                     max={50}
@@ -316,38 +316,38 @@ export default function EditInstructorProfile() {
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.professionalProfileUrl')}</span>}
+                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.professionalProfileUrl')}</span>}
                   name="professionalProfileUrl"
                   rules={[
-                    { type: 'url', message: t('instructor.profile.validation.urlInvalid') }
+                    { type: 'url', message: t('instructor.profile.form.professionalProfileUrlInvalid') }
                   ]}
                 >
                   <Input
-                    placeholder={t('instructor.profile.placeholder.professionalProfileUrl')}
+                    placeholder={t('instructor.profile.form.professionalProfileUrlPlaceholder')}
                     className="!rounded-xl !py-2.5"
                   />
                 </Form.Item>
               </div>
 
               <Form.Item
-                label={<span className="text-slate-700 font-medium">{t('instructor.profile.specialization')}</span>}
+                label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.specialization')}</span>}
                 name="specialization"
-                rules={[{ required: true, message: t('instructor.profile.validation.specializationRequired') }]}
+                rules={[{ required: true, message: t('instructor.profile.form.specializationRequired') }]}
               >
                 <Input
-                  placeholder={t('instructor.profile.placeholder.specialization')}
+                  placeholder={t('instructor.profile.form.specializationPlaceholder')}
                   className="!rounded-xl !py-2.5"
                 />
               </Form.Item>
 
               <Form.Item
-                label={<span className="text-slate-700 font-medium">{t('instructor.profile.biography')}</span>}
+                label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.biography')}</span>}
                 name="biography"
-                rules={[{ required: true, message: t('instructor.profile.validation.biographyRequired') }]}
+                rules={[{ required: true, message: t('instructor.profile.form.biographyRequired') }]}
               >
                 <TextArea
                   rows={5}
-                  placeholder={t('instructor.profile.placeholder.biography')}
+                  placeholder={t('instructor.profile.form.biographyPlaceholder')}
                   maxLength={1000}
                   showCount
                   className="!rounded-xl"
@@ -379,27 +379,27 @@ export default function EditInstructorProfile() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.status')}</div>
+                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.form.status')}</div>
                   <div className="flex items-center gap-2">
                     <span className={`w-2 h-2 rounded-full ${profileData?.isInstructorActive ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
                     <span className="text-slate-800 font-semibold">
-                      {profileData?.isInstructorActive ? t('instructor.profile.active') : t('instructor.profile.inactive')}
+                      {profileData?.isInstructorActive ? t('common.active') : t('common.inactive')}
                     </span>
                   </div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.hireDate')}</div>
+                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.form.hireDate')}</div>
                   <div className="text-slate-800 font-semibold">
                     {profileData?.hireDate ? new Date(profileData.hireDate).toLocaleDateString('vi-VN') : 'N/A'}
                   </div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.userId')}</div>
+                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.form.userId')}</div>
                   <div className="text-slate-800 font-semibold font-mono text-sm">{profileData?.userId || 'N/A'}</div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.role')}</div>
-                  <div className="text-slate-800 font-semibold">{t('instructor.profile.instructorRole')}</div>
+                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.form.role')}</div>
+                  <div className="text-slate-800 font-semibold">{t('instructor.profile.roles.instructor')}</div>
                 </div>
               </div>
             </div>
@@ -431,3 +431,4 @@ export default function EditInstructorProfile() {
     </div>
   );
 }
+
