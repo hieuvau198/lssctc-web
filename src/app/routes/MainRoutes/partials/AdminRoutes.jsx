@@ -1,3 +1,5 @@
+// hieuvau198/lssctc-web/lssctc-web-dev/src/app/routes/MainRoutes/partials/AdminRoutes.jsx
+
 import { Route, Routes } from 'react-router'
 import AdminLayout from '../../../layouts/AdminLayout/AdminLayout'
 import NotFound from '../../../layouts/NotFound'
@@ -13,7 +15,8 @@ import SimulationManagerTable from '../../../pages/Admin/ManageUser/partials/Sim
 import TraineeTable from '../../../pages/Admin/ManageUser/partials/TraineeTable'
 import ManagerProgramList from '../../../pages/Admin/Program/ManagerProgramList'
 import ProgramDetailPage from '../../../pages/Admin/Program/ProgramDetailPage'
-import MaterialManagement from '../../../pages/Admin/Material/MaterialManagement' // Import new page
+import MaterialManagement from '../../../pages/Admin/Material/MaterialManagement'
+import QuizManagement from '../../../pages/Admin/Quiz/QuizManagement' // Import QuizManagement
 import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
 
 export default function AdminRoutes() {
@@ -50,8 +53,10 @@ export default function AdminRoutes() {
           <Route path=":id/edit" element={<ClassEditPage />} />
         </Route>
 
-        {/* Added Material Route */}
         <Route path="materials" element={<MaterialManagement />} />
+        
+        {/* Added Quiz Route */}
+        <Route path="quizzes" element={<QuizManagement />} />
 
       </Route>
       <Route path="*" element={<NotFound />} />
