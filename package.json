@@ -14,7 +14,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ant-design/cssinjs": "^2.0.1",
     "@hello-pangea/dnd": "^18.0.1",
     "@react-oauth/google": "^0.12.2",
     "antd": "^5.27.1",

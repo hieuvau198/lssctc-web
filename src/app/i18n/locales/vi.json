@@ -225,7 +225,7 @@
     "allRightsReserved": "Đã đăng ký bản quyền."
   },
   "sidebar": {
-    "dashboard": "Tổng quan",
+    "dashboard": "Bảng điều khiển",
     "users": "Người dùng",
     "programs": "Chương trình",
     "courses": "Khóa học",
@@ -2295,7 +2295,7 @@
     },
     "support": {
       "text": "Gặp vấn đề cài đặt? Gửi email",
-      "email": "nhatdmse182236@fpt.edu.vn",
+      "email": "support@lssctc.example",
       "withDetails": "với phiên bản hệ điều hành và file log của bạn"
     },
     "error": {
