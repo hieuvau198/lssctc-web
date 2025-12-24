@@ -125,6 +125,7 @@ export default function SEExam({ classId }) {
       dataIndex: 'startTime',
       render: (val) => val ? <span className="text-neutral-600"><DayTimeFormat value={val} showTime /></span> : '-',
     },
+    /* // [DISABLED] Edit Action disabled
     {
       title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.action')}</span>,
       width: 100,
@@ -150,6 +151,7 @@ export default function SEExam({ classId }) {
         </button>
       ),
     },
+    */
   ];
 
   const studentColumns = [
@@ -226,6 +228,7 @@ export default function SEExam({ classId }) {
           <ExternalLink className="w-4 h-4" />
           {t('instructor.finalExam.viewDetails')}
         </button>
+        {/* [DISABLED] Create button disabled
         {configs.length === 0 && isExamNotYet && (
           <button
             onClick={() => { setSelectedConfig(null); form.resetFields(); setCreateModalOpen(true); }}
@@ -235,6 +238,7 @@ export default function SEExam({ classId }) {
             {t('instructor.finalExam.createExam', 'Tạo bài thi')}
           </button>
         )}
+        */}
       </div>
 
       {/* Config Table */}

@@ -176,6 +176,7 @@ export default function TEExam({ classId }) {
       dataIndex: 'startTime',
       render: (val) => val ? <span className="text-neutral-600"><DayTimeFormat value={val} showTime /></span> : '-',
     },
+    /* // [DISABLED] Edit Action disabled
     {
       title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.action')}</span>,
       key: 'actions',
@@ -192,7 +193,8 @@ export default function TEExam({ classId }) {
           <Edit3 className="w-4 h-4" />
         </button>
       ),
-    },
+    }, 
+    */
   ];
 
   // Student Detail Table Columns
@@ -266,8 +268,8 @@ export default function TEExam({ classId }) {
 
   return (
     <div className="py-4">
-      {/* Action Button - Only show when no configs exist */}
-      {configs.length === 0 && isExamNotYet && ( // [UPDATED] Only allow create if NotYet
+      {/* [DISABLED] Create button disabled 
+      {configs.length === 0 && isExamNotYet && ( 
         <div className="mb-4 flex justify-end">
           <button
             onClick={handleCreate}
@@ -278,6 +280,7 @@ export default function TEExam({ classId }) {
           </button>
         </div>
       )}
+      */}
 
       {/* Config Table */}
       <div className="bg-white border-2 border-black">

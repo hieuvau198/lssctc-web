@@ -86,7 +86,7 @@ const ClassViewPage = () => {
           <img
             src={classItem.backgroundImageUrl}
             alt="Background"
-            className="w-full h-full object-cover opacity-60"
+            className="w-full h-full "
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-600 bg-neutral-900 absolute inset-0">

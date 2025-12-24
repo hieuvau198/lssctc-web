@@ -196,6 +196,8 @@ export default function PEExam({ classId }) {
       dataIndex: 'startTime',
       render: (val) => val ? <span className="text-neutral-600"><DayTimeFormat value={val} showTime /></span> : '-',
     },
+    /*
+    // [DISABLED] Edit Action disabled
     {
       title: <span className="uppercase font-black text-xs">{t('instructor.finalExam.action')}</span>,
       width: 100,
@@ -212,6 +214,7 @@ export default function PEExam({ classId }) {
         </button>
       ),
     },
+    */
   ];
 
   const studentColumns = [
@@ -301,7 +304,8 @@ export default function PEExam({ classId }) {
 
   return (
     <div className="py-4">
-      {/* Action Button - Only show when no configs exist */}
+      {/* Action Button - Only show when no configs exist 
+      // [DISABLED] Create button disabled
       {configs.length === 0 && isExamNotYet && ( // [UPDATED] Only allowed if NotYet
         <div className="mb-4 flex justify-end">
           <button
@@ -313,6 +317,7 @@ export default function PEExam({ classId }) {
           </button>
         </div>
       )}
+      */}
 
       {/* Config Table */}
       <div className="bg-white border-2 border-black">
