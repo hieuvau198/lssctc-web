@@ -1,6 +1,7 @@
 {
   "common": {
     "save": "Lưu",
+    "saveChanges": "Lưu thay đổi",
     "cancel": "Hủy",
     "delete": "Xóa",
     "edit": "Sửa",
@@ -1085,7 +1086,9 @@
         "durationRequired": "Vui lòng nhập thời lượng",
         "cancel": "Hủy",
         "addActivity": "Thêm Hoạt động",
-        "addFailed": "Thêm hoạt động thất bại. Vui lòng thử lại."
+        "addFailed": "Thêm hoạt động thất bại. Vui lòng thử lại.",
+        "durationExceedsLimit": "Thời lượng vượt quá giới hạn! Còn lại: {{remaining}} phút (Chương: {{sectionDuration}} phút, Đã dùng: {{usedDuration}} phút)",
+        "durationInfo": "Thời gian còn lại: {{remaining}} phút (Chương: {{sectionDuration}} phút, Đã dùng: {{usedDuration}} phút)"
       },
       "manageMaterialModal": {
         "title": "Quản lý Tài liệu cho: {{title}}",
@@ -2740,7 +2743,10 @@
           "description": "Mô tả",
           "descriptionPlaceholder": "Nhập mô tả chương",
           "durationMinutes": "Thời lượng (Phút)",
-          "durationMinutesPlaceholder": "Nhập thời lượng tính bằng phút"
+          "durationMinutesPlaceholder": "Nhập thời lượng tính bằng phút",
+          "durationRequired": "Vui lòng nhập thời lượng",
+          "durationExceedsLimit": "Thời lượng vượt quá giới hạn! Còn lại: {{remaining}} phút (Khóa học: {{courseDuration}} phút, Đã dùng: {{usedDuration}} phút)",
+          "durationInfo": "Thời gian còn lại: {{remaining}} phút (Khóa học: {{courseDuration}} phút, Đã dùng: {{usedDuration}} phút)"
         }
       }
     },

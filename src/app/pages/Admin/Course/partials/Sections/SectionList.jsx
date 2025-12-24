@@ -20,7 +20,7 @@ import ImportSectionsModal from './ImportSectionsModal';
 import AddActivityModal from './AddActivityModal'; // Import this
 import EditActivityModal from './EditActivityModal'; // Import this
 
-const SectionList = ({ courseId }) => {
+const SectionList = ({ courseId, courseDurationHours = 0 }) => {
   const { t } = useTranslation();
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -318,6 +318,8 @@ const SectionList = ({ courseId }) => {
       <AddSectionModal
         visible={isAddModalVisible}
         courseId={courseId}
+        courseDurationMinutes={courseDurationHours * 60}
+        existingSections={sections}
         onCancel={() => setIsAddModalVisible(false)}
         onSuccess={() => { setIsAddModalVisible(false); loadData(); }}
       />

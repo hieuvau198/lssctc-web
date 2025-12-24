@@ -75,15 +75,15 @@ export default function InstructorProfile() {
     return isNaN(d) ? '-' : d.toLocaleDateString('vi-VN');
   };
 
-  // Info Item Component
-  const InfoItem = ({ icon: Icon, label, value, iconColor = "text-blue-500" }) => (
+  // Info Item Component - Industrial Style
+  const InfoItem = ({ icon: Icon, label, value }) => (
     <div className="flex items-start gap-3">
-      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center shadow-sm flex-shrink-0`}>
-        <Icon className={`w-5 h-5 ${iconColor}`} />
+      <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center flex-shrink-0">
+        <Icon className="w-5 h-5 text-black" />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</div>
-        <div className="text-slate-700 font-semibold mt-0.5 truncate">{value || '-'}</div>
+        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{label}</div>
+        <div className="text-neutral-800 font-semibold mt-0.5 truncate">{value || '-'}</div>
       </div>
     </div>
   );
@@ -96,9 +96,9 @@ export default function InstructorProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-neutral-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 shadow-lg shadow-slate-200/50">
+          <div className="bg-white border-2 border-neutral-200 p-8">
             <Skeleton avatar active paragraph={{ rows: 8 }} />
           </div>
         </div>
@@ -108,18 +108,21 @@ export default function InstructorProfile() {
 
   if (error) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-neutral-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 shadow-lg shadow-slate-200/50">
+          <div className="bg-white border-2 border-neutral-200 p-8">
             <Alert
               message={t('instructor.profile.error.errorLoadingProfile')}
               description={error}
               type="error"
               showIcon
             />
-            <Button className="mt-4" onClick={() => navigate(-1)}>
+            <button
+              onClick={() => navigate(-1)}
+              className="mt-4 px-5 py-2.5 bg-neutral-100 border-2 border-neutral-300 text-neutral-700 font-bold uppercase text-xs tracking-wider hover:bg-neutral-200 transition-all"
+            >
               {t('common.back')}
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -128,10 +131,10 @@ export default function InstructorProfile() {
 
   if (!profileData) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-neutral-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 shadow-lg shadow-slate-200/50">
-            <div className="text-center text-slate-500">{t('instructor.profile.instructorNotFound')}</div>
+          <div className="bg-white border-2 border-neutral-200 p-8">
+            <div className="text-center text-neutral-500">{t('instructor.profile.instructorNotFound')}</div>
           </div>
         </div>
       </div>
@@ -139,34 +142,36 @@ export default function InstructorProfile() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-neutral-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="space-y-6">
-          {/* Hero Card */}
-          <div className="relative bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50">
-            {/* Gradient Top Bar */}
-            <div className="h-2 bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500" />
+          {/* Hero Card - Industrial Style */}
+          <div className="relative bg-white border-2 border-neutral-200 overflow-hidden">
+            {/* Industrial Top Bar */}
+            <div className="h-2 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400" />
 
             <div className="p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                {/* Avatar with Ring */}
+                {/* Avatar with Industrial Ring */}
                 <div className="relative">
-                  <div className="w-28 h-28 rounded-full bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 p-1 shadow-lg shadow-blue-500/25">
+                  <div className="w-28 h-28 border-4 border-black p-1 bg-yellow-400">
                     {profileData?.avatarUrl && !imgErr ? (
                       <img
                         src={profileData.avatarUrl}
                         alt={fullName}
-                        className="w-full h-full rounded-full object-cover bg-white"
+                        className="w-full h-full object-cover bg-white"
                         onError={() => setImgErr(true)}
                       />
                     ) : (
-                      <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                        <span className="text-3xl font-bold text-white">{initial}</span>
+                      <div className="w-full h-full bg-black flex items-center justify-center">
+                        <span className="text-3xl font-black text-yellow-400">{initial}</span>
                       </div>
                     )}
                   </div>
                   {/* Status Badge */}
-                  <div className={`absolute -bottom-1 -right-1 px-3 py-1 rounded-full text-xs font-semibold shadow-md ${status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                  <div className={`absolute -bottom-2 -right-2 px-3 py-1 text-xs font-black uppercase tracking-wider border-2 ${status === 'Active'
+                      ? 'bg-emerald-400 border-emerald-600 text-emerald-900'
+                      : 'bg-neutral-200 border-neutral-400 text-neutral-700'
                     }`}>
                     {status}
                   </div>
@@ -174,19 +179,19 @@ export default function InstructorProfile() {
 
                 {/* User Info */}
                 <div className="flex-1 text-center sm:text-left">
-                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
+                  <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-tight">
                     {fullName}
                   </h1>
-                  <p className="text-slate-500 mt-1">{profileData?.email || '-'}</p>
+                  <p className="text-neutral-600 mt-1 font-medium">{profileData?.email || '-'}</p>
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
-                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
+                    <span className="px-3 py-1 bg-yellow-400 border-2 border-black text-black text-sm font-bold uppercase">
                       {getRoleName(profileData?.role)}
                     </span>
-                    <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-sm font-medium">
+                    <span className="px-3 py-1 bg-neutral-100 border-2 border-neutral-300 text-neutral-700 text-sm font-mono font-bold">
                       {profileData?.instructorCode || 'N/A'}
                     </span>
                     {profileData?.experienceYears && (
-                      <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium flex items-center gap-1">
+                      <span className="px-3 py-1 bg-black text-yellow-400 text-sm font-bold flex items-center gap-1">
                         <Award className="w-3.5 h-3.5" />
                         {profileData.experienceYears} năm KN
                       </span>
@@ -194,111 +199,122 @@ export default function InstructorProfile() {
                   </div>
                 </div>
 
-                {/* Edit Button */}
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<Edit className="w-4 h-4" />}
+                {/* Edit Button - Industrial Style */}
+                <button
                   onClick={() => navigate('/instructor/profile/edit')}
-                  className="!rounded-xl !font-semibold !flex !items-center !gap-2"
+                  className="px-5 py-2.5 bg-yellow-400 border-2 border-black text-black font-black uppercase text-xs tracking-wider hover:bg-yellow-500 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2"
                 >
+                  <Edit className="w-4 h-4" />
                   {t('instructor.profile.editProfile')}
-                </Button>
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Personal Information */}
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-            <div className="h-1 bg-gradient-to-r from-blue-400 to-indigo-500" />
+          {/* Personal Information - Industrial Style */}
+          <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+            <div className="h-1 bg-yellow-400" />
             <div className="p-6">
-              <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                <User className="w-5 h-5 text-blue-500" />
+              <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+                  <User className="w-4 h-4 text-black" />
+                </div>
                 {t('instructor.profile.personalInformation')}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <InfoItem icon={User} label={t('instructor.profile.form.fullName')} value={profileData?.fullname} iconColor="text-blue-500" />
-                <InfoItem icon={Mail} label={t('instructor.profile.form.email')} value={profileData?.email} iconColor="text-indigo-500" />
-                <InfoItem icon={Phone} label={t('instructor.profile.form.phone')} value={profileData?.phoneNumber} iconColor="text-purple-500" />
-                <InfoItem icon={Shield} label={t('instructor.profile.form.role')} value={getRoleName(profileData?.role)} iconColor="text-emerald-500" />
+                <InfoItem icon={User} label={t('instructor.profile.form.fullName')} value={profileData?.fullname} />
+                <InfoItem icon={Mail} label={t('instructor.profile.form.email')} value={profileData?.email} />
+                <InfoItem icon={Phone} label={t('instructor.profile.form.phone')} value={profileData?.phoneNumber} />
+                <InfoItem icon={Shield} label={t('instructor.profile.form.role')} value={getRoleName(profileData?.role)} />
               </div>
             </div>
           </div>
 
-          {/* Professional Information */}
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-            <div className="h-1 bg-gradient-to-r from-indigo-400 to-purple-500" />
+          {/* Professional Information - Industrial Style */}
+          <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+            <div className="h-1 bg-black" />
             <div className="p-6">
-              <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                <IdCard className="w-5 h-5 text-indigo-500" />
+              <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                <div className="w-8 h-8 bg-black flex items-center justify-center">
+                  <IdCard className="w-4 h-4 text-yellow-400" />
+                </div>
                 {t('instructor.profile.professionalDetails')}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <InfoItem icon={IdCard} label={t('instructor.profile.form.instructorCode')} value={profileData?.instructorCode} iconColor="text-indigo-500" />
-                <InfoItem icon={Award} label={t('instructor.profile.form.experienceYears')} value={`${profileData?.experienceYears || 0} năm`} iconColor="text-purple-500" />
-                <InfoItem icon={Calendar} label={t('instructor.profile.form.hireDate')} value={fmtDate(profileData?.hireDate)} iconColor="text-blue-500" />
-                <InfoItem
-                  icon={Shield}
-                  label={t('instructor.profile.form.status')}
-                  value={
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${profileData?.isInstructorActive
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-red-100 text-red-700'
-                      }`}>
-                      {profileData?.isInstructorActive ? t('common.active') : t('common.inactive')}
-                    </span>
-                  }
-                  iconColor="text-emerald-500"
-                />
+                <InfoItem icon={IdCard} label={t('instructor.profile.form.instructorCode')} value={profileData?.instructorCode} />
+                <InfoItem icon={Award} label={t('instructor.profile.form.experienceYears')} value={`${profileData?.experienceYears || 0} năm`} />
+                <InfoItem icon={Calendar} label={t('instructor.profile.form.hireDate')} value={fmtDate(profileData?.hireDate)} />
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-yellow-400 border-2 border-black flex items-center justify-center flex-shrink-0">
+                    <Shield className="w-5 h-5 text-black" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">{t('instructor.profile.form.status')}</div>
+                    <div className="mt-1">
+                      <span className={`px-2 py-0.5 text-xs font-black uppercase ${profileData?.isInstructorActive
+                          ? 'bg-emerald-400 text-emerald-900'
+                          : 'bg-red-400 text-red-900'
+                        }`}>
+                        {profileData?.isInstructorActive ? t('common.active') : t('common.inactive')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Biography Section */}
+          {/* Biography Section - Industrial Style */}
           {profileData?.biography && (
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-              <div className="h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
+            <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+              <div className="h-1 bg-yellow-400" />
               <div className="p-6">
-                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-emerald-500" />
+                <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                  <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+                    <Briefcase className="w-4 h-4 text-black" />
+                  </div>
                   {t('instructor.profile.biography')}
                 </h2>
-                <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+                <p className="text-neutral-700 leading-relaxed whitespace-pre-line font-medium">
                   {profileData.biography}
                 </p>
               </div>
             </div>
           )}
 
-          {/* Specialization Section */}
+          {/* Specialization Section - Industrial Style */}
           {profileData?.specialization && (
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-              <div className="h-1 bg-gradient-to-r from-purple-400 to-pink-500" />
+            <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+              <div className="h-1 bg-black" />
               <div className="p-6">
-                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                  <Award className="w-5 h-5 text-purple-500" />
+                <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                  <div className="w-8 h-8 bg-black flex items-center justify-center">
+                    <Award className="w-4 h-4 text-yellow-400" />
+                  </div>
                   {t('instructor.profile.specialization')}
                 </h2>
-                <p className="text-slate-600 leading-relaxed">
+                <p className="text-neutral-700 leading-relaxed font-medium">
                   {profileData.specialization}
                 </p>
               </div>
             </div>
           )}
 
-          {/* Professional Certificate */}
+          {/* Professional Certificate - Industrial Style */}
           {profileData?.professionalProfileUrl && (
-            <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-              <div className="h-1 bg-gradient-to-r from-amber-400 to-orange-500" />
+            <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+              <div className="h-1 bg-yellow-400" />
               <div className="p-6">
-                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                  <Award className="w-5 h-5 text-amber-500" />
+                <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                  <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+                    <Award className="w-4 h-4 text-black" />
+                  </div>
                   {t('instructor.profile.professionalCertificate')}
                 </h2>
                 <img
                   src={profileData.professionalProfileUrl}
                   alt={t('instructor.profile.professionalCertificate')}
-                  className="max-w-2xl w-full rounded-xl border border-slate-200 shadow-sm"
+                  className="max-w-2xl w-full border-2 border-neutral-200"
                 />
               </div>
             </div>

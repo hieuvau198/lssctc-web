@@ -1,16 +1,74 @@
 // src/app/pages/Admin/Course/partials/Sections/AddSectionModal.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Form, Input, InputNumber, message } from 'antd';
+import { Modal, Form, Input, InputNumber, message, Alert } from 'antd';
 import { createSectionForCourse } from '../../../../../apis/ProgramManager/SectionApi';
 import { FilePlus, X } from 'lucide-react';
 
-const AddSectionModal = ({ visible, onCancel, onSuccess, courseId }) => {
+const AddSectionModal = ({ visible, onCancel, onSuccess, courseId, courseDurationMinutes = 0, existingSections = [] }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const [isDurationValid, setIsDurationValid] = useState(true);
+
+  // Watch duration field changes
+  const durationValue = Form.useWatch('estimatedDurationMinutes', form);
+
+  // Calculate used and remaining duration
+  const usedDuration = existingSections.reduce((sum, section) => sum + (section.estimatedDurationMinutes || 0), 0);
+  const remainingDuration = courseDurationMinutes - usedDuration;
+
+  // Validate duration in real-time when durationValue changes
+  useEffect(() => {
+    if (courseDurationMinutes > 0) {
+      const isValid = durationValue && durationValue >= 1 && durationValue <= remainingDuration;
+      setIsDurationValid(isValid);
+    } else {
+      // If no course duration limit, just check if value is valid
+      setIsDurationValid(durationValue && durationValue >= 1);
+    }
+  }, [durationValue, remainingDuration, courseDurationMinutes]);
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!visible) {
+      setIsDurationValid(true);
+    }
+  }, [visible]);
+
+  // Hide create button when duration is invalid
+  const shouldHideCreateButton = !isDurationValid || (courseDurationMinutes > 0 && remainingDuration <= 0);
+
+  // Custom validator for duration field
+  const validateDuration = (_, value) => {
+    if (!value || value < 1) {
+      return Promise.reject(new Error(t('admin.courses.sections.form.durationRequired')));
+    }
+    if (courseDurationMinutes > 0 && value > remainingDuration) {
+      return Promise.reject(
+        new Error(
+          t('admin.courses.sections.form.durationExceedsLimit', {
+            remaining: remainingDuration,
+            courseDuration: courseDurationMinutes,
+            usedDuration: usedDuration
+          })
+        )
+      );
+    }
+    return Promise.resolve();
+  };
 
   const handleSubmit = async (values) => {
+    // Extra validation before submit
+    if (courseDurationMinutes > 0 && values.estimatedDurationMinutes > remainingDuration) {
+      message.error(t('admin.courses.sections.form.durationExceedsLimit', {
+        remaining: remainingDuration,
+        courseDuration: courseDurationMinutes,
+        usedDuration: usedDuration
+      }));
+      return;
+    }
+
     setLoading(true);
     try {
       await createSectionForCourse(courseId, {
@@ -47,14 +105,9 @@ const AddSectionModal = ({ visible, onCancel, onSuccess, courseId }) => {
           <div className="w-10 h-10 bg-yellow-400 flex items-center justify-center">
             <FilePlus className="w-5 h-5 text-black" />
           </div>
-          <div>
-            <h3 className="text-white font-black uppercase text-lg leading-none m-0">
-              {t('admin.courses.sections.addNewSection')}
-            </h3>
-            <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
-              ID: {courseId}
-            </p>
-          </div>
+          <h3 className="text-white font-black uppercase text-lg leading-none m-0">
+            {t('admin.courses.sections.addNewSection')}
+          </h3>
         </div>
         <button
           onClick={onCancel}
@@ -94,6 +147,20 @@ const AddSectionModal = ({ visible, onCancel, onSuccess, courseId }) => {
         `}</style>
 
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          {/* Duration info message */}
+          {courseDurationMinutes > 0 && (
+            <Alert
+              message={t('admin.courses.sections.form.durationInfo', {
+                remaining: remainingDuration,
+                courseDuration: courseDurationMinutes,
+                usedDuration: usedDuration
+              })}
+              type={remainingDuration <= 0 ? 'warning' : 'info'}
+              showIcon
+              className="mb-4"
+            />
+          )}
+
           <Form.Item
             name="sectionTitle"
             label={t('admin.courses.sections.form.title')}
@@ -122,12 +189,11 @@ const AddSectionModal = ({ visible, onCancel, onSuccess, courseId }) => {
             name="estimatedDurationMinutes"
             label={t('admin.courses.sections.form.durationMinutes')}
             initialValue={60}
-            rules={[{ required: true, message: t('admin.courses.sections.form.durationRequired') }]}
+            rules={[{ validator: validateDuration }]}
             className="industrial-form-item"
           >
             <InputNumber
               min={1}
-              max={1000}
               className="industrial-input h-10 flex items-center"
             />
           </Form.Item>
@@ -141,14 +207,17 @@ const AddSectionModal = ({ visible, onCancel, onSuccess, courseId }) => {
             >
               {t('common.cancel')}
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-5 py-2.5 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all text-xs flex items-center gap-2"
-            >
-              {loading && <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />}
-              {t('common.create')}
-            </button>
+            {/* Only show Create button when duration is valid */}
+            {!shouldHideCreateButton && (
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-5 py-2.5 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all text-xs flex items-center gap-2"
+              >
+                {loading && <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />}
+                {t('common.create')}
+              </button>
+            )}
           </div>
         </Form>
       </div>

@@ -1,10 +1,9 @@
 // src\app\pages\Trainee\Profile\EditProfile.jsx
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Input, Button, message, Spin, Alert } from 'antd';
+import { Form, Input, message, Alert } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeftOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
-import { User, Phone, Image, GraduationCap, FileText, CreditCard, Car } from 'lucide-react';
+import { User, Phone, Image, GraduationCap, FileText, CreditCard, Car, ArrowLeft, Save, X } from 'lucide-react';
 import PageNav from '../../../components/PageNav/PageNav';
 import useAuthStore from '../../../store/authStore';
 import { getAuthToken } from '../../../libs/cookies';
@@ -97,13 +96,13 @@ export default function EditProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
+      <div className="min-h-screen bg-neutral-50">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <PageNav nameMap={{ profile: t('trainee.profile.title'), edit: t('trainee.editProfile.title') }} />
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg shadow-slate-200/50 p-12">
+          <div className="bg-white border-2 border-neutral-200 p-12">
             <div className="flex flex-col justify-center items-center">
-              <Spin size="large" />
-              <p className="mt-4 text-slate-500">{t('trainee.editProfile.loading')}</p>
+              <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
+              <p className="text-neutral-600 font-medium">{t('trainee.editProfile.loading')}</p>
             </div>
           </div>
         </div>
@@ -113,12 +112,17 @@ export default function EditProfile() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
+      <div className="min-h-screen bg-neutral-50">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <PageNav nameMap={{ profile: t('trainee.profile.title'), edit: t('trainee.editProfile.title') }} />
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg shadow-slate-200/50 p-8">
+          <div className="bg-white border-2 border-neutral-200 p-8">
             <Alert message={t('trainee.editProfile.errorLoadingProfile')} description={error} type="error" showIcon />
-            <Button className="mt-4" onClick={handleCancel}>{t('trainee.editProfile.backToProfile')}</Button>
+            <button
+              onClick={handleCancel}
+              className="mt-4 px-5 py-2.5 bg-neutral-100 border-2 border-neutral-300 text-neutral-700 font-bold uppercase text-xs tracking-wider hover:bg-neutral-200 transition-all"
+            >
+              {t('trainee.editProfile.backToProfile')}
+            </button>
           </div>
         </div>
       </div>
@@ -126,46 +130,65 @@ export default function EditProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/30">
+    <div className="min-h-screen bg-neutral-50">
+      {/* Industrial Form Styles */}
+      <style>{`
+        .trainee-industrial-form .ant-form-item-label > label {
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          font-size: 11px !important;
+          letter-spacing: 0.05em !important;
+          color: #525252 !important;
+        }
+        .trainee-industrial-form .ant-input {
+          border-radius: 0 !important;
+          border: 2px solid #e5e5e5 !important;
+        }
+        .trainee-industrial-form .ant-input:hover,
+        .trainee-industrial-form .ant-input:focus {
+          border-color: #10b981 !important;
+          box-shadow: none !important;
+        }
+      `}</style>
+
       <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
         <PageNav nameMap={{ profile: t('trainee.profile.title'), edit: t('trainee.editProfile.title') }} />
 
-        {/* Header Card */}
-        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg shadow-slate-200/50 overflow-hidden">
-          <div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500" />
+        {/* Header Card - Industrial Style */}
+        <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-500" />
           <div className="p-6 flex items-center gap-4">
-            <Button
-              icon={<ArrowLeftOutlined />}
+            <button
               onClick={handleCancel}
-              className="!rounded-xl"
+              className="w-10 h-10 bg-neutral-100 border-2 border-neutral-300 hover:border-emerald-500 hover:bg-emerald-50 flex items-center justify-center transition-all"
             >
-              {t('trainee.editProfile.back')}
-            </Button>
+              <ArrowLeft className="w-5 h-5 text-neutral-700" />
+            </button>
             <div className="flex items-center gap-3 flex-1">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-200/50">
+              <div className="w-12 h-12 bg-emerald-500 border-2 border-emerald-700 flex items-center justify-center">
                 <User className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-900">{t('trainee.editProfile.updateProfile')}</h3>
-                <p className="text-sm text-slate-500">{t('trainee.editProfile.updateProfileDesc')}</p>
+                <h3 className="text-xl font-black text-black uppercase tracking-tight">{t('trainee.editProfile.updateProfile')}</h3>
+                <p className="text-sm text-neutral-600">{t('trainee.editProfile.updateProfileDesc')}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Form Card */}
-        <div className="bg-white/90 p-6 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg shadow-slate-200/50 overflow-hidden">
-          <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off" className="p-6">
+        {/* Form Card - Industrial Style */}
+        <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+          <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off" className="p-6 trainee-industrial-form">
 
             {/* Read-only Information */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-slate-600" />
+                <div className="w-8 h-8 bg-neutral-400 flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-white" />
                 </div>
-                <h4 className="text-lg font-semibold text-slate-800">{t('trainee.editProfile.basicInfoReadOnly')}</h4>
+                <h4 className="text-lg font-black text-black uppercase tracking-tight">{t('trainee.editProfile.basicInfoReadOnly')}</h4>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-xl border border-slate-200/60">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5 bg-neutral-50 border-2 border-neutral-200">
                 {[
                   { label: t('trainee.profile.fullName'), value: profileData?.fullname },
                   { label: t('trainee.profile.email'), value: profileData?.email },
@@ -173,8 +196,8 @@ export default function EditProfile() {
                   { label: t('trainee.profile.studentId'), value: profileData?.traineeCode },
                 ].map((item, i) => (
                   <div key={i}>
-                    <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">{item.label}</div>
-                    <div className="text-slate-800 font-medium">{item.value || '-'}</div>
+                    <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">{item.label}</div>
+                    <div className="text-neutral-800 font-semibold">{item.value || '-'}</div>
                   </div>
                 ))}
               </div>
@@ -183,61 +206,61 @@ export default function EditProfile() {
             {/* Editable Fields */}
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                <div className="w-8 h-8 bg-emerald-500 border-2 border-emerald-700 flex items-center justify-center">
                   <GraduationCap className="w-4 h-4 text-white" />
                 </div>
-                <h4 className="text-lg font-semibold text-cyan-700">{t('trainee.editProfile.editableInfo')}</h4>
+                <h4 className="text-lg font-black text-black uppercase tracking-tight">{t('trainee.editProfile.editableInfo')}</h4>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Form.Item
-                  label={<span className="flex items-center gap-2"><Phone className="w-4 h-4 text-cyan-500" />{t('trainee.editProfile.phoneNumber')}</span>}
+                  label={<span className="flex items-center gap-2"><Phone className="w-4 h-4 text-emerald-500" />{t('trainee.editProfile.phoneNumber')}</span>}
                   name="phoneNumber"
                   rules={[
                     { required: true, message: t('trainee.editProfile.phoneRequired') },
                     { pattern: /^[0-9]{4,15}$/, message: t('trainee.editProfile.phonePattern') }
                   ]}
                 >
-                  <Input placeholder={t('trainee.editProfile.phonePlaceholder')} className="!rounded-xl !py-2.5" />
+                  <Input placeholder={t('trainee.editProfile.phonePlaceholder')} className="h-10" />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="flex items-center gap-2"><Image className="w-4 h-4 text-cyan-500" />{t('trainee.editProfile.avatarUrl')}</span>}
+                  label={<span className="flex items-center gap-2"><Image className="w-4 h-4 text-emerald-500" />{t('trainee.editProfile.avatarUrl')}</span>}
                   name="avatarUrl"
                   rules={[{ type: 'url', message: t('trainee.editProfile.urlInvalid') }]}
                 >
-                  <Input placeholder={t('trainee.editProfile.avatarPlaceholder')} className="!rounded-xl !py-2.5" />
+                  <Input placeholder={t('trainee.editProfile.avatarPlaceholder')} className="h-10" />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="flex items-center gap-2"><GraduationCap className="w-4 h-4 text-cyan-500" />{t('trainee.editProfile.educationLevelLabel')}</span>}
+                  label={<span className="flex items-center gap-2"><GraduationCap className="w-4 h-4 text-emerald-500" />{t('trainee.editProfile.educationLevelLabel')}</span>}
                   name="educationLevel"
                   rules={[{ required: true, message: t('trainee.editProfile.educationRequired') }]}
                 >
-                  <Input placeholder={t('trainee.editProfile.educationPlaceholder')} className="!rounded-xl !py-2.5" />
+                  <Input placeholder={t('trainee.editProfile.educationPlaceholder')} className="h-10" />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="flex items-center gap-2"><FileText className="w-4 h-4 text-cyan-500" />{t('trainee.editProfile.educationCertUrl')}</span>}
+                  label={<span className="flex items-center gap-2"><FileText className="w-4 h-4 text-emerald-500" />{t('trainee.editProfile.educationCertUrl')}</span>}
                   name="educationImageUrl"
                   rules={[{ type: 'url', message: t('trainee.editProfile.urlInvalid') }]}
                 >
-                  <Input placeholder={t('trainee.editProfile.certPlaceholder')} className="!rounded-xl !py-2.5" />
+                  <Input placeholder={t('trainee.editProfile.certPlaceholder')} className="h-10" />
                 </Form.Item>
               </div>
 
               {/* Current Images Preview */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 {profileData?.avatarUrl && (
-                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/60">
-                    <div className="text-sm font-medium text-slate-600 mb-3">{t('trainee.editProfile.currentAvatar')}</div>
-                    <img src={profileData.avatarUrl} alt="Avatar" className="w-24 h-24 object-cover rounded-full border-4 border-white shadow-lg" />
+                  <div className="bg-neutral-50 border-2 border-neutral-200 p-4">
+                    <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">{t('trainee.editProfile.currentAvatar')}</div>
+                    <img src={profileData.avatarUrl} alt="Avatar" className="w-24 h-24 object-cover border-4 border-emerald-500" />
                   </div>
                 )}
                 {profileData?.educationImageUrl && (
-                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/60">
-                    <div className="text-sm font-medium text-slate-600 mb-3">{t('trainee.editProfile.currentEducationCert')}</div>
-                    <img src={profileData.educationImageUrl} alt="Education Certificate" className="max-w-full max-h-32 rounded-lg border shadow" />
+                  <div className="bg-neutral-50 border-2 border-neutral-200 p-4">
+                    <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">{t('trainee.editProfile.currentEducationCert')}</div>
+                    <img src={profileData.educationImageUrl} alt="Education Certificate" className="max-w-full max-h-32 border-2 border-neutral-200" />
                   </div>
                 )}
               </div>
@@ -246,83 +269,86 @@ export default function EditProfile() {
             {/* Read-only Profile Sections */}
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                  <CreditCard className="w-4 h-4 text-slate-600" />
+                <div className="w-8 h-8 bg-neutral-400 flex items-center justify-center">
+                  <CreditCard className="w-4 h-4 text-white" />
                 </div>
-                <h4 className="text-lg font-semibold text-slate-800">{t('trainee.editProfile.otherInfoReadOnly')}</h4>
+                <h4 className="text-lg font-black text-black uppercase tracking-tight">{t('trainee.editProfile.otherInfoReadOnly')}</h4>
               </div>
 
               {/* Driver License */}
-              <div className="mb-4 p-5 bg-gradient-to-r from-amber-50/50 to-orange-50/50 rounded-xl border border-amber-200/60">
-                <h5 className="font-semibold mb-3 flex items-center gap-2 text-amber-800">
-                  <Car className="w-4 h-4" />
+              <div className="mb-4 p-5 bg-amber-50 border-2 border-amber-300">
+                <h5 className="font-black mb-3 flex items-center gap-2 text-amber-800 uppercase text-sm tracking-tight">
+                  <div className="w-6 h-6 bg-amber-500 border border-amber-700 flex items-center justify-center">
+                    <Car className="w-3 h-3 text-white" />
+                  </div>
                   {t('trainee.profile.driverLicenseInfo')}
                 </h5>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                   <div>
-                    <span className="text-slate-500">{t('trainee.editProfile.number')}:</span>
-                    <span className="ml-2 font-medium text-slate-800">{profileData?.driverLicenseNumber || '-'}</span>
+                    <span className="text-xs font-bold text-neutral-500 uppercase block mb-1">{t('trainee.editProfile.number')}</span>
+                    <span className="font-semibold text-neutral-800">{profileData?.driverLicenseNumber || '-'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500">{t('trainee.editProfile.level')}:</span>
-                    <span className="ml-2 font-medium text-slate-800">{profileData?.driverLicenseLevel || '-'}</span>
+                    <span className="text-xs font-bold text-neutral-500 uppercase block mb-1">{t('trainee.editProfile.level')}</span>
+                    <span className="font-semibold text-neutral-800">{profileData?.driverLicenseLevel || '-'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500">{t('trainee.editProfile.issued')}:</span>
-                    <span className="ml-2 font-medium text-slate-800">{profileData?.driverLicenseIssuedDate ? new Date(profileData.driverLicenseIssuedDate).toLocaleDateString() : '-'}</span>
+                    <span className="text-xs font-bold text-neutral-500 uppercase block mb-1">{t('trainee.editProfile.issued')}</span>
+                    <span className="font-semibold text-neutral-800">{profileData?.driverLicenseIssuedDate ? new Date(profileData.driverLicenseIssuedDate).toLocaleDateString() : '-'}</span>
                   </div>
                 </div>
                 {profileData?.driverLicenseImageUrl && (
-                  <img src={profileData.driverLicenseImageUrl} alt="License" className="mt-3 max-w-xs rounded-lg border shadow" />
+                  <img src={profileData.driverLicenseImageUrl} alt="License" className="mt-3 max-w-xs border-2 border-amber-200" />
                 )}
               </div>
 
               {/* Citizen Card */}
-              <div className="p-5 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-xl border border-blue-200/60">
-                <h5 className="font-semibold mb-3 flex items-center gap-2 text-blue-800">
-                  <CreditCard className="w-4 h-4" />
+              <div className="p-5 bg-violet-50 border-2 border-violet-300">
+                <h5 className="font-black mb-3 flex items-center gap-2 text-violet-800 uppercase text-sm tracking-tight">
+                  <div className="w-6 h-6 bg-violet-500 border border-violet-700 flex items-center justify-center">
+                    <CreditCard className="w-3 h-3 text-white" />
+                  </div>
                   {t('trainee.profile.citizenCardInfo')}
                 </h5>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                   <div>
-                    <span className="text-slate-500">{t('trainee.editProfile.id')}:</span>
-                    <span className="ml-2 font-medium text-slate-800">{profileData?.citizenCardId || '-'}</span>
+                    <span className="text-xs font-bold text-neutral-500 uppercase block mb-1">{t('trainee.editProfile.id')}</span>
+                    <span className="font-semibold text-neutral-800">{profileData?.citizenCardId || '-'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500">{t('trainee.editProfile.issued')}:</span>
-                    <span className="ml-2 font-medium text-slate-800">{profileData?.citizenCardIssuedDate || '-'}</span>
+                    <span className="text-xs font-bold text-neutral-500 uppercase block mb-1">{t('trainee.editProfile.issued')}</span>
+                    <span className="font-semibold text-neutral-800">{profileData?.citizenCardIssuedDate || '-'}</span>
                   </div>
                   <div className="col-span-2 md:col-span-1">
-                    <span className="text-slate-500">{t('trainee.editProfile.place')}:</span>
-                    <span className="ml-2 font-medium text-slate-800">{profileData?.citizenCardPlaceOfIssue || '-'}</span>
+                    <span className="text-xs font-bold text-neutral-500 uppercase block mb-1">{t('trainee.editProfile.place')}</span>
+                    <span className="font-semibold text-neutral-800">{profileData?.citizenCardPlaceOfIssue || '-'}</span>
                   </div>
                 </div>
                 {profileData?.citizenCardImageUrl && (
-                  <img src={profileData.citizenCardImageUrl} alt="Citizen Card" className="mt-3 max-w-xs rounded-lg border shadow" />
+                  <img src={profileData.citizenCardImageUrl} alt="Citizen Card" className="mt-3 max-w-xs border-2 border-violet-200" />
                 )}
               </div>
             </div>
 
             {/* Form Actions */}
-            <div className="flex gap-3 justify-end pt-6 border-t border-slate-200">
-              <Button
-                size="large"
+            <div className="flex gap-4 justify-end pt-6 border-t-2 border-neutral-200">
+              <button
+                type="button"
                 onClick={handleCancel}
-                className="!rounded-xl !h-11 !px-6 !font-medium"
-                icon={<CloseOutlined />}
+                className="px-6 py-2.5 bg-white border-2 border-neutral-300 text-neutral-700 font-bold uppercase text-xs tracking-wider hover:border-black hover:text-black transition-all flex items-center gap-2"
               >
+                <X className="w-4 h-4" />
                 {t('trainee.editProfile.cancel')}
-              </Button>
-              <Button
-                type="primary"
-                size="large"
-                htmlType="submit"
-                loading={submitting}
-                className="!rounded-xl !h-11 !px-6 !font-semibold"
-                icon={<SaveOutlined />}
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="px-6 py-2.5 bg-emerald-500 border-2 border-emerald-700 text-white font-black uppercase text-xs tracking-wider hover:bg-emerald-600 hover:shadow-[4px_4px_0px_0px_rgba(5,150,105,1)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
+                {submitting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                <Save className="w-4 h-4" />
                 {t('trainee.editProfile.saveChanges')}
-              </Button>
+              </button>
             </div>
           </Form>
         </div>
