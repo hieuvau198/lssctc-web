@@ -1,3 +1,4 @@
+// src/app/pages/Instructor/InstructorClasses/partials/ClassSections.jsx
 import { Alert, Collapse, Skeleton, Tooltip } from 'antd';
 import { Clock, BookOpen, Plus, ChevronRight } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -149,19 +150,8 @@ const ClassSections = ({ courseId, classId }) => {
                     minutesText={minutesText}
                   />
                 }
-                extra={
-                  <Tooltip title={t('instructor.classes.sections.addActivity')}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openAddActivityModal(section.id);
-                      }}
-                      className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center hover:bg-yellow-500 transition-all"
-                    >
-                      <Plus className="w-4 h-4 text-black" />
-                    </button>
-                  </Tooltip>
-                }
+                // Removed the extra prop which contained the Add Activity button
+                extra={null} 
                 className="mb-3 overflow-hidden border-2 border-neutral-200 hover:border-yellow-400 transition-all bg-white [&>.ant-collapse-header]:bg-neutral-50 [&>.ant-collapse-header]:border-b-2 [&>.ant-collapse-header]:border-neutral-200"
               >
                 <div className="bg-neutral-50 -mx-4 -mt-4 px-4 py-3 mb-4 border-b-2 border-neutral-100">

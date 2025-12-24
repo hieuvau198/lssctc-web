@@ -1,3 +1,4 @@
+// src/app/pages/Instructor/InstructorClasses/partials/ActivityList.jsx
 import { Alert, List, Skeleton, Drawer } from 'antd';
 import { BookOpen, FileText, Monitor, HelpCircle, Settings } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -156,39 +157,7 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
           const typeDetails = getActivityTypeDetails(item.type, t);
 
           const getManageButton = () => {
-            const buttonClass = "px-3 py-1 text-xs font-bold uppercase border-2 border-black bg-white hover:bg-yellow-400 transition-all flex items-center gap-1";
-
-            if (item.type?.toLowerCase() === 'material') {
-              return (
-                <button
-                  className={buttonClass}
-                  onClick={(e) => { e.stopPropagation(); openManageMaterial(item); }}
-                >
-                  <Settings className="w-3 h-3" />
-                  {t('instructor.classes.activityList.manageMaterial')}
-                </button>
-              );
-            } else if (item.type?.toLowerCase() === 'quiz') {
-              return (
-                <button
-                  className={buttonClass}
-                  onClick={(e) => { e.stopPropagation(); openManageQuiz(item); }}
-                >
-                  <Settings className="w-3 h-3" />
-                  {t('instructor.classes.activityList.manageQuiz')}
-                </button>
-              );
-            } else if (item.type?.toLowerCase() === 'practice') {
-              return (
-                <button
-                  className={buttonClass}
-                  onClick={(e) => { e.stopPropagation(); openManagePractice(item); }}
-                >
-                  <Settings className="w-3 h-3" />
-                  {t('instructor.classes.activityList.managePractice')}
-                </button>
-              );
-            }
+            // Disabled managing content for this view
             return null;
           };
 
