@@ -183,7 +183,7 @@ export async function deleteActivity(activityId) {
  */
 export async function fetchAllQuizzes() {
   try {
-    const resp = await apiClient.get('/Quizzes?pageIndex=1&pageSize=1000');
+    const resp = await apiClient.get('/Quizzes?pageIndex=1&pageSize=50');
     // Handle wrapped response { data: { items: [] } } or direct { items: [] }
     const data = resp.data?.data || resp.data;
     return data?.items || [];
@@ -232,6 +232,65 @@ export async function removeQuizFromActivity(activityId, quizId) {
     return true;
   } catch (err) {
     console.error(`Error removing quiz ${quizId} from activity ${activityId}:`, err);
+    throw err;
+  }
+}
+
+//#endregion
+
+//#region Activity-Practice APIs
+
+/**
+ * Fetch all available practices (for dropdown)
+ */
+export async function fetchAllPractices() {
+  try {
+    // Calling GetAll endpoint (not paged, or large page size)
+    const resp = await apiClient.get('/Practices/paged?pageNumber=1&pageSize=50');
+    const data = resp.data?.data || resp.data;
+    return data?.items || [];
+  } catch (err) {
+    console.error('Error fetching all practices:', err);
+    return [];
+  }
+}
+
+/**
+ * Fetch practices assigned to a specific activity
+ */
+export async function fetchPracticesByActivity(activityId) {
+  try {
+    const resp = await apiClient.get(`/Practices/activity/${activityId}`);
+    // Handle wrapped response { success: true, data: [...] }
+    return resp.data?.data || resp.data || [];
+  } catch (err) {
+    console.error(`Error fetching practices for activity ${activityId}:`, err);
+    return [];
+  }
+}
+
+/**
+ * Assign a practice to an activity
+ */
+export async function assignPracticeToActivity(activityId, practiceId) {
+  try {
+    const resp = await apiClient.post(`/Practices/activity/${activityId}/add/${practiceId}`);
+    return resp.data;
+  } catch (err) {
+    console.error(`Error assigning practice ${practiceId} to activity ${activityId}:`, err);
+    throw err;
+  }
+}
+
+/**
+ * Remove a practice from an activity
+ */
+export async function removePracticeFromActivity(activityId, practiceId) {
+  try {
+    await apiClient.delete(`/Practices/activity/${activityId}/remove/${practiceId}`);
+    return true;
+  } catch (err) {
+    console.error(`Error removing practice ${practiceId} from activity ${activityId}:`, err);
     throw err;
   }
 }

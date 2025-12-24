@@ -7,7 +7,11 @@ import {
   fetchAllQuizzes,
   fetchQuizzesByActivity,
   assignQuizToActivity,
-  removeQuizFromActivity 
+  removeQuizFromActivity,
+  fetchAllPractices,
+  fetchPracticesByActivity,
+  assignPracticeToActivity,
+  removePracticeFromActivity
 } from '../../../../../apis/ProgramManager/SectionApi';
 import { 
   getMaterials, 
@@ -31,8 +35,12 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
   // State for Quiz Management
   const [quizzes, setQuizzes] = useState([]);
   const [initialQuizId, setInitialQuizId] = useState(null);
+
+  // State for Practice Management
+  const [practices, setPractices] = useState([]);
+  const [initialPracticeId, setInitialPracticeId] = useState(null);
   
-  // Watch activity type to conditionally show Material/Quiz Select
+  // Watch activity type to conditionally show Material/Quiz/Practice Select
   const activityType = Form.useWatch('activityType', form);
 
   useEffect(() => {
@@ -45,7 +53,7 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
         estimatedDurationMinutes: activity.estimatedDurationMinutes || activity.duration
       });
 
-      // 2. Fetch Resources Data (Materials & Quizzes)
+      // 2. Fetch Resources Data (Materials, Quizzes, Practices)
       fetchResourcesData();
     } else {
       form.resetFields();
@@ -53,6 +61,8 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
       setMaterials([]);
       setInitialQuizId(null);
       setQuizzes([]);
+      setInitialPracticeId(null);
+      setPractices([]);
     }
   }, [visible, activity, form]);
 
@@ -66,7 +76,6 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
       if (attachedMaterials && attachedMaterials.length > 0) {
         const currentMatId = attachedMaterials[0].id;
         setInitialMaterialId(currentMatId);
-        // Only set the field if the type matches to avoid confusion
         if (activity.activityType === 'Material' || !activity.activityType) {
              form.setFieldValue('materialId', currentMatId);
         }
@@ -89,6 +98,22 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
       } else {
         setInitialQuizId(null);
         form.setFieldValue('quizId', null);
+      }
+
+      // --- PRACTICES ---
+      const practicesList = await fetchAllPractices();
+      setPractices(practicesList || []);
+
+      const attachedPractices = await fetchPracticesByActivity(activity.id);
+      if (attachedPractices && attachedPractices.length > 0) {
+        const currentPracticeId = attachedPractices[0].id;
+        setInitialPracticeId(currentPracticeId);
+        if (activity.activityType === 'Practice') {
+            form.setFieldValue('practiceId', currentPracticeId);
+        }
+      } else {
+        setInitialPracticeId(null);
+        form.setFieldValue('practiceId', null);
       }
 
     } catch (error) {
@@ -124,6 +149,15 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
         if (initialQuizId !== newQuizId) {
             if (initialQuizId) await removeQuizFromActivity(activity.id, initialQuizId);
             if (newQuizId) await assignQuizToActivity(activity.id, newQuizId);
+        }
+      }
+
+      // 4. Handle Practice Assignment
+      if (values.activityType === 'Practice') {
+        const newPracticeId = values.practiceId;
+        if (initialPracticeId !== newPracticeId) {
+            if (initialPracticeId) await removePracticeFromActivity(activity.id, initialPracticeId);
+            if (newPracticeId) await assignPracticeToActivity(activity.id, newPracticeId);
         }
       }
 
@@ -219,6 +253,28 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
                   {quizzes.map(q => (
                     <Option key={q.id} value={q.id}>
                       {q.name} ({q.totalScore} pts)
+                    </Option>
+                  ))}
+                </Select>
+             </Form.Item>
+          )}
+
+          {/* Conditional Practice Select */}
+          {activityType === 'Practice' && (
+             <Form.Item name="practiceId" label="Assign Practice">
+                <Select 
+                  placeholder="Select a practice to assign"
+                  allowClear
+                  showSearch
+                  optionFilterProp="children"
+                  className="h-10 border-2 border-neutral-200 rounded-none"
+                  filterOption={(input, option) =>
+                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                >
+                  {practices.map(p => (
+                    <Option key={p.id} value={p.id}>
+                      {p.practiceName}
                     </Option>
                   ))}
                 </Select>
