@@ -225,7 +225,7 @@ export default function ManageUser() {
       </div>
 
       {/* Main Content Card */}
-      <div className="bg-white border-x-2 border-b-2 border-black overflow-hidden flex-1 flex flex-col min-h-0">
+      <div className="bg-white  overflow-hidden flex-1 flex flex-col min-h-0">
 
         {/* Industrial Tabs */}
         <div className="border-b-2 border-neutral-200 flex-none bg-neutral-50/50">
@@ -299,11 +299,12 @@ export default function ManageUser() {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden mt-4">
           <Outlet
             context={{
               setDrawerVisible,
               refreshTrigger,
+              setRefreshTrigger,
               traineeData,
               loadingTrainees,
               page,
@@ -314,7 +315,7 @@ export default function ManageUser() {
               loadingInstructors,
               simManagerData,
               loadingSimManagers,
-              tableScroll: { y: 'calc(100vh - 350px)' }
+              tableScroll: { y: 'calc(100vh - 380px)' }
             }}
           />
         </div>
