@@ -9,12 +9,13 @@ import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
 import { sAvatarUrl, setAvatarUrl, clearAvatarUrl } from '../../../store/userAvatar';
 
+// COMMENTED OUT MATERIALS AND QUIZZES TO HIDE FROM VIEW
 const getItems = (t) => [
   { to: '/instructor/dashboard', label: t('sidebar.dashboard'), icon: <LayoutDashboard className="w-5 h-5" /> },
   { to: '/instructor/schedule', label: t('sidebar.schedule'), icon: <Calendar className="w-5 h-5" /> },
   { to: '/instructor/classes', label: t('sidebar.class'), icon: <BookOpen className="w-5 h-5" /> },
-  { to: '/instructor/materials', label: t('sidebar.material'), icon: <FileText className="w-5 h-5" /> },
-  { to: '/instructor/quizzes', label: t('sidebar.quiz'), icon: <HelpCircle className="w-5 h-5" /> },
+  // { to: '/instructor/materials', label: t('sidebar.material'), icon: <FileText className="w-5 h-5" /> },
+  // { to: '/instructor/quizzes', label: t('sidebar.quiz'), icon: <HelpCircle className="w-5 h-5" /> },
   { to: '/instructor/practices', label: t('sidebar.practice'), icon: <Dumbbell className="w-5 h-5" /> },
 ];
 

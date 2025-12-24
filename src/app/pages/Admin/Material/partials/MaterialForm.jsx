@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Select, Upload } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, Select, Upload, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { Upload as UploadIcon, Link as LinkIcon, FileText } from 'lucide-react';
+import { Upload as UploadIcon, Link as LinkIcon, FileText, Video } from 'lucide-react';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -9,7 +9,26 @@ const { Option } = Select;
 const MaterialForm = ({ initialValues, onFinish, loading, onCancel }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [type, setType] = useState(initialValues?.learningMaterialType || 'Link');
+  
+  // Determine initial source type based on URL pattern (heuristic for Firebase Storage)
+  const isLikelyFile = (url) => url && url.includes('firebasestorage.googleapis.com');
+  
+  const [sourceType, setSourceType] = useState('Link');
+
+  useEffect(() => {
+    if (initialValues) {
+      setSourceType(isLikelyFile(initialValues.url) ? 'File' : 'Link');
+      form.setFieldsValue({
+        ...initialValues,
+        sourceType: isLikelyFile(initialValues.url) ? 'File' : 'Link',
+        // Ensure learningMaterialType is set correctly (Video/Document)
+        learningMaterialType: initialValues.learningMaterialType
+      });
+    } else {
+        setSourceType('Link');
+        form.resetFields();
+    }
+  }, [initialValues, form]);
 
   const normFile = (e) => {
     if (Array.isArray(e)) {
@@ -19,11 +38,16 @@ const MaterialForm = ({ initialValues, onFinish, loading, onCancel }) => {
   };
 
   const handleFinish = (values) => {
-    // Transform upload object to raw file if type is File
     const payload = { ...values };
-    if (values.learningMaterialType === 'File' && values.upload && values.upload.length > 0) {
+    
+    // Extract file object if source is File
+    if (values.sourceType === 'File' && values.upload && values.upload.length > 0) {
         payload.file = values.upload[0].originFileObj;
     }
+    
+    // Ensure we are passing the source type explicitly so the parent knows which API to call
+    payload.sourceType = values.sourceType;
+    
     onFinish(payload);
   };
 
@@ -32,8 +56,8 @@ const MaterialForm = ({ initialValues, onFinish, loading, onCancel }) => {
       form={form}
       layout="vertical"
       initialValues={{
-        learningMaterialType: 'Link',
-        ...initialValues,
+        learningMaterialType: 'Document', // Default API value
+        sourceType: 'Link',               // Default UI value
       }}
       onFinish={handleFinish}
       requiredMark="optional"
@@ -61,24 +85,47 @@ const MaterialForm = ({ initialValues, onFinish, loading, onCancel }) => {
       </Form.Item>
 
       <div className="grid grid-cols-2 gap-4">
+        {/* API Field: Content Type (Video vs Document) */}
         <Form.Item
             name="learningMaterialType"
-            label={<span className="font-bold uppercase text-xs">{t('common.type', 'Type')}</span>}
+            label={<span className="font-bold uppercase text-xs">{t('common.contentType', 'Content Type')}</span>}
+            rules={[{ required: true }]}
+        >
+            <Select className="border-neutral-400">
+                <Option value="Document">
+                    <div className="flex items-center gap-2">
+                        <FileText size={14} />
+                        <span>Document</span>
+                    </div>
+                </Option>
+                <Option value="Video">
+                    <div className="flex items-center gap-2">
+                        <Video size={14} />
+                        <span>Video</span>
+                    </div>
+                </Option>
+            </Select>
+        </Form.Item>
+
+        {/* UI Field: Source Type (Link vs File) */}
+        <Form.Item
+            name="sourceType"
+            label={<span className="font-bold uppercase text-xs">{t('common.source', 'Source')}</span>}
             rules={[{ required: true }]}
         >
             <Select 
-                onChange={setType}
+                onChange={setSourceType}
                 className="border-neutral-400"
             >
                 <Option value="Link">
                     <div className="flex items-center gap-2">
                         <LinkIcon size={14} />
-                        <span>Link (URL)</span>
+                        <span>External Link</span>
                     </div>
                 </Option>
                 <Option value="File">
                     <div className="flex items-center gap-2">
-                        <FileText size={14} />
+                        <UploadIcon size={14} />
                         <span>File Upload</span>
                     </div>
                 </Option>
@@ -86,7 +133,8 @@ const MaterialForm = ({ initialValues, onFinish, loading, onCancel }) => {
         </Form.Item>
       </div>
 
-      {type === 'Link' ? (
+      {/* Conditional Inputs based on Source Type */}
+      {sourceType === 'Link' ? (
         <Form.Item
           name="url"
           label={<span className="font-bold uppercase text-xs">{t('common.url', 'URL Address')}</span>}
@@ -109,7 +157,7 @@ const MaterialForm = ({ initialValues, onFinish, loading, onCancel }) => {
           getValueFromEvent={normFile}
           rules={[
             { 
-                required: !initialValues?.url, // Required if creating new or if no existing URL (which implies no existing file in this simplistic logic)
+                required: !initialValues?.url || (initialValues?.url && !isLikelyFile(initialValues.url)), 
                 message: t('common.required', 'Please upload a file') 
             }
           ]}
@@ -128,11 +176,11 @@ const MaterialForm = ({ initialValues, onFinish, loading, onCancel }) => {
         </Form.Item>
       )}
 
-      {initialValues && type === 'File' && initialValues.url && (
+      {initialValues && sourceType === 'File' && initialValues.url && (
          <div className="mb-6 p-3 bg-neutral-100 border border-neutral-300 rounded text-sm">
             <span className="font-bold text-xs uppercase block text-neutral-500 mb-1">Current File:</span>
             <a href={initialValues.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
-                {initialValues.url}
+                {initialValues.url ? initialValues.url.split('?')[0].split('/').pop() : 'View File'}
             </a>
          </div>
       )}

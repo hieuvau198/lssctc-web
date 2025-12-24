@@ -106,9 +106,10 @@ const MaterialManagement = () => {
       if (isFile) {
         // Prepare FormData for file upload
         const formData = new FormData();
-        formData.append('Name', values.name);
-        formData.append('Description', values.description || '');
-        formData.append('LearningMaterialType', values.learningMaterialType);
+        // Fix: Use camelCase keys to match payload convention and likely API model binding
+        formData.append('name', values.name);
+        formData.append('description', values.description || '');
+        formData.append('learningMaterialType', values.learningMaterialType);
         
         if (values.file) {
             formData.append('file', values.file);
