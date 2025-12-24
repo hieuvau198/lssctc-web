@@ -1,11 +1,12 @@
+// hieuvau198/lssctc-web/lssctc-web-dev/src/app/pages/Admin/Material/MaterialManagement.jsx
+
 import React, { useState, useEffect } from 'react';
-import { App, Drawer, Button, Modal, Tooltip, Input, Skeleton } from 'antd';
+import { App, Drawer, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, Trash2, Edit, FileText, Link as LinkIcon, ExternalLink, FileQuestion, X, BookOpen } from 'lucide-react';
-import { getMaterials, deleteMaterial, createMaterial, createMaterialWithFile, updateMaterial, updateMaterialWithFile } from '../../../apis/Instructor/InstructorMaterialsApi';
+import { Plus, Search, Trash2, Edit, FileText, Link as LinkIcon, ExternalLink, X, BookOpen, Download } from 'lucide-react';
+import { getMaterialsPaged, deleteMaterial, createMaterial, createMaterialWithFile, updateMaterial, updateMaterialWithFile } from '../../../apis/Instructor/InstructorMaterialsApi';
 import IndustrialTable from '../../../components/Common/IndustrialTable';
 import MaterialForm from './partials/MaterialForm';
-import ViewModeToggle from "../../../components/ViewModeToggle/ViewModeToggle";
 
 const MaterialManagement = () => {
   const { t } = useTranslation();
@@ -13,14 +14,14 @@ const MaterialManagement = () => {
   
   // Data States
   const [materials, setMaterials] = useState([]);
-  const [filteredMaterials, setFilteredMaterials] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   
   // View/Filter States
-  const [viewMode, setViewMode] = useState("table");
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   
-  // Pagination States (Client-side since API returns all)
+  // Pagination States
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -29,35 +30,36 @@ const MaterialManagement = () => {
   const [editingMaterial, setEditingMaterial] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 on new search
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch data when params change
   useEffect(() => {
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    // Client-side filtering
-    if (!searchTerm.trim()) {
-      setFilteredMaterials(materials);
-    } else {
-      const lower = searchTerm.toLowerCase();
-      const filtered = materials.filter(m => 
-        (m.name && m.name.toLowerCase().includes(lower)) ||
-        (m.description && m.description.toLowerCase().includes(lower))
-      );
-      setFilteredMaterials(filtered);
-    }
-    setPage(1); // Reset to page 1 on search
-  }, [searchTerm, materials]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize, debouncedSearch]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      // API currently fetches all and paginates on client side in the helper, 
-      // but to get 'all' for client-side search, we pass a large pageSize
-      const res = await getMaterials({ page: 1, pageSize: 10000 });
+      const res = await getMaterialsPaged({ 
+        page, 
+        pageSize, 
+        searchTerm: debouncedSearch 
+      });
       setMaterials(res.items || []);
-      setFilteredMaterials(res.items || []);
+      setTotalCount(res.totalCount || 0);
     } catch (error) {
       message.error(t('common.fetchError', 'Failed to load materials'));
+      setMaterials([]);
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
@@ -74,6 +76,7 @@ const MaterialManagement = () => {
         try {
           await deleteMaterial(id);
           message.success(t('common.deleteSuccess', 'Material deleted successfully'));
+          // Refresh current page if possible, or go back to 1
           fetchData();
         } catch (error) {
           message.error(error.message || t('common.deleteError', 'Failed to delete material'));
@@ -98,7 +101,6 @@ const MaterialManagement = () => {
       const isFile = values.learningMaterialType === 'File';
       const isEdit = !!editingMaterial;
 
-      let payload;
       let apiCall;
 
       if (isFile) {
@@ -108,8 +110,6 @@ const MaterialManagement = () => {
         formData.append('Description', values.description || '');
         formData.append('LearningMaterialType', values.learningMaterialType);
         
-        // Only append file if it's a new file upload (file object present)
-        // If editing and no new file selected, we might need different handling depends on API
         if (values.file) {
             formData.append('file', values.file);
         }
@@ -121,7 +121,7 @@ const MaterialManagement = () => {
         }
       } else {
         // JSON payload for URL
-        payload = {
+        const payload = {
           name: values.name,
           description: values.description,
           learningMaterialType: values.learningMaterialType,
@@ -222,9 +222,6 @@ const MaterialManagement = () => {
     }
   ];
 
-  // Pagination for the table
-  const paginatedData = filteredMaterials.slice((page - 1) * pageSize, page * pageSize);
-
   return (
     <div className="max-w-7xl mx-auto h-[calc(100vh-64px)] flex flex-col pb-2">
         {/* Header - Industrial Theme */}
@@ -240,7 +237,7 @@ const MaterialManagement = () => {
                     {t('sidebar.materials', 'Materials')}
                 </span>
                 <p className="text-yellow-400 text-xs mt-0.5 font-bold">
-                    {filteredMaterials.length} {t('common.items', 'items')}
+                    {totalCount} {t('common.items', 'items')}
                 </p>
                 </div>
             </div>
@@ -255,7 +252,7 @@ const MaterialManagement = () => {
         </div>
 
         {/* Content Area */}
-        <div className="bg-white  flex-1 flex flex-col min-h-0">
+        <div className="bg-white flex-1 flex flex-col min-h-0">
             
              {/* Search Bar */}
              <div className="px-4 py-2 bg-white border-b-2 border-neutral-200 flex-none shadow-sm z-10">
@@ -287,15 +284,15 @@ const MaterialManagement = () => {
             <div className="mt-6 flex-1 overflow-hidden bg-white relative p-0 ">
                 <IndustrialTable
                     loading={loading}
-                    dataSource={paginatedData}
+                    dataSource={materials}
                     columns={columns}
                     rowKey="id"
                     pagination={true}
                     page={page}
                     pageSize={pageSize}
-                    total={filteredMaterials.length}
+                    total={totalCount}
                     onPageChange={(p, ps) => { setPage(p); setPageSize(ps); }}
-                    scroll={{ y: 'calc(100vh - 280px)' }}
+                    scroll={{ y: 'calc(100vh - 345px)' }}
                     className="h-full border-none"
                 />
             </div>

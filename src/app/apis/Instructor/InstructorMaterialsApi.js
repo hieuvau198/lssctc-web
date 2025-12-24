@@ -1,3 +1,5 @@
+// hieuvau198/lssctc-web/lssctc-web-dev/src/app/apis/Instructor/InstructorMaterialsApi.js
+
 import apiClient from '../../libs/axios';
 
 //#region Mapping Functions
@@ -34,6 +36,31 @@ export const getMaterials = async ({ page = 1, pageSize = 1000 } = {}) => {
     };
   } catch (error) {
     console.error('Error fetching materials:', error.response || error);
+    return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
+  }
+};
+
+// NEW: Server-side pagination support
+export const getMaterialsPaged = async ({ page = 1, pageSize = 10, searchTerm = '' } = {}) => {
+  try {
+    const searchParams = new URLSearchParams();
+    searchParams.append('PageNumber', page);
+    searchParams.append('PageSize', pageSize);
+    if (searchTerm) searchParams.append('SearchTerm', searchTerm);
+
+    const response = await apiClient.get(`/Materials/paged?${searchParams.toString()}`);
+    const data = response.data;
+
+    return {
+      items: (data.items || []).map(mapMaterialFromApi),
+      totalCount: data.totalCount || 0,
+      page: data.pageNumber || page,
+      pageSize: data.pageSize || pageSize,
+      totalPages: data.totalPages || 0
+    };
+  } catch (error) {
+    console.error('Error fetching paged materials:', error.response || error);
+    // Fallback to empty state on error
     return { items: [], totalCount: 0, page, pageSize, totalPages: 0 };
   }
 };
