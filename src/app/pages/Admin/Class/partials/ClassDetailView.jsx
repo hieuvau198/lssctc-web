@@ -7,7 +7,7 @@ import ClassMembersTable from "./ClassMembersTable";
 import ClassTimeslotManage from "./ClassTimeslotManage";
 import ClassCertificate from './ClassCertificate';
 import ClassCourseInfo from './ClassCourseInfo';
-import ClassExamWeights from './ClassExamWeights';
+import ClassFinalExam from './ClassFinalExam'; // [UPDATED] Import ClassFinalExam
 import IndustrialTabs from "../../../../components/Common/IndustrialTabs";
 import { openClass, startClass, completeClass, cancelClass } from '../../../../apis/ProgramManager/ClassesApi';
 import { getClassStatus } from '../../../../utils/classStatus';
@@ -26,9 +26,7 @@ import {
   GraduationCap
 } from 'lucide-react';
 
-/**
- * Industrial Style Metadata Card
- */
+// ... (InfoCard and SectionHeader components remain the same)
 const InfoCard = ({ icon: Icon, label, value, subValue, highlight = false }) => (
   <div className={`p-4 border-2 ${highlight ? 'border-yellow-400 bg-yellow-50' : 'border-slate-200 bg-white'} flex flex-col items-start gap-2 hover:border-black transition-colors group`}>
     <div className="flex items-center gap-2 text-slate-500 group-hover:text-black transition-colors">
@@ -46,9 +44,6 @@ const InfoCard = ({ icon: Icon, label, value, subValue, highlight = false }) => 
   </div>
 );
 
-/**
- * Industrial Section Header
- */
 const SectionHeader = ({ icon: Icon, title }) => (
   <div className="flex items-center gap-3 mb-6 border-b-2 border-slate-100 pb-4">
     <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
@@ -97,7 +92,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   const secondaryBtnClass = "flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-slate-200 text-slate-600 font-bold uppercase tracking-wider hover:border-black hover:text-black hover:bg-slate-50 transition-all text-xs disabled:opacity-50 w-full justify-center";
 
   const renderStatusActions = () => {
-    switch (statusInfo.key) {
+     switch (statusInfo.key) {
       case 'Draft':
         return (
           <div className="flex flex-col gap-3">
@@ -174,28 +169,15 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   };
 
   const tabs = [
-    {
-      key: 'overview',
-      label: 'Tổng quan',
-      icon: LayoutDashboard
-    },
-    {
-      key: 'exam',
-      label: 'Thi cuối khóa',
-      icon: GraduationCap
-    },
-    {
-      key: 'certificate',
-      label: 'Chứng chỉ',
-      icon: Award
-    }
+    { key: 'overview', label: 'Tổng quan', icon: LayoutDashboard },
+    { key: 'exam', label: 'Thi cuối khóa', icon: GraduationCap },
+    { key: 'certificate', label: 'Chứng chỉ', icon: Award }
   ];
 
   return (
     <div className="flex flex-col gap-8 font-sans text-slate-800">
-
-      {/* TOP PART: Metadata & Description */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      {/* Metadata & Description */}
+       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Column 1: Class Info Card */}
         <div className="lg:col-span-1">
           <div className="relative group">
@@ -240,21 +222,9 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
         {/* Column 2: Metadata & Description */}
         <div className="lg:col-span-2 flex flex-col gap-8">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <InfoCard
-              icon={Users}
-              label={t('admin.classes.columns.capacity')}
-              value={classItem.capacity}
-            />
-            <InfoCard
-              icon={Calendar}
-              label={t('admin.classes.form.startDate')}
-              value={<DayTimeFormat value={classItem.startDate} />}
-            />
-            <InfoCard
-              icon={Clock}
-              label={t('admin.classes.form.endDate')}
-              value={<DayTimeFormat value={classItem.endDate} />}
-            />
+            <InfoCard icon={Users} label={t('admin.classes.columns.capacity')} value={classItem.capacity} />
+            <InfoCard icon={Calendar} label={t('admin.classes.form.startDate')} value={<DayTimeFormat value={classItem.startDate} />} />
+            <InfoCard icon={Clock} label={t('admin.classes.form.endDate')} value={<DayTimeFormat value={classItem.endDate} />} />
           </div>
 
           <div className="relative p-6 border-2 border-slate-200 bg-slate-50 hover:bg-white hover:border-black transition-all">
@@ -270,64 +240,36 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
       </div>
 
       {/* Tabs Navigation */}
-      <IndustrialTabs 
-        tabs={tabs} 
-        activeKey={activeTab} 
-        onChange={setActiveTab} 
-      />
+      <IndustrialTabs tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
 
       {/* TAB 1: OVERVIEW */}
       {activeTab === 'overview' && (
         <div className="flex flex-col gap-8 animate-in fade-in zoom-in-95 duration-300">
-          {/* ROW 1: Schedule (8) + Status (4) */}
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-            {/* LEFT: Schedule / Timeslots (Span 8) */}
             <div className="xl:col-span-8">
               <div id="class-schedule" className="p-6 border-2 border-slate-200 bg-white h-full">
-                <ClassTimeslotManage 
-                  classItem={classItem} 
-                  onTimeSlotsChange={setHasTimeSlots} 
-                  readOnly={readOnly}
-                />
+                <ClassTimeslotManage classItem={classItem} onTimeSlotsChange={setHasTimeSlots} readOnly={readOnly} />
               </div>
             </div>
-
-            {/* RIGHT: Status Management (Span 4) */}
             <div className="xl:col-span-4">
               <div id="class-status" className="p-6 border-2 border-slate-200 bg-white h-full">
                 <SectionHeader icon={Activity} title={t('admin.classes.status.title', 'Status Management')} />
-
                 <div className="flex flex-col gap-6">
-                  {/* Current Status Display */}
                   <div className="flex flex-col gap-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      {t('admin.classes.status.currentStatus', 'Current Status')}
-                    </span>
-                    
-                    {/* Industrial Status Badge */}
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('admin.classes.status.currentStatus', 'Current Status')}</span>
                     <div className="relative">
                       <div className={`px-4 py-4 text-center border-2 border-black flex flex-col items-center justify-center gap-1 ${
                         statusInfo.key === 'Inprogress' || statusInfo.key === 'Open' ? 'bg-black text-yellow-400' : 'bg-slate-50 text-slate-900'
                       }`}>
-                        <span className="text-lg font-black uppercase tracking-widest">
-                          {t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}
-                        </span>
+                        <span className="text-lg font-black uppercase tracking-widest">{t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}</span>
                         {statusInfo.key === 'Draft' && <span className="text-[10px] uppercase font-bold text-slate-500">Not Published</span>}
                       </div>
                     </div>
                   </div>
-
-                  {/* Status Actions */}
                   <div className="border-t-2 border-slate-100 pt-6">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-4">
-                      {t('admin.classes.status.availableActions', 'Available Actions')}
-                    </span>
-                    <div className="flex flex-col gap-3">
-                      {renderStatusActions()}
-                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-4">{t('admin.classes.status.availableActions', 'Available Actions')}</span>
+                    <div className="flex flex-col gap-3">{renderStatusActions()}</div>
                   </div>
-
-                  {/* Loading Indicator */}
                   {statusLoading && (
                     <div className="flex items-center gap-2 text-slate-400 justify-center pt-2">
                       <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
@@ -338,17 +280,12 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
               </div>
             </div>
           </div>
-
-          {/* ROW 2: Members (8) + Instructor (4) */}
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-            {/* LEFT: Class Members (Span 8) */}
             <div className="xl:col-span-8">
               <div className="p-6 border-2 border-slate-200 bg-white h-full">
                 <ClassMembersTable classItem={classItem} />
               </div>
             </div>
-
-            {/* RIGHT: Instructor (Span 4) */}
             <div className="xl:col-span-4">
               <div className="p-6 border-2 border-slate-200 bg-white h-full">
                 <InstructorCard classItem={classItem} allowAssign={hasTimeSlots} />
@@ -361,21 +298,19 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
       {/* TAB 2: FINAL EXAM */}
       {activeTab === 'exam' && (
         <div className="flex flex-col gap-8 animate-in fade-in zoom-in-95 duration-300">
-          <ClassExamWeights classId={classItem?.id} readOnly={readOnly} />
+           {/* [UPDATED] Replaced ClassExamWeights with ClassFinalExam */}
+          <ClassFinalExam classId={classItem?.id} readOnly={readOnly} />
         </div>
       )}
 
       {/* TAB 3: CERTIFICATE & PARENT COURSE */}
       {activeTab === 'certificate' && (
         <div className="flex flex-col gap-8 animate-in fade-in zoom-in-95 duration-300">
-          {/* Parent Course Info */}
           {classItem?.courseId && (
             <div id="parent-course" className="p-6 border-2 border-slate-200 bg-white">
               <ClassCourseInfo courseId={classItem.courseId} />
             </div>
           )}
-
-          {/* Certificates */}
           <div id="class-certificates" className="p-6 border-2 border-slate-200 bg-white">
             <ClassCertificate classId={classItem?.id} />
           </div>
