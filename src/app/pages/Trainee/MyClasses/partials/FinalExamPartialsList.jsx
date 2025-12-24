@@ -23,6 +23,11 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
   const navigate = useNavigate();
   const [expandedRow, setExpandedRow] = useState(null);
 
+  // Logic to determine if the "Start Exam" button should be enabled
+  // Only allow if qualified AND status is Open or Submitted
+  const isExamOpen = ['Open', 'Submitted'].includes(examStatus);
+  const canStartExam = isQualified && isExamOpen;
+
   const getTypeIcon = (type) => {
     switch (type) {
       case 'Theory':
@@ -79,6 +84,12 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
           </span>
         );
     }
+  };
+
+  const getButtonTooltip = () => {
+    if (!isQualified) return t('trainee.finalExam.lockedDesc', 'Complete course progress first');
+    if (!isExamOpen) return t('trainee.finalExam.examNotAvailable', 'Exam is not currently available');
+    return '';
   };
 
   const toggleRow = (id) => {
@@ -157,19 +168,19 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
 
                   <div>
                     {partial.type === 'Theory' && (
-                      <Tooltip title={!isQualified ? t('trainee.finalExam.lockedDesc', 'Complete course progress first') : ''}>
+                      <Tooltip title={getButtonTooltip()}>
                         <button
-                          disabled={!isQualified}
+                          disabled={!canStartExam}
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (isQualified) navigate(`/final-exam/${partial.id}`);
+                            if (canStartExam) navigate(`/final-exam/${partial.id}`);
                           }}
                           className={`flex items-center gap-2 px-4 py-2 font-bold text-xs uppercase tracking-wider border-2 border-black transition-all duration-200
-                                 ${isQualified
+                                 ${canStartExam
                               ? "bg-yellow-400 text-black hover:scale-[1.02] hover:shadow-lg"
                               : "bg-neutral-200 text-neutral-400 cursor-not-allowed opacity-60"}`}
                         >
-                          {isQualified ? <Play className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                          {canStartExam ? <Play className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                           {t('trainee.finalExam.startExam', 'Start Exam')}
                         </button>
                       </Tooltip>
@@ -195,16 +206,18 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
                                 <div className="text-sm text-neutral-600 mt-1">{checklist.description}</div>
                               </div>
                               <div>
-                                {checklist.isPass ? (
-                                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider border-2 border-black">
-                                    <CheckCircle className="w-3 h-3" />
-                                    {t('trainee.finalExam.passed', 'Passed')}
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-600 text-white font-bold text-xs uppercase tracking-wider border-2 border-black">
-                                    <XCircle className="w-3 h-3" />
-                                    {t('trainee.finalExam.failed', 'Failed')}
-                                  </span>
+                                {['Submitted', 'Approved'].includes(partial.status) && (
+                                  checklist.isPass ? (
+                                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider border-2 border-black">
+                                      <CheckCircle className="w-3 h-3" />
+                                      {t('trainee.finalExam.passed', 'Passed')}
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-600 text-white font-bold text-xs uppercase tracking-wider border-2 border-black">
+                                      <XCircle className="w-3 h-3" />
+                                      {t('trainee.finalExam.failed', 'Failed')}
+                                    </span>
+                                  )
                                 )}
                               </div>
                             </div>
@@ -274,17 +287,17 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
 
                 {partial.type === 'Theory' && (
                   <button
-                    disabled={!isQualified}
+                    disabled={!canStartExam}
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (isQualified) navigate(`/final-exam/${partial.id}`);
+                      if (canStartExam) navigate(`/final-exam/${partial.id}`);
                     }}
                     className={`w-full flex items-center justify-center gap-2 px-4 py-2 font-bold text-xs uppercase tracking-wider border-2 border-black
-                             ${isQualified
+                             ${canStartExam
                         ? "bg-yellow-400 text-black"
                         : "bg-neutral-200 text-neutral-400 cursor-not-allowed"}`}
                   >
-                    {isQualified ? <Play className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                    {canStartExam ? <Play className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                     {t('trainee.finalExam.startExam', 'Start Exam')}
                   </button>
                 )}
@@ -298,10 +311,12 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
                         <div className="font-bold text-sm">{checklist.name}</div>
                         <div className="text-xs text-neutral-600">{checklist.description}</div>
                       </div>
-                      {checklist.isPass ? (
-                        <CheckCircle className="w-5 h-5 text-yellow-500" />
-                      ) : (
-                        <XCircle className="w-5 h-5 text-red-500" />
+                      {['Submitted', 'Approved'].includes(partial.status) && (
+                        checklist.isPass ? (
+                          <CheckCircle className="w-5 h-5 text-yellow-500" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-500" />
+                        )
                       )}
                     </div>
                   ))}

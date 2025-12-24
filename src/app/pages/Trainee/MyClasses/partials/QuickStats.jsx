@@ -9,7 +9,7 @@ export default function QuickStats({ features }) {
         { icon: Award, title: t('trainee.myClassDetail.industryCertification', 'Industry Certification'), value: t('trainee.myClassDetail.lssctcStandard', 'LSSCTC Standard') },
         { icon: Target, title: t('trainee.myClassDetail.completionRate', 'Completion Rate'), value: t('trainee.myClassDetail.successRate', '95% Success') },
         { icon: TrendingUp, title: t('trainee.myClassDetail.careerGrowth', 'Career Growth'), value: t('trainee.myClassDetail.salaryIncrease', '+40% Salary') },
-        { icon: Calendar, title: t('trainee.myClassDetail.courseLength', 'Course Length'), value: t('trainee.myClassDetail.weeks', '12 Weeks') },
+        { icon: Calendar, title: t('trainee.myClassDetail.courseLength', 'Thời Lượng Trung Bình'), value: t('trainee.myClassDetail.weeks', '6 Tuần') },
     ];
 
     const displayFeatures = features || defaultFeatures;
