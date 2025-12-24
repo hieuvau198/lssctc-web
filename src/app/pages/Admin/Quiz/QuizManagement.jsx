@@ -255,7 +255,7 @@ const QuizManagement = () => {
             </div>
 
             {/* Table */}
-            <div className="flex-1 overflow-hidden bg-white relative p-0">
+            <div className="mt-4 flex-1 overflow-hidden bg-white relative p-0">
                 <IndustrialTable
                     loading={loading}
                     dataSource={paginatedData}
@@ -266,7 +266,7 @@ const QuizManagement = () => {
                     pageSize={pageSize}
                     total={filteredQuizzes.length}
                     onPageChange={(p, ps) => { setPage(p); setPageSize(ps); }}
-                    scroll={{ y: 'calc(100vh - 280px)' }}
+                    scroll={{ y: 'calc(100vh - 360px)' }}
                     className="h-full border-none"
                 />
             </div>

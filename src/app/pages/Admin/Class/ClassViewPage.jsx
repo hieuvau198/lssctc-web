@@ -24,7 +24,9 @@ const ClassViewPage = () => {
     fetchClassDetail(id)
       .then((d) => setClassItem(d))
       .catch((err) => {
-        message.error(err?.message || t('admin.classes.loadError'));
+        // FIX: Handle object errors in load
+        const errorMsg = err?.response?.data?.message || err?.message || t('admin.classes.loadError');
+        message.error(typeof errorMsg === 'object' ? JSON.stringify(errorMsg) : errorMsg);
       })
       .finally(() => setLoading(false));
   };
@@ -51,7 +53,21 @@ const ClassViewPage = () => {
       setIsEditModalOpen(false);
       loadClassDetail();
     } catch (err) {
-      message.error(err?.response?.data || err?.message || t('admin.classes.messages.updateFailed'));
+      // --- FIX: Safely extract error message string ---
+      const data = err?.response?.data;
+      let errorMsg = t('admin.classes.messages.updateFailed');
+      
+      if (typeof data === 'string') {
+        errorMsg = data;
+      } else if (data && typeof data === 'object') {
+        // Extract common error properties or fallback to JSON string
+        errorMsg = data.message || data.error || data.title || JSON.stringify(data);
+      } else if (err?.message) {
+        errorMsg = err.message;
+      }
+      
+      message.error(errorMsg);
+      // ------------------------------------------------
     } finally {
       setUpdating(false);
     }

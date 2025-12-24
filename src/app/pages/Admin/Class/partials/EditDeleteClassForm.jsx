@@ -59,6 +59,20 @@ const EditDeleteClassForm = ({
   // Check if class is in Draft status
   const isDraft = classItem ? getClassStatus(classItem.status).key === 'Draft' : true;
 
+  // --- HELPER TO SAFELY EXTRACT ERROR MESSAGE ---
+  const getErrorMessage = (err, fallbackKey) => {
+    const data = err?.response?.data;
+    if (typeof data === 'string') {
+      return data;
+    }
+    // Try to find common error fields if data is an object
+    if (data && typeof data === 'object') {
+      return data.message || data.error || data.title || JSON.stringify(data);
+    }
+    return err?.message || t(fallbackKey);
+  };
+  // ----------------------------------------------
+
   const handleFinish = async (values) => {
     // If onUpdate is provided, let the parent handle it
     if (onUpdate) {
@@ -84,9 +98,8 @@ const EditDeleteClassForm = ({
       onUpdated?.();
       onClose();
     } catch (err) {
-      setError(
-        err?.response?.data || err?.message || t('admin.classes.messages.updateFailed')
-      );
+      // FIX: Safely extract string message
+      setError(getErrorMessage(err, 'admin.classes.messages.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -100,9 +113,8 @@ const EditDeleteClassForm = ({
       onDeleted?.();
       onClose();
     } catch (err) {
-      setDeleteError(
-        err?.response?.data || err?.message || t('admin.classes.messages.deleteFailed')
-      );
+      // FIX: Safely extract string message
+      setDeleteError(getErrorMessage(err, 'admin.classes.messages.deleteFailed'));
     } finally {
       setDeleting(false);
     }
