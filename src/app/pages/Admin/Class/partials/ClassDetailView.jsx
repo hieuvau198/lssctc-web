@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Empty, Skeleton, Popconfirm, App } from "antd";
 import { useTranslation } from 'react-i18next';
 import DayTimeFormat from "../../../../components/DayTimeFormat/DayTimeFormat";
@@ -8,23 +8,22 @@ import ClassTimeslotManage from "./ClassTimeslotManage";
 import ClassCertificate from './ClassCertificate';
 import ClassCourseInfo from './ClassCourseInfo';
 import ClassExamWeights from './ClassExamWeights';
+import IndustrialTabs from "../../../../components/Common/IndustrialTabs";
 import { openClass, startClass, completeClass, cancelClass } from '../../../../apis/ProgramManager/ClassesApi';
 import { getClassStatus } from '../../../../utils/classStatus';
-import dayjs from "dayjs";
 import {
   Users,
   Calendar,
   Clock,
   FileText,
-  UserCheck,
-  CalendarDays,
-  BookOpen,
   Award,
   Activity,
   Play,
   CheckCircle,
   XCircle,
-  Send
+  Send,
+  LayoutDashboard,
+  GraduationCap
 } from 'lucide-react';
 
 /**
@@ -64,8 +63,9 @@ const SectionHeader = ({ icon: Icon, title }) => (
 const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   const { t } = useTranslation();
   const { message } = App.useApp();
-  const [statusLoading, setStatusLoading] = React.useState(false);
-  const [hasTimeSlots, setHasTimeSlots] = React.useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [hasTimeSlots, setHasTimeSlots] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   const handleStatusAction = async (action, actionName) => {
     setStatusLoading(true);
@@ -89,17 +89,13 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
     return <Empty description={t('admin.classes.noClassData')} />;
   }
 
-
   const statusInfo = getClassStatus(classItem.status);
-
-  // Determine if the class is editable (Only editable if status is Draft)
   const readOnly = statusInfo.key !== 'Draft';
 
   // Shared Button Styles
   const primaryBtnClass = "flex items-center gap-2 px-5 py-2.5 bg-black border-2 border-black text-white font-bold uppercase tracking-wider hover:bg-yellow-400 hover:text-black hover:border-yellow-500 transition-all text-xs disabled:opacity-50 w-full justify-center shadow-sm";
   const secondaryBtnClass = "flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-slate-200 text-slate-600 font-bold uppercase tracking-wider hover:border-black hover:text-black hover:bg-slate-50 transition-all text-xs disabled:opacity-50 w-full justify-center";
 
-  // Status action buttons based on current status
   const renderStatusActions = () => {
     switch (statusInfo.key) {
       case 'Draft':
@@ -177,8 +173,26 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
     }
   };
 
+  const tabs = [
+    {
+      key: 'overview',
+      label: 'Tổng quan',
+      icon: LayoutDashboard
+    },
+    {
+      key: 'exam',
+      label: 'Thi cuối khóa',
+      icon: GraduationCap
+    },
+    {
+      key: 'certificate',
+      label: 'Chứng chỉ',
+      icon: Award
+    }
+  ];
+
   return (
-    <div className="flex flex-col gap-12 font-sans text-slate-800">
+    <div className="flex flex-col gap-8 font-sans text-slate-800">
 
       {/* TOP PART: Metadata & Description */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -255,103 +269,118 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
         </div>
       </div>
 
-      {/* SECTIONS */}
-      <div className="flex flex-col gap-8">
+      {/* Tabs Navigation */}
+      <IndustrialTabs 
+        tabs={tabs} 
+        activeKey={activeTab} 
+        onChange={setActiveTab} 
+      />
 
-        {/* ROW 1: Schedule (8) + Status (4) */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-          
-          {/* LEFT: Schedule / Timeslots (Span 8) */}
-          <div className="xl:col-span-8">
-            <div id="class-schedule" className="p-6 border-2 border-slate-200 bg-white h-full">
-              <ClassTimeslotManage 
-                classItem={classItem} 
-                onTimeSlotsChange={setHasTimeSlots} 
-                readOnly={readOnly}
-              />
+      {/* TAB 1: OVERVIEW */}
+      {activeTab === 'overview' && (
+        <div className="flex flex-col gap-8 animate-in fade-in zoom-in-95 duration-300">
+          {/* ROW 1: Schedule (8) + Status (4) */}
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+            {/* LEFT: Schedule / Timeslots (Span 8) */}
+            <div className="xl:col-span-8">
+              <div id="class-schedule" className="p-6 border-2 border-slate-200 bg-white h-full">
+                <ClassTimeslotManage 
+                  classItem={classItem} 
+                  onTimeSlotsChange={setHasTimeSlots} 
+                  readOnly={readOnly}
+                />
+              </div>
+            </div>
+
+            {/* RIGHT: Status Management (Span 4) */}
+            <div className="xl:col-span-4">
+              <div id="class-status" className="p-6 border-2 border-slate-200 bg-white h-full">
+                <SectionHeader icon={Activity} title={t('admin.classes.status.title', 'Status Management')} />
+
+                <div className="flex flex-col gap-6">
+                  {/* Current Status Display */}
+                  <div className="flex flex-col gap-3">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      {t('admin.classes.status.currentStatus', 'Current Status')}
+                    </span>
+                    
+                    {/* Industrial Status Badge */}
+                    <div className="relative">
+                      <div className={`px-4 py-4 text-center border-2 border-black flex flex-col items-center justify-center gap-1 ${
+                        statusInfo.key === 'Inprogress' || statusInfo.key === 'Open' ? 'bg-black text-yellow-400' : 'bg-slate-50 text-slate-900'
+                      }`}>
+                        <span className="text-lg font-black uppercase tracking-widest">
+                          {t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}
+                        </span>
+                        {statusInfo.key === 'Draft' && <span className="text-[10px] uppercase font-bold text-slate-500">Not Published</span>}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status Actions */}
+                  <div className="border-t-2 border-slate-100 pt-6">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-4">
+                      {t('admin.classes.status.availableActions', 'Available Actions')}
+                    </span>
+                    <div className="flex flex-col gap-3">
+                      {renderStatusActions()}
+                    </div>
+                  </div>
+
+                  {/* Loading Indicator */}
+                  {statusLoading && (
+                    <div className="flex items-center gap-2 text-slate-400 justify-center pt-2">
+                      <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+                      <span className="text-xs font-bold uppercase">{t('common.processing', 'Processing...')}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* RIGHT: Status Management (Span 4) */}
-          <div className="xl:col-span-4">
-            <div id="class-status" className="p-6 border-2 border-slate-200 bg-white h-full sticky top-6">
-              <SectionHeader icon={Activity} title={t('admin.classes.status.title', 'Status Management')} />
+          {/* ROW 2: Members (8) + Instructor (4) */}
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+            {/* LEFT: Class Members (Span 8) */}
+            <div className="xl:col-span-8">
+              <div className="p-6 border-2 border-slate-200 bg-white h-full">
+                <ClassMembersTable classItem={classItem} />
+              </div>
+            </div>
 
-              <div className="flex flex-col gap-6">
-                {/* Current Status Display */}
-                <div className="flex flex-col gap-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    {t('admin.classes.status.currentStatus', 'Current Status')}
-                  </span>
-                  
-                  {/* Industrial Status Badge */}
-                  <div className="relative">
-                    <div className={`px-4 py-4 text-center border-2 border-black flex flex-col items-center justify-center gap-1 ${
-                      statusInfo.key === 'Inprogress' || statusInfo.key === 'Open' ? 'bg-black text-yellow-400' : 'bg-slate-50 text-slate-900'
-                    }`}>
-                      <span className="text-lg font-black uppercase tracking-widest">
-                        {t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}
-                      </span>
-                      {statusInfo.key === 'Draft' && <span className="text-[10px] uppercase font-bold text-slate-500">Not Published</span>}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Status Actions */}
-                <div className="border-t-2 border-slate-100 pt-6">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-4">
-                    {t('admin.classes.status.availableActions', 'Available Actions')}
-                  </span>
-                  <div className="flex flex-col gap-3">
-                    {renderStatusActions()}
-                  </div>
-                </div>
-
-                {/* Loading Indicator */}
-                {statusLoading && (
-                  <div className="flex items-center gap-2 text-slate-400 justify-center pt-2">
-                    <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-xs font-bold uppercase">{t('common.processing', 'Processing...')}</span>
-                  </div>
-                )}
+            {/* RIGHT: Instructor (Span 4) */}
+            <div className="xl:col-span-4">
+              <div className="p-6 border-2 border-slate-200 bg-white h-full">
+                <InstructorCard classItem={classItem} allowAssign={hasTimeSlots} />
               </div>
             </div>
           </div>
         </div>
+      )}
 
-        {/* ROW 2: Members (8) + Instructor (4) */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-          
-          {/* LEFT: Class Members (Span 8) */}
-          <div className="xl:col-span-8">
-            <div className="p-6 border-2 border-slate-200 bg-white h-full">
-              <ClassMembersTable classItem={classItem} />
-            </div>
-          </div>
+      {/* TAB 2: FINAL EXAM */}
+      {activeTab === 'exam' && (
+        <div className="flex flex-col gap-8 animate-in fade-in zoom-in-95 duration-300">
+          <ClassExamWeights classId={classItem?.id} readOnly={readOnly} />
+        </div>
+      )}
 
-          {/* RIGHT: Instructor (Span 4) */}
-          <div className="xl:col-span-4">
-            <div className="p-6 border-2 border-slate-200 bg-white h-full">
-              <InstructorCard classItem={classItem} allowAssign={hasTimeSlots} />
+      {/* TAB 3: CERTIFICATE & PARENT COURSE */}
+      {activeTab === 'certificate' && (
+        <div className="flex flex-col gap-8 animate-in fade-in zoom-in-95 duration-300">
+          {/* Parent Course Info */}
+          {classItem?.courseId && (
+            <div id="parent-course" className="p-6 border-2 border-slate-200 bg-white">
+              <ClassCourseInfo courseId={classItem.courseId} />
             </div>
+          )}
+
+          {/* Certificates */}
+          <div id="class-certificates" className="p-6 border-2 border-slate-200 bg-white">
+            <ClassCertificate classId={classItem?.id} />
           </div>
         </div>
-
-        {/* FULL WIDTH: Parent Course Info */}
-        {classItem?.courseId && (
-          <div id="parent-course" className="p-6 border-2 border-slate-200 bg-white">
-            <ClassCourseInfo courseId={classItem.courseId} />
-          </div>
-        )}
-
-        {/* FULL WIDTH: Exam Weights */}
-        <ClassExamWeights classId={classItem?.id} readOnly={readOnly} />
-
-        {/* FULL WIDTH: Certificates */}
-        <div id="class-certificates" className="p-6 border-2 border-slate-200 bg-white">
-          <ClassCertificate classId={classItem?.id} />
-        </div>
-      </div>
+      )}
     </div>
   );
 };
