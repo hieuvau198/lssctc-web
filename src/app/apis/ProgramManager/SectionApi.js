@@ -175,3 +175,65 @@ export async function deleteActivity(activityId) {
   }
 }
 //#endregion
+
+//#region Activity-Quiz APIs
+
+/**
+ * Fetch all available quizzes (for dropdown)
+ */
+export async function fetchAllQuizzes() {
+  try {
+    const resp = await apiClient.get('/Quizzes?pageIndex=1&pageSize=1000');
+    // Handle wrapped response { data: { items: [] } } or direct { items: [] }
+    const data = resp.data?.data || resp.data;
+    return data?.items || [];
+  } catch (err) {
+    console.error('Error fetching all quizzes:', err);
+    return [];
+  }
+}
+
+/**
+ * Fetch quizzes assigned to a specific activity
+ */
+export async function fetchQuizzesByActivity(activityId) {
+  try {
+    const resp = await apiClient.get(`/Quizzes/activity/${activityId}/quizzes`);
+    // Handle wrapped response { status, message, data: [] }
+    return resp.data?.data || resp.data || [];
+  } catch (err) {
+    console.error(`Error fetching quizzes for activity ${activityId}:`, err);
+    return [];
+  }
+}
+
+/**
+ * Assign a quiz to an activity
+ */
+export async function assignQuizToActivity(activityId, quizId) {
+  try {
+    const resp = await apiClient.post(`/Quizzes/add-to-activity`, {
+      activityId,
+      quizId
+    });
+    return resp.data;
+  } catch (err) {
+    console.error(`Error assigning quiz ${quizId} to activity ${activityId}:`, err);
+    throw err;
+  }
+}
+
+/**
+ * Remove a quiz from an activity
+ */
+export async function removeQuizFromActivity(activityId, quizId) {
+  try {
+    await apiClient.delete(`/Quizzes/activity/${activityId}/quiz/${quizId}`);
+    return true;
+  } catch (err) {
+    console.error(`Error removing quiz ${quizId} from activity ${activityId}:`, err);
+    throw err;
+  }
+}
+
+//#endregion

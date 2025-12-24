@@ -1,7 +1,14 @@
+// src/app/pages/Admin/Course/partials/Sections/EditActivityModal.jsx
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Form, Input, InputNumber, Select, message } from 'antd';
-import { updateActivity } from '../../../../../apis/ProgramManager/SectionApi';
+import { 
+  updateActivity,
+  fetchAllQuizzes,
+  fetchQuizzesByActivity,
+  assignQuizToActivity,
+  removeQuizFromActivity 
+} from '../../../../../apis/ProgramManager/SectionApi';
 import { 
   getMaterials, 
   getMaterialsByActivityId, 
@@ -20,8 +27,12 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
   // State for Material Management
   const [materials, setMaterials] = useState([]);
   const [initialMaterialId, setInitialMaterialId] = useState(null);
+
+  // State for Quiz Management
+  const [quizzes, setQuizzes] = useState([]);
+  const [initialQuizId, setInitialQuizId] = useState(null);
   
-  // Watch activity type to conditionally show Material Select
+  // Watch activity type to conditionally show Material/Quiz Select
   const activityType = Form.useWatch('activityType', form);
 
   useEffect(() => {
@@ -34,36 +45,55 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
         estimatedDurationMinutes: activity.estimatedDurationMinutes || activity.duration
       });
 
-      // 2. Fetch Materials Data
-      fetchMaterialsData();
+      // 2. Fetch Resources Data (Materials & Quizzes)
+      fetchResourcesData();
     } else {
       form.resetFields();
       setInitialMaterialId(null);
       setMaterials([]);
+      setInitialQuizId(null);
+      setQuizzes([]);
     }
   }, [visible, activity, form]);
 
-  const fetchMaterialsData = async () => {
+  const fetchResourcesData = async () => {
     try {
-      // A. Fetch all available materials for the dropdown
+      // --- MATERIALS ---
       const materialsResp = await getMaterials({ page: 1, pageSize: 1000 });
       setMaterials(materialsResp.items || []);
 
-      // B. Fetch current assigned material for this activity
       const attachedMaterials = await getMaterialsByActivityId(activity.id);
-      
       if (attachedMaterials && attachedMaterials.length > 0) {
-        // Assuming 1 activity has 1 material per requirements
-        const currentId = attachedMaterials[0].learningMaterialId;
-        setInitialMaterialId(currentId);
-        form.setFieldValue('materialId', currentId);
+        const currentMatId = attachedMaterials[0].id;
+        setInitialMaterialId(currentMatId);
+        // Only set the field if the type matches to avoid confusion
+        if (activity.activityType === 'Material' || !activity.activityType) {
+             form.setFieldValue('materialId', currentMatId);
+        }
       } else {
         setInitialMaterialId(null);
         form.setFieldValue('materialId', null);
       }
+
+      // --- QUIZZES ---
+      const quizzesList = await fetchAllQuizzes();
+      setQuizzes(quizzesList || []);
+
+      const attachedQuizzes = await fetchQuizzesByActivity(activity.id);
+      if (attachedQuizzes && attachedQuizzes.length > 0) {
+        const currentQuizId = attachedQuizzes[0].id;
+        setInitialQuizId(currentQuizId);
+        if (activity.activityType === 'Quiz') {
+            form.setFieldValue('quizId', currentQuizId);
+        }
+      } else {
+        setInitialQuizId(null);
+        form.setFieldValue('quizId', null);
+      }
+
     } catch (error) {
-      console.error("Error loading materials:", error);
-      message.error("Failed to load materials information");
+      console.error("Error loading resources:", error);
+      message.error("Failed to load attached resources information");
     }
   };
 
@@ -79,20 +109,21 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
         estimatedDurationMinutes: values.estimatedDurationMinutes
       });
 
-      // 2. Handle Material Assignment (Only if type is Material)
+      // 2. Handle Material Assignment
       if (values.activityType === 'Material') {
         const newMaterialId = values.materialId;
-
-        // If material changed or removed
         if (initialMaterialId !== newMaterialId) {
-          // Unassign old if exists
-          if (initialMaterialId) {
-            await removeMaterialFromActivity(activity.id, initialMaterialId);
-          }
-          // Assign new if selected
-          if (newMaterialId) {
-            await assignMaterialToActivity(activity.id, newMaterialId);
-          }
+          if (initialMaterialId) await removeMaterialFromActivity(activity.id, initialMaterialId);
+          if (newMaterialId) await assignMaterialToActivity(activity.id, newMaterialId);
+        }
+      }
+
+      // 3. Handle Quiz Assignment
+      if (values.activityType === 'Quiz') {
+        const newQuizId = values.quizId;
+        if (initialQuizId !== newQuizId) {
+            if (initialQuizId) await removeQuizFromActivity(activity.id, initialQuizId);
+            if (newQuizId) await assignQuizToActivity(activity.id, newQuizId);
         }
       }
 
@@ -166,6 +197,28 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
                   {materials.map(m => (
                     <Option key={m.id} value={m.id}>
                       {m.name} {m.learningMaterialType ? `(${m.learningMaterialType})` : ''}
+                    </Option>
+                  ))}
+                </Select>
+             </Form.Item>
+          )}
+
+          {/* Conditional Quiz Select */}
+          {activityType === 'Quiz' && (
+             <Form.Item name="quizId" label="Assign Quiz">
+                <Select 
+                  placeholder="Select a quiz to assign"
+                  allowClear
+                  showSearch
+                  optionFilterProp="children"
+                  className="h-10 border-2 border-neutral-200 rounded-none"
+                  filterOption={(input, option) =>
+                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                >
+                  {quizzes.map(q => (
+                    <Option key={q.id} value={q.id}>
+                      {q.name} ({q.totalScore} pts)
                     </Option>
                   ))}
                 </Select>
