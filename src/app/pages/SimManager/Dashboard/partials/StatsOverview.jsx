@@ -1,35 +1,35 @@
 // src/app/pages/SimManager/Dashboard/partials/StatsOverview.jsx
 import { Spin } from 'antd';
-import { Activity, CheckCircle, PlayCircle, Monitor } from 'lucide-react';
+import { Users, PlayCircle, ListTodo, Monitor } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function StatsOverview({
+  totalTrainees = 0,
   totalPractices = 0,
-  completedPractices = 0,
-  activePractices = 0,
-  totalSimulators = 0,
+  totalTasks = 0,
+  totalSimulationSessions = 0,
   loading = false,
 }) {
   const { t } = useTranslation();
   const items = [
+    {
+      title: t('simManager.dashboard.totalTrainees') || 'Tổng học viên',
+      value: totalTrainees,
+      icon: <Users className="w-5 h-5" />,
+    },
     {
       title: t('simManager.dashboard.totalPractices') || 'Tổng thực hành',
       value: totalPractices,
       icon: <PlayCircle className="w-5 h-5" />,
     },
     {
-      title: t('simManager.dashboard.completedPractices') || 'Đã hoàn thành',
-      value: completedPractices,
-      icon: <CheckCircle className="w-5 h-5" />,
+      title: t('simManager.dashboard.totalTasks') || 'Tổng nhiệm vụ',
+      value: totalTasks,
+      icon: <ListTodo className="w-5 h-5" />,
     },
     {
-      title: t('simManager.dashboard.activePractices') || 'Đang thực hành',
-      value: activePractices,
-      icon: <Activity className="w-5 h-5" />,
-    },
-    {
-      title: t('simManager.dashboard.totalSimulators') || 'Tổng thiết bị',
-      value: totalSimulators,
+      title: t('simManager.dashboard.totalSimulationSessions') || 'Tổng phiên mô phỏng',
+      value: totalSimulationSessions,
       icon: <Monitor className="w-5 h-5" />,
     },
   ];

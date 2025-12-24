@@ -18,10 +18,10 @@ export default function SimDashboard() {
 
   // State for summary stats
   const [stats, setStats] = useState({
+    totalTrainees: 0,
     totalPractices: 0,
-    completedPractices: 0,
-    activePractices: 0,
-    totalSimulators: 0,
+    totalTasks: 0,
+    totalSimulationSessions: 0,
   });
   const [loadingStats, setLoadingStats] = useState(true);
 
@@ -42,10 +42,10 @@ export default function SimDashboard() {
         const data = await getSimulationManagerSummary();
         if (data) {
           setStats({
-            totalPractices: data.totalPractices ?? data.totalPracticeCount ?? 0,
-            completedPractices: data.completedPractices ?? data.completedCount ?? 0,
-            activePractices: data.activePractices ?? data.activeCount ?? 0,
-            totalSimulators: data.totalSimulators ?? data.simulatorCount ?? 0,
+            totalTrainees: data.totalTrainees ?? 0,
+            totalPractices: data.totalPractices ?? 0,
+            totalTasks: data.totalTasks ?? 0,
+            totalSimulationSessions: data.totalSimulationSessions ?? 0,
           });
         }
       } catch (error) {
@@ -113,10 +113,10 @@ export default function SimDashboard() {
       </div>
 
       <StatsOverview
+        totalTrainees={stats.totalTrainees}
         totalPractices={stats.totalPractices}
-        completedPractices={stats.completedPractices}
-        activePractices={stats.activePractices}
-        totalSimulators={stats.totalSimulators}
+        totalTasks={stats.totalTasks}
+        totalSimulationSessions={stats.totalSimulationSessions}
         loading={loadingStats}
       />
 

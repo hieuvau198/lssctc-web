@@ -13,25 +13,25 @@ const getStatConfig = (t) => [
   {
     key: 'trainees',
     label: t('instructor.dashboard.totalTrainees'),
-    dataKey: 'totalTrainees',
+    dataKey: 'totalAssignedTrainees',
     icon: Users
   },
   {
     key: 'classes',
     label: t('instructor.dashboard.totalClasses'),
-    dataKey: 'totalClasses',
+    dataKey: 'totalAssignedClasses',
     icon: BookOpen
   },
   {
     key: 'materials',
     label: t('instructor.dashboard.totalMaterials'),
-    dataKey: 'totalMaterials',
+    dataKey: 'totalMaterialsCreated',
     icon: FileText
   },
   {
     key: 'quizzes',
     label: t('instructor.dashboard.totalQuizzes'),
-    dataKey: 'totalQuizzes',
+    dataKey: 'totalQuizzesCreated',
     icon: HelpCircle
   },
 ];

@@ -141,12 +141,30 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
       />
 
       <Drawer
-        title={<span className="font-black uppercase">{t('instructor.classes.activityList.activityDetails')}</span>}
+        title={
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-black" />
+            </div>
+            <span className="font-black uppercase text-lg">{t('instructor.classes.activityList.activityDetails')}</span>
+          </div>
+        }
         placement="right"
         width={720}
         onClose={closeDetailDrawer}
         open={isDetailDrawerVisible}
-        bodyStyle={{ paddingBottom: 80 }}
+        styles={{
+          header: {
+            background: 'linear-gradient(to right, #fef3c7, #fde68a)',
+            borderBottom: '3px solid #000',
+            padding: '16px 24px'
+          },
+          body: {
+            padding: 0,
+            background: '#fafafa'
+          }
+        }}
+        className="[&_.ant-drawer-close]:text-black [&_.ant-drawer-close]:hover:text-yellow-600"
       >
         <ActivityDetailView
           activity={selectedActivity}
