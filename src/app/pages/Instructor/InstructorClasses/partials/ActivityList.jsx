@@ -1,12 +1,9 @@
 // src/app/pages/Instructor/InstructorClasses/partials/ActivityList.jsx
 import { Alert, List, Skeleton, Drawer } from 'antd';
-import { BookOpen, FileText, Monitor, HelpCircle, Settings } from 'lucide-react';
+import { BookOpen, FileText, Monitor, HelpCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getActivitiesBySectionId } from '../../../../apis/Instructor/InstructorSectionApi';
-import ManageMaterialModal from './Sections/ManageMaterialModal';
-import ManageQuizModal from './Sections/ManageQuizModal';
-import ManagePracticeModal from './Sections/ManagePracticeModal';
 import ActivityDetailView from './Sections/ActivityDetail/ActivityDetailView';
 
 const getActivityTypeDetails = (type, t) => {
@@ -53,9 +50,6 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
   const [error, setError] = useState(null);
 
   const [selectedActivity, setSelectedActivity] = useState(null);
-  const [isManageMaterialVisible, setIsManageMaterialVisible] = useState(false);
-  const [isManageQuizVisible, setIsManageQuizVisible] = useState(false);
-  const [isManagePracticeVisible, setIsManagePracticeVisible] = useState(false);
   const [isDetailDrawerVisible, setIsDetailDrawerVisible] = useState(false);
 
   const fetchActivities = async () => {
@@ -90,48 +84,6 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
     setSelectedActivity(null);
   };
 
-  const openManageMaterial = (activity) => {
-    setSelectedActivity(activity);
-    setIsManageMaterialVisible(true);
-  };
-  const onMaterialModalUpdate = () => {
-    setIsManageMaterialVisible(false);
-    setSelectedActivity(null);
-    fetchActivities();
-  };
-  const onMaterialModalClose = () => {
-    setIsManageMaterialVisible(false);
-    setSelectedActivity(null);
-  };
-
-  const openManageQuiz = (activity) => {
-    setSelectedActivity(activity);
-    setIsManageQuizVisible(true);
-  };
-  const onQuizModalUpdate = () => {
-    setIsManageQuizVisible(false);
-    setSelectedActivity(null);
-    fetchActivities();
-  };
-  const onQuizModalClose = () => {
-    setIsManageQuizVisible(false);
-    setSelectedActivity(null);
-  };
-
-  const openManagePractice = (activity) => {
-    setSelectedActivity(activity);
-    setIsManagePracticeVisible(true);
-  };
-  const onPracticeModalUpdate = () => {
-    setIsManagePracticeVisible(false);
-    setSelectedActivity(null);
-    fetchActivities();
-  };
-  const onPracticeModalClose = () => {
-    setIsManagePracticeVisible(false);
-    setSelectedActivity(null);
-  };
-
   if (loading) {
     return (
       <div className="p-4">
@@ -156,14 +108,10 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
         renderItem={(item) => {
           const typeDetails = getActivityTypeDetails(item.type, t);
 
-          const getManageButton = () => {
-            // Disabled managing content for this view
-            return null;
-          };
-
           return (
             <List.Item
-              actions={[getManageButton()]}
+              // Actions removed (Manage buttons)
+              actions={[]}
               onClick={() => openDetailDrawer(item)}
               className="hover:bg-yellow-50 cursor-pointer border-b border-neutral-100 transition-all"
             >
@@ -206,31 +154,6 @@ const ActivityList = ({ sectionId, classId, refreshKey }) => {
           sectionId={sectionId}
         />
       </Drawer>
-
-      {selectedActivity && (
-        <>
-          <ManageMaterialModal
-            activity={selectedActivity}
-            isVisible={isManageMaterialVisible}
-            onClose={onMaterialModalClose}
-            onUpdate={onMaterialModalUpdate}
-          />
-
-          <ManageQuizModal
-            activity={selectedActivity}
-            isVisible={isManageQuizVisible}
-            onClose={onQuizModalClose}
-            onUpdate={onQuizModalUpdate}
-          />
-
-          <ManagePracticeModal
-            activity={selectedActivity}
-            isVisible={isManagePracticeVisible}
-            onClose={onPracticeModalClose}
-            onUpdate={onPracticeModalUpdate}
-          />
-        </>
-      )}
     </>
   );
 };

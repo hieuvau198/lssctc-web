@@ -1,11 +1,10 @@
 // src/app/pages/Instructor/InstructorClasses/partials/ClassSections.jsx
 import { Alert, Collapse, Skeleton, Tooltip } from 'antd';
-import { Clock, BookOpen, Plus, ChevronRight } from 'lucide-react';
+import { Clock, BookOpen, ChevronRight } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getSectionsByCourseId } from '../../../../apis/Instructor/InstructorSectionApi';
 import ActivityList from './ActivityList';
-import AddActivityModal from './Sections/AddActivityModal';
 
 const { Panel } = Collapse;
 
@@ -32,11 +31,6 @@ const ClassSections = ({ courseId, classId }) => {
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-  const [currentSectionId, setCurrentSectionId] = useState(null);
-
-  const [activityRefreshKeys, setActivityRefreshKeys] = useState({});
 
   useEffect(() => {
     if (!courseId) {
@@ -69,20 +63,6 @@ const ClassSections = ({ courseId, classId }) => {
       cancelled = true;
     };
   }, [courseId]);
-
-  const openAddActivityModal = (sectionId) => {
-    setCurrentSectionId(sectionId);
-    setIsAddModalVisible(true);
-  };
-
-  const handleActivityAdded = () => {
-    setActivityRefreshKeys(prev => ({
-      ...prev,
-      [currentSectionId]: (prev[currentSectionId] || 0) + 1,
-    }));
-    setIsAddModalVisible(false);
-    setCurrentSectionId(null);
-  };
 
   if (loading) {
     return (
@@ -127,54 +107,44 @@ const ClassSections = ({ courseId, classId }) => {
   }
 
   return (
-    <>
-      <div className="bg-white border-2 border-black overflow-hidden">
-        <div className="h-1 bg-yellow-400" />
-        <div className="p-6 space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto">
-          <Collapse
-            accordion
-            bordered={false}
-            className="bg-transparent"
-            expandIconPosition="end"
-            expandIcon={({ isActive }) => (
-              <ChevronRight className={`w-5 h-5 text-neutral-500 transition-transform ${isActive ? 'rotate-90' : ''}`} />
-            )}
-          >
-            {sections.map((section, index) => (
-              <Panel
-                key={section.id}
-                header={
-                  <SectionHeader
-                    title={section.title}
-                    duration={section.duration}
-                    minutesText={minutesText}
-                  />
-                }
-                // Removed the extra prop which contained the Add Activity button
-                extra={null} 
-                className="mb-3 overflow-hidden border-2 border-neutral-200 hover:border-yellow-400 transition-all bg-white [&>.ant-collapse-header]:bg-neutral-50 [&>.ant-collapse-header]:border-b-2 [&>.ant-collapse-header]:border-neutral-200"
-              >
-                <div className="bg-neutral-50 -mx-4 -mt-4 px-4 py-3 mb-4 border-b-2 border-neutral-100">
-                  <p className="text-neutral-700 leading-relaxed">{section.description}</p>
-                </div>
-                <ActivityList
-                  sectionId={section.id}
-                  classId={classId}
-                  refreshKey={activityRefreshKeys[section.id] || 0}
+    <div className="bg-white border-2 border-black overflow-hidden">
+      <div className="h-1 bg-yellow-400" />
+      <div className="p-6 space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto">
+        <Collapse
+          accordion
+          bordered={false}
+          className="bg-transparent"
+          expandIconPosition="end"
+          expandIcon={({ isActive }) => (
+            <ChevronRight className={`w-5 h-5 text-neutral-500 transition-transform ${isActive ? 'rotate-90' : ''}`} />
+          )}
+        >
+          {sections.map((section, index) => (
+            <Panel
+              key={section.id}
+              header={
+                <SectionHeader
+                  title={section.title}
+                  duration={section.duration}
+                  minutesText={minutesText}
                 />
-              </Panel>
-            ))}
-          </Collapse>
-        </div>
+              }
+              // Removed extra prop (add button)
+              className="mb-3 overflow-hidden border-2 border-neutral-200 hover:border-yellow-400 transition-all bg-white [&>.ant-collapse-header]:bg-neutral-50 [&>.ant-collapse-header]:border-b-2 [&>.ant-collapse-header]:border-neutral-200"
+            >
+              <div className="bg-neutral-50 -mx-4 -mt-4 px-4 py-3 mb-4 border-b-2 border-neutral-100">
+                <p className="text-neutral-700 leading-relaxed">{section.description}</p>
+              </div>
+              <ActivityList
+                sectionId={section.id}
+                classId={classId}
+                refreshKey={0} // Fixed key since we don't add activities anymore
+              />
+            </Panel>
+          ))}
+        </Collapse>
       </div>
-
-      <AddActivityModal
-        sectionId={currentSectionId}
-        isVisible={isAddModalVisible}
-        onClose={() => setIsAddModalVisible(false)}
-        onActivityAdded={handleActivityAdded}
-      />
-    </>
+    </div>
   );
 };
 
