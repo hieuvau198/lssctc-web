@@ -1,7 +1,7 @@
 // src\app\pages\Instructor\InstructorProfile\EditInstructorProfile.jsx
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, message, Spin, Alert, InputNumber } from 'antd';
-import { ArrowLeft, User, Briefcase, Shield, Image } from 'lucide-react';
+import { Form, Input, message, Alert, InputNumber } from 'antd';
+import { ArrowLeft, User, Briefcase, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../../../store/authStore';
@@ -136,12 +136,12 @@ export default function EditInstructorProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-neutral-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 shadow-lg shadow-slate-200/50">
+          <div className="bg-white border-2 border-neutral-200 p-8">
             <div className="flex flex-col justify-center items-center py-12">
-              <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-              <p className="text-slate-500">{t('instructor.profile.loadingProfile')}</p>
+              <div className="w-12 h-12 border-4 border-yellow-200 border-t-yellow-500 rounded-full animate-spin mb-4"></div>
+              <p className="text-neutral-600 font-medium">{t('instructor.profile.loadingProfile')}</p>
             </div>
           </div>
         </div>
@@ -151,18 +151,21 @@ export default function EditInstructorProfile() {
 
   if (error) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-neutral-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 shadow-lg shadow-slate-200/50">
+          <div className="bg-white border-2 border-neutral-200 p-8">
             <Alert
               message={t('instructor.profile.error.errorLoadingProfile')}
               description={error}
               type="error"
               showIcon
             />
-            <Button className="mt-4" onClick={handleCancel}>
+            <button
+              onClick={handleCancel}
+              className="mt-4 px-5 py-2.5 bg-neutral-100 border-2 border-neutral-300 text-neutral-700 font-bold uppercase text-xs tracking-wider hover:bg-neutral-200 transition-all"
+            >
               {t('instructor.profile.backToProfile')}
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -170,24 +173,64 @@ export default function EditInstructorProfile() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-neutral-50">
+      {/* Industrial Form Styles */}
+      <style>{`
+        .industrial-form .ant-form-item-label > label {
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          font-size: 11px !important;
+          letter-spacing: 0.05em !important;
+          color: #525252 !important;
+        }
+        .industrial-form .ant-input,
+        .industrial-form .ant-input-number,
+        .industrial-form .ant-input-affix-wrapper,
+        .industrial-form textarea.ant-input {
+          border-radius: 0 !important;
+          border: 2px solid #e5e5e5 !important;
+        }
+        .industrial-form .ant-input:hover,
+        .industrial-form .ant-input:focus,
+        .industrial-form .ant-input-number:hover,
+        .industrial-form .ant-input-number-focused,
+        .industrial-form .ant-input-affix-wrapper:hover,
+        .industrial-form .ant-input-affix-wrapper-focused,
+        .industrial-form textarea.ant-input:hover,
+        .industrial-form textarea.ant-input:focus {
+          border-color: #facc15 !important;
+          box-shadow: none !important;
+        }
+        .industrial-form .ant-input-number {
+          width: 100% !important;
+        }
+        .industrial-form .ant-input-number-handler-wrap {
+          display: none;
+        }
+        .industrial-form .ant-input-disabled,
+        .industrial-form .ant-input[disabled] {
+          background: #f5f5f5 !important;
+          color: #737373 !important;
+        }
+      `}</style>
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Header Card */}
-        <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-          <div className="h-1.5 bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500" />
+        {/* Header Card - Industrial Style */}
+        <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400" />
           <div className="p-6">
             <div className="flex items-center gap-4">
               <button
                 onClick={handleCancel}
-                className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 flex items-center justify-center transition-all duration-200"
+                className="w-10 h-10 bg-neutral-100 border-2 border-neutral-300 hover:border-black hover:bg-yellow-400 flex items-center justify-center transition-all"
               >
-                <ArrowLeft className="w-5 h-5 text-slate-600" />
+                <ArrowLeft className="w-5 h-5 text-neutral-700" />
               </button>
               <div className="flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
+                <h1 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
                   {t('instructor.profile.updateProfile')}
                 </h1>
-                <p className="text-sm text-slate-500 mt-1">{t('instructor.profile.updateDescription')}</p>
+                <p className="text-sm text-neutral-600 mt-1">{t('instructor.profile.updateDescription')}</p>
               </div>
             </div>
           </div>
@@ -199,31 +242,33 @@ export default function EditInstructorProfile() {
           layout="vertical"
           onFinish={handleSubmit}
           autoComplete="off"
-          className="space-y-6"
+          className="space-y-6 industrial-form"
         >
           {/* Basic Information Section */}
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-            <div className="h-1 bg-gradient-to-r from-blue-400 to-indigo-500" />
+          <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+            <div className="h-1 bg-yellow-400" />
             <div className="p-6">
-              <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                <User className="w-5 h-5 text-blue-500" />
+              <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                <div className="w-8 h-8 bg-yellow-400 border-2 border-black flex items-center justify-center">
+                  <User className="w-4 h-4 text-black" />
+                </div>
                 {t('instructor.profile.basicInformation')}
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.fullName')}</span>}
+                  label={t('instructor.profile.form.fullName')}
                   name="fullname"
                   rules={[{ required: true, message: t('instructor.profile.form.fullNameRequired') }]}
                 >
                   <Input
                     placeholder={t('instructor.profile.form.fullNamePlaceholder')}
-                    className="!rounded-xl !py-2.5"
+                    className="h-10"
                   />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.email')}</span>}
+                  label={t('instructor.profile.form.email')}
                   name="email"
                   rules={[
                     { required: true, message: t('instructor.profile.form.emailRequired') },
@@ -232,12 +277,12 @@ export default function EditInstructorProfile() {
                 >
                   <Input
                     placeholder={t('instructor.profile.form.emailPlaceholder')}
-                    className="!rounded-xl !py-2.5"
+                    className="h-10"
                   />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.phone')}</span>}
+                  label={t('instructor.profile.form.phone')}
                   name="phoneNumber"
                   rules={[
                     { required: true, message: t('instructor.profile.form.phoneRequired') },
@@ -246,24 +291,24 @@ export default function EditInstructorProfile() {
                 >
                   <Input
                     placeholder={t('instructor.profile.form.phonePlaceholder')}
-                    className="!rounded-xl !py-2.5"
+                    className="h-10"
                   />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.instructorCode')}</span>}
+                  label={t('instructor.profile.form.instructorCode')}
                   name="instructorCode"
                 >
                   <Input
                     placeholder={t('instructor.profile.form.instructorCodePlaceholder')}
                     disabled
-                    className="!rounded-xl !py-2.5 !bg-slate-50"
+                    className="h-10"
                   />
                 </Form.Item>
               </div>
 
               <Form.Item
-                label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.avatarUrl')}</span>}
+                label={t('instructor.profile.form.avatarUrl')}
                 name="avatarUrl"
                 rules={[
                   { type: 'url', message: t('instructor.profile.form.avatarUrlInvalid') }
@@ -271,18 +316,18 @@ export default function EditInstructorProfile() {
               >
                 <Input
                   placeholder={t('instructor.profile.form.avatarUrlPlaceholder')}
-                  className="!rounded-xl !py-2.5"
+                  className="h-10"
                 />
               </Form.Item>
 
               {/* Current Avatar Preview */}
               {profileData?.avatarUrl && (
-                <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">{t('instructor.profile.currentAvatar')}</div>
+                <div className="mt-4 p-4 bg-neutral-50 border-2 border-neutral-200">
+                  <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">{t('instructor.profile.currentAvatar')}</div>
                   <img
                     src={profileData.avatarUrl}
                     alt="Avatar"
-                    className="w-24 h-24 object-cover rounded-full border-2 border-blue-200 shadow-sm"
+                    className="w-24 h-24 object-cover border-4 border-black"
                   />
                 </div>
               )}
@@ -290,17 +335,19 @@ export default function EditInstructorProfile() {
           </div>
 
           {/* Professional Information Section */}
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-            <div className="h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
+          <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+            <div className="h-1 bg-black" />
             <div className="p-6">
-              <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-emerald-500" />
+              <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                <div className="w-8 h-8 bg-black flex items-center justify-center">
+                  <Briefcase className="w-4 h-4 text-yellow-400" />
+                </div>
                 {t('instructor.profile.professionalInformation')}
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.experienceYears')}</span>}
+                  label={t('instructor.profile.form.experienceYears')}
                   name="experienceYears"
                   rules={[
                     { required: true, message: t('instructor.profile.form.experienceYearsRequired') },
@@ -309,14 +356,14 @@ export default function EditInstructorProfile() {
                 >
                   <InputNumber
                     placeholder={t('instructor.profile.form.experienceYearsPlaceholder')}
-                    className="!w-full !rounded-xl"
+                    className="h-10"
                     min={0}
                     max={50}
                   />
                 </Form.Item>
 
                 <Form.Item
-                  label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.professionalProfileUrl')}</span>}
+                  label={t('instructor.profile.form.professionalProfileUrl')}
                   name="professionalProfileUrl"
                   rules={[
                     { type: 'url', message: t('instructor.profile.form.professionalProfileUrlInvalid') }
@@ -324,24 +371,24 @@ export default function EditInstructorProfile() {
                 >
                   <Input
                     placeholder={t('instructor.profile.form.professionalProfileUrlPlaceholder')}
-                    className="!rounded-xl !py-2.5"
+                    className="h-10"
                   />
                 </Form.Item>
               </div>
 
               <Form.Item
-                label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.specialization')}</span>}
+                label={t('instructor.profile.form.specialization')}
                 name="specialization"
                 rules={[{ required: true, message: t('instructor.profile.form.specializationRequired') }]}
               >
                 <Input
                   placeholder={t('instructor.profile.form.specializationPlaceholder')}
-                  className="!rounded-xl !py-2.5"
+                  className="h-10"
                 />
               </Form.Item>
 
               <Form.Item
-                label={<span className="text-slate-700 font-medium">{t('instructor.profile.form.biography')}</span>}
+                label={t('instructor.profile.form.biography')}
                 name="biography"
                 rules={[{ required: true, message: t('instructor.profile.form.biographyRequired') }]}
               >
@@ -350,18 +397,17 @@ export default function EditInstructorProfile() {
                   placeholder={t('instructor.profile.form.biographyPlaceholder')}
                   maxLength={1000}
                   showCount
-                  className="!rounded-xl"
                 />
               </Form.Item>
 
               {/* Current Professional Profile Preview */}
               {profileData?.professionalProfileUrl && (
-                <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">{t('instructor.profile.currentProfessionalCertificate')}</div>
+                <div className="mt-4 p-4 bg-neutral-50 border-2 border-neutral-200">
+                  <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">{t('instructor.profile.currentProfessionalCertificate')}</div>
                   <img
                     src={profileData.professionalProfileUrl}
                     alt="Professional Certificate"
-                    className="max-w-md rounded-xl border border-slate-200 shadow-sm"
+                    className="max-w-md border-2 border-neutral-200"
                   />
                 </div>
               )}
@@ -369,61 +415,61 @@ export default function EditInstructorProfile() {
           </div>
 
           {/* Read-only Information Section */}
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
-            <div className="h-1 bg-gradient-to-r from-slate-300 to-slate-400" />
+          <div className="bg-white border-2 border-neutral-200 overflow-hidden">
+            <div className="h-1 bg-neutral-400" />
             <div className="p-6">
-              <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-slate-500" />
+              <h2 className="text-lg font-black text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                <div className="w-8 h-8 bg-neutral-400 flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-white" />
+                </div>
                 {t('instructor.profile.readOnlyInformation')}
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.form.status')}</div>
+                <div className="p-4 bg-neutral-50 border-2 border-neutral-200">
+                  <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">{t('instructor.profile.form.status')}</div>
                   <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${profileData?.isInstructorActive ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
-                    <span className="text-slate-800 font-semibold">
+                    <span className={`px-2 py-0.5 text-xs font-black uppercase ${profileData?.isInstructorActive ? 'bg-emerald-400 text-emerald-900' : 'bg-red-400 text-red-900'}`}>
                       {profileData?.isInstructorActive ? t('common.active') : t('common.inactive')}
                     </span>
                   </div>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.form.hireDate')}</div>
-                  <div className="text-slate-800 font-semibold">
+                <div className="p-4 bg-neutral-50 border-2 border-neutral-200">
+                  <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">{t('instructor.profile.form.hireDate')}</div>
+                  <div className="text-neutral-800 font-semibold">
                     {profileData?.hireDate ? new Date(profileData.hireDate).toLocaleDateString('vi-VN') : 'N/A'}
                   </div>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.form.userId')}</div>
-                  <div className="text-slate-800 font-semibold font-mono text-sm">{profileData?.userId || 'N/A'}</div>
+                <div className="p-4 bg-neutral-50 border-2 border-neutral-200">
+                  <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">{t('instructor.profile.form.userId')}</div>
+                  <div className="text-neutral-800 font-semibold font-mono text-sm">{profileData?.userId || 'N/A'}</div>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('instructor.profile.form.role')}</div>
-                  <div className="text-slate-800 font-semibold">{t('instructor.profile.roles.instructor')}</div>
+                <div className="p-4 bg-neutral-50 border-2 border-neutral-200">
+                  <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">{t('instructor.profile.form.role')}</div>
+                  <div className="text-neutral-800 font-semibold">{t('instructor.profile.roles.instructor')}</div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50">
+          <div className="bg-white border-2 border-neutral-200 overflow-hidden">
             <div className="p-6 flex gap-4 justify-end">
-              <Button
-                size="large"
+              <button
+                type="button"
                 onClick={handleCancel}
-                className="!rounded-xl !px-6"
+                className="px-6 py-2.5 bg-white border-2 border-neutral-300 text-neutral-700 font-bold uppercase text-xs tracking-wider hover:border-black hover:text-black transition-all"
               >
                 {t('common.cancel')}
-              </Button>
-              <Button
-                type="primary"
-                size="large"
-                htmlType="submit"
-                loading={submitting}
-                className="!rounded-xl !px-6 !font-semibold"
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="px-6 py-2.5 bg-yellow-400 border-2 border-black text-black font-black uppercase text-xs tracking-wider hover:bg-yellow-500 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
+                {submitting && <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />}
                 {t('common.saveChanges')}
-              </Button>
+              </button>
             </div>
           </div>
         </Form>
@@ -431,4 +477,3 @@ export default function EditInstructorProfile() {
     </div>
   );
 }
-

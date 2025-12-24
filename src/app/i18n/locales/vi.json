@@ -1,6 +1,7 @@
 {
   "common": {
     "save": "Lưu",
+    "saveChanges": "Lưu thay đổi",
     "cancel": "Hủy",
     "delete": "Xóa",
     "edit": "Sửa",
