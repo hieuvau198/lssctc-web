@@ -5,6 +5,7 @@ import { Edit3, Plus, MinusCircle, ClipboardList } from 'lucide-react';
 import dayjs from 'dayjs';
 import FinalExamApi from '../../../../../apis/FinalExam/FinalExamApi';
 import PartialApi from '../../../../../apis/FinalExam/PartialApi';
+import { fetchClassDetail } from '../../../../../apis/ProgramManager/ClassApi';
 import DayTimeFormat from '../../../../../components/DayTimeFormat/DayTimeFormat';
 
 export default function AdminPEConfig({ classId, readOnly }) {
@@ -14,7 +15,13 @@ export default function AdminPEConfig({ classId, readOnly }) {
   const [configs, setConfigs] = useState([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedConfig, setSelectedConfig] = useState(null);
+  const [classInfo, setClassInfo] = useState(null);
+
   const [form] = Form.useForm();
+  
+  // Watch fields for auto-calculation
+  const startTime = Form.useWatch('startTime', form);
+  const duration = Form.useWatch('duration', form);
 
   const fetchConfig = useCallback(async () => {
     setLoading(true);
@@ -29,13 +36,27 @@ export default function AdminPEConfig({ classId, readOnly }) {
     }
   }, [classId, message]);
 
-  useEffect(() => { if (classId) fetchConfig(); }, [classId, fetchConfig]);
+  useEffect(() => { 
+    if (classId) {
+      fetchConfig();
+      fetchClassDetail(classId).then(data => setClassInfo(data)).catch(console.error);
+    }
+  }, [classId, fetchConfig]);
+
+  // Auto-calculate End Time
+  useEffect(() => {
+    if (startTime && duration) {
+      const end = dayjs(startTime).add(duration, 'minute');
+      form.setFieldValue('endTime', end);
+    }
+  }, [startTime, duration, form]);
 
   const handleEdit = (record) => {
     setSelectedConfig(record);
     form.setFieldsValue({
       ...record,
-      timeRange: [record.startTime ? dayjs(record.startTime) : null, record.endTime ? dayjs(record.endTime) : null],
+      startTime: record.startTime ? dayjs(record.startTime) : null,
+      endTime: record.endTime ? dayjs(record.endTime) : null,
       checklistConfig: record.checklist || []
     });
     setCreateModalOpen(true);
@@ -55,8 +76,8 @@ export default function AdminPEConfig({ classId, readOnly }) {
         type: 'Practical',
         examWeight: values.examWeight,
         duration: values.duration,
-        startTime: values.timeRange?.[0]?.format('YYYY-MM-DDTHH:mm:ss'),
-        endTime: values.timeRange?.[1]?.format('YYYY-MM-DDTHH:mm:ss'),
+        startTime: values.startTime?.format('YYYY-MM-DDTHH:mm:ss'),
+        endTime: values.endTime?.format('YYYY-MM-DDTHH:mm:ss'),
         checklistConfig: values.checklistConfig
       };
 
@@ -69,6 +90,11 @@ export default function AdminPEConfig({ classId, readOnly }) {
     } catch (err) {
       message.error(t('admin.finalExam.saveFailed', 'Save failed'));
     }
+  };
+
+  const disabledDate = (current) => {
+    if (!classInfo?.startDate) return false;
+    return current && current < dayjs(classInfo.startDate).startOf('day');
   };
 
   const columns = [
@@ -147,12 +173,22 @@ export default function AdminPEConfig({ classId, readOnly }) {
               <InputNumber min={1} className="w-full" />
             </Form.Item>
             <Form.Item name="examWeight" label="Weight (%)" rules={[{ required: true }]}>
-              <InputNumber min={0} max={100} className="w-full" />
+              <InputNumber min={0} max={100} className="w-full" disabled />
             </Form.Item>
           </div>
-          <Form.Item name="timeRange" label="Time Range" rules={[{ required: true }]}>
-            <DatePicker.RangePicker showTime format="DD-MM-YYYY HH:mm" className="w-full" />
-          </Form.Item>
+          <div className="grid grid-cols-2 gap-4">
+            <Form.Item name="startTime" label="Start Time" rules={[{ required: true }]}>
+              <DatePicker 
+                showTime 
+                format="DD-MM-YYYY HH:mm" 
+                className="w-full" 
+                disabledDate={disabledDate}
+              />
+            </Form.Item>
+            <Form.Item name="endTime" label="End Time">
+              <DatePicker showTime format="DD-MM-YYYY HH:mm" className="w-full" disabled />
+            </Form.Item>
+          </div>
 
           <div className="mt-6 mb-4 font-bold uppercase text-xs tracking-wider text-neutral-500 border-b border-neutral-200 pb-2">
             Checklist Items

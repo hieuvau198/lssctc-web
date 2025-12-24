@@ -5,7 +5,8 @@ import { Edit3, FileText, Plus } from 'lucide-react';
 import dayjs from 'dayjs';
 import FinalExamApi from '../../../../../apis/FinalExam/FinalExamApi';
 import PartialApi from '../../../../../apis/FinalExam/PartialApi';
-import InstructorQuizApi from '../../../../../apis/Instructor/InstructorQuiz'; // Reusing Instructor API for list
+import InstructorQuizApi from '../../../../../apis/Instructor/InstructorQuiz';
+import { fetchClassDetail } from '../../../../../apis/ProgramManager/ClassApi';
 import DayTimeFormat from '../../../../../components/DayTimeFormat/DayTimeFormat';
 
 export default function AdminTEConfig({ classId, readOnly }) {
@@ -16,7 +17,13 @@ export default function AdminTEConfig({ classId, readOnly }) {
   const [quizzes, setQuizzes] = useState([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedConfig, setSelectedConfig] = useState(null);
+  const [classInfo, setClassInfo] = useState(null);
+  
   const [form] = Form.useForm();
+  
+  // Watch fields for auto-calculation
+  const startTime = Form.useWatch('startTime', form);
+  const duration = Form.useWatch('duration', form);
 
   const fetchConfig = useCallback(async () => {
     setLoading(true);
@@ -44,8 +51,18 @@ export default function AdminTEConfig({ classId, readOnly }) {
     if (classId) {
       fetchConfig();
       fetchQuizzes();
+      // Fetch class details for date restriction
+      fetchClassDetail(classId).then(data => setClassInfo(data)).catch(console.error);
     }
   }, [classId, fetchConfig]);
+
+  // Auto-calculate End Time
+  useEffect(() => {
+    if (startTime && duration) {
+      const end = dayjs(startTime).add(duration, 'minute');
+      form.setFieldValue('endTime', end);
+    }
+  }, [startTime, duration, form]);
 
   const handleEdit = (record) => {
     setSelectedConfig(record);
@@ -89,6 +106,11 @@ export default function AdminTEConfig({ classId, readOnly }) {
     } catch (err) {
       message.error(err.response?.data?.message || t('admin.finalExam.saveFailed', 'Failed to save'));
     }
+  };
+
+  const disabledDate = (current) => {
+    if (!classInfo?.startDate) return false;
+    return current && current < dayjs(classInfo.startDate).startOf('day');
   };
 
   const columns = [
@@ -171,12 +193,17 @@ export default function AdminTEConfig({ classId, readOnly }) {
               <InputNumber min={1} className="w-full" />
             </Form.Item>
             <Form.Item name="examWeight" label="Weight (%)" rules={[{ required: true }]}>
-              <InputNumber min={0} max={100} className="w-full" />
+              <InputNumber min={0} max={100} className="w-full" disabled />
             </Form.Item>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Form.Item name="startTime" label="Start Time" rules={[{ required: true }]}>
-              <DatePicker showTime format="DD-MM-YYYY HH:mm" className="w-full" />
+              <DatePicker 
+                showTime 
+                format="DD-MM-YYYY HH:mm" 
+                className="w-full" 
+                disabledDate={disabledDate}
+              />
             </Form.Item>
             <Form.Item name="endTime" label="End Time">
               <DatePicker showTime format="DD-MM-YYYY HH:mm" className="w-full" disabled />
