@@ -21,9 +21,14 @@ export default function AdminTEConfig({ classId, readOnly }) {
   
   const [form] = Form.useForm();
   
-  // Watch fields for auto-calculation
+  // Watch fields
   const startTime = Form.useWatch('startTime', form);
   const duration = Form.useWatch('duration', form);
+  const quizId = Form.useWatch('quizId', form);
+
+  // Calculate min duration based on selected quiz
+  const selectedQuiz = quizzes.find(q => q.id === quizId);
+  const minDuration = selectedQuiz?.timelimitMinute || 1;
 
   const fetchConfig = useCallback(async () => {
     setLoading(true);
@@ -51,7 +56,6 @@ export default function AdminTEConfig({ classId, readOnly }) {
     if (classId) {
       fetchConfig();
       fetchQuizzes();
-      // Fetch class details for date restriction
       fetchClassDetail(classId).then(data => setClassInfo(data)).catch(console.error);
     }
   }, [classId, fetchConfig]);
@@ -186,11 +190,25 @@ export default function AdminTEConfig({ classId, readOnly }) {
       >
         <Form form={form} layout="vertical" className="pt-4">
           <Form.Item name="quizId" label="Quiz" rules={[{ required: true }]}>
-             <Select options={quizzes.map(q => ({ label: q.name, value: q.id }))} />
+             <Select options={quizzes.map(q => ({ label: `${q.name} (${q.timelimitMinute}m)`, value: q.id }))} />
           </Form.Item>
           <div className="grid grid-cols-2 gap-4">
-            <Form.Item name="duration" label="Duration (min)" rules={[{ required: true }]}>
-              <InputNumber min={1} className="w-full" />
+            <Form.Item 
+              name="duration" 
+              label="Duration (min)" 
+              rules={[
+                { required: true },
+                { 
+                  validator: async (_, value) => {
+                    if (value && value < minDuration) {
+                      throw new Error(`Duration must be at least ${minDuration} min`);
+                    }
+                  } 
+                }
+              ]}
+              extra={selectedQuiz ? `Minimum required: ${minDuration} mins` : null}
+            >
+              <InputNumber min={minDuration} className="w-full" />
             </Form.Item>
             <Form.Item name="examWeight" label="Weight (%)" rules={[{ required: true }]}>
               <InputNumber min={0} max={100} className="w-full" disabled />

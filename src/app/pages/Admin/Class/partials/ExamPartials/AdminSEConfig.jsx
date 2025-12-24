@@ -21,9 +21,14 @@ export default function AdminSEConfig({ classId, readOnly }) {
   
   const [form] = Form.useForm();
   
-  // Watch fields for auto-calculation
+  // Watch fields
   const startTime = Form.useWatch('startTime', form);
   const duration = Form.useWatch('duration', form);
+  const practiceId = Form.useWatch('practiceId', form);
+
+  // Calculate min duration based on selected practice
+  const selectedPractice = practices.find(p => p.id === practiceId);
+  const minDuration = selectedPractice?.estimatedDurationMinutes || 1;
 
   const fetchConfig = useCallback(async () => {
     setLoading(true);
@@ -180,11 +185,25 @@ export default function AdminSEConfig({ classId, readOnly }) {
       >
         <Form form={form} layout="vertical" className="pt-4">
           <Form.Item name="practiceId" label="Practice" rules={[{ required: true }]}>
-            <Select options={practices.map(p => ({ label: p.practiceName, value: p.id }))} />
+            <Select options={practices.map(p => ({ label: `${p.practiceName} (${p.estimatedDurationMinutes}m)`, value: p.id }))} />
           </Form.Item>
           <div className="grid grid-cols-2 gap-4">
-            <Form.Item name="duration" label="Duration (min)" rules={[{ required: true }]}>
-              <InputNumber min={1} className="w-full" />
+            <Form.Item 
+              name="duration" 
+              label="Duration (min)" 
+              rules={[
+                { required: true },
+                { 
+                  validator: async (_, value) => {
+                    if (value && value < minDuration) {
+                      throw new Error(`Duration must be at least ${minDuration} min`);
+                    }
+                  } 
+                }
+              ]}
+              extra={selectedPractice ? `Minimum required: ${minDuration} mins` : null}
+            >
+              <InputNumber min={minDuration} className="w-full" />
             </Form.Item>
             <Form.Item name="examWeight" label="Weight (%)" rules={[{ required: true }]}>
               <InputNumber min={0} max={100} className="w-full" disabled />
