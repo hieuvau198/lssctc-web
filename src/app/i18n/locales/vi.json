@@ -907,7 +907,7 @@
       "tasksCompleted": "Nhiệm vụ hoàn thành",
       "averageScore": "Điểm trung bình",
       "sessionNotStarted": "Phiên học chưa bắt đầu",
-      "sessionExpired": "Phiên học đã kết thúc",
+      "sessionExpired": "Bài Làm Bị Khóa",
       "sessionNotOpenAlert": "Hoạt động này hiện không trong phiên mở. Bạn không thể đánh dấu hoàn thành lúc này.",
       "activityAlreadyCompleted": "Hoạt động đã hoàn thành!",
       "activityAlreadyCompletedDesc": "Tuyệt vời! Bạn đã hoàn thành hoạt động này rồi.",

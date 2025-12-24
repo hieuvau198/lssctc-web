@@ -46,13 +46,13 @@ export default function SessionLockScreen({ sessionStatus, activityName }) {
                         <h2 className={`text-2xl font-black uppercase tracking-wide ${isNotStarted ? 'text-black' : 'text-white'}`}>
                             {isNotStarted
                                 ? t('trainee.learn.sessionNotStartedTitle', 'Phiên học chưa bắt đầu')
-                                : t('trainee.learn.sessionExpiredTitle', 'Phiên học đã kết thúc')}
+                                : t('trainee.learn.sessionExpiredTitle', 'Nội dung đang Bị Khóa')}
                         </h2>
-                        <p className={`mt-2 ${isNotStarted ? 'text-black/80' : 'text-white/80'}`}>
+                        {/* <p className={`mt-2 ${isNotStarted ? 'text-black/80' : 'text-white/80'}`}>
                             {isNotStarted
                                 ? t('trainee.learn.sessionNotStartedDesc', 'Bạn không thể xem nội dung bài học này lúc này')
-                                : t('trainee.learn.sessionExpiredDesc', 'Thời gian học đã hết, bạn không thể xem nội dung')}
-                        </p>
+                                : t('trainee.learn.sessionExpiredDesc', 'Hãy yêu cầu giảng viên mở lại thời hạn làm bài.')}
+                        </p> */}
                     </div>
 
                     {/* Details */}
