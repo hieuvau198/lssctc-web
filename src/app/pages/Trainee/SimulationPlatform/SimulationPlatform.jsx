@@ -210,7 +210,7 @@ export default function SimulationPlatform() {
               <div className="h-2 bg-neutral-900 -mx-6 -mt-6 mb-6" />
               <h3 className="text-xl font-black uppercase tracking-wider text-neutral-900 flex items-center gap-2 mb-4">
                 <Cpu className="w-5 h-5 text-yellow-500" />
-                {t('simulator.requirements', 'System Requirements')}
+                {t('simulator.requirements', 'Thông số phần cứng đề cử')}
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 {systemRequirements.map((req, i) => (
