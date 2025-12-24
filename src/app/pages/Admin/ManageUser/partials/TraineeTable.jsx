@@ -1,10 +1,13 @@
+// src/app/pages/Admin/ManageUser/partials/TraineeTable.jsx
+
 import { Avatar, Empty, Modal, App } from 'antd';
-import { Users } from 'lucide-react';
+import { Users, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import { getUserById } from '../../../../apis/Admin/AdminUser';
 import { IndustrialTable } from '../../../../components/Industrial';
+import DrawerEdit from './DrawerEdit';
 
 const getInitials = (name = '') => {
   return name
@@ -25,13 +28,20 @@ export default function TraineeTable() {
     pageSize,
     setPage,
     setPageSize,
-    tableScroll
+    tableScroll,
+    setRefreshTrigger
   } = useOutletContext() || {};
 
   const [data, setData] = useState([]);
+  
+  // View State
   const [viewingUser, setViewingUser] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
+
+  // Edit State
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
   const handleViewUser = async (id) => {
     setIsViewModalOpen(true);
@@ -48,14 +58,13 @@ export default function TraineeTable() {
     }
   };
 
+  const handleEditUser = (id) => {
+    setEditingUserId(id);
+    setIsEditDrawerOpen(true);
+  };
+
   const COLUMNS = [
-    {
-      title: '#',
-      dataIndex: 'idx',
-      width: 60,
-      align: 'center',
-      render: (v) => <span className="font-bold text-neutral-500">{v}</span>
-    },
+    // Removed the '#' (index) column here
     {
       title: t('admin.users.table.avatar'),
       dataIndex: 'avatar',
@@ -74,6 +83,7 @@ export default function TraineeTable() {
     {
       title: t('admin.users.table.fullName'),
       dataIndex: 'fullName',
+      width: 220, // Shortened column with fixed width
       render: (text, record) => (
         <span
           onClick={() => handleViewUser(record.key)}
@@ -97,6 +107,7 @@ export default function TraineeTable() {
     {
       title: t('admin.users.table.status'),
       dataIndex: 'status',
+      width: 200, // Increased width
       render: (s) => (
         <span className={`px-3 py-1 text-xs font-bold uppercase border ${s === 'active'
           ? 'bg-green-100 text-green-800 border-green-300'
@@ -105,7 +116,25 @@ export default function TraineeTable() {
           {s === 'active' ? t('common.active') : t('common.inactive')}
         </span>
       ),
-      width: 150,
+    },
+    {
+      title: t('common.action') || 'Action',
+      key: 'action',
+      width: 80,
+      align: 'center',
+      fixed: 'right',
+      render: (_, record) => (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEditUser(record.key);
+          }}
+          className="p-1.5 text-neutral-500 hover:text-black hover:bg-yellow-400 border border-transparent hover:border-black transition-all"
+          title={t('common.edit')}
+        >
+          <Pencil className="w-4 h-4" />
+        </button>
+      ),
     },
   ];
 
@@ -114,7 +143,7 @@ export default function TraineeTable() {
       const items = Array.isArray(traineeData.items) ? traineeData.items : [];
       const rows = items.map((it, idx) => ({
         key: it.id,
-        idx: (page - 1) * pageSize + idx + 1,
+        // idx calculation removed from data mapping as it's no longer used
         fullName: it.fullName || it.fullname || it.username || '',
         email: it.email || '',
         phoneNumber: it.phoneNumber || it.phone || it.phone_number || '-',
@@ -159,7 +188,17 @@ export default function TraineeTable() {
         }}
       />
 
-      {/* Industrial Modal */}
+      <DrawerEdit
+        visible={isEditDrawerOpen}
+        userId={editingUserId}
+        onClose={() => setIsEditDrawerOpen(false)}
+        onUpdated={() => {
+            if (setRefreshTrigger) {
+                setRefreshTrigger(prev => prev + 1);
+            }
+        }}
+      />
+
       <Modal
         title={
           <div className="flex items-center gap-2">
@@ -182,7 +221,6 @@ export default function TraineeTable() {
           </div>
         ) : viewingUser ? (
           <div>
-            {/* Header Profile Section */}
             <div className="flex items-center gap-4 border-b border-neutral-200 pb-4 mb-4">
               <div className="relative">
                 <Avatar
@@ -206,7 +244,6 @@ export default function TraineeTable() {
               </div>
             </div>
 
-            {/* Compact Details Grid */}
             <div className="grid grid-cols-2 gap-x-4 gap-y-4 bg-neutral-50 p-4 border border-neutral-200">
               {[
                 { label: t('admin.users.table.fullName'), value: viewingUser.fullName, full: true },
