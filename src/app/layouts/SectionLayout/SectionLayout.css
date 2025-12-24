@@ -33,14 +33,16 @@ aside::-webkit-scrollbar-thumb:hover {
 }
 
 @keyframes check-pop {
-  0% { 
+  0% {
     transform: scale(0);
     opacity: 0;
   }
-  50% { 
+
+  50% {
     transform: scale(1.2);
   }
-  100% { 
+
+  100% {
     transform: scale(1);
     opacity: 1;
   }
@@ -52,10 +54,13 @@ aside::-webkit-scrollbar-thumb:hover {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { 
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4);
   }
-  50% { 
+
+  50% {
     box-shadow: 0 0 0 4px rgba(6, 182, 212, 0);
   }
 }
@@ -70,6 +75,7 @@ aside::-webkit-scrollbar-thumb:hover {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -97,9 +103,11 @@ aside::-webkit-scrollbar-thumb:hover {
     transform: scale(0);
     opacity: 0;
   }
+
   60% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -108,9 +116,12 @@ aside::-webkit-scrollbar-thumb:hover {
 
 /* Gradient background animation */
 @keyframes gradient-shift {
-  0%, 100% {
+
+  0%,
+  100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
@@ -145,6 +156,7 @@ aside::-webkit-scrollbar-thumb:hover {
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -166,6 +178,7 @@ aside::-webkit-scrollbar-thumb:hover {
     transform: translateY(-100%) rotate(0deg);
     opacity: 1;
   }
+
   100% {
     transform: translateY(100vh) rotate(720deg);
     opacity: 0;
@@ -174,9 +187,12 @@ aside::-webkit-scrollbar-thumb:hover {
 
 /* Trophy bounce animation */
 @keyframes trophy-bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -240,4 +256,53 @@ aside::-webkit-scrollbar-thumb:hover {
 /* Sidebar transition when not resizing */
 aside:not(.resizing) {
   transition: width 0.1s ease-out;
+}
+
+/* Completion Notification Modal Styles */
+.completion-notification-modal .ant-modal-content {
+  border-radius: 0 !important;
+  border: 4px solid #000 !important;
+  overflow: hidden;
+  box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.completion-notification-modal .ant-modal-body {
+  padding: 0;
+  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 50%, #fef08a 100%);
+}
+
+/* Notification modal icon animation */
+@keyframes notification-bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.completion-notification-modal .animate-bounce {
+  animation: notification-bounce 1s ease-in-out infinite;
+}
+
+/* Sparkle pulse animation */
+@keyframes sparkle-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.completion-notification-modal .animate-pulse {
+  animation: sparkle-pulse 1.5s ease-in-out infinite;
 }

@@ -25,8 +25,9 @@ export default function CourseSection() {
 
   // --- LEARNING SIDEBAR CONTEXT ---
   const { refreshKey, triggerCourseCompletion } = useLearningSidebar();
-  // Track previous completion state to detect when it becomes 100%
-  const [wasCompleted, setWasCompleted] = React.useState(false);
+  // Track previous completed count to detect when it becomes 100%
+  const [prevCompletedCount, setPrevCompletedCount] = React.useState(0);
+  const [prevTotalCount, setPrevTotalCount] = React.useState(0);
   // --- KẾT THÚC LEARNING SIDEBAR CONTEXT ---
 
   // --- LOGIC TRAINEE ID MỚI ---
@@ -111,12 +112,19 @@ export default function CourseSection() {
       const totalActivities = allActivities.length;
       const completedActivities = allActivities.filter(a => a.isCompleted).length;
       const isNowComplete = totalActivities > 0 && completedActivities === totalActivities;
+      const wasPreviouslyComplete = prevTotalCount > 0 && prevCompletedCount === prevTotalCount;
 
-      // Only show celebration if it just became complete (not on initial load)
-      if (isNowComplete && !wasCompleted && refreshKey > 0) {
+      // Show celebration if:
+      // 1. Course is now 100% complete
+      // 2. It wasn't complete before (either first load after completion or just completed)
+      // 3. refreshKey > 0 means this is not the initial page load
+      if (isNowComplete && !wasPreviouslyComplete && refreshKey > 0) {
         triggerCourseCompletion(courseTitle);
       }
-      setWasCompleted(isNowComplete);
+
+      // Update previous counts
+      setPrevCompletedCount(completedActivities);
+      setPrevTotalCount(totalActivities);
 
     } catch (err) {
       console.error('Error fetching sections/partitions:', err);
@@ -124,7 +132,7 @@ export default function CourseSection() {
     } finally {
       setLoading(false);
     }
-  }, [classId, traineeId]);
+  }, [classId, traineeId, refreshKey, prevCompletedCount, prevTotalCount, courseTitle, triggerCourseCompletion]);
 
   useEffect(() => {
     fetchSidebarData();
@@ -149,8 +157,8 @@ export default function CourseSection() {
       // Lọc các activities thuộc về section này
       const sectionActivities = activities
         .filter((act) => act.sectionId === section.sectionId)
-         // TODO: Cần một trường 'order' thực sự trên ActivityRecord
-        .sort((a, b) => a.activityId - b.activityId); 
+        // TODO: Cần một trường 'order' thực sự trên ActivityRecord
+        .sort((a, b) => a.activityId - b.activityId);
 
       // Thêm partitions (activities)
       sectionActivities.forEach((act) => {
