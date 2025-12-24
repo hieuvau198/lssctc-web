@@ -72,8 +72,8 @@ const EditDeleteClassForm = ({
     try {
       await updateClass(classItem.id, {
         name: values.name,
-        startDate: values.startDate.toISOString(),
-        endDate: values.endDate.toISOString(),
+        startDate: values.startDate.format('YYYY-MM-DD'),
+        endDate: values.endDate.format('YYYY-MM-DD'),
         capacity: values.capacity,
         description: values.description,
         classCode: values.classCode,

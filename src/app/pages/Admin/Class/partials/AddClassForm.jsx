@@ -98,8 +98,8 @@ const AddClassForm = ({
       await createClass({
         classCode: values.classCode,
         name: values.name,
-        startDate: values.startDate.toISOString(),
-        endDate: values.endDate.toISOString(),
+        startDate: values.startDate.format('YYYY-MM-DD'),
+        endDate: values.endDate.format('YYYY-MM-DD'),
         capacity: values.capacity,
         programId: values.programId,
         courseId: values.courseId || programCourseId, // Send courseId (use programCourseId as fallback)
