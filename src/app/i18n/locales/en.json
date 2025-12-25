@@ -768,6 +768,7 @@
       "statusRejected": "Rejected",
       "statusPending": "Pending",
       "statusNotYet": "Not Yet",
+      "submitted": "Submitted",
       "checklists": "Checklists",
       "checklistName": "Checklist Name",
       "result": "Result",
