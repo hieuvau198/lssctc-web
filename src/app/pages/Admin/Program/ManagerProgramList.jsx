@@ -97,7 +97,7 @@ const ManagerProgramList = () => {
       setTotal(data.totalCount || 0);
       closeCreateDrawer();
     } catch (err) {
-      message.error(err.message || 'Create failed');
+      message.error(err.message || t('admin.programs.createError'));
     } finally {
       setSubmitting(false);
     }
@@ -135,7 +135,7 @@ const ManagerProgramList = () => {
                 {t('admin.programs.title')}
               </span>
               <p className="text-yellow-400 text-xs mt-0.5 font-bold">
-                {total} {t('admin.programs.totalPrograms') || 'programs'}
+                {total} {t('admin.programs.totalPrograms')}
               </p>
             </div>
           </div>
@@ -150,7 +150,7 @@ const ManagerProgramList = () => {
       </div>
 
       {/* Main Content Card Wrapper */}
-      <div className="bg-white border-x-2 border-b-2 border-black overflow-hidden flex-1 flex flex-col min-h-0">
+      <div className="bg-white overflow-hidden flex-1 flex flex-col min-h-0">
 
         {/* Integrated Search Bar */}
         <div className="px-4 py-2 bg-white border-b-2 border-neutral-200 flex-none shadow-sm z-10">

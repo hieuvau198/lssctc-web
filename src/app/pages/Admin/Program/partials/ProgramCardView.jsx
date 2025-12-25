@@ -32,7 +32,7 @@ const ProgramCard = ({ program, onView }) => {
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           <span className="flex items-center gap-2 text-white font-bold uppercase tracking-wider">
             <Eye className="w-5 h-5" />
-            {t('common.viewDetails') || 'View Details'}
+            {t('common.viewDetails')}
           </span>
         </div>
       </div>
@@ -48,8 +48,8 @@ const ProgramCard = ({ program, onView }) => {
             {program.name}
           </h3>
           <span className={`shrink-0 inline-flex items-center px-2 py-1 text-xs font-bold uppercase tracking-wider border-2 ${program.isActive
-              ? 'bg-green-50 text-green-700 border-green-300'
-              : 'bg-red-50 text-red-700 border-red-300'
+            ? 'bg-green-50 text-green-700 border-green-300'
+            : 'bg-red-50 text-red-700 border-red-300'
             }`}>
             {program.isActive ? t('common.active') : t('common.inactive')}
           </span>
@@ -57,7 +57,7 @@ const ProgramCard = ({ program, onView }) => {
 
         {/* Description */}
         <p className="text-sm text-neutral-500 line-clamp-2 mb-4">
-          {program.description || t('admin.programs.noDescription') || 'No description available'}
+          {program.description || t('admin.programs.noDescription')}
         </p>
 
         {/* Meta info */}
@@ -70,7 +70,7 @@ const ProgramCard = ({ program, onView }) => {
           )}
           <div className="flex items-center gap-1 text-sm text-neutral-600">
             <BookOpen className="w-4 h-4 text-yellow-500" />
-            <span className="font-medium">{program.totalCourses || 0} {t('admin.programs.courses') || 'courses'}</span>
+            <span className="font-medium">{program.totalCourses || 0} {t('admin.programs.courses')}</span>
           </div>
         </div>
       </div>
@@ -80,7 +80,7 @@ const ProgramCard = ({ program, onView }) => {
         onClick={() => onView(program)}
         className="w-full py-3 bg-neutral-100 text-black font-bold uppercase text-sm tracking-wider flex items-center justify-center gap-2 hover:bg-yellow-400 transition-colors border-t-2 border-black"
       >
-        {t('common.viewDetails') || 'View Details'}
+        {t('common.viewDetails')}
         <ChevronRight className="w-4 h-4" />
       </button>
     </div>

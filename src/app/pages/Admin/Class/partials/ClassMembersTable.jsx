@@ -64,7 +64,7 @@ const ClassMembersTable = ({ classItem }) => {
     const columns = [
         // COMBINED: Avatar + Name + Email
         {
-            title: t('admin.classes.members.traineeInfo', 'Trainee Information'),
+            title: t('admin.classes.members.traineeInfo'),
             key: 'traineeInfo',
             render: (_, record) => (
                 <div className="flex items-center gap-3">
@@ -249,7 +249,7 @@ const ClassMembersTable = ({ classItem }) => {
             `}</style>
 
             <div className="flex justify-between items-end mb-4 border-b-2 border-slate-200 pb-2">
-                 <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-black flex items-center justify-center text-yellow-400">
                         <Users size={18} strokeWidth={2.5} />
                     </div>

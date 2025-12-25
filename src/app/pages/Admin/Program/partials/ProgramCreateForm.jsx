@@ -80,7 +80,7 @@ const ProgramCreateForm = ({ form, onFinish, onCancel, submitting }) => {
                 }}
             >
                 {/* Basic Information Section */}
-                <SectionHeader icon={Layers} title={t('admin.programs.form.basicInfo') || "Basic Information"} />
+                <SectionHeader icon={Layers} title={t('admin.programs.form.basicInfo')} />
 
                 <Form.Item
                     name="name"
@@ -96,7 +96,7 @@ const ProgramCreateForm = ({ form, onFinish, onCancel, submitting }) => {
                 </Form.Item>
 
                 {/* Images Section */}
-                <SectionHeader icon={ImageIcon} title={t('admin.programs.form.images') || "Program Images"} />
+                <SectionHeader icon={ImageIcon} title={t('admin.programs.form.images')} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     {/* Main Image */}
@@ -141,7 +141,7 @@ const ProgramCreateForm = ({ form, onFinish, onCancel, submitting }) => {
                     <div className="border-2 border-neutral-700 p-4 bg-neutral-900 hover:border-yellow-400 transition-colors">
                         <Form.Item
                             name="backgroundImageUrl"
-                            label={<span className="text-white">{t('admin.programs.form.backgroundImageUrl') || "Background Image URL"}</span>}
+                            label={<span className="text-white">{t('admin.programs.form.backgroundImageUrl')}</span>}
                             rules={[
                                 { type: "url", message: t('admin.programs.form.imageUrlInvalid') },
                             ]}
@@ -160,7 +160,7 @@ const ProgramCreateForm = ({ form, onFinish, onCancel, submitting }) => {
 
                         <div className="text-xs font-bold uppercase text-neutral-400 mb-2 flex items-center gap-1">
                             <FileImage className="w-3 h-3" />
-                            {t('admin.programs.form.backgroundPreview') || "Background Preview"}
+                            {t('admin.programs.form.backgroundPreview')}
                         </div>
                         <div className="program-image-preview w-full h-40 flex items-center justify-center bg-neutral-800 border-2 border-neutral-700 cursor-pointer">
                             {bgPreview ? (
@@ -168,7 +168,7 @@ const ProgramCreateForm = ({ form, onFinish, onCancel, submitting }) => {
                             ) : (
                                 <div className="flex flex-col items-center text-neutral-500">
                                     <FileImage className="w-10 h-10 mb-2 opacity-50" />
-                                    <span className="text-xs font-medium">{t('common.noBackground') || "No background"}</span>
+                                    <span className="text-xs font-medium">{t('common.noBackground')}</span>
                                 </div>
                             )}
                         </div>

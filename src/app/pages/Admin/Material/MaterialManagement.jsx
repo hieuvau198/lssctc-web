@@ -57,7 +57,7 @@ const MaterialManagement = () => {
       setMaterials(res.items || []);
       setTotalCount(res.totalCount || 0);
     } catch (error) {
-      message.error(t('material.fetchError'));
+      message.error(t('admin.materials.fetchError'));
       setMaterials([]);
       setTotalCount(0);
     } finally {
@@ -67,19 +67,19 @@ const MaterialManagement = () => {
 
   const handleDelete = (id) => {
     modal.confirm({
-      title: t('material.deleteConfirm'),
-      content: t('material.deleteWarning'),
+      title: t('admin.materials.deleteConfirm'),
+      content: t('admin.materials.deleteWarning'),
       okText: t('common.delete'),
       okButtonProps: { danger: true },
       cancelText: t('common.cancel'),
       onOk: async () => {
         try {
           await deleteMaterial(id);
-          message.success(t('material.deleteSuccess'));
+          message.success(t('admin.materials.deleteSuccess'));
           // Refresh current page if possible, or go back to 1
           fetchData();
         } catch (error) {
-          message.error(error.message || t('material.deleteError'));
+          message.error(error.message || t('admin.materials.deleteError'));
         }
       },
     });
@@ -137,12 +137,12 @@ const MaterialManagement = () => {
       }
 
       await apiCall();
-      message.success(isEdit ? t('material.updateSuccess') : t('material.createSuccess'));
+      message.success(isEdit ? t('admin.materials.updateSuccess') : t('admin.materials.createSuccess'));
       setDrawerOpen(false);
       fetchData();
     } catch (error) {
       console.error(error);
-      message.error(error.message || (editingMaterial ? t('material.updateError') : t('material.createError')));
+      message.error(error.message || (editingMaterial ? t('admin.materials.updateError') : t('admin.materials.createError')));
     } finally {
       setSubmitting(false);
     }
@@ -173,7 +173,7 @@ const MaterialManagement = () => {
       width: 120,
       render: (type) => (
         <span className="px-2 py-1 bg-neutral-200 border border-black text-xs font-bold uppercase">
-          {type === 'Video' ? t('material.video') : t('material.document')}
+          {type === 'Video' ? t('admin.materials.video') : t('admin.materials.document')}
         </span>
       )
     },
@@ -190,9 +190,9 @@ const MaterialManagement = () => {
             className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold hover:underline"
           >
             {record.learningMaterialType === 'File' ? <Download size={14} /> : <ExternalLink size={14} />}
-            {record.learningMaterialType === 'File' ? t('common.download') : t('material.visit')}
+            {record.learningMaterialType === 'File' ? t('common.download') : t('admin.materials.visit')}
           </a>
-        ) : <span className="text-neutral-400 italic">{t('material.noLink')}</span>
+        ) : <span className="text-neutral-400 italic">{t('admin.materials.noLink')}</span>
       )
     },
     {
@@ -238,7 +238,7 @@ const MaterialManagement = () => {
                 {t('sidebar.materials')}
               </span>
               <p className="text-yellow-400 text-xs mt-0.5 font-bold">
-                {totalCount} {t('material.items')}
+                {totalCount} {t('admin.materials.items')}
               </p>
             </div>
           </div>
@@ -247,7 +247,7 @@ const MaterialManagement = () => {
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-400 text-black font-bold uppercase tracking-wider text-xs border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
-            {t('material.addMaterial')}
+            {t('admin.materials.addMaterial')}
           </button>
         </div>
       </div>
@@ -264,7 +264,7 @@ const MaterialManagement = () => {
               </div>
               <input
                 type="text"
-                placeholder={t('material.searchPlaceholder')}
+                placeholder={t('admin.materials.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full h-9 pl-10 pr-4 bg-neutral-50 border border-neutral-300 focus:border-black focus:bg-white focus:ring-1 focus:ring-black font-medium text-sm text-black placeholder-neutral-400 transition-all outline-none"
@@ -317,7 +317,7 @@ const MaterialManagement = () => {
               </div>
               <div>
                 <h3 className="text-lg font-black uppercase tracking-wider text-white m-0">
-                  {editingMaterial ? t('material.editMaterial') : t('material.newMaterial')}
+                  {editingMaterial ? t('admin.materials.editMaterial') : t('admin.materials.newMaterial')}
                 </h3>
               </div>
             </div>

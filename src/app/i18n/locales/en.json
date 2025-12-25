@@ -1,5 +1,19 @@
 {
   "common": {
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
     "save": "Save",
     "saveChanges": "Save Changes",
     "cancel": "Cancel",
@@ -81,6 +95,7 @@
     "duration": "Duration",
     "clickToPreview": "Click to preview",
     "noImage": "No image",
+    "noBackground": "No background",
     "viewDetails": "View Details",
     "createdAt": "Created",
     "updatedAt": "Updated",
@@ -2456,6 +2471,7 @@
   "admin": {
     "dashboard": {
       "title": "Dashboard",
+      "subtitle": "System Overview",
       "totalUsers": "Total Users",
       "totalPrograms": "Total Programs",
       "totalCourses": "Total Courses",
@@ -2502,6 +2518,11 @@
       "noTrainees": "No trainees found",
       "noInstructors": "No instructors found",
       "noSimulationManagers": "No simulation managers found",
+      "fetchTraineesFailed": "Failed to fetch trainees",
+      "fetchInstructorsFailed": "Failed to fetch instructors",
+      "fetchSimManagersFailed": "Failed to fetch simulation managers",
+      "searchPlaceholder": "Search users...",
+      "filterStatus": "Status",
       "columns": {
         "avatar": "Avatar",
         "fullName": "Full Name",
@@ -2566,8 +2587,6 @@
         "deactivateUser": "Deactivate this user?"
       },
       "pagination": "{{start}}-{{end}} of {{total}} users",
-      "searchPlaceholder": "Search user...",
-      "filterStatus": "Status",
       "import": {
         "title": "Import from Excel",
         "importTrainee": "Import Trainees from Excel",
@@ -2603,6 +2622,22 @@
       "instructorDetail": "Instructor Detail",
       "simManagerDetail": "Simulation Manager Detail"
     },
+    "quizzes": {
+      "title": "Quiz Management",
+      "items": "quizzes",
+      "createQuiz": "Create Quiz",
+      "searchPlaceholder": "Search by name or description...",
+      "fetchFailed": "Failed to load quizzes",
+      "deleteConfirm": "Are you sure you want to delete this quiz?",
+      "deleteWarning": "This action cannot be undone.",
+      "deleteSuccess": "Quiz deleted successfully",
+      "deleteError": "Failed to delete quiz",
+      "loadDetailFailed": "Failed to load quiz details",
+      "timeLimit": "Time Limit",
+      "passScore": "Pass Score",
+      "totalScore": "Total Score",
+      "points": "pts"
+    },
     "programs": {
       "title": "Program Management",
       "totalPrograms": "programs",
@@ -2622,6 +2657,7 @@
       "noPrograms": "No programs found",
       "noCoursesAssigned": "No courses assigned to this program",
       "createSuccess": "Program created successfully",
+      "createError": "Failed to create program",
       "updateSuccess": "Program updated successfully",
       "deleteSuccess": "Program deleted successfully",
       "deleteError": "Failed to delete program",
@@ -2837,6 +2873,7 @@
       "createSuccess": "Class created successfully",
       "createError": "Failed to create class",
       "updateSuccess": "Class updated successfully",
+      "updateError": "Failed to update class",
       "fetchFailed": "Failed to fetch classes",
       "buttons": {
         "updateClass": "Update Class",
@@ -2962,7 +2999,8 @@
         "noMembers": "No members enrolled",
         "pagination": "{{start}}-{{end}} of {{total}} trainees",
         "approve": "Approve",
-        "reject": "Reject"
+        "reject": "Reject",
+        "traineeInfo": "Trainee Information"
       },
       "status": {
         "title": "Status Management",
@@ -2976,7 +3014,19 @@
         "completeSuccess": "Class completed successfully",
         "completeError": "Failed to complete class",
         "cancelSuccess": "Class cancelled successfully",
-        "cancelError": "Failed to cancel class"
+        "cancelError": "Failed to cancel class",
+        "publishConfirm": "Publish Class",
+        "publishConfirmDesc": "Are you sure you want to publish this class?",
+        "publishButton": "Publish",
+        "cancelConfirm": "Cancel Class",
+        "cancelConfirmDesc": "Are you sure you want to cancel this class?",
+        "cancelButton": "Cancel",
+        "startConfirm": "Start Class",
+        "startConfirmDesc": "Are you sure you want to start this class?",
+        "startButton": "Start Class",
+        "completeConfirm": "Complete Class",
+        "completeConfirmDesc": "Are you sure you want to complete this class?",
+        "completeButton": "Complete Class"
       },
       "modal": {
         "editClass": "Edit Class",
@@ -3121,6 +3171,27 @@
       "noTimeslots": "No timeslots scheduled",
       "programAndCourse": "Program & Course",
       "scheduleAndCapacity": "Schedule & Capacity"
+    },
+    "materials": {
+      "title": "Material Management",
+      "fetchError": "Failed to fetch materials",
+      "deleteConfirm": "Delete Material",
+      "deleteWarning": "Are you sure you want to delete this material? This action cannot be undone.",
+      "deleteSuccess": "Material deleted successfully",
+      "deleteError": "Failed to delete material",
+      "createSuccess": "Material created successfully",
+      "createError": "Failed to create material",
+      "updateSuccess": "Material updated successfully",
+      "updateError": "Failed to update material",
+      "video": "Video",
+      "document": "Document",
+      "visit": "Visit Link",
+      "noLink": "No link",
+      "items": "materials",
+      "addMaterial": "Add Material",
+      "searchPlaceholder": "Search materials...",
+      "editMaterial": "Edit Material",
+      "newMaterial": "New Material"
     }
   }
 }

@@ -18,7 +18,7 @@ export default function Dashboard() {
             {t('admin.dashboard.title')}
           </span>
           <p className="text-sm text-neutral-500 uppercase tracking-wider">
-            {t('admin.dashboard.subtitle', 'System Overview')}
+            {t('admin.dashboard.subtitle')}
           </p>
         </div>
       </div>

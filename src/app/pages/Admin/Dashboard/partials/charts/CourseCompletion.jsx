@@ -40,10 +40,10 @@ export default function CourseCompletion() {
   };
 
   const months = [
-    { value: 1, label: 'January' }, { value: 2, label: 'February' }, { value: 3, label: 'March' },
-    { value: 4, label: 'April' }, { value: 5, label: 'May' }, { value: 6, label: 'June' },
-    { value: 7, label: 'July' }, { value: 8, label: 'August' }, { value: 9, label: 'September' },
-    { value: 10, label: 'October' }, { value: 11, label: 'November' }, { value: 12, label: 'December' }
+    { value: 1, label: t('common.months.january') }, { value: 2, label: t('common.months.february') }, { value: 3, label: t('common.months.march') },
+    { value: 4, label: t('common.months.april') }, { value: 5, label: t('common.months.may') }, { value: 6, label: t('common.months.june') },
+    { value: 7, label: t('common.months.july') }, { value: 8, label: t('common.months.august') }, { value: 9, label: t('common.months.september') },
+    { value: 10, label: t('common.months.october') }, { value: 11, label: t('common.months.november') }, { value: 12, label: t('common.months.december') }
   ];
 
   const years = Array.from({ length: 5 }, (_, i) => currentDate.getFullYear() - 2 + i);

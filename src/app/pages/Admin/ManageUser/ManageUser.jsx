@@ -111,7 +111,7 @@ export default function ManageUser() {
           setTraineeData(res);
         } catch (err) {
           console.error("Failed to fetch trainees", err);
-          message.error("Failed to fetch trainees");
+          message.error(t('admin.users.fetchTraineesFailed'));
         } finally {
           setLoadingTrainees(false);
         }
@@ -134,7 +134,7 @@ export default function ManageUser() {
           setInstructorData(res);
         } catch (err) {
           console.error("Failed to fetch instructors", err);
-          message.error("Failed to fetch instructors");
+          message.error(t('admin.users.fetchInstructorsFailed'));
         } finally {
           setLoadingInstructors(false);
         }
@@ -157,7 +157,7 @@ export default function ManageUser() {
           setSimManagerData(res);
         } catch (err) {
           console.error("Failed to fetch simulation managers", err);
-          message.error("Failed to fetch simulation managers");
+          message.error(t('admin.users.fetchSimManagersFailed'));
         } finally {
           setLoadingSimManagers(false);
         }
@@ -259,7 +259,7 @@ export default function ManageUser() {
               </div>
               <input
                 type="text"
-                placeholder={t('admin.users.searchPlaceholder') || "Search..."}
+                placeholder={t('admin.users.searchPlaceholder')}
                 value={localSearchTerm}
                 onChange={(e) => setLocalSearchTerm(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch(localSearchTerm)}
@@ -283,7 +283,7 @@ export default function ManageUser() {
 
             {/* Status Filter */}
             <Select
-              placeholder={t('admin.users.filterStatus') || "Status"}
+              placeholder={t('admin.users.filterStatus')}
               allowClear
               value={statusFilter}
               onChange={handleStatusChange}
@@ -291,9 +291,9 @@ export default function ManageUser() {
               style={{ width: 150 }}
               className="industrial-select-compact"
             >
-              <Option value={undefined}>{t('common.all') || "All"}</Option>
-              <Option value={true}>{t('common.active') || "Active"}</Option>
-              <Option value={false}>{t('common.inactive') || "Inactive"}</Option>
+              <Option value={undefined}>{t('common.all')}</Option>
+              <Option value={true}>{t('common.active')}</Option>
+              <Option value={false}>{t('common.inactive')}</Option>
             </Select>
           </div>
         </div>

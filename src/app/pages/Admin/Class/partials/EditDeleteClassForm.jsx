@@ -99,7 +99,7 @@ const EditDeleteClassForm = ({
       onClose();
     } catch (err) {
       // FIX: Safely extract string message
-      setError(getErrorMessage(err, 'admin.classes.messages.updateFailed'));
+      setError(getErrorMessage(err, 'admin.classes.updateError'));
     } finally {
       setSaving(false);
     }
@@ -114,7 +114,7 @@ const EditDeleteClassForm = ({
       onClose();
     } catch (err) {
       // FIX: Safely extract string message
-      setDeleteError(getErrorMessage(err, 'admin.classes.messages.deleteFailed'));
+      setDeleteError(getErrorMessage(err, 'admin.classes.deleteError'));
     } finally {
       setDeleting(false);
     }
@@ -247,7 +247,7 @@ const EditDeleteClassForm = ({
       >
         {/* Basic Info */}
         <div className={embedded ? "md:col-span-2" : ""}>
-          <SectionHeader icon={FileText} title={t('admin.classes.form.basicInfo') || "Basic Information"} />
+          <SectionHeader icon={FileText} title={t('admin.classes.form.basicInfo')} />
         </div>
 
         <Form.Item
@@ -269,7 +269,7 @@ const EditDeleteClassForm = ({
 
         {/* Program & Course */}
         <div className={embedded ? "md:col-span-2 mt-2" : "mt-2"}>
-          <SectionHeader icon={Layers} title={t('admin.classes.form.programAndCourse') || "Program & Course"} />
+          <SectionHeader icon={Layers} title={t('admin.classes.form.programAndCourse')} />
         </div>
 
         <Form.Item
@@ -325,7 +325,7 @@ const EditDeleteClassForm = ({
 
         {/* Schedule & Capacity */}
         <div className={embedded ? "md:col-span-2 mt-2" : "mt-2"}>
-          <SectionHeader icon={Calendar} title={t('admin.classes.form.scheduleAndCapacity') || "Schedule & Capacity"} />
+          <SectionHeader icon={Calendar} title={t('admin.classes.form.scheduleAndCapacity')} />
         </div>
 
         <Form.Item

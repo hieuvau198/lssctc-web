@@ -1,5 +1,19 @@
 {
   "common": {
+    "months": {
+      "january": "Tháng 1",
+      "february": "Tháng 2",
+      "march": "Tháng 3",
+      "april": "Tháng 4",
+      "may": "Tháng 5",
+      "june": "Tháng 6",
+      "july": "Tháng 7",
+      "august": "Tháng 8",
+      "september": "Tháng 9",
+      "october": "Tháng 10",
+      "november": "Tháng 11",
+      "december": "Tháng 12"
+    },
     "save": "Lưu",
     "saveChanges": "Lưu thay đổi",
     "cancel": "Hủy",
@@ -81,6 +95,7 @@
     "duration": "Thời lượng",
     "clickToPreview": "Nhấn để xem trước",
     "noImage": "Không có hình ảnh",
+    "noBackground": "Không có ảnh nền",
     "viewDetails": "Xem chi tiết",
     "createdAt": "Ngày tạo",
     "updatedAt": "Ngày cập nhật",
@@ -2457,6 +2472,7 @@
   "admin": {
     "dashboard": {
       "title": "Bảng điều khiển",
+      "subtitle": "Tổng quan hệ thống",
       "totalUsers": "Tổng người dùng",
       "totalPrograms": "Tổng chương trình",
       "totalCourses": "Tổng khóa học",
@@ -2503,6 +2519,11 @@
       "noTrainees": "Không tìm thấy học viên nào",
       "noInstructors": "Không tìm thấy giảng viên nào",
       "noSimulationManagers": "Không tìm thấy quản lý mô phỏng nào",
+      "fetchTraineesFailed": "Không thể tải danh sách học viên",
+      "fetchInstructorsFailed": "Không thể tải danh sách giảng viên",
+      "fetchSimManagersFailed": "Không thể tải danh sách quản lý mô phỏng",
+      "searchPlaceholder": "Tìm kiếm người dùng...",
+      "filterStatus": "Trạng thái",
       "columns": {
         "avatar": "Avatar",
         "fullName": "Họ và tên",
@@ -2567,8 +2588,6 @@
         "deactivateUser": "Vô hiệu hóa người dùng này?"
       },
       "pagination": "{{start}}-{{end}} của {{total}} người dùng",
-      "searchPlaceholder": "Tìm kiếm người dùng...",
-      "filterStatus": "Trạng thái",
       "import": {
         "title": "Import từ Excel",
         "importTrainee": "Import Học viên từ Excel",
@@ -2604,6 +2623,22 @@
       "instructorDetail": "Chi tiết Giảng viên",
       "simManagerDetail": "Chi tiết Quản lý Mô phỏng"
     },
+    "quizzes": {
+      "title": "Quản lý Bài thi",
+      "items": "bài thi",
+      "createQuiz": "Tạo bài thi",
+      "searchPlaceholder": "Tìm theo tên hoặc mô tả...",
+      "fetchFailed": "Không thể tải danh sách bài thi",
+      "deleteConfirm": "Bạn có chắc chắn muốn xóa bài thi này?",
+      "deleteWarning": "Hành động này không thể hoàn tác.",
+      "deleteSuccess": "Xóa bài thi thành công",
+      "deleteError": "Không thể xóa bài thi",
+      "loadDetailFailed": "Không thể tải chi tiết bài thi",
+      "timeLimit": "Thời gian",
+      "passScore": "Điểm đạt",
+      "totalScore": "Tổng điểm",
+      "points": "điểm"
+    },
     "programs": {
       "title": "Quản lý chương trình",
       "totalPrograms": "chương trình",
@@ -2622,6 +2657,7 @@
       "courses": "Khóa học",
       "noCoursesAssigned": "Chưa có khóa học nào được gán cho chương trình này",
       "createSuccess": "Tạo chương trình thành công",
+      "createError": "Không thể tạo chương trình",
       "updateSuccess": "Cập nhật chương trình thành công",
       "deleteSuccess": "Xóa chương trình thành công",
       "deleteError": "Không thể xóa chương trình",
@@ -2835,6 +2871,7 @@
       "createSuccess": "Tạo lớp học thành công",
       "createError": "Không thể tạo lớp học",
       "updateSuccess": "Cập nhật lớp học thành công",
+      "updateError": "Không thể cập nhật lớp học",
       "fetchFailed": "Không thể tải danh sách lớp học",
       "buttons": {
         "updateClass": "Cập nhật lớp học",
@@ -2959,7 +2996,8 @@
         "noMembers": "Chưa có thành viên nào đăng ký",
         "pagination": "{{start}}-{{end}} của {{total}} học viên",
         "approve": "Phê duyệt",
-        "reject": "Từ chối"
+        "reject": "Từ chối",
+        "traineeInfo": "Thông tin học viên"
       },
       "status": {
         "title": "Quản lý Trạng thái",
@@ -2973,7 +3011,19 @@
         "completeSuccess": "Hoàn thành lớp học thành công",
         "completeError": "Không thể hoàn thành lớp học",
         "cancelSuccess": "Hủy lớp học thành công",
-        "cancelError": "Không thể hủy lớp học"
+        "cancelError": "Không thể hủy lớp học",
+        "publishConfirm": "Công khai Lớp học",
+        "publishConfirmDesc": "Bạn có chắc chắn muốn công khai lớp học này?",
+        "publishButton": "Công khai",
+        "cancelConfirm": "Hủy Lớp học",
+        "cancelConfirmDesc": "Bạn có chắc chắn muốn hủy lớp học này?",
+        "cancelButton": "Hủy",
+        "startConfirm": "Bắt đầu Lớp học",
+        "startConfirmDesc": "Bạn có chắc chắn muốn bắt đầu lớp học này?",
+        "startButton": "Bắt đầu",
+        "completeConfirm": "Hoàn thành Lớp học",
+        "completeConfirmDesc": "Bạn có chắc chắn muốn hoàn thành lớp học này?",
+        "completeButton": "Hoàn thành"
       },
       "modal": {
         "editClass": "Chỉnh sửa lớp",
@@ -3118,6 +3168,27 @@
       "noTimeslots": "Chưa có buổi học nào được lên lịch",
       "programAndCourse": "Chương trình & Khóa học",
       "scheduleAndCapacity": "Lịch trình & Sức chứa"
+    },
+    "materials": {
+      "title": "Quản lý tài liệu",
+      "fetchError": "Không thể tải tài liệu",
+      "deleteConfirm": "Xóa tài liệu",
+      "deleteWarning": "Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác.",
+      "deleteSuccess": "Xóa tài liệu thành công",
+      "deleteError": "Không thể xóa tài liệu",
+      "createSuccess": "Tạo tài liệu thành công",
+      "createError": "Không thể tạo tài liệu",
+      "updateSuccess": "Cập nhật tài liệu thành công",
+      "updateError": "Không thể cập nhật tài liệu",
+      "video": "Video",
+      "document": "Tài liệu",
+      "visit": "Truy cập",
+      "noLink": "Không có liên kết",
+      "items": "tài liệu",
+      "addMaterial": "Thêm tài liệu",
+      "searchPlaceholder": "Tìm kiếm tài liệu...",
+      "editMaterial": "Sửa tài liệu",
+      "newMaterial": "Tài liệu mới"
     }
   }
 }

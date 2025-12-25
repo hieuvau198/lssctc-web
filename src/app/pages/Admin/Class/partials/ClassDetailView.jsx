@@ -97,8 +97,8 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
         return (
           <div className="flex flex-col gap-3">
             <Popconfirm
-              title={t('class.publishConfirm', 'Publish Class')}
-              description={t('class.publishConfirmDesc', 'Are you sure you want to publish this class?')}
+              title={t('admin.classes.status.publishConfirm')}
+              description={t('admin.classes.status.publishConfirmDesc')}
               onConfirm={() => handleStatusAction(openClass, 'publish')}
               okText={t('common.yes')}
               cancelText={t('common.no')}
@@ -106,12 +106,12 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             >
               <a disabled={statusLoading} className={primaryBtnClass}>
                 <Send className="w-4 h-4" />
-                {t('class.publishClass', 'Publish')}
+                {t('admin.classes.status.publishButton')}
               </a>
             </Popconfirm>
             <Popconfirm
-              title={t('class.cancelConfirm', 'Cancel Class')}
-              description={t('class.cancelConfirmDesc', 'Are you sure you want to cancel this class?')}
+              title={t('admin.classes.status.cancelConfirm')}
+              description={t('admin.classes.status.cancelConfirmDesc')}
               onConfirm={() => handleStatusAction(cancelClass, 'cancel')}
               okText={t('common.yes')}
               cancelText={t('common.no')}
@@ -119,7 +119,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
             >
               <button disabled={statusLoading} className={secondaryBtnClass}>
                 <XCircle className="w-4 h-4" />
-                {t('class.cancelClass', 'Cancel')}
+                {t('admin.classes.status.cancelButton')}
               </button>
             </Popconfirm>
           </div>
@@ -127,8 +127,8 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
       case 'Open':
         return (
           <Popconfirm
-            title={t('class.startConfirm', 'Start Class')}
-            description={t('class.startConfirmDesc', 'Are you sure you want to start this class?')}
+            title={t('admin.classes.status.startConfirm')}
+            description={t('admin.classes.status.startConfirmDesc')}
             onConfirm={() => handleStatusAction(startClass, 'start')}
             okText={t('common.yes')}
             cancelText={t('common.no')}
@@ -136,15 +136,15 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           >
             <a disabled={statusLoading} className={primaryBtnClass}>
               <Play className="w-4 h-4" />
-              {t('class.startClass', 'Start Class')}
+              {t('admin.classes.status.startButton')}
             </a>
           </Popconfirm>
         );
       case 'Inprogress':
         return (
           <Popconfirm
-            title={t('class.completeConfirm', 'Complete Class')}
-            description={t('class.completeConfirmDesc', 'Are you sure you want to complete this class?')}
+            title={t('admin.classes.status.completeConfirm')}
+            description={t('admin.classes.status.completeConfirmDesc')}
             onConfirm={() => handleStatusAction(completeClass, 'complete')}
             okText={t('common.yes')}
             cancelText={t('common.no')}
@@ -152,7 +152,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
           >
             <a disabled={statusLoading} className={primaryBtnClass}>
               <CheckCircle className="w-4 h-4" />
-              {t('class.completeClass', 'Complete Class')}
+              {t('admin.classes.status.completeButton')}
             </a>
           </Popconfirm>
         );
@@ -160,7 +160,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
       case 'Completed':
         return (
           <div className="text-slate-400 italic text-sm text-center border border-slate-100 py-3 bg-slate-50">
-            {t('admin.classes.status.noActionsAvailable', 'No status actions available.')}
+            {t('admin.classes.status.noActionsAvailable')}
           </div>
         );
       default:

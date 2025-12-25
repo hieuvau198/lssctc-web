@@ -87,7 +87,7 @@ const ProgramTableView = ({
       ),
     },
     {
-      title: "Created At",
+      title: t('common.createdAt'),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 160,
