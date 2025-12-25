@@ -92,7 +92,7 @@ export async function importSections(courseId, file) {
     formData.append('file', file);
 
     const resp = await apiClient.post(
-      `${BASE_URL}/course/${courseId}/import`, 
+      `${BASE_URL}/course/${courseId}/import-full`, 
       formData, 
       {
         headers: {
