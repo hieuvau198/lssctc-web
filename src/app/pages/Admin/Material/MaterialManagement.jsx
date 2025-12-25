@@ -98,7 +98,8 @@ const MaterialManagement = () => {
   const handleFormSubmit = async (values) => {
     setSubmitting(true);
     try {
-      const isFile = values.learningMaterialType === 'File';
+      // FIX: Check sourceType instead of learningMaterialType to determine API method
+      const isFile = values.sourceType === 'File';
       const isEdit = !!editingMaterial;
 
       let apiCall;
@@ -157,7 +158,7 @@ const MaterialManagement = () => {
       render: (text, record) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-yellow-400 border border-black flex items-center justify-center text-black">
-            {record.learningMaterialType === 'File' ? <FileText size={20} /> : <LinkIcon size={20} />}
+            {record.learningMaterialType === 'Document' ? <FileText size={20} /> : <LinkIcon size={20} />}
           </div>
           <div>
             <div className="font-bold text-base">{text}</div>
@@ -189,8 +190,9 @@ const MaterialManagement = () => {
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold hover:underline"
           >
-            {record.learningMaterialType === 'File' ? <Download size={14} /> : <ExternalLink size={14} />}
-            {record.learningMaterialType === 'File' ? t('common.download') : t('admin.materials.visit')}
+            {/* Logic to guess if it's a file download or external link based on URL content or just use Generic External Link */}
+            <ExternalLink size={14} />
+            {t('admin.materials.visit')}
           </a>
         ) : <span className="text-neutral-400 italic">{t('admin.materials.noLink')}</span>
       )
