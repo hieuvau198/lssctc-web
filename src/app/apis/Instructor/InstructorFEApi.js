@@ -19,6 +19,8 @@ const InstructorFEApi = {
   // Open the final exam for the class [NEW]
   openClassExam: (classId) => apiClient.post(`/FinalExams/class/${classId}/open`),
 
+  pauseClassExam: (classId) => apiClient.post(`/FinalExams/class/${classId}/pause`),
+
   // Finish/Finalize the exam for the class
   finishClassExam: (classId) => apiClient.post(`/FinalExams/class/${classId}/finish`),
 

@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import TEExam from './partials/TEExam';
 import SEExam from './partials/SEExam';
 import PEExam from './partials/PEExam';
-import { FileText, Monitor, Award, Trophy, CheckCircle, AlertTriangle, Lock, ChevronRight, Play } from 'lucide-react'; // Added Play icon
+import { FileText, Monitor, Award, Trophy, CheckCircle, AlertTriangle, Lock, ChevronRight, Play, PauseCircle } from 'lucide-react';
 import InstructorFEApi from '../../../apis/Instructor/InstructorFEApi';
 
 const { Panel } = Collapse;
@@ -77,6 +77,45 @@ export default function InstructorFinalExam() {
         } catch (error) {
           console.error("Error in openClassExam:", error);
           message.error(t('instructor.finalExam.openError', 'Mở bài kiểm tra thất bại.'));
+        } finally {
+          setLoading(false);
+        }
+      },
+    });
+  };
+
+  const handlePauseExam = () => {
+    modal.confirm({
+      title: <span className="font-bold uppercase">{t('instructor.finalExam.pauseConfirmTitle', 'Tạm dừng bài kiểm tra')}</span>,
+      icon: <AlertTriangle className="text-yellow-500 w-6 h-6 mr-2" />,
+      content: (
+        <div className="text-neutral-600 mt-2">
+          <p>{t('instructor.finalExam.pauseConfirmContent', 'Bạn có chắc chắn muốn tạm dừng bài kiểm tra? Học viên sẽ không thể truy cập bài làm nữa.')}</p>
+          <p className="font-bold mt-2 text-yellow-600 uppercase text-xs">
+            {t('instructor.finalExam.pauseWarning', 'Lưu ý: Trạng thái sẽ trở về "Chưa bắt đầu".')}
+          </p>
+        </div>
+      ),
+      okText: t('common.confirm', 'CONFIRM'),
+      cancelText: t('common.cancel', 'CANCEL'),
+      okButtonProps: {
+        className: 'bg-black hover:!bg-neutral-800 border-none font-bold uppercase',
+      },
+      cancelButtonProps: {
+        className: 'font-bold uppercase border-2 border-neutral-300 hover:!border-black hover:!text-black'
+      },
+      onOk: async () => {
+        try {
+          setLoading(true);
+          // Call the new API endpoint
+          await InstructorFEApi.pauseClassExam(classId);
+          message.success(t('instructor.finalExam.pauseSuccess', 'Đã tạm dừng bài kiểm tra thành công!'));
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } catch (error) {
+          console.error("Error in pauseClassExam:", error);
+          message.error(t('instructor.finalExam.pauseError', 'Tạm dừng thất bại.'));
         } finally {
           setLoading(false);
         }
@@ -194,16 +233,31 @@ export default function InstructorFinalExam() {
             )}
 
             {examStatus === 'Open' && (
-              <Tooltip title={t('instructor.finalExam.tooltipFinish')}>
-                <button
-                  onClick={handleFinishExam}
-                  disabled={loading}
-                  className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-red-500 text-white border-white hover:bg-red-600 active:bg-red-700 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <CheckCircle className="w-5 h-5" />
-                  <span>{loading ? t('instructor.finalExam.processing') : t('instructor.finalExam.finishButton')}</span>
-                </button>
-              </Tooltip>
+              <div className="flex items-center gap-3">
+                {/* NEW: Pause Button */}
+                <Tooltip title={t('instructor.finalExam.tooltipPause', 'Tạm dừng kiểm tra')}>
+                  <button
+                    onClick={handlePauseExam}
+                    disabled={loading}
+                    className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-white text-black border-black hover:bg-neutral-100 active:bg-neutral-200 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <PauseCircle className="w-5 h-5" />
+                    <span>{loading ? t('instructor.finalExam.processing') : t('instructor.finalExam.pauseButton', 'Tạm Dừng')}</span>
+                  </button>
+                </Tooltip>
+
+                {/* Existing Finish Button */}
+                <Tooltip title={t('instructor.finalExam.tooltipFinish')}>
+                  <button
+                    onClick={handleFinishExam}
+                    disabled={loading}
+                    className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wide border-2 transition-all bg-red-500 text-white border-white hover:bg-red-600 active:bg-red-700 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <CheckCircle className="w-5 h-5" />
+                    <span>{loading ? t('instructor.finalExam.processing') : t('instructor.finalExam.finishButton')}</span>
+                  </button>
+                </Tooltip>
+              </div>
             )}
 
             {examStatus === 'Completed' && (

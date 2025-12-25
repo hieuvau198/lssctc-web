@@ -13,7 +13,7 @@ export default function StatsOverview({
   const { t } = useTranslation();
   const items = [
     {
-      title: t('simManager.dashboard.totalTrainees') || 'Tổng học viên',
+      title: 'Tổng học viên',
       value: totalTrainees,
       icon: <Users className="w-5 h-5" />,
     },
@@ -23,12 +23,12 @@ export default function StatsOverview({
       icon: <PlayCircle className="w-5 h-5" />,
     },
     {
-      title: t('simManager.dashboard.totalTasks') || 'Tổng nhiệm vụ',
+      title: 'Tổng nhiệm vụ',
       value: totalTasks,
       icon: <ListTodo className="w-5 h-5" />,
     },
     {
-      title: t('simManager.dashboard.totalSimulationSessions') || 'Tổng phiên mô phỏng',
+      title: 'Tổng phiên mô phỏng',
       value: totalSimulationSessions,
       icon: <Monitor className="w-5 h-5" />,
     },
