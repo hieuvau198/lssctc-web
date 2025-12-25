@@ -85,7 +85,7 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
           <div className="mt-6 space-y-2 px-2">
             {course.createdAt && (
               <div className="flex items-center justify-between text-xs border-b border-neutral-200 pb-1">
-                <span className="text-neutral-500 font-mono uppercase">Created</span>
+                <span className="text-neutral-500 font-mono uppercase">{t('common.createdAt')}</span>
                 <span className="font-bold"><DayTimeFormat value={course.createdAt} /></span>
               </div>
             )}
@@ -133,7 +133,7 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
               {t('common.description')}
             </div>
             <div className="text-neutral-600 leading-relaxed whitespace-pre-line text-base font-medium">
-              {course.description || <span className="text-neutral-400 italic">No description provided.</span>}
+              {course.description || <span className="text-neutral-400 italic">{t('common.noDescription')}</span>}
             </div>
           </div>
         </div>
@@ -142,19 +142,19 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
       <div className="w-full flex flex-col gap-10">
         {/* Sections List */}
         <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={Layers} title={t('admin.courses.courseSections') || "Course Sections"} />
+          <SectionHeader icon={Layers} title={t('admin.courses.courseSections')} />
           <SectionList courseId={course.id} courseDurationHours={course.durationHours} />
         </div>
 
         {/* Certificates */}
         <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={Award} title={t('admin.courses.certificates') || "Certificates"} />
+          <SectionHeader icon={Award} title={t('admin.courses.certificates')} />
           <CourseCertificate courseId={course.id} />
         </div>
 
         {/* Class List */}
         <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={Users} title={t('admin.courses.classList') || "Classes"} />
+          <SectionHeader icon={Users} title={t('admin.courses.classList')} />
           <CourseClassList courseId={course.id} />
         </div>
       </div>

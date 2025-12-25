@@ -193,7 +193,7 @@ const AddClassForm = ({
         }}
       >
         {/* Basic Information Section */}
-        <SectionHeader icon={Users} title={t('admin.classes.form.basicInfo') || "Basic Information"} />
+        <SectionHeader icon={Users} title={t('admin.classes.form.basicInfo')} />
 
         <Form.Item
           label={t('admin.classes.form.className')}
@@ -224,7 +224,7 @@ const AddClassForm = ({
         </Form.Item>
 
         {/* Program & Course Section */}
-        <SectionHeader icon={BookOpen} title={t('admin.classes.form.programCourse') || "Program & Course"} />
+        <SectionHeader icon={BookOpen} title={t('admin.classes.form.programCourse')} />
 
         {/* Program Selection */}
         <Form.Item
@@ -280,7 +280,7 @@ const AddClassForm = ({
         )}
 
         {/* Schedule Section */}
-        <SectionHeader icon={Calendar} title={t('admin.classes.form.schedule') || "Schedule"} />
+        <SectionHeader icon={Calendar} title={t('admin.classes.form.schedule')} />
 
         <Form.Item
           label={t('admin.classes.form.startDate')}
@@ -391,7 +391,7 @@ const AddClassForm = ({
               <h3 className="text-xl font-black uppercase tracking-wider text-white m-0">
                 {t('admin.classes.addClass')}
               </h3>
-              <p className="text-neutral-400 text-sm m-0 mt-1">{t('admin.classes.form.subtitle') || 'Fill in the class details'}</p>
+              <p className="text-neutral-400 text-sm m-0 mt-1">{t('admin.classes.form.subtitle')}</p>
             </div>
           </div>
           <button

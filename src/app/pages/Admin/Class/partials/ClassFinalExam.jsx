@@ -31,19 +31,19 @@ export default function ClassFinalExam({ classId, readOnly }) {
     {
       key: 'te',
       icon: FileText,
-      title: t('admin.finalExam.teTab', 'Theory Exam (TE)'),
+      title: t('admin.classes.finalExam.teTab'),
       component: <AdminTEConfig classId={classId} readOnly={readOnly} />,
     },
     {
       key: 'se',
       icon: Monitor,
-      title: t('admin.finalExam.seTab', 'Simulation Exam (SE)'),
+      title: t('admin.classes.finalExam.seTab'),
       component: <AdminSEConfig classId={classId} readOnly={readOnly} />,
     },
     {
       key: 'pe',
       icon: Award,
-      title: t('admin.finalExam.peTab', 'Practical Exam (PE)'),
+      title: t('admin.classes.finalExam.peTab'),
       component: <AdminPEConfig classId={classId} readOnly={readOnly} />,
     },
   ];
@@ -63,10 +63,10 @@ export default function ClassFinalExam({ classId, readOnly }) {
             </div>
             <div>
               <span className="text-xl font-black text-white uppercase tracking-tight">
-                {t('admin.finalExam.contentTitle', 'Exam Content Configuration')}
+                {t('admin.classes.finalExam.contentTitle')}
               </span>
               <p className="text-yellow-400 text-xs mt-1 font-medium uppercase tracking-wide">
-                {t('admin.finalExam.contentSubtitle', 'Manage Quizzes, Practices, and Checklists')}
+                {t('admin.classes.finalExam.contentSubtitle')}
               </p>
             </div>
           </div>

@@ -29,7 +29,7 @@ const InstructorCard = ({ classItem, allowAssign }) => {
       } catch (err) {
         if (!active) return;
         console.error('Failed to fetch class instructor', err);
-        setInstructorError(err?.message || 'Failed to load instructor');
+        setInstructorError(err?.message || t('admin.classes.detail.loadInstructorFailed'));
         setInstructor(null);
       } finally {
         if (active) setInstructorLoading(false);
@@ -70,7 +70,7 @@ const InstructorCard = ({ classItem, allowAssign }) => {
       {instructorLoading ? (
         <Skeleton active paragraph={{ rows: 2 }} />
       ) : instructor ? (
-        <div className="bg-white border-2 border-slate-200 hover:border-black transition-all p-4 lg:p-6 group">
+        <div className="bg-white transition-all group">
           {/* Responsive Layout Logic:
             - Mobile (< sm): Stacked
             - Tablet/Desktop (sm - xl): Row (Card is wide in 1-col grid)

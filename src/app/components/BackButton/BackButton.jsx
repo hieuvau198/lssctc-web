@@ -17,7 +17,7 @@ export default function BackButton({ size = 'default' }) {
     <button
       type="button"
       onClick={() => navigate(-1)}
-      className={`inline-flex items-center gap-2 font-bold uppercase tracking-wider border-2 border-neutral-900 hover:bg-yellow-400 hover:border-yellow-400 transition-all group ${sizeClasses[size] || sizeClasses.default}`}
+      className={`inline-flex items-center cursor-pointer gap-2 font-bold uppercase tracking-wider border-2 border-neutral-900 hover:bg-yellow-400 hover:border-yellow-400 transition-all group ${sizeClasses[size] || sizeClasses.default}`}
     >
       <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
       {t('common.back')}

@@ -149,7 +149,7 @@ const ClassExamWeights = ({ classId, readOnly }) => {
           <div className="flex items-start gap-3 p-4 bg-slate-50 border border-slate-200 mb-6">
             <Info className="w-5 h-5 text-slate-400 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-slate-600">
-              <p className="font-bold text-slate-800 uppercase text-xs mb-1">Configuration Rules</p>
+              <p className="font-bold text-slate-800 uppercase text-xs mb-1">{t('admin.classes.weights.configRules')}</p>
               {t('admin.classes.weights.configDesc')}
             </div>
           </div>
@@ -168,11 +168,11 @@ const ClassExamWeights = ({ classId, readOnly }) => {
                 return (
                   <Form.Item
                     key={fieldName}
-                    label={<span className="font-bold uppercase text-xs text-slate-500 tracking-wider">{type} Weight</span>}
+                    label={<span className="font-bold uppercase text-xs text-slate-500 tracking-wider">{t(`admin.classes.weights.${type.toLowerCase()}`)} {t('admin.classes.weights.weight')}</span>}
                     name={fieldName}
                     className="mb-0"
                     rules={[
-                      { required: true, message: 'Required' },
+                      { required: true, message: t('common.required', 'Required') },
                       { type: 'number', min: 0.0001, max: 0.9999, message: '> 0' }
                     ]}
                   >
@@ -198,14 +198,14 @@ const ClassExamWeights = ({ classId, readOnly }) => {
                   {t('admin.classes.weights.totalWeight')}:
                 </span>
                 <div className={`flex items-center gap-2 px-3 py-1 border-2 ${isTotalValid ? 'border-slate-300 bg-slate-100 text-slate-400' : 'border-slate-300 bg-slate-100 text-slate-400'}`}>
-                   <span className="font-mono text-xl font-bold">
+                  <span className="font-mono text-xl font-bold">
                     {total.toFixed(2)}
                   </span>
                   <span className="text-sm font-medium opacity-60">/ 1.00</span>
                 </div>
                 {!isTotalValid && (
                   <span className="text-xs font-bold uppercase text-slate-500 bg-slate-200 px-2 py-1">
-                    Invalid Total
+                    {t('admin.classes.weights.invalid')}
                   </span>
                 )}
               </div>
@@ -254,7 +254,7 @@ const ClassExamWeights = ({ classId, readOnly }) => {
               return (
                 <div key={item.name}>
                   <div className="flex justify-between text-xs mb-2">
-                    <span className="font-bold text-slate-800 uppercase tracking-wide">{item.label}</span>
+                    <span className="font-bold text-slate-800 uppercase tracking-wide">{t(`admin.classes.weights.${item.label.toLowerCase()}`)}</span>
                     <span className="font-mono font-bold text-slate-600">{percent}%</span>
                   </div>
                   <div className="h-3 bg-white w-full border border-slate-300 p-0.5">
@@ -268,7 +268,7 @@ const ClassExamWeights = ({ classId, readOnly }) => {
             })}
           </div>
 
-          
+
         </div>
       </div>
     </div>

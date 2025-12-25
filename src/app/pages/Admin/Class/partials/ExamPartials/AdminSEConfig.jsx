@@ -18,9 +18,9 @@ export default function AdminSEConfig({ classId, readOnly }) {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedConfig, setSelectedConfig] = useState(null);
   const [classInfo, setClassInfo] = useState(null);
-  
+
   const [form] = Form.useForm();
-  
+
   // Watch fields
   const startTime = Form.useWatch('startTime', form);
   const duration = Form.useWatch('duration', form);
@@ -37,7 +37,7 @@ export default function AdminSEConfig({ classId, readOnly }) {
       const seConfigs = response.partialConfigs?.filter(c => c.type === 'Simulation') || [];
       setConfigs(seConfigs);
     } catch (error) {
-      message.error('Failed to load SE config');
+      message.error(t('admin.classes.finalExam.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -101,11 +101,11 @@ export default function AdminSEConfig({ classId, readOnly }) {
       if (selectedConfig) await PartialApi.updateClassPartialConfig(payload);
       else await PartialApi.createClassPartial(payload);
 
-      message.success(t('admin.finalExam.saveSuccess', 'Saved successfully'));
+      message.success(t('admin.classes.finalExam.saveSuccess'));
       setCreateModalOpen(false);
       fetchConfig();
     } catch (err) {
-      message.error(t('admin.finalExam.saveFailed', 'Save failed'));
+      message.error(t('admin.classes.finalExam.saveFailed'));
     }
   };
 
@@ -116,29 +116,29 @@ export default function AdminSEConfig({ classId, readOnly }) {
 
   const columns = [
     {
-      title: <span className="uppercase font-black text-xs">{t('admin.finalExam.practiceName', 'Practice Name')}</span>,
+      title: <span className="uppercase font-black text-xs">{t('admin.classes.finalExam.practiceName')}</span>,
       key: 'name',
       render: (_, record) => (
         <div className="font-bold text-black uppercase flex items-center gap-2">
           <Monitor className="w-4 h-4" />
-          {record.practiceName || 'Simulation Exam'}
+          {record.practiceName || t('admin.classes.finalExam.simulationExam')}
         </div>
       ),
     },
     {
-      title: <span className="uppercase font-black text-xs">{t('admin.finalExam.duration', 'Duration')}</span>,
+      title: <span className="uppercase font-black text-xs">{t('admin.classes.finalExam.duration')}</span>,
       dataIndex: 'duration',
       align: 'center',
       render: (val) => <span className="font-bold">{val} min</span>,
     },
     {
-      title: <span className="uppercase font-black text-xs">{t('admin.finalExam.weight', 'Weight')}</span>,
+      title: <span className="uppercase font-black text-xs">{t('admin.classes.finalExam.weight')}</span>,
       dataIndex: 'examWeight',
       align: 'center',
       render: (val) => <span className="font-bold">{val}%</span>,
     },
     {
-      title: <span className="uppercase font-black text-xs">{t('admin.finalExam.time', 'Time Range')}</span>,
+      title: <span className="uppercase font-black text-xs">{t('admin.classes.finalExam.time')}</span>,
       dataIndex: 'startTime',
       render: (val) => val ? <span className="text-neutral-600 font-mono text-xs"><DayTimeFormat value={val} showTime /></span> : '-',
     },
@@ -163,7 +163,7 @@ export default function AdminSEConfig({ classId, readOnly }) {
       {configs.length === 0 && !readOnly && (
         <div className="mb-4 flex justify-end">
           <button onClick={handleCreate} className="h-9 px-4 flex items-center gap-2 bg-yellow-400 text-black font-bold uppercase text-xs border-2 border-black hover:bg-yellow-500 transition-all">
-            <Plus className="w-4 h-4" /> {t('admin.finalExam.createConfig', 'Create Config')}
+            <Plus className="w-4 h-4" /> {t('admin.classes.finalExam.createConfig')}
           </button>
         </div>
       )}
@@ -177,48 +177,48 @@ export default function AdminSEConfig({ classId, readOnly }) {
       />
 
       <Modal
-        title={<span className="font-black uppercase">{t('admin.finalExam.seConfig', 'Simulation Exam Configuration')}</span>}
+        title={<span className="font-black uppercase">{t('admin.classes.finalExam.seConfig')}</span>}
         open={createModalOpen}
         onCancel={() => setCreateModalOpen(false)}
         onOk={handleSave}
         okButtonProps={{ className: 'bg-black text-white font-bold uppercase' }}
       >
         <Form form={form} layout="vertical" className="pt-4">
-          <Form.Item name="practiceId" label="Practice" rules={[{ required: true }]}>
+          <Form.Item name="practiceId" label={t('admin.classes.finalExam.practice')} rules={[{ required: true }]}>
             <Select options={practices.map(p => ({ label: `${p.practiceName} (${p.estimatedDurationMinutes}m)`, value: p.id }))} />
           </Form.Item>
           <div className="grid grid-cols-2 gap-4">
-            <Form.Item 
-              name="duration" 
-              label="Duration (min)" 
+            <Form.Item
+              name="duration"
+              label={t('admin.classes.finalExam.durationMin')}
               rules={[
                 { required: true },
-                { 
+                {
                   validator: async (_, value) => {
                     if (value && value < minDuration) {
-                      throw new Error(`Duration must be at least ${minDuration} min`);
+                      throw new Error(t('admin.classes.finalExam.durationMustBeAtLeast', { min: minDuration }));
                     }
-                  } 
+                  }
                 }
               ]}
-              extra={selectedPractice ? `Minimum required: ${minDuration} mins` : null}
+              extra={selectedPractice ? t('admin.classes.finalExam.minRequired', { min: minDuration }) : null}
             >
               <InputNumber min={minDuration} className="w-full" />
             </Form.Item>
-            <Form.Item name="examWeight" label="Weight (%)" rules={[{ required: true }]}>
+            <Form.Item name="examWeight" label={t('admin.classes.finalExam.weightPercent')} rules={[{ required: true }]}>
               <InputNumber min={0} max={100} className="w-full" disabled />
             </Form.Item>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <Form.Item name="startTime" label="Start Time" rules={[{ required: true }]}>
-              <DatePicker 
-                showTime 
-                format="DD-MM-YYYY HH:mm" 
-                className="w-full" 
+            <Form.Item name="startTime" label={t('admin.classes.finalExam.startTime')} rules={[{ required: true }]}>
+              <DatePicker
+                showTime
+                format="DD-MM-YYYY HH:mm"
+                className="w-full"
                 disabledDate={disabledDate}
               />
             </Form.Item>
-            <Form.Item name="endTime" label="End Time">
+            <Form.Item name="endTime" label={t('admin.classes.finalExam.endTime')}>
               <DatePicker showTime format="DD-MM-YYYY HH:mm" className="w-full" disabled />
             </Form.Item>
           </div>

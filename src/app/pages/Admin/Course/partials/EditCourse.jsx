@@ -147,11 +147,11 @@ const EditCourse = ({
             <Form.Item
               label={t('admin.courses.form.name')}
               name="name"
-              rules={[{ required: true, message: t('admin.courses.form.nameRequired', 'Name is required') }]}
+              rules={[{ required: true, message: t('admin.courses.form.nameRequired') }]}
             >
-              <Input 
-                showCount 
-                placeholder={t('admin.courses.form.namePlaceholder')} 
+              <Input
+                showCount
+                placeholder={t('admin.courses.form.namePlaceholder')}
                 prefix={<BookOpen className="w-4 h-4 text-neutral-400" />}
               />
             </Form.Item>
@@ -164,11 +164,11 @@ const EditCourse = ({
                 { max: 50, message: t('admin.courses.form.courseCodeMax') }
               ]}
             >
-              <Input 
-                showCount 
-                maxLength={50} 
+              <Input
+                showCount
+                maxLength={50}
                 placeholder={t('admin.courses.form.courseCodePlaceholder')}
-                prefix={<Code className="w-4 h-4 text-neutral-400" />} 
+                prefix={<Code className="w-4 h-4 text-neutral-400" />}
               />
             </Form.Item>
           </div>
@@ -179,28 +179,28 @@ const EditCourse = ({
           <Form.Item
             label={t('common.category')}
             name="categoryId"
-            rules={[{ required: true, message: t('admin.courses.form.categoryRequired', 'Category is required') }]}
+            rules={[{ required: true, message: t('admin.courses.form.categoryRequired') }]}
           >
-            <Select loading={catsLoading} placeholder={t('admin.courses.form.selectCategory', 'Select category')}>
+            <Select loading={catsLoading} placeholder={t('admin.courses.form.categoryPlaceholder')}>
               {localCategories.map((cat) => <Option key={cat.value} value={cat.value}>{cat.label}</Option>)}
             </Select>
           </Form.Item>
           <Form.Item
             label={t('common.level')}
             name="levelId"
-            rules={[{ required: true, message: t('admin.courses.form.levelRequired', 'Level is required') }]}
+            rules={[{ required: true, message: t('admin.courses.form.levelRequired') }]}
           >
-            <Select loading={lvlsLoading} placeholder={t('admin.courses.form.selectLevel', 'Select level')}>
+            <Select loading={lvlsLoading} placeholder={t('admin.courses.form.levelPlaceholder')}>
               {localLevels.map((lvl) => <Option key={lvl.value} value={lvl.value}>{lvl.label}</Option>)}
             </Select>
           </Form.Item>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">          
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
           <Form.Item
             label={t('admin.courses.form.durationHours')}
             name="durationHours"
-            rules={[{ required: true, type: 'integer', message: t('admin.courses.form.durationRequired', 'Duration is required') }]}
+            rules={[{ required: true, type: 'integer', message: t('admin.courses.form.durationRequired') }]}
           >
             <InputNumber style={{ width: "100%" }} />
           </Form.Item>
@@ -213,7 +213,7 @@ const EditCourse = ({
             <Form.Item
               label={t('admin.courses.form.imageUrl')}
               name="imageUrl"
-              rules={[{ required: true, type: 'url', message: t('admin.courses.form.imageUrlRequired', 'Valid image URL is required') }]}
+              rules={[{ required: true, type: 'url', message: t('admin.courses.form.imageUrlRequired') }]}
             >
               <Input
                 placeholder="https://..."
@@ -225,16 +225,16 @@ const EditCourse = ({
               />
             </Form.Item>
             <div className="w-full h-32 flex items-center justify-center border-2 border-neutral-200 overflow-hidden bg-neutral-50 mb-4">
-              {imagePreview ? <Image src={imagePreview} height={128} /> : <span className="text-neutral-400 text-xs uppercase">{t('common.noPreview', 'No Preview')}</span>}
+              {imagePreview ? <Image src={imagePreview} height={128} /> : <span className="text-neutral-400 text-xs uppercase">{t('common.noPreview')}</span>}
             </div>
           </div>
 
           {/* Background Image */}
           <div>
             <Form.Item
-              label={t('admin.courses.form.backgroundImageUrl', 'Background Image URL')}
+              label={t('admin.courses.form.backgroundImageUrl')}
               name="backgroundImageUrl"
-              rules={[{ type: 'url', message: t('admin.courses.form.invalidUrl', 'Invalid URL') }]}
+              rules={[{ type: 'url', message: t('admin.courses.form.urlInvalid') }]}
             >
               <Input
                 placeholder="https://..."
@@ -248,7 +248,7 @@ const EditCourse = ({
             <div className="w-full h-32 flex items-center justify-center border-2 border-neutral-200 overflow-hidden bg-neutral-50 mb-4">
               {bgImagePreview ?
                 <Image src={bgImagePreview} className="object-cover w-full h-full" /> :
-                <span className="text-neutral-400 text-xs uppercase">{t('common.noPreview', 'No Preview')}</span>}
+                <span className="text-neutral-400 text-xs uppercase">{t('common.noPreview')}</span>}
             </div>
           </div>
         </div>
@@ -260,7 +260,7 @@ const EditCourse = ({
         <Form.Item
           label={t('common.description')}
           name="description"
-          rules={[{ required: true, max: 1000, message: t('admin.courses.form.descriptionRequired', 'Description is required') }]}
+          rules={[{ required: true, max: 1000, message: t('admin.courses.form.descriptionRequired') }]}
         >
           <Input.TextArea rows={3} showCount />
         </Form.Item>

@@ -55,7 +55,7 @@ const PMClasses = () => {
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message || "Failed to fetch classes");
+        setError(err.message || t('admin.classes.fetchFailed'));
         setLoading(false);
       });
   }, [page, pageSize, searchTerm, status, sortBy, sortDirection]);
@@ -86,7 +86,7 @@ const PMClasses = () => {
       const field = sorter.field;
       // AntD uses 'ascend'/'descend', API uses 'asc'/'desc'
       const direction = sorter.order === 'ascend' ? 'asc' : 'desc';
-      
+
       // If order is undefined (user cancelled sort), revert to default
       if (!sorter.order) {
         setSortBy('startDate');
@@ -224,7 +224,7 @@ const PMClasses = () => {
                 {t('admin.classes.title')}
               </span>
               <p className="text-yellow-400 text-xs mt-0.5 font-bold">
-                {total} {t('admin.classes.totalClasses') || 'classes'}
+                {total} {t('admin.classes.totalClasses')}
               </p>
             </div>
           </div>
@@ -251,7 +251,7 @@ const PMClasses = () => {
               </div>
               <input
                 type="text"
-                placeholder={t('admin.classes.searchPlaceholder') || "Search classes..."}
+                placeholder={t('admin.classes.searchPlaceholder')}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchValue)}
@@ -276,7 +276,7 @@ const PMClasses = () => {
             {/* Filters */}
             <div className="flex gap-2 flex-wrap items-center">
               <Select
-                placeholder={t('admin.classes.filters.status') || "Status"}
+                placeholder={t('admin.classes.filters.status')}
                 allowClear
                 value={status}
                 onChange={handleStatusChange}
@@ -284,11 +284,11 @@ const PMClasses = () => {
                 size="middle"
                 style={{ width: 140 }}
               >
-                <Option value="Draft">{t('common.classStatus.Draft') || "Draft"}</Option>
-                <Option value="Open">{t('common.classStatus.Open') || "Open"}</Option>
-                <Option value="Inprogress">{t('common.classStatus.Inprogress') || "In Progress"}</Option>
-                <Option value="Completed">{t('common.classStatus.Completed') || "Completed"}</Option>
-                <Option value="Cancelled">{t('common.classStatus.Cancelled') || "Cancelled"}</Option>
+                <Option value="Draft">{t('common.classStatus.Draft')}</Option>
+                <Option value="Open">{t('common.classStatus.Open')}</Option>
+                <Option value="Inprogress">{t('common.classStatus.Inprogress')}</Option>
+                <Option value="Completed">{t('common.classStatus.Completed')}</Option>
+                <Option value="Cancelled">{t('common.classStatus.Cancelled')}</Option>
               </Select>
 
               {/* View Mode Toggle */}
@@ -401,7 +401,7 @@ const PMClasses = () => {
                   {t('admin.classes.createClass')}
                 </span>
                 <p className="text-neutral-400 text-xs m-0 mt-1">
-                  {t('admin.classes.form.subtitle') || 'Fill in the class details'}
+                  {t('admin.classes.form.subtitle')}
                 </p>
               </div>
             </div>

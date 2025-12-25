@@ -92,7 +92,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   const secondaryBtnClass = "flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-slate-200 text-slate-600 font-bold uppercase tracking-wider hover:border-black hover:text-black hover:bg-slate-50 transition-all text-xs disabled:opacity-50 w-full justify-center";
 
   const renderStatusActions = () => {
-     switch (statusInfo.key) {
+    switch (statusInfo.key) {
       case 'Draft':
         return (
           <div className="flex flex-col gap-3">
@@ -169,21 +169,21 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
   };
 
   const tabs = [
-    { key: 'overview', label: 'Tổng quan', icon: LayoutDashboard },
-    { key: 'exam', label: 'Thi cuối khóa', icon: GraduationCap },
-    { key: 'certificate', label: 'Chứng chỉ', icon: Award }
+    { key: 'overview', label: t('admin.classes.tabs.overview'), icon: LayoutDashboard },
+    { key: 'exam', label: t('admin.classes.tabs.exam'), icon: GraduationCap },
+    { key: 'certificate', label: t('admin.classes.tabs.certificate'), icon: Award }
   ];
 
   return (
     <div className="flex flex-col gap-8 font-sans text-slate-800">
       {/* Metadata & Description */}
-       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Column 1: Class Info Card */}
         <div className="lg:col-span-1">
           <div className="relative group">
             {/* Shadow Block */}
             <div className="absolute inset-0 border-2 border-black translate-x-2 translate-y-2 bg-black" />
-            
+
             {/* Main Card */}
             <div className="relative border-2 border-black bg-yellow-400 p-6">
               <div className="flex flex-col items-center text-center pt-4">
@@ -258,17 +258,16 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
                   <div className="flex flex-col gap-3">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('admin.classes.status.currentStatus', 'Current Status')}</span>
                     <div className="relative">
-                      <div className={`px-4 py-4 text-center border-2 border-black flex flex-col items-center justify-center gap-1 ${
-                        statusInfo.key === 'Inprogress' || statusInfo.key === 'Open' ? 'bg-black text-yellow-400' : 'bg-slate-50 text-slate-900'
-                      }`}>
+                      <div className={`px-4 py-4 text-center border-2 border-black flex flex-col items-center justify-center gap-1 ${statusInfo.key === 'Inprogress' || statusInfo.key === 'Open' ? 'bg-black text-yellow-400' : 'bg-slate-50 text-slate-900'
+                        }`}>
                         <span className="text-lg font-black uppercase tracking-widest">{t(`common.classStatus.${statusInfo.key}`, statusInfo.key)}</span>
-                        {statusInfo.key === 'Draft' && <span className="text-[10px] uppercase font-bold text-slate-500">Not Published</span>}
+                        {statusInfo.key === 'Draft' && <span className="text-[10px] uppercase font-bold text-slate-500">{t('common.notPublished')}</span>}
                       </div>
                     </div>
                   </div>
                   <div className="border-t-2 border-slate-100 pt-6">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-4">{t('admin.classes.status.availableActions', 'Available Actions')}</span>
-                    <div className="flex flex-col gap-3">{renderStatusActions()}</div>
+                    <div className="flex flex-col gap-3 cursor-pointer">{renderStatusActions()}</div>
                   </div>
                   {statusLoading && (
                     <div className="flex items-center gap-2 text-slate-400 justify-center pt-2">
@@ -298,7 +297,7 @@ const ClassDetailView = ({ classItem, loading, onRefresh }) => {
       {/* TAB 2: FINAL EXAM */}
       {activeTab === 'exam' && (
         <div className="flex flex-col gap-8 animate-in fade-in zoom-in-95 duration-300">
-           {/* [UPDATED] Replaced ClassExamWeights with ClassFinalExam */}
+          {/* [UPDATED] Replaced ClassExamWeights with ClassFinalExam */}
           <ClassFinalExam classId={classItem?.id} readOnly={readOnly} />
         </div>
       )}

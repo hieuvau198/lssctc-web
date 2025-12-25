@@ -31,11 +31,11 @@ const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Search State
   const [searchValue, setSearchValue] = useState(searchParams.get('searchTerm') || "");
   const [searchTerm, setSearchTerm] = useState(searchParams.get('searchTerm') || "");
-  
+
   // Sort State
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || undefined);
   const [sortDirection, setSortDirection] = useState(searchParams.get('sortDirection') || undefined);
@@ -44,7 +44,7 @@ const Courses = () => {
   const [pageNumber, setPageNumber] = useState(parseInt(searchParams.get('page')) || 1);
   const [pageSize, setPageSize] = useState(parseInt(searchParams.get('pageSize')) || 10);
   const [total, setTotal] = useState(0);
-  
+
   const [deletingId, setDeletingId] = useState(null);
   const [viewMode, setViewMode] = useState("table"); // 'table' | 'card'
 
@@ -126,7 +126,7 @@ const Courses = () => {
     };
     if (field) params.sortBy = field;
     if (newSortDirection) params.sortDirection = newSortDirection;
-    
+
     setSearchParams(params);
   };
 
@@ -160,18 +160,18 @@ const Courses = () => {
       const res = await deleteCourse(id);
       message.success((res && res.message) || t('admin.courses.deleteSuccess'));
       // Refresh list after delete
-      const data = await fetchCourses({ 
-        pageNumber, 
-        pageSize, 
-        searchTerm, 
-        sortBy, 
-        sortDirection 
+      const data = await fetchCourses({
+        pageNumber,
+        pageSize,
+        searchTerm,
+        sortBy,
+        sortDirection
       });
       setCourses(data.items || []);
       setTotal(data.totalCount || 0);
       closeDrawer();
     } catch (err) {
-      message.error(err?.response?.data || err?.message || 'Delete failed');
+      message.error(err?.response?.data || err?.message || t('admin.courses.deleteError'));
     } finally {
       setDeletingId(null);
     }
@@ -252,7 +252,7 @@ const Courses = () => {
       closeDrawer();
     } catch (err) {
       if (err.message && err.message.includes("Internal Server Error")) {
-        message.error("Operation failed. Please check for duplicate course codes or invalid data.");
+        message.error(t('admin.courses.duplicateError'));
       } else {
         message.error(err.message || t('admin.courses.createError'));
       }
@@ -314,7 +314,7 @@ const Courses = () => {
                 {t('admin.courses.title')}
               </span>
               <p className="text-yellow-400 text-xs mt-0.5 font-bold">
-                {total} {t('admin.courses.totalCourses') || 'courses'}
+                {total} {t('admin.courses.totalCourses')}
               </p>
             </div>
           </div>
@@ -341,7 +341,7 @@ const Courses = () => {
               </div>
               <input
                 type="text"
-                placeholder={t('admin.courses.searchPlaceholder') || "Search courses..."}
+                placeholder={t('admin.courses.searchPlaceholder')}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchValue)}

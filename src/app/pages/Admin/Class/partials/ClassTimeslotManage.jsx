@@ -106,7 +106,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
         if (!classItem?.startDate || !classItem?.endDate) return false;
         // Restrict to Class Duration
         return current && (
-            current < dayjs(classItem.startDate).startOf('day') || 
+            current < dayjs(classItem.startDate).startOf('day') ||
             current > dayjs(classItem.endDate).endOf('day')
         );
     };
@@ -114,7 +114,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
     // 2. Start Time Time Constraints
     const disabledStartTime = (current) => {
         if (!current || !classItem?.startDate || !classItem?.endDate) return {};
-        
+
         const clsStart = dayjs(classItem.startDate);
         const clsEnd = dayjs(classItem.endDate);
         const isClassStartDay = current.isSame(clsStart, 'day');
@@ -140,7 +140,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
     const disabledEndDate = (current) => {
         // Basic class range check
         if (disabledStartDate(current)) return true;
-        
+
         // Dependency Check: Cannot be before the "Min End Time" day
         if (startTime) {
             const minEndTime = startTime.add(15, 'minute');
@@ -187,7 +187,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
             }
         };
     };
-    
+
 
 
     // --- Columns Definition (Respects readOnly) ---
@@ -384,7 +384,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                     </div>
                     <span className="text-xl font-bold uppercase tracking-wide text-slate-900">{t('class.timeslot.title')}</span>
                 </div>
-                
+
                 {/* Hide Add button if readOnly is true */}
                 {!readOnly && (
                     <Button
@@ -404,7 +404,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                 dataSource={timeslots}
                 loading={loading}
                 pagination={{ pageSize: 5 }}
-                locale={{ emptyText: <div className="py-8 font-mono text-slate-400 uppercase">No timeslots scheduled</div> }}
+                locale={{ emptyText: <div className="py-8 font-mono text-slate-400 uppercase">{t('class.timeslot.noTimeslots')}</div> }}
                 className="industrial-table"
             />
 
@@ -433,7 +433,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                             rules={[{ required: true, message: t('class.timeslot.pleaseEnterName') }]}
                             className="mb-5"
                         >
-                            <Input placeholder="e.g. Session 1: Safety Introduction" className="h-11 font-medium text-slate-700" />
+                            <Input placeholder={t('class.timeslot.slotNamePlaceholder')} className="h-11 font-medium text-slate-700" />
                         </Form.Item>
 
                         <div className="grid grid-cols-2 gap-5">
@@ -448,7 +448,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                     format="YYYY-MM-DD HH:mm"
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
-                                    placeholder="Select start time"
+                                    placeholder={t('class.timeslot.selectStartTime')}
                                     popupClassName="rounded-lg"
                                     disabledDate={disabledStartDate}
                                     disabledTime={disabledStartTime}
@@ -469,7 +469,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                             }
                                             // 2. Strict check: End time must be at least 15 minutes AFTER start time
                                             if (value.isBefore(start.add(15, 'minute'))) {
-                                                return Promise.reject(new Error(t('class.timeslot.minDurationError', 'End time must be at least 15 minutes after start time')));
+                                                return Promise.reject(new Error(t('class.timeslot.minDurationError')));
                                             }
                                             return Promise.resolve();
                                         },
@@ -482,7 +482,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                     format="YYYY-MM-DD HH:mm"
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
-                                    placeholder="Select end time"
+                                    placeholder={t('class.timeslot.selectEndTime')}
                                     popupClassName="rounded-lg"
                                     disabledDate={disabledEndDate}
                                     disabledTime={disabledEndTime}
@@ -497,7 +497,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                 rules={[{ required: true, message: t('class.timeslot.required') }]}
                                 className="mb-5"
                             >
-                                <Input placeholder="e.g. Building A" className="h-11 font-medium" />
+                                <Input placeholder={t('class.timeslot.buildingPlaceholder')} className="h-11 font-medium" />
                             </Form.Item>
                             <Form.Item
                                 label={t('class.timeslot.room')}
@@ -505,7 +505,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                 rules={[{ required: true, message: t('class.timeslot.required') }]}
                                 className="mb-5"
                             >
-                                <Input placeholder="e.g. Room 101" className="h-11 font-medium" />
+                                <Input placeholder={t('class.timeslot.roomPlaceholder')} className="h-11 font-medium" />
                             </Form.Item>
                         </div>
 
@@ -517,7 +517,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                         >
                             <Input.TextArea
                                 rows={4}
-                                placeholder="Detailed navigation instructions or notes..."
+                                placeholder={t('class.timeslot.locationDetailPlaceholder')}
                                 className="font-medium resize-none leading-relaxed"
                             />
                         </Form.Item>
