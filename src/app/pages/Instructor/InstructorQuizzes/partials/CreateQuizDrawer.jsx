@@ -33,7 +33,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
   useEffect(() => {
     if (open) {
       setScoreErrors({});
-      
+
       if (mode === 'edit' && initialData) {
         form.setFieldsValue({
           name: initialData.name,
@@ -59,7 +59,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
 
         const initialCollapsed = {};
         mappedQuestions.forEach(q => {
-             initialCollapsed[q.id] = true;
+          initialCollapsed[q.id] = true;
         });
         setCollapsedQuestions(initialCollapsed);
 
@@ -156,9 +156,9 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
     setScoreErrors(newErrors);
 
     if (qToRemove.id) {
-        const newCollapsed = { ...collapsedQuestions };
-        delete newCollapsed[qToRemove.id];
-        setCollapsedQuestions(newCollapsed);
+      const newCollapsed = { ...collapsedQuestions };
+      delete newCollapsed[qToRemove.id];
+      setCollapsedQuestions(newCollapsed);
     }
   };
 
@@ -293,7 +293,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
       let response;
       if (mode === 'edit' && quizId) {
         response = await updateQuizWithQuestions(quizId, payload);
-        message.success(response?.message || t('instructor.quizzes.messages.updateQuizSuccess'));
+        message.success(response?.message || t('instructor.quizzes.messages.updateSuccess'));
       } else {
         response = await createQuizWithQuestions(payload);
         message.success(response?.message || t('instructor.quizzes.messages.createSuccess'));
@@ -378,9 +378,9 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
               <Save className="w-4 h-4 text-white " />
             )}
             <span className='text-white'>
-            {mode === 'edit' ? t('instructor.quizzes.drawer.save') : t('instructor.quizzes.drawer.create')}
+              {mode === 'edit' ? t('instructor.quizzes.drawer.save') : t('instructor.quizzes.drawer.create')}
             </span>
-            
+
           </button>
         </div>
       }
@@ -442,7 +442,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
         <div className="bg-white border-2 border-gray-300 mb-6">
           <div className="h-1 bg-gray-300" />
           <div className="px-4 py-3 border-b-2 border-gray-300 bg-gray-50">
-            <span className="font-bold uppercase text-sm tracking-wider text-gray-700">Quiz Information</span>
+            <span className="font-bold uppercase text-sm tracking-wider text-gray-700">{t('instructor.quizzes.quizInformation')}</span>
           </div>
           <div className="p-4">
             <div className="grid grid-cols-2 gap-4">
@@ -537,7 +537,7 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
                   {questions.length > 0 ? (totalScore / questions.length).toFixed(2) : '0'}
                 </p>
               </div>
-              
+
             </div>
 
             {/* Status Message */}
@@ -711,17 +711,17 @@ const CreateQuizDrawer = ({ open, onClose, onSuccess, mode = 'create', initialDa
             );
           })}
         </div>
-          <div className='mt-12'>
+        <div className='mt-12'>
 
-        <button
-          type="button"
-          onClick={addQuestion}
-          className="mt-12 w-full py-3 border-2 border-dashed border-gray-300 bg-white text-gray-600 font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:border-gray-500 hover:text-gray-800 transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          {t('instructor.quizzes.questions.addQuestion')}
-        </button>
-          </div>
+          <button
+            type="button"
+            onClick={addQuestion}
+            className="mt-12 w-full py-3 border-2 border-dashed border-gray-300 bg-white text-gray-600 font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:border-gray-500 hover:text-gray-800 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            {t('instructor.quizzes.questions.addQuestion')}
+          </button>
+        </div>
         {/* Add Question Button */}
       </Form>
     </Drawer>

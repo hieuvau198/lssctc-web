@@ -1473,7 +1473,8 @@
         "timeLimitRange": "Phải từ 1-60",
         "timeLimitHelp": "Tổng thời gian làm bài.",
         "totalScore": "Tổng điểm",
-        "totalScoreFixed": "Cố định 10 điểm"
+        "totalScoreFixed": "Cố định 10 điểm",
+        "maxAttempts": "Số lần làm tối đa"
       },
       "questions": {
         "title": "Câu hỏi",

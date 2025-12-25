@@ -1472,7 +1472,8 @@
         "timeLimitRange": "Must be between 1-60",
         "timeLimitHelp": "Total duration of the quiz.",
         "totalScore": "Total Score",
-        "totalScoreFixed": "Fixed at 10 points"
+        "totalScoreFixed": "Fixed at 10 points",
+        "maxAttempts": "Max Attempts"
       },
       "questions": {
         "title": "Questions",
