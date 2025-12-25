@@ -167,7 +167,7 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
                   </div>
 
                   <div>
-                    {partial.type === 'Theory' && (
+                    {partial.type === 'Theory' && partial.status !== 'Submitted' && (
                       <Tooltip title={getButtonTooltip()}>
                         <button
                           disabled={!canStartExam}
@@ -285,7 +285,7 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
                   <DayTimeFormat value={partial.startTime} /> → <DayTimeFormat value={partial.endTime} />
                 </div>
 
-                {partial.type === 'Theory' && (
+                {partial.type === 'Theory' && partial.status !== 'Submitted' && (
                   <button
                     disabled={!canStartExam}
                     onClick={(e) => {
