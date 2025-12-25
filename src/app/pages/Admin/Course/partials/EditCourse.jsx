@@ -152,6 +152,7 @@ const EditCourse = ({
               <Input
                 showCount
                 placeholder={t('admin.courses.form.namePlaceholder')}
+                maxLength={200}
                 prefix={<BookOpen className="w-4 h-4 text-neutral-400" />}
               />
             </Form.Item>
@@ -202,7 +203,7 @@ const EditCourse = ({
             name="durationHours"
             rules={[{ required: true, type: 'integer', message: t('admin.courses.form.durationRequired') }]}
           >
-            <InputNumber style={{ width: "100%" }} />
+            <InputNumber min={0.2} max={500} style={{ width: "100%" }} />
           </Form.Item>
         </div>
 
@@ -262,7 +263,7 @@ const EditCourse = ({
           name="description"
           rules={[{ required: true, max: 1000, message: t('admin.courses.form.descriptionRequired') }]}
         >
-          <Input.TextArea rows={3} showCount />
+          <Input.TextArea rows={3} maxLength={1000} showCount />
         </Form.Item>
 
         {embedded && (

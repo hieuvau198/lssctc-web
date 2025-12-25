@@ -195,7 +195,7 @@ const CreateCourse = ({
 
           <Form.Item label={t('admin.courses.form.durationHours')} name="durationHours"
             rules={[{ required: true, message: t('admin.courses.form.durationRequired') }]}>
-            <InputNumber style={{ width: "100%" }} min={1} placeholder={t('admin.courses.form.durationPlaceholder')} prefix={<Clock className="w-4 h-4 text-neutral-400" />} />
+            <InputNumber style={{ width: "100%" }} min={0.2} max={500} placeholder={t('admin.courses.form.durationPlaceholder')} prefix={<Clock className="w-4 h-4 text-neutral-400" />} />
           </Form.Item>
         </div>
 
