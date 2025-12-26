@@ -13,6 +13,16 @@ export async function fetchCertificateTemplates() {
   }
 }
 
+export async function createCertificateTemplate(data) {
+  const response = await apiClient.post(BASE_URL, data);
+  return response.data;
+}
+
+export async function updateCertificateTemplate(id, data) {
+  const response = await apiClient.put(`${BASE_URL}/${id}`, data);
+  return response.data;
+}
+
 export async function fetchCertificateByCourse(courseId) {
   try {
     const response = await apiClient.get(`${BASE_URL}/course/${courseId}`);
