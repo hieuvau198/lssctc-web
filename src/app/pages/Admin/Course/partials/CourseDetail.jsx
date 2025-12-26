@@ -148,7 +148,7 @@ const CourseDetail = ({ id, onBack, course: providedCourse, embedded = false }) 
 
         {/* Certificates */}
         <div className="p-6 border-2 border-neutral-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-          <SectionHeader icon={Award} title={t('admin.courses.certificates')} />
+          <SectionHeader icon={Award} title={t('admin.courses.certificates.title')} />
           <CourseCertificate courseId={course.id} />
         </div>
 

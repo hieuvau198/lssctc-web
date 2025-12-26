@@ -239,7 +239,7 @@ const PMClasses = () => {
       </div>
 
       {/* Main Content Card Wrapper */}
-      <div className="bg-white border-x-2 border-b-2 border-black overflow-hidden flex-1 flex flex-col min-h-0">
+      <div className="bg-white overflow-hidden flex-1 flex flex-col min-h-0">
 
         {/* Integrated Search Bar & Filters */}
         <div className="px-4 py-2 bg-white border-b-2 border-neutral-200 flex-none shadow-sm z-10">
@@ -353,7 +353,7 @@ const PMClasses = () => {
           ) : classes.length === 0 ? (
             <Empty description={t('admin.classes.noClasses')} className="py-20" />
           ) : (
-            <div className="">
+            <div className="py-6">
               <ClassList
                 classes={classes}
                 viewMode={viewMode}

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Form, Input, InputNumber, Select, message } from 'antd';
-import { 
+import {
   updateActivity,
   fetchAllQuizzes,
   fetchQuizzesByActivity,
@@ -13,11 +13,11 @@ import {
   assignPracticeToActivity,
   removePracticeFromActivity
 } from '../../../../../apis/ProgramManager/SectionApi';
-import { 
-  getMaterials, 
-  getMaterialsByActivityId, 
-  assignMaterialToActivity, 
-  removeMaterialFromActivity 
+import {
+  getMaterials,
+  getMaterialsByActivityId,
+  assignMaterialToActivity,
+  removeMaterialFromActivity
 } from '../../../../../apis/Instructor/InstructorMaterialsApi';
 import { FileEdit, X } from 'lucide-react';
 
@@ -39,7 +39,7 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
   // State for Practice Management
   const [practices, setPractices] = useState([]);
   const [initialPracticeId, setInitialPracticeId] = useState(null);
-  
+
   // Watch activity type to conditionally show Material/Quiz/Practice Select
   const activityType = Form.useWatch('activityType', form);
 
@@ -80,8 +80,8 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
       if (type === 'Material') {
         // Only fetch materials if list is empty or strictly necessary
         if (materials.length === 0) {
-            const materialsResp = await getMaterials({ page: 1, pageSize: 1000 });
-            setMaterials(materialsResp.items || []);
+          const materialsResp = await getMaterials({ page: 1, pageSize: 1000 });
+          setMaterials(materialsResp.items || []);
         }
 
         const attachedMaterials = await getMaterialsByActivityId(activity.id);
@@ -89,9 +89,9 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
           // FIX: Use learningMaterialId (the actual material ID) instead of id (the assignment ID)
           const currentMatId = attachedMaterials[0].learningMaterialId;
           setInitialMaterialId(currentMatId);
-          
+
           if (form.getFieldValue('activityType') === 'Material') {
-               form.setFieldValue('materialId', currentMatId);
+            form.setFieldValue('materialId', currentMatId);
           }
         } else {
           setInitialMaterialId(null);
@@ -102,8 +102,8 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
       // --- QUIZZES ---
       else if (type === 'Quiz') {
         if (quizzes.length === 0) {
-            const quizzesList = await fetchAllQuizzes();
-            setQuizzes(quizzesList || []);
+          const quizzesList = await fetchAllQuizzes();
+          setQuizzes(quizzesList || []);
         }
 
         const attachedQuizzes = await fetchQuizzesByActivity(activity.id);
@@ -111,7 +111,7 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
           const currentQuizId = attachedQuizzes[0].id;
           setInitialQuizId(currentQuizId);
           if (form.getFieldValue('activityType') === 'Quiz') {
-              form.setFieldValue('quizId', currentQuizId);
+            form.setFieldValue('quizId', currentQuizId);
           }
         } else {
           setInitialQuizId(null);
@@ -122,8 +122,8 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
       // --- PRACTICES ---
       else if (type === 'Practice') {
         if (practices.length === 0) {
-            const practicesList = await fetchAllPractices();
-            setPractices(practicesList || []);
+          const practicesList = await fetchAllPractices();
+          setPractices(practicesList || []);
         }
 
         const attachedPractices = await fetchPracticesByActivity(activity.id);
@@ -131,7 +131,7 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
           const currentPracticeId = attachedPractices[0].id;
           setInitialPracticeId(currentPracticeId);
           if (form.getFieldValue('activityType') === 'Practice') {
-              form.setFieldValue('practiceId', currentPracticeId);
+            form.setFieldValue('practiceId', currentPracticeId);
           }
         } else {
           setInitialPracticeId(null);
@@ -141,7 +141,7 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
 
     } catch (error) {
       console.error("Error loading resources:", error);
-      message.error("Failed to load attached resources information");
+      message.error(t('admin.courses.sections.activities.loadResourceError'));
     }
   };
 
@@ -171,8 +171,8 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
       if (values.activityType === 'Quiz') {
         const newQuizId = values.quizId;
         if (initialQuizId !== newQuizId) {
-            if (initialQuizId) await removeQuizFromActivity(activity.id, initialQuizId);
-            if (newQuizId) await assignQuizToActivity(activity.id, newQuizId);
+          if (initialQuizId) await removeQuizFromActivity(activity.id, initialQuizId);
+          if (newQuizId) await assignQuizToActivity(activity.id, newQuizId);
         }
       }
 
@@ -180,17 +180,17 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
       if (values.activityType === 'Practice') {
         const newPracticeId = values.practiceId;
         if (initialPracticeId !== newPracticeId) {
-            if (initialPracticeId) await removePracticeFromActivity(activity.id, initialPracticeId);
-            if (newPracticeId) await assignPracticeToActivity(activity.id, newPracticeId);
+          if (initialPracticeId) await removePracticeFromActivity(activity.id, initialPracticeId);
+          if (newPracticeId) await assignPracticeToActivity(activity.id, newPracticeId);
         }
       }
 
-      message.success('Activity updated successfully');
+      message.success(t('admin.courses.sections.activities.updateSuccess'));
       form.resetFields();
       onSuccess();
     } catch (error) {
       console.error(error);
-      message.error(error.response?.data?.message || 'Failed to update activity');
+      message.error(error.response?.data?.message || t('admin.courses.sections.activities.updateError'));
     } finally {
       setLoading(false);
     }
@@ -211,7 +211,7 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
             <FileEdit className="w-5 h-5 text-black" />
           </div>
           <div>
-            <h3 className="text-white font-black uppercase text-lg leading-none m-0">Edit Activity</h3>
+            <h3 className="text-white font-black uppercase text-lg leading-none m-0">{t('admin.courses.sections.activities.editActivity')}</h3>
             <p className="text-neutral-400 text-xs font-mono mt-1 m-0">ID: {activity?.id}</p>
           </div>
         </div>
@@ -222,100 +222,100 @@ const EditActivityModal = ({ visible, onCancel, onSuccess, activity }) => {
 
       <div className="p-6">
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item name="activityTitle" label="Activity Title" rules={[{ required: true }]}>
+          <Form.Item name="activityTitle" label={t('admin.courses.sections.activities.form.title')} rules={[{ required: true, message: t('admin.courses.sections.activities.form.titleRequired') }]}>
             <Input className="h-10 border-2 border-neutral-200 rounded-none focus:border-yellow-400" />
           </Form.Item>
 
           <div className="grid grid-cols-2 gap-4">
-            <Form.Item name="activityType" label="Type" rules={[{ required: true }]}>
+            <Form.Item name="activityType" label={t('admin.courses.sections.activities.form.type')} rules={[{ required: true }]}>
               <Select className="h-10 border-2 border-neutral-200 rounded-none">
                 <Option value="Material">Material</Option>
                 <Option value="Quiz">Quiz</Option>
                 <Option value="Practice">Practice</Option>
               </Select>
             </Form.Item>
-            <Form.Item name="estimatedDurationMinutes" label="Duration (Mins)" rules={[{ required: true }]}>
+            <Form.Item name="estimatedDurationMinutes" label={t('admin.courses.sections.activities.form.duration')} rules={[{ required: true }]}>
               <InputNumber min={1} className="w-full h-10 border-2 border-neutral-200 rounded-none flex items-center" />
             </Form.Item>
           </div>
 
           {/* Conditional Material Select */}
           {activityType === 'Material' && (
-             <Form.Item name="materialId" label="Assign Material">
-                <Select 
-                  placeholder="Select a material to assign"
-                  allowClear
-                  showSearch
-                  optionFilterProp="children"
-                  className="h-10 border-2 border-neutral-200 rounded-none"
-                  filterOption={(input, option) =>
-                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                  }
-                >
-                  {materials.map(m => (
-                    <Option key={m.id} value={m.id}>
-                      {m.name} {m.learningMaterialType ? `(${m.learningMaterialType})` : ''}
-                    </Option>
-                  ))}
-                </Select>
-             </Form.Item>
+            <Form.Item name="materialId" label={t('admin.courses.sections.activities.form.assignMaterial')}>
+              <Select
+                placeholder={t('admin.courses.sections.activities.form.selectMaterial')}
+                allowClear
+                showSearch
+                optionFilterProp="children"
+                className="h-10 border-2 border-neutral-200 rounded-none"
+                filterOption={(input, option) =>
+                  (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {materials.map(m => (
+                  <Option key={m.id} value={m.id}>
+                    {m.name} {m.learningMaterialType ? `(${m.learningMaterialType})` : ''}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           )}
 
           {/* Conditional Quiz Select */}
           {activityType === 'Quiz' && (
-             <Form.Item name="quizId" label="Assign Quiz">
-                <Select 
-                  placeholder="Select a quiz to assign"
-                  allowClear
-                  showSearch
-                  optionFilterProp="children"
-                  className="h-10 border-2 border-neutral-200 rounded-none"
-                  filterOption={(input, option) =>
-                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                  }
-                >
-                  {quizzes.map(q => (
-                    <Option key={q.id} value={q.id}>
-                      {q.name} ({q.totalScore} pts)
-                    </Option>
-                  ))}
-                </Select>
-             </Form.Item>
+            <Form.Item name="quizId" label={t('admin.courses.sections.activities.form.assignQuiz')}>
+              <Select
+                placeholder={t('admin.courses.sections.activities.form.selectQuiz')}
+                allowClear
+                showSearch
+                optionFilterProp="children"
+                className="h-10 border-2 border-neutral-200 rounded-none"
+                filterOption={(input, option) =>
+                  (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {quizzes.map(q => (
+                  <Option key={q.id} value={q.id}>
+                    {q.name} ({q.totalScore} pts)
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           )}
 
           {/* Conditional Practice Select */}
           {activityType === 'Practice' && (
-             <Form.Item name="practiceId" label="Assign Practice">
-                <Select 
-                  placeholder="Select a practice to assign"
-                  allowClear
-                  showSearch
-                  optionFilterProp="children"
-                  className="h-10 border-2 border-neutral-200 rounded-none"
-                  filterOption={(input, option) =>
-                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                  }
-                >
-                  {practices.map(p => (
-                    <Option key={p.id} value={p.id}>
-                      {p.practiceName}
-                    </Option>
-                  ))}
-                </Select>
-             </Form.Item>
+            <Form.Item name="practiceId" label={t('admin.courses.sections.activities.form.assignPractice')}>
+              <Select
+                placeholder={t('admin.courses.sections.activities.form.selectPractice')}
+                allowClear
+                showSearch
+                optionFilterProp="children"
+                className="h-10 border-2 border-neutral-200 rounded-none"
+                filterOption={(input, option) =>
+                  (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {practices.map(p => (
+                  <Option key={p.id} value={p.id}>
+                    {p.practiceName}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           )}
 
-          <Form.Item name="activityDescription" label="Description">
+          <Form.Item name="activityDescription" label={t('admin.courses.sections.activities.form.description')}>
             <Input.TextArea rows={3} className="border-2 border-neutral-200 rounded-none focus:border-yellow-400" />
           </Form.Item>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100 mt-6">
             <button type="button" onClick={onCancel} className="px-5 py-2.5 bg-white border-2 border-neutral-300 text-neutral-600 font-bold uppercase tracking-wider hover:border-black text-xs">
-              Cancel
+              {t('common.cancel')}
             </button>
             <button type="submit" disabled={loading} className="px-5 py-2.5 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 text-xs flex items-center gap-2">
               {loading && <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />}
-              Save Changes
+              {t('admin.courses.sections.activities.form.saveChanges')}
             </button>
           </div>
         </Form>

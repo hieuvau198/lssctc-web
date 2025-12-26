@@ -2787,7 +2787,33 @@
         "durationPlaceholder": "e.g. 40"
       },
       "courseSections": "Course Sections",
-      "certificates": "Certificates",
+      "certificates": {
+        "title": "Certificates",
+        "loadError": "Failed to load certificate information.",
+        "loadTemplateError": "Failed to load certificate templates.",
+        "selectTemplateWarning": "Please select a certificate template.",
+        "assignSuccess": "Certificate assigned successfully.",
+        "assignError": "Failed to assign certificate.",
+        "autoAssignSuccess": "Default certificate auto-assigned successfully.",
+        "autoAssignError": "Failed to auto-assign certificate.",
+        "templatePreview": "Template Preview",
+        "noTemplateContent": "No Template Content Available",
+        "active": "Active",
+        "hidePreview": "Hide Preview",
+        "preview": "Preview",
+        "viewFullScreen": "View Full Screen",
+        "changeTemplate": "Change Template",
+        "noCertificate": "No Certificate Assigned",
+        "assignDescription": "Assign a certificate template to this course for automated issuance.",
+        "autoAssign": "Auto Assign",
+        "selectTemplate": "Select Template",
+        "assignTitle": "ASSIGN CERTIFICATE TEMPLATE",
+        "assignSubtitle": "Select and preview template",
+        "selectLabel": "Select a template from the library",
+        "selectPlaceholder": "Select a certificate template",
+        "assignButton": "Assign Template",
+        "previewTitle": "CERTIFICATE TEMPLATE PREVIEW"
+      },
       "classList": "Class List",
       "filters": {
         "category": "Filter by Category",
@@ -2837,6 +2863,7 @@
           "durationInfo": "Remaining time: {{remaining}} minutes (Course: {{courseDuration}} min, Used: {{usedDuration}} min)"
         },
         "cannotModifyWithClasses": "Cannot add/import sections when classes exist",
+        "changeExcelFile": "Change Excel File",
         "activities": {
           "title": "Activity Title",
           "add": "Add Activity",
@@ -2845,7 +2872,30 @@
           "loadError": "Failed to load activities",
           "removeSuccess": "Activity removed successfully",
           "removeError": "Failed to remove activity",
-          "removeConfirm": "Remove activity?"
+          "removeConfirm": "Remove activity?",
+          "editActivity": "Edit Activity",
+          "addNew": "Add New Activity",
+          "updateSuccess": "Activity updated successfully",
+          "updateError": "Failed to update activity",
+          "addSuccess": "Activity added successfully",
+          "addError": "Failed to add activity",
+          "loadResourceError": "Failed to load attached resources information",
+          "form": {
+            "title": "Activity Title",
+            "titleRequired": "Title is required",
+            "titlePlaceholder": "e.g., Introduction Video",
+            "type": "Type",
+            "duration": "Duration (Mins)",
+            "assignMaterial": "Assign Material",
+            "selectMaterial": "Select a material to assign",
+            "assignQuiz": "Assign Quiz",
+            "selectQuiz": "Select a quiz to assign",
+            "assignPractice": "Assign Practice",
+            "selectPractice": "Select a practice to assign",
+            "description": "Description",
+            "save": "Save Activity",
+            "saveChanges": "Save Changes"
+          }
         }
       }
     },

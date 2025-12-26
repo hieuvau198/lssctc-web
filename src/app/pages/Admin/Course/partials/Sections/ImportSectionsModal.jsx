@@ -104,7 +104,7 @@ const ImportSectionsModal = ({ visible, onCancel, onSuccess, courseId }) => {
                 <UploadIcon className="w-6 h-6 text-neutral-600 group-hover:text-black" />
               </div>
               <span className="font-bold uppercase text-sm tracking-wider text-neutral-600 group-hover:text-black">
-                {fileList.length > 0 ? "Change Excel File" : t('admin.courses.sections.selectExcel')}
+                {fileList.length > 0 ? t('admin.courses.sections.changeExcelFile') : t('admin.courses.sections.selectExcel')}
               </span>
               {fileList.length > 0 && (
                 <span className="text-xs font-mono text-green-600 bg-green-100 px-2 py-1 rounded-none border border-green-200">
