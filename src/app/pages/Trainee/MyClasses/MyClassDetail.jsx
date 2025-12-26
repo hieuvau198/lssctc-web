@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { Empty, message } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -150,7 +150,7 @@ export default function MyClassDetail() {
 
   // Not found state
   if (!classData) {
-    return <div className="p-8 text-center">{t('trainee.myClassDetail.noClassInfo', 'Class not found')}</div>;
+    return <div className="p-8 min-h-[500px] flex items-center justify-center text-center"><Empty description={t('trainee.myClassDetail.noClassInfo', 'Class not found')} /></div>;
   }
 
   return (
