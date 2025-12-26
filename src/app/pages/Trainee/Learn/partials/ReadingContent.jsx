@@ -79,7 +79,7 @@ export default function ReadingContent({
                             <>
                                 <div className="flex items-center gap-2 text-neutral-500">
                                     <BookOpen className="w-5 h-5" />
-                                    <span className="text-sm font-medium">{t('trainee.learn.readingInProgress', 'Reading in progress')}</span>
+                                    <span className="text-sm font-medium">{t('trainee.learn.readingInProgress', 'Đang đọc')}</span>
                                 </div>
                                 <button
                                     onClick={handleMarkComplete}

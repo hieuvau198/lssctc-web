@@ -129,7 +129,7 @@ export default function VideoContent({
                     ) : (
                         <div className="flex items-center gap-2 text-neutral-500">
                             <Clock className="w-5 h-5" />
-                            <span className="text-sm font-medium">{t('trainee.learn.inProgress', 'In Progress')}</span>
+                            <span className="text-sm font-medium">{t('trainee.learn.inProgress', 'Đang học')}</span>
                         </div>
                     )}
                 </div>

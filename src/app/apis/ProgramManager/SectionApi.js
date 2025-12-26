@@ -92,7 +92,7 @@ export async function importSections(courseId, file) {
     formData.append('file', file);
 
     const resp = await apiClient.post(
-      `${BASE_URL}/course/${courseId}/import`, 
+      `${BASE_URL}/course/${courseId}/import-full`, 
       formData, 
       {
         headers: {
@@ -174,6 +174,20 @@ export async function deleteActivity(activityId) {
     throw err;
   }
 }
+
+/**
+ * Remove an activity from a section (dissociate)
+ */
+export async function removeActivityFromSection(sectionId, activityId) {
+  try {
+    await apiClient.delete(`/Activities/section/${sectionId}/activity/${activityId}`);
+    return true;
+  } catch (err) {
+    console.error(`Error removing activity ${activityId} from section ${sectionId}:`, err);
+    throw err;
+  }
+}
+
 //#endregion
 
 //#region Activity-Quiz APIs

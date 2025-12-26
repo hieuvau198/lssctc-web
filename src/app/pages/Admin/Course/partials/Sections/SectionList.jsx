@@ -9,16 +9,16 @@ import {
 import {
   fetchSectionsByCourse,
   removeSectionFromCourse,
-  fetchActivitiesBySection, // Import this
-  deleteActivity // Import this
+  fetchActivitiesBySection,
+  removeActivityFromSection
 } from '../../../../../apis/ProgramManager/SectionApi';
 import { fetchClassesByCourse } from '../../../../../apis/ProgramManager/CourseApi';
 
 import AddSectionModal from './AddSectionModal';
 import EditSectionModal from './EditSectionModal';
 import ImportSectionsModal from './ImportSectionsModal';
-import AddActivityModal from './AddActivityModal'; // Import this
-import EditActivityModal from './EditActivityModal'; // Import this
+import AddActivityModal from './AddActivityModal'; 
+import EditActivityModal from './EditActivityModal'; 
 
 const SectionList = ({ courseId, courseDurationHours = 0 }) => {
   const { t } = useTranslation();
@@ -93,7 +93,7 @@ const SectionList = ({ courseId, courseDurationHours = 0 }) => {
 
   const handleDeleteActivity = async (activityId, sectionId) => {
     try {
-      await deleteActivity(activityId);
+      await removeActivityFromSection(sectionId, activityId); 
       message.success(t('admin.courses.sections.activities.removeSuccess'));
       loadActivitiesForSection(sectionId); // Refresh list
     } catch (error) {
