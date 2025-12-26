@@ -42,7 +42,7 @@ const CourseCertificate = ({ courseId }) => {
       const data = await fetchCertificateByCourse(courseId);
       setCertificate(data);
     } catch (error) {
-      message.error("Failed to load certificate information.");
+      message.error(t('admin.courses.certificates.loadError'));
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const CourseCertificate = ({ courseId }) => {
       const data = await fetchCertificateTemplates();
       setTemplates(data);
     } catch (error) {
-      message.error("Failed to load certificate templates.");
+      message.error(t('admin.courses.certificates.loadTemplateError'));
     } finally {
       setLoadingTemplates(false);
     }
@@ -68,19 +68,19 @@ const CourseCertificate = ({ courseId }) => {
 
   const handleAssign = async () => {
     if (!selectedTemplateId) {
-      message.warning("Please select a certificate template.");
+      message.warning(t('admin.courses.certificates.selectTemplateWarning'));
       return;
     }
 
     setAssignLoading(true);
     try {
       await assignCertificateToCourse(courseId, selectedTemplateId);
-      message.success("Certificate assigned successfully.");
+      message.success(t('admin.courses.certificates.assignSuccess'));
       setIsModalOpen(false);
       setSelectedTemplateId(null);
       loadCertificate();
     } catch (error) {
-      message.error(error?.response?.data || "Failed to assign certificate.");
+      message.error(error?.response?.data || t('admin.courses.certificates.assignError'));
     } finally {
       setAssignLoading(false);
     }
@@ -90,10 +90,10 @@ const CourseCertificate = ({ courseId }) => {
     setAssignLoading(true);
     try {
       await autoAssignCertificateToCourse(courseId);
-      message.success("Default certificate auto-assigned successfully.");
+      message.success(t('admin.courses.certificates.autoAssignSuccess'));
       loadCertificate();
     } catch (error) {
-      message.error(error?.response?.data || "Failed to auto-assign certificate.");
+      message.error(error?.response?.data || t('admin.courses.certificates.autoAssignError'));
     } finally {
       setAssignLoading(false);
     }
@@ -108,7 +108,7 @@ const CourseCertificate = ({ courseId }) => {
         {showTitle && (
           <div className="bg-neutral-100 px-4 py-2 border-b-2 border-neutral-200 flex items-center justify-between">
             <span className="font-bold uppercase text-xs tracking-wider text-neutral-600">
-              Template Preview
+              {t('admin.courses.certificates.templatePreview')}
             </span>
             <span className="text-xs font-mono text-neutral-400">ID: {template.id}</span>
           </div>
@@ -145,7 +145,7 @@ const CourseCertificate = ({ courseId }) => {
                 <p className="text-xs text-neutral-500 mt-1">Template ID: {template.id}</p>
               </div>
               <span className="px-3 py-1 bg-neutral-200 text-neutral-600 text-xs font-bold uppercase tracking-wider">
-                No Template Content Available
+                {t('admin.courses.certificates.noTemplateContent')}
               </span>
             </div>
           )}
@@ -173,7 +173,7 @@ const CourseCertificate = ({ courseId }) => {
                 <Space direction="vertical" size={2} className="mt-1">
                   <Text type="secondary" className="text-xs font-mono uppercase tracking-wider">Template ID: {certificate.id}</Text>
                   <div className="mt-1 flex gap-2">
-                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold uppercase border border-green-200">Active</span>
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold uppercase border border-green-200">{t('admin.courses.certificates.active')}</span>
                     {certificate.courseName && <span className="px-2 py-0.5 bg-neutral-200 text-neutral-600 text-xs font-bold uppercase border border-neutral-300">{certificate.courseName}</span>}
                   </div>
                 </Space>
@@ -186,12 +186,12 @@ const CourseCertificate = ({ courseId }) => {
                 className="flex items-center gap-2 h-10 px-5 bg-white border-2 border-neutral-300 text-neutral-700 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all"
               >
                 <EyeOutlined />
-                {showCertPreview ? 'Hide Preview' : 'Preview'}
+                {showCertPreview ? t('admin.courses.certificates.hidePreview') : t('admin.courses.certificates.preview')}
               </button>
               <button
                 onClick={() => setPreviewModalOpen(true)}
                 className="flex items-center gap-2 h-10 px-4 bg-white border-2 border-neutral-300 text-neutral-700 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all"
-                title="View Full Screen"
+                title={t('admin.courses.certificates.viewFullScreen')}
               >
                 <ExpandOutlined />
               </button>
@@ -200,7 +200,7 @@ const CourseCertificate = ({ courseId }) => {
                 className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-black text-black font-bold uppercase tracking-wider hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none"
               >
                 <SwapOutlined />
-                Change Template
+                {t('admin.courses.certificates.changeTemplate')}
               </button>
             </div>
           </div>
@@ -218,8 +218,8 @@ const CourseCertificate = ({ courseId }) => {
             <SafetyCertificateOutlined className="text-3xl text-neutral-400" />
           </div>
           <div>
-            <h4 className="text-neutral-900 font-bold uppercase m-0">No Certificate Assigned</h4>
-            <p className="text-neutral-500 text-sm mt-1 mb-4">Assign a certificate template to this course for automated issuance.</p>
+            <h4 className="text-neutral-900 font-bold uppercase m-0">{t('admin.courses.certificates.noCertificate')}</h4>
+            <p className="text-neutral-500 text-sm mt-1 mb-4">{t('admin.courses.certificates.assignDescription')}</p>
             <div className="flex gap-4 justify-center">
               <button
                 onClick={handleAutoAssign}
@@ -227,13 +227,13 @@ const CourseCertificate = ({ courseId }) => {
                 className="flex items-center gap-2 h-10 px-6 bg-white border-2 border-neutral-300 text-neutral-600 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all disabled:opacity-50"
               >
                 {assignLoading ? <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <ThunderboltOutlined />}
-                Auto Assign
+                {t('admin.courses.certificates.autoAssign')}
               </button>
               <button
                 onClick={handleOpenAssignModal}
                 className="flex items-center gap-2 h-10 px-6 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all"
               >
-                Select Template
+                {t('admin.courses.certificates.selectTemplate')}
               </button>
             </div>
           </div>
@@ -260,10 +260,10 @@ const CourseCertificate = ({ courseId }) => {
             </div>
             <div>
               <h3 className="text-white font-black uppercase text-lg leading-none m-0">
-                ASSIGN CERTIFICATE TEMPLATE
+                {t('admin.courses.certificates.assignTitle')}
               </h3>
               <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
-                Select and preview template
+                {t('admin.courses.certificates.assignSubtitle')}
               </p>
             </div>
           </div>
@@ -277,7 +277,7 @@ const CourseCertificate = ({ courseId }) => {
 
         <div className="p-6">
           <label className="block mb-2 font-bold uppercase text-xs tracking-wider text-neutral-500 font-sans">
-            Select a template from the library
+            {t('admin.courses.certificates.selectLabel')}
           </label>
 
           <style>{`
@@ -296,7 +296,7 @@ const CourseCertificate = ({ courseId }) => {
 
           <Select
             className="w-full industrial-select"
-            placeholder="Select a certificate template"
+            placeholder={t('admin.courses.certificates.selectPlaceholder')}
             loading={loadingTemplates}
             onChange={(value) => setSelectedTemplateId(value)}
             value={selectedTemplateId}
@@ -325,7 +325,7 @@ const CourseCertificate = ({ courseId }) => {
               onClick={() => setIsModalOpen(false)}
               className="px-5 py-2.5 bg-white border-2 border-neutral-300 text-neutral-600 font-bold uppercase tracking-wider hover:border-black hover:text-black transition-all text-xs"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               onClick={handleAssign}
@@ -333,7 +333,7 @@ const CourseCertificate = ({ courseId }) => {
               className="px-5 py-2.5 bg-yellow-400 border-2 border-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-500 hover:border-yellow-500 hover:shadow-md transition-all text-xs flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {assignLoading && <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />}
-              Assign Template
+              {t('admin.courses.certificates.assignButton')}
             </button>
           </div>
         </div>
@@ -360,7 +360,7 @@ const CourseCertificate = ({ courseId }) => {
             </div>
             <div>
               <h3 className="text-white font-black uppercase text-base leading-none m-0">
-                CERTIFICATE TEMPLATE PREVIEW
+                {t('admin.courses.certificates.previewTitle')}
               </h3>
               <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
                 {certificate?.name} - ID: {certificate?.id}

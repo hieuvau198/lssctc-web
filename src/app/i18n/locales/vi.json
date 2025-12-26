@@ -2785,7 +2785,33 @@
         "durationPlaceholder": "ví dụ: 40"
       },
       "courseSections": "Nội dung khóa học",
-      "certificates": "Chứng chỉ",
+      "certificates": {
+        "title": "Chứng chỉ",
+        "loadError": "Không thể tải thông tin chứng chỉ.",
+        "loadTemplateError": "Không thể tải danh sách mẫu chứng chỉ.",
+        "selectTemplateWarning": "Vui lòng chọn một mẫu chứng chỉ.",
+        "assignSuccess": "Gán chứng chỉ thành công.",
+        "assignError": "Gán chứng chỉ thất bại.",
+        "autoAssignSuccess": "Tự động gán chứng chỉ mặc định thành công.",
+        "autoAssignError": "Tự động gán chứng chỉ thất bại.",
+        "templatePreview": "Xem trước mẫu",
+        "noTemplateContent": "Không có nội dung mẫu",
+        "active": "Đang hoạt động",
+        "hidePreview": "Ẩn xem trước",
+        "preview": "Xem trước",
+        "viewFullScreen": "Xem toàn màn hình",
+        "changeTemplate": "Đổi mẫu",
+        "noCertificate": "Chưa gán chứng chỉ",
+        "assignDescription": "Gán một mẫu chứng chỉ cho khóa học này để cấp tự động.",
+        "autoAssign": "Tự động gán",
+        "selectTemplate": "Chọn mẫu",
+        "assignTitle": "GÁN MẪU CHỨNG CHỈ",
+        "assignSubtitle": "Chọn và xem trước mẫu",
+        "selectLabel": "Chọn mẫu từ thư viện",
+        "selectPlaceholder": "Chọn một mẫu chứng chỉ",
+        "assignButton": "Gán mẫu",
+        "previewTitle": "XEM TRƯỚC MẪU CHỨNG CHỈ"
+      },
       "classList": "Danh sách lớp học",
       "filters": {
         "category": "Lọc theo danh mục",
@@ -2835,6 +2861,7 @@
           "durationInfo": "Thời gian còn lại: {{remaining}} phút (Khóa học: {{courseDuration}} phút, Đã dùng: {{usedDuration}} phút)"
         },
         "cannotModifyWithClasses": "Không thể thêm/nhập chương khi có lớp học tồn tại",
+        "changeExcelFile": "Thay đổi tệp Excel",
         "activities": {
           "title": "Tiêu đề hoạt động",
           "add": "Thêm hoạt động",
@@ -2843,7 +2870,30 @@
           "loadError": "Không thể tải danh sách hoạt động",
           "removeSuccess": "Xóa hoạt động thành công",
           "removeError": "Không thể xóa hoạt động",
-          "removeConfirm": "Xóa hoạt động này?"
+          "removeConfirm": "Xóa hoạt động này?",
+          "editActivity": "Chỉnh Sửa Hoạt Động",
+          "addNew": "Thêm Hoạt Động Mới",
+          "updateSuccess": "Cập nhật hoạt động thành công",
+          "updateError": "Cập nhật hoạt động thất bại",
+          "addSuccess": "Thêm hoạt động thành công",
+          "addError": "Thêm hoạt động thất bại",
+          "loadResourceError": "Không thể tải thông tin tài nguyên đính kèm",
+          "form": {
+            "title": "Tiêu Đề Hoạt Động",
+            "titleRequired": "Vui lòng nhập tiêu đề",
+            "titlePlaceholder": "VD: Video Giới Thiệu",
+            "type": "Loại",
+            "duration": "Thời Lượng (Phút)",
+            "assignMaterial": "Gán Tài Liệu",
+            "selectMaterial": "Chọn tài liệu để gán",
+            "assignQuiz": "Gán Bài Kiểm Tra",
+            "selectQuiz": "Chọn bài kiểm tra để gán",
+            "assignPractice": "Gán Bài Thực Hành",
+            "selectPractice": "Chọn bài thực hành để gán",
+            "description": "Mô Tả",
+            "save": "Lưu Hoạt Động",
+            "saveChanges": "Lưu Thay Đổi"
+          }
         }
       }
     },

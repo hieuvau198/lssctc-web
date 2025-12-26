@@ -17,8 +17,8 @@ import { fetchClassesByCourse } from '../../../../../apis/ProgramManager/CourseA
 import AddSectionModal from './AddSectionModal';
 import EditSectionModal from './EditSectionModal';
 import ImportSectionsModal from './ImportSectionsModal';
-import AddActivityModal from './AddActivityModal'; 
-import EditActivityModal from './EditActivityModal'; 
+import AddActivityModal from './AddActivityModal';
+import EditActivityModal from './EditActivityModal';
 
 const SectionList = ({ courseId, courseDurationHours = 0 }) => {
   const { t } = useTranslation();
@@ -52,7 +52,6 @@ const SectionList = ({ courseId, courseDurationHours = 0 }) => {
       const sectionsData = await fetchSectionsByCourse(courseId);
       setSections(sectionsData);
     } catch (error) {
-      console.error('Failed to load sections:', error);
       message.error(t('admin.courses.sections.loadError'));
     }
 
@@ -93,7 +92,7 @@ const SectionList = ({ courseId, courseDurationHours = 0 }) => {
 
   const handleDeleteActivity = async (activityId, sectionId) => {
     try {
-      await removeActivityFromSection(sectionId, activityId); 
+      await removeActivityFromSection(sectionId, activityId);
       message.success(t('admin.courses.sections.activities.removeSuccess'));
       loadActivitiesForSection(sectionId); // Refresh list
     } catch (error) {

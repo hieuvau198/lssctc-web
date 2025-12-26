@@ -18,7 +18,7 @@ const EditSectionModal = ({ visible, onCancel, onSuccess, section }) => {
         estimatedDurationMinutes: section.estimatedDurationMinutes
       });
     } else {
-        form.resetFields();
+      form.resetFields();
     }
   }, [visible, section, form]);
 
@@ -63,7 +63,7 @@ const EditSectionModal = ({ visible, onCancel, onSuccess, section }) => {
           </div>
           <div>
             <h3 className="text-white font-black uppercase text-lg leading-none m-0">
-              {t('admin.courses.sections.editSection') || "Edit Section"}
+              {t('admin.courses.sections.editSection')}
             </h3>
             <p className="text-neutral-400 text-xs font-mono mt-1 m-0">
               ID: {section?.id}
