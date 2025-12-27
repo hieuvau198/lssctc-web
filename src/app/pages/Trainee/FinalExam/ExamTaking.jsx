@@ -373,7 +373,7 @@ export default function ExamTaking() {
             lastHiddenAtRef.current = null;
             if (!leftAt) return;
             const awayDuration = Date.now() - leftAt;
-            if (awayDuration < 5000) return; // ignore short switches
+            if (awayDuration < 1000) return; // ignore short switches
 
             const currentViolation = leaveViolationsRef.current + 1;
             leaveViolationsRef.current = currentViolation;
