@@ -979,7 +979,8 @@
       "confirmTitle": "Xác nhận đăng ký",
       "confirmEnrollment": "Đăng ký ngay",
       "noteTitle": "Lưu ý:",
-      "noteBody": "Sau khi đăng ký, bạn sẽ có quyền truy cập vào tất cả tài liệu khóa học và có thể bắt đầu học ngay lập tức."
+      "noteBody": "Sau khi đăng ký, bạn sẽ có quyền truy cập vào tất cả tài liệu khóa học và có thể bắt đầu học ngay lập tức.",
+      "loginRequired": "Vui lòng đăng nhập để đăng ký lớp học"
     }
   },
   "instructor": {
@@ -3026,7 +3027,8 @@
         "approveSuccess": "Phê duyệt đăng ký thành công",
         "approveFailed": "Không thể phê duyệt đăng ký",
         "rejectSuccess": "Từ chối đăng ký thành công",
-        "rejectFailed": "Không thể từ chối đăng ký"
+        "rejectFailed": "Không thể từ chối đăng ký",
+        "updateSuccess": "Cập nhật lớp học thành công"
       },
       "popconfirm": {
         "approveEnrollment": "Phê duyệt đăng ký",

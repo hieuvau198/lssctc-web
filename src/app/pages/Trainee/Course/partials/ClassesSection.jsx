@@ -1,10 +1,11 @@
-import { Tag, Empty, Modal, App, Skeleton } from 'antd';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { App, Modal, Skeleton } from 'antd';
+import { BookOpen, Calendar, CheckCircle, Info, UserCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { enrollMyClass } from '../../../../apis/Trainee/TraineeEnrollment';
+import { useNavigate } from 'react-router';
 import { fetchClassesByCourse } from '../../../../apis/ProgramManager/CourseApi';
-import { Calendar, Info, CheckCircle, ChevronRight, BookOpen, UserCheck } from 'lucide-react';
+import { enrollMyClass } from '../../../../apis/Trainee/TraineeEnrollment';
+import { getAuthToken } from '../../../../libs/cookies';
 import { getClassStatus } from '../../../../utils/classStatus';
 
 export default function ClassesSection({ courseId, programId }) {
@@ -45,6 +46,15 @@ export default function ClassesSection({ courseId, programId }) {
   }, [courseId, programId]);
 
   const handleClassClick = (cls) => {
+    // Kiểm tra đăng nhập trước khi mở modal đăng ký
+    const token = getAuthToken();
+
+    if (!token) {
+      message.warning(t('trainee.classes.loginRequired', 'Vui lòng đăng nhập để đăng ký khóa học'));
+      navigate('/auth/login');
+      return;
+    }
+
     setSelectedClass(cls);
     setEnrollModalOpen(true);
   };
@@ -57,10 +67,10 @@ export default function ClassesSection({ courseId, programId }) {
       await enrollMyClass({ classId: selectedClass.id });
       message.success(t('trainee.classes.enrollSuccess', { name: selectedClass.name || selectedClass.className }));
       setEnrollModalOpen(false);
-      
+
       // Cập nhật lại trạng thái local để hiển thị "Đã đăng ký" ngay lập tức mà không cần reload
       setClasses(prev => prev.map(c => c.id === selectedClass.id ? { ...c, isEnrolled: true } : c));
-      
+
       setTimeout(() => {
         navigate('/my-enrollments');
       }, 1500);
@@ -172,8 +182,8 @@ export default function ClassesSection({ courseId, programId }) {
                   onClick={() => !isEnrolled && handleClassClick(cls)}
                   disabled={enrolling || isEnrolled}
                   className={`w-full h-11 font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 mt-auto 
-                    ${isEnrolled 
-                      ? 'bg-green-600 text-white cursor-default border-2 border-green-600 opacity-100' 
+                    ${isEnrolled
+                      ? 'bg-green-600 text-white cursor-default border-2 border-green-600 opacity-100'
                       : 'bg-yellow-400 text-black hover:border-3 hover:border-black disabled:opacity-50'
                     }`}
                 >
@@ -246,10 +256,10 @@ export default function ClassesSection({ courseId, programId }) {
                     </div>
                   </div>
                 )}
-                 {/* ... (Rest of Modal content) */}
-                 
-                 {/* Status in Modal */}
-                 <div className="flex items-center gap-3">
+                {/* ... (Rest of Modal content) */}
+
+                {/* Status in Modal */}
+                <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-neutral-200 flex items-center justify-center">
                     <Info className="w-4 h-4 text-neutral-600" />
                   </div>
