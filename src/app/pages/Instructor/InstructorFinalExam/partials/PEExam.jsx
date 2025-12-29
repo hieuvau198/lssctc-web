@@ -26,9 +26,35 @@ export default function PEExam({ classId }) {
   const [gradingModalOpen, setGradingModalOpen] = useState(false);
   const [currentGradingPartial, setCurrentGradingPartial] = useState(null);
   const [currentTraineeName, setCurrentTraineeName] = useState('');
+  const [isPassDisabled, setIsPassDisabled] = useState(false); // State to control Pass switch
 
   const [form] = Form.useForm();
   const [gradingForm] = Form.useForm();
+  
+  // Watch checklist values to calculate pass/fail eligibility in real-time
+  const checklistValues = Form.useWatch('checklist', gradingForm);
+
+  useEffect(() => {
+    if (checklistValues && checklistValues.length > 0) {
+      const total = checklistValues.length;
+      // Count items that are NOT passed (isPass is false or undefined)
+      const failCount = checklistValues.filter(item => !item?.isPass).length;
+      
+      // Condition: Disable "Pass" if failed items are 50% or more of the total
+      // "less than half the checklists is fail" means Fail < Total/2 is allowed.
+      // So if Fail >= Total/2, we disable.
+      const shouldDisable = failCount >= (total / 2);
+      
+      setIsPassDisabled(shouldDisable);
+
+      // Automatically set Overall Result to Fail if criteria not met
+      if (shouldDisable) {
+        gradingForm.setFieldValue('isOverallPass', false);
+      }
+    } else {
+      setIsPassDisabled(false);
+    }
+  }, [checklistValues, gradingForm]);
 
   const fetchConfig = useCallback(async () => {
     setLoading(true);
@@ -630,6 +656,7 @@ export default function PEExam({ classId }) {
             className="bg-yellow-50 p-4 border-2 border-yellow-400"
           >
             <Switch
+              disabled={isPassDisabled}
               checkedChildren={t('instructor.finalExam.pass')}
               unCheckedChildren={t('instructor.finalExam.fail')}
               className="bg-neutral-400"

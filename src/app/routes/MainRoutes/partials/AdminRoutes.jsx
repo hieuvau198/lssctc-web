@@ -16,7 +16,8 @@ import TraineeTable from '../../../pages/Admin/ManageUser/partials/TraineeTable'
 import ManagerProgramList from '../../../pages/Admin/Program/ManagerProgramList'
 import ProgramDetailPage from '../../../pages/Admin/Program/ProgramDetailPage'
 import MaterialManagement from '../../../pages/Admin/Material/MaterialManagement'
-import QuizManagement from '../../../pages/Admin/Quiz/QuizManagement' // Import QuizManagement
+import QuizManagement from '../../../pages/Admin/Quiz/QuizManagement'
+import CertificateManagement from '../../../pages/Admin/Certificate/CertificateManagement'
 import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
 
 export default function AdminRoutes() {
@@ -55,8 +56,9 @@ export default function AdminRoutes() {
 
         <Route path="materials" element={<MaterialManagement />} />
         
-        {/* Added Quiz Route */}
         <Route path="quizzes" element={<QuizManagement />} />
+
+        <Route path="certificates" element={<CertificateManagement />} />
 
       </Route>
       <Route path="*" element={<NotFound />} />

@@ -31,19 +31,19 @@ export default function ClassFinalExam({ classId, readOnly }) {
     {
       key: 'te',
       icon: FileText,
-      title: t('admin.classes.finalExam.teTab'),
+      title: 'Thi Lý Thuyết',
       component: <AdminTEConfig classId={classId} readOnly={readOnly} />,
     },
     {
       key: 'se',
       icon: Monitor,
-      title: t('admin.classes.finalExam.seTab'),
+      title: 'Thi Mô Phỏng',
       component: <AdminSEConfig classId={classId} readOnly={readOnly} />,
     },
     {
       key: 'pe',
       icon: Award,
-      title: t('admin.classes.finalExam.peTab'),
+      title: 'Thi Thực Hành',
       component: <AdminPEConfig classId={classId} readOnly={readOnly} />,
     },
   ];

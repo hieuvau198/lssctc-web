@@ -167,20 +167,20 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
                   </div>
 
                   <div>
-                    {partial.type === 'Theory' && partial.status !== 'Submitted' && (
-                      <Tooltip title={getButtonTooltip()}>
+                    {partial.type === 'Theory' && (
+                      <Tooltip title={partial.status === 'Submitted' ? t('trainee.finalExam.submitted', 'Submitted') : getButtonTooltip()}>
                         <button
-                          disabled={!canStartExam}
+                          disabled={!canStartExam || partial.status === 'Submitted'}
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (canStartExam) navigate(`/final-exam/${partial.id}`);
+                            if (canStartExam && partial.status !== 'Submitted') navigate(`/final-exam/${partial.id}`);
                           }}
                           className={`flex items-center gap-2 px-4 py-2 font-bold text-xs uppercase tracking-wider border-2 border-black transition-all duration-200
-                                 ${canStartExam
+                                 ${canStartExam && partial.status !== 'Submitted'
                               ? "bg-yellow-400 text-black hover:scale-[1.02] hover:shadow-lg"
                               : "bg-neutral-200 text-neutral-400 cursor-not-allowed opacity-60"}`}
                         >
-                          {canStartExam ? <Play className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                          {canStartExam && partial.status !== 'Submitted' ? <Play className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                           {t('trainee.finalExam.startExam', 'Start Exam')}
                         </button>
                       </Tooltip>
@@ -285,19 +285,19 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
                   <DayTimeFormat value={partial.startTime} /> → <DayTimeFormat value={partial.endTime} />
                 </div>
 
-                {partial.type === 'Theory' && partial.status !== 'Submitted' && (
+                {partial.type === 'Theory' && (
                   <button
-                    disabled={!canStartExam}
+                    disabled={!canStartExam || partial.status === 'Submitted'}
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (canStartExam) navigate(`/final-exam/${partial.id}`);
+                      if (canStartExam && partial.status !== 'Submitted') navigate(`/final-exam/${partial.id}`);
                     }}
                     className={`w-full flex items-center justify-center gap-2 px-4 py-2 font-bold text-xs uppercase tracking-wider border-2 border-black
-                             ${canStartExam
+                             ${canStartExam && partial.status !== 'Submitted'
                         ? "bg-yellow-400 text-black"
                         : "bg-neutral-200 text-neutral-400 cursor-not-allowed"}`}
                   >
-                    {canStartExam ? <Play className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                    {canStartExam && partial.status !== 'Submitted' ? <Play className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                     {t('trainee.finalExam.startExam', 'Start Exam')}
                   </button>
                 )}

@@ -17,6 +17,17 @@ const getInitials = (name = '') => {
         .join('');
 };
 
+// 1. Defined Vietnamese translation map for statuses
+const STATUS_MAP = {
+    'Pending': 'Chờ duyệt',
+    'Enrolled': 'Đã ghi danh',
+    'Inprogress': 'Đang học',
+    'Cancelled': 'Đã hủy',
+    'Rejected': 'Từ chối',
+    'Completed': 'Hoàn thành',
+    'Failed': 'Thất bại'
+};
+
 const ClassMembersTable = ({ classItem }) => {
     const { t } = useTranslation();
     const { message } = App.useApp();
@@ -50,7 +61,8 @@ const ClassMembersTable = ({ classItem }) => {
             } catch (err) {
                 if (!active) return;
                 console.error('Failed to fetch trainees:', err);
-                setTraineesError(err?.message || 'Failed to load trainees');
+                // 2. Changed error message default to Vietnamese
+                setTraineesError(err?.message || 'Không thể tải danh sách học viên');
                 setTrainees([]);
                 setTotalCount(0);
             } finally {
@@ -106,9 +118,13 @@ const ClassMembersTable = ({ classItem }) => {
                     'default': 'bg-slate-100 text-slate-800 border-slate-300',
                 };
                 const statusClass = colorMap[st.color] || colorMap.default;
+                
+                // 3. Apply the Vietnamese translation map using the status key
+                const displayLabel = STATUS_MAP[st.key] || st.label;
+
                 return (
                     <span className={`px-3 py-1 text-xs font-bold uppercase border whitespace-nowrap ${statusClass}`}>
-                        {st.label}
+                        {displayLabel}
                     </span>
                 );
             },
@@ -322,7 +338,8 @@ const ClassMembersTable = ({ classItem }) => {
                             pageSizeOptions={["10", "20", "35", "50"]}
                             showTotal={(total, range) => (
                                 <span className="text-sm font-medium text-slate-600">
-                                    {range[0]}-{range[1]} / {total}
+                                    {/* 4. Changed pagination text to Vietnamese */}
+                                    {range[0]}-{range[1]} trên {total}
                                 </span>
                             )}
                         />

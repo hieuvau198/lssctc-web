@@ -1,6 +1,6 @@
 import { Tooltip, App, Avatar, Dropdown, Menu, Switch } from 'antd';
 import { NavLink, useNavigate, useLocation } from 'react-router';
-import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, MoreVertical, FileText, FileQuestion } from 'lucide-react'; // Added FileQuestion
+import { LayoutDashboard, Users, Layers, BookOpen, Calendar, PanelLeftClose, MoreVertical, FileText, FileQuestion, Award } from 'lucide-react'; // Added FileQuestion
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
 import useAuthStore from '../../../store/authStore';
@@ -15,7 +15,8 @@ const getItems = (t) => [
   { to: '/admin/courses', label: t('sidebar.courses'), icon: <BookOpen className="w-5 h-5" />, matchPath: '/admin/courses' },
   { to: '/admin/class', label: t('sidebar.class'), icon: <Calendar className="w-5 h-5" />, matchPath: '/admin/class' },
   { to: '/admin/materials', label: t('sidebar.materials'), icon: <FileText className="w-5 h-5" />, matchPath: '/admin/materials' },
-  { to: '/admin/quizzes', label: t('sidebar.quizzes', 'Quizzes'), icon: <FileQuestion className="w-5 h-5" />, matchPath: '/admin/quizzes' }, // Added Quizzes Item
+  { to: '/admin/quizzes', label: t('sidebar.quizzes', 'Quizzes'), icon: <FileQuestion className="w-5 h-5" />, matchPath: '/admin/quizzes' },
+  { to: '/admin/certificates', label: 'Chứng nhận', icon: <Award className="w-5 h-5" />, matchPath: '/admin/certificates' },
 ];
 
 export default function SidebarAdmin({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
