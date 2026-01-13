@@ -4,7 +4,7 @@ import { Award, Calendar, GraduationCap, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PageNav from '../../../components/PageNav/PageNav';
-import { getAllTraineeCertificates } from '../../../apis/Trainee/TraineeCertificateApi';
+import { getMyCertificates } from '../../../apis/Trainee/TraineeCertificateApi';
 import { getAuthToken } from '../../../libs/cookies';
 import { decodeToken } from '../../../libs/jwtDecode';
 import useAuthStore from '../../../store/authStore';
@@ -32,7 +32,7 @@ export default function CertificateView() {
 
 			setLoading(true);
 			try {
-				const data = await getAllTraineeCertificates();
+				const data = await getMyCertificates();
 				if (mounted) {
 					setCertificates(data);
 				}

@@ -16,6 +16,21 @@ export async function getAllTraineeCertificates() {
 }
 
 /**
+ * Get certificates for the currently authenticated trainee (by token)
+ * GET /api/TraineeCertificates/my-certificates
+ * @returns {Promise<Array<{id, traineeName, courseName, certificateCode, pdfUrl, issuedDate}>>}
+ */
+export async function getMyCertificates() {
+	try {
+		const response = await apiClient.get('/TraineeCertificates/my-certificates');
+		return response.data?.data || response.data || [];
+	} catch (error) {
+		console.error('Error fetching my certificates:', error);
+		throw error;
+	}
+}
+
+/**
  * Create a new trainee certificate
  * POST /api/TraineeCertificates
  * @param {Object} payload - Certificate data
