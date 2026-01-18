@@ -114,16 +114,9 @@ export default function CertificateCourse() {
 									className="h-9 px-3 border-2 border-white/40 text-white text-xs font-bold uppercase tracking-wide hover:bg-yellow-400 hover:text-black hover:border-yellow-400 transition-all flex items-center gap-2 whitespace-nowrap"
 								>
 									<ExternalLink className="w-4 h-4" />
-									<span className="hidden sm:inline">Mở tab mới</span>
+									<span className="hidden sm:inline">Chia sẻ chứng chỉ</span>
 								</button>
 							)}
-							<button
-								onClick={downloadPdf}
-								className="h-9 px-4 bg-yellow-400 text-black text-xs font-bold uppercase tracking-wide hover:bg-white transition-all flex items-center gap-2 whitespace-nowrap"
-							>
-								<Download className="w-4 h-4" />
-								<span>Tải PDF</span>
-							</button>
 						</div>
 					</div>
 
