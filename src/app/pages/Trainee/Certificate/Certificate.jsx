@@ -158,11 +158,8 @@ export default function CertificateView() {
 							{Array.from({ length: 8 }).map((_, idx) => (
 								<div key={idx} className="bg-white border-2 border-neutral-900 overflow-hidden">
 									<div className="h-2 bg-neutral-200" />
-									<div className="w-full h-44 overflow-hidden">
-										<Skeleton.Image active className="!w-full !h-44" />
-									</div>
 									<div className="p-5">
-										<Skeleton active title={{ width: '70%' }} paragraph={{ rows: 2, width: ['100%', '60%'] }} />
+										<Skeleton active title={{ width: '70%' }} paragraph={{ rows: 3, width: ['100%', '80%', '60%'] }} />
 									</div>
 								</div>
 							))}
@@ -193,22 +190,6 @@ export default function CertificateView() {
 										<div className="bg-white border-2 border-neutral-900 hover:border-yellow-400 overflow-hidden transition-all duration-300">
 											{/* Status bar */}
 											<div className={`h-2 ${statusColors.bg}`} />
-
-											{/* Cover */}
-											{cert.pdfUrl ? (
-												<div className="relative h-44 bg-neutral-100 overflow-hidden">
-													<iframe
-														src={`${cert.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-														className="w-full h-full pointer-events-none"
-														title={t('trainee.certificate.preview')}
-													/>
-													<div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-												</div>
-											) : (
-												<div className="relative h-44 bg-neutral-900 flex items-center justify-center">
-													<Award className="w-16 h-16 text-yellow-400" />
-												</div>
-											)}
 
 											{/* Content */}
 											<div className="p-5">
