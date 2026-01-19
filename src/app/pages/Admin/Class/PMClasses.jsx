@@ -368,7 +368,7 @@ const PMClasses = () => {
                 onEdit={openEdit}
                 onDelete={handleDelete}
                 deletingId={deletingId}
-                scroll={{ x: 'max-content', y: 'calc(100vh - 330px)' }}
+                scroll={{ x: 'max-content', y: 'calc(100vh - 350px)' }}
               />
             </div>
           )}

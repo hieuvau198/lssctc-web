@@ -41,7 +41,7 @@ export default function IndustrialTable({
                     border: 2px solid #000 !important;
                 }
                 .industrial-table .ant-table-thead > tr > th {
-                    background: #fef08a !important;
+                    background: #FFEE58;
                     border-bottom: 2px solid #000 !important;
                     font-weight: 700 !important;
                     text-transform: uppercase !important;

@@ -17,6 +17,17 @@ const ClassOverview = ({ classData }) => {
     return statusMap[status] || statusMap['Draft'];
   };
 
+  const statusDisplayMap = {
+  draft: "Chưa Mở",
+  open: "Mở",
+  inprogress: "Đang Hoạt Động",
+  completed: "Hoàn Thành",
+  cancelled: "Đã Hủy",
+};
+
+const displayStatus =
+  statusDisplayMap[classData.status?.toLowerCase()] || classData.status;
+
   const calculateDuration = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -113,13 +124,13 @@ const ClassOverview = ({ classData }) => {
               <CheckCircle className="w-5 h-5 text-black" />
             </div>
             <div>
-              <span className="text-xs font-bold uppercase text-neutral-500 tracking-wider">
-                {t('instructor.classes.overview.status')}
-              </span>
+              
               <div className="mt-2">
-                <span className={`px-3 py-1 text-sm font-bold uppercase border-2 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>
-                  {classData.status}
-                </span>
+                <span
+  className={`px-3 py-1 text-sm font-bold uppercase border-2 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
+>
+  {displayStatus}
+</span>
               </div>
             </div>
           </div>

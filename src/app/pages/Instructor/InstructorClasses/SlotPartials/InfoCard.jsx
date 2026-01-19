@@ -46,8 +46,7 @@ export default function InfoCard({ slotInfo, timeslotId, summary, handleMarkAll,
                 <div className="flex items-center gap-3 text-gray-700">
                   <div className="w-5 h-5 flex items-center justify-center text-blue-600">#</div>
                   <div>
-                    <div className="text-sm font-medium">{timeslotId}</div>
-                    <div className="text-xs text-gray-500">{t('attendance.slot', 'Buổi')}</div>
+                    <div className="text-sm font-medium">Học tập trung</div>
                   </div>
                 </div>
               </div>

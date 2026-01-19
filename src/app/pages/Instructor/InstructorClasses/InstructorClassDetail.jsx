@@ -29,23 +29,23 @@ export default function InstructorClassDetail() {
   const tabItems = [
     {
       key: "overview",
-      label: <Link to={`/instructor/classes/${classId}/overview`} className="font-bold uppercase text-sm">{t('instructor.classes.overviewTitle')}</Link>,
+      label: <Link to={`/instructor/classes/${classId}/overview`} className="font-bold uppercase text-sm text-black">{t('instructor.classes.overviewTitle')}</Link>,
     },
     {
       key: "sections",
-      label: <Link to={`/instructor/classes/${classId}/sections`} className="font-bold uppercase text-sm">{t('instructor.classes.sectionsTitle')}</Link>,
+      label: <Link to={`/instructor/classes/${classId}/sections`} className="font-bold uppercase text-sm text-black">{t('instructor.classes.sectionsTitle')}</Link>,
     },
     {
       key: "members",
-      label: <Link to={`/instructor/classes/${classId}/members`} className="font-bold uppercase text-sm">{t('instructor.classes.membersTitle')}</Link>,
+      label: <Link to={`/instructor/classes/${classId}/members`} className="font-bold uppercase text-sm text-black">{t('instructor.classes.membersTitle')}</Link>,
     },
     {
       key: "schedule",
-      label: <Link to={`/instructor/classes/${classId}/schedule`} className="font-bold uppercase text-sm">{t('attendance.classSchedule')}</Link>,
+      label: <Link to={`/instructor/classes/${classId}/schedule`} className="font-bold uppercase text-sm text-black">{t('attendance.classSchedule')}</Link>,
     },
     {
       key: "final-exam",
-      label: <Link to={`/instructor/classes/${classId}/final-exam`} className="font-bold uppercase text-sm">{t('instructor.finalExam.tabTitle')}</Link>,
+      label: <Link to={`/instructor/classes/${classId}/final-exam`} className="font-bold uppercase text-sm text-black">{t('instructor.finalExam.tabTitle')}</Link>,
     },
   ];
 

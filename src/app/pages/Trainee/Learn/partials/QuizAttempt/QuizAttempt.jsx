@@ -38,7 +38,7 @@ const QuestionCard = ({ question, questionIndex, selectedAnswers, onChange, tota
           </div>
         </div>
         <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider ${isAnswered ? 'bg-yellow-400 text-black' : 'bg-neutral-100 text-neutral-500'}`}>
-          {isAnswered ? 'Answered' : 'Unanswered'}
+          {isAnswered ? 'Đã chọn' : 'Chưa chọn'}
         </span>
       </div>
 
@@ -173,7 +173,7 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
               <h2 className="text-lg font-black text-neutral-900 uppercase">{quizName}</h2>
               <div className="flex items-center gap-4 mt-1">
                 <span className="text-sm text-neutral-500 font-semibold uppercase tracking-wider">
-                  {answeredCount}/{questions.length} answered
+                  {answeredCount}/{questions.length} câu hỏi
                 </span>
                 <div className="w-24 h-2 border-2 border-neutral-900 bg-white">
                   <div
@@ -203,7 +203,7 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
                 className="flex items-center gap-2 px-6 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
-                Submit
+                Nộp
               </button>
             </div>
           </div>
@@ -238,8 +238,7 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
           <div className="h-1 bg-yellow-400 -mx-6 -mt-6 mb-6" />
           <div className="mb-4">
             <div className="flex items-center justify-center gap-2 text-neutral-600 mb-2">
-              <CheckCircle2 className="w-5 h-5" />
-              <span className="font-semibold uppercase tracking-wider">{answeredCount} of {questions.length} questions answered</span>
+              <span className="font-semibold uppercase tracking-wider">{answeredCount} trên {questions.length} câu hỏi đã trả lời</span>
             </div>
             <div className="max-w-md mx-auto h-3 border-2 border-neutral-900 bg-white">
               <div
@@ -254,7 +253,7 @@ export default function QuizAttempt({ quizData, onSubmit, isSubmitting }) {
             className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-400 text-black font-bold uppercase tracking-wider border-2 border-black hover:bg-yellow-500 hover:scale-[1.02] transition-all disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
-            Submit Quiz
+            Nộp bài
           </button>
         </div>
       </div>

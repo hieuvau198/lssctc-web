@@ -57,7 +57,7 @@ export default function QuizAttemptsHistory({ attempts = [] }) {
                             </div>
 
                             <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto pl-[4rem] md:pl-0">
-                                <div className={`px-4 py-1.5 border-2 border-black font-bold uppercase text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-2 ${attempt.isPass ? 'bg-white-100 text-white-800' : 'bg-white-100 text-white-800'}`}>
+                                <div className={`px-4 py-1.5 border-2 border-black font-bold uppercase text-sm flex items-center gap-2 ${attempt.isPass ? 'bg-white-100 text-white-800' : 'bg-white-100 text-white-800'}`}>
                                     {attempt.isPass ? (
                                         <><CheckCircle2 className="w-4 h-4" /> Đạt</>
                                     ) : (
