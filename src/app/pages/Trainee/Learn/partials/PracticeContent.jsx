@@ -52,8 +52,8 @@ export default function PracticeContent({
                     <div>
                         <span className="font-bold text-yellow-800 block text-sm uppercase tracking-wide">
                             {sessionStatus.message === "Not started yet"
-                                ? t('trainee.learn.sessionNotStarted', 'Session Not Started')
-                                : t('trainee.learn.sessionExpired', 'Session Expired')}
+                                ? t('trainee.learn.sessionNotStarted', 'Phiên làm bài chưa bắt đầu')
+                                : t('trainee.learn.sessionExpired', 'Phiên làm bài chưa bắt đầu')}
                         </span>
                         <span className="text-xs text-yellow-700">
                             {sessionStatus.startTime && `Start: ${dayjs(sessionStatus.startTime).format('DD/MM/YYYY HH:mm')}`}
@@ -146,7 +146,6 @@ export default function PracticeContent({
                                             <div>
                                                 <div className="font-bold text-black">{task.taskName || 'Unnamed Task'}</div>
                                                 {task.taskDescription && <div className="text-sm text-neutral-600">{task.taskDescription}</div>}
-                                                {task.taskCode && <div className="text-xs font-mono text-neutral-400 mt-1">{task.taskCode}</div>}
                                             </div>
                                         </li>
                                     ))}

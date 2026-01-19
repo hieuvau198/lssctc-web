@@ -52,7 +52,7 @@ const QuizStartScreen = ({ quiz, onStart, t, sessionStatus, attempts }) => {
                         <div>
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="px-3 py-1 bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider border-2 border-black">
-                                    Quiz
+                                    Kiểm tra
                                 </span>
                             </div>
                             <h1 className="text-xl font-black text-black uppercase tracking-tight">{quiz.quizName}</h1>
@@ -112,7 +112,7 @@ const QuizStartScreen = ({ quiz, onStart, t, sessionStatus, attempts }) => {
                                     <RotateCcw className="w-5 h-5 text-black" />
                                 </div>
                                 <div>
-                                    <div className="text-xs text-neutral-500 uppercase font-bold tracking-wider">{t('trainee.quizContent.maxAttempts', 'Attempts')}</div>
+                                    <div className="text-xs text-neutral-500 uppercase font-bold tracking-wider">{t('trainee.quizContent.maxAttempts', 'Lượt tối đa')}</div>
                                     <div className="text-lg font-black text-black">
                                         {hasLimit ? `${attemptsCount}/${maxAttempts}` : 'Unlimited'}
                                     </div>
@@ -137,8 +137,8 @@ const QuizStartScreen = ({ quiz, onStart, t, sessionStatus, attempts }) => {
                         <div className="mb-6 p-4 bg-red-50 border-2 border-red-400 flex items-start gap-3">
                             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                             <div>
-                                <div className="font-bold text-red-800 uppercase">{t('trainee.quizContent.limitReached', 'Attempt Limit Reached')}</div>
-                                <div className="text-sm text-red-700">{t('trainee.quizContent.limitReachedDesc', 'You have used all available attempts for this quiz.')}</div>
+                                <div className="font-bold text-red-800 uppercase">{t('trainee.quizContent.limitReached', 'Hết lượt làm bài')}</div>
+                                <div className="text-sm text-red-700">{t('trainee.quizContent.limitReachedDesc', 'Bạn đã dùng hết lượt làm bài tối đa.')}</div>
                             </div>
                         </div>
                     )}
@@ -195,7 +195,7 @@ const QuizResultScreen = ({ quiz, onRestart, t, attempts }) => {
                                     {isPass ? t('trainee.quizContent.passed', 'Passed') : t('trainee.quizContent.notPassed', 'Not Passed')}
                                 </span>
                             </div>
-                            <h1 className="text-xl font-black text-black uppercase tracking-tight">{t('trainee.quizContent.quizResult', 'Quiz Result')}</h1>
+                            <h1 className="text-xl font-black text-black uppercase tracking-tight">{t('trainee.quizContent.quizResult', 'Kết quả')}</h1>
                             <p className="text-neutral-600">{quiz.quizName}</p>
                         </div>
                     </div>
@@ -257,10 +257,10 @@ const QuizResultScreen = ({ quiz, onRestart, t, attempts }) => {
                             <div className="p-4 bg-red-50 border-2 border-red-400 inline-block text-left">
                                 <div className="flex items-center gap-2 text-red-800 font-bold uppercase mb-1">
                                     <AlertCircle className="w-5 h-5" />
-                                    <span>{t('trainee.quizContent.limitReached', 'Attempt Limit Reached')}</span>
+                                    <span>{t('trainee.quizContent.limitReached', 'Hết lượt làm bài')}</span>
                                 </div>
                                 <p className="text-red-700 text-sm">
-                                    {t('trainee.quizContent.limitReachedDesc', 'You have used all available attempts for this quiz.')}
+                                    {t('trainee.quizContent.limitReachedDesc', 'Bạn đã dùng hết lượt làm bài tối đa.')}
                                 </p>
                             </div>
                         ) : (
