@@ -293,76 +293,79 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                     border-radius: 0;
                 }
                 
-                /* Improved Rounded Modal Styles */
-                .rounded-modal .ant-modal-content {
-                    border-radius: 16px !important;
+                /* Industrial Modal Styles - Square and Sharp */
+                .industrial-modal .ant-modal-content {
+                    border-radius: 0px !important; /* Not rounded */
                     padding: 0 !important; /* Full bleed */
                     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
                     overflow: hidden;
+                    border: 1px solid #000;
                 }
-                .rounded-modal .ant-modal-header {
-                    background: #facc15 !important;
+                .industrial-modal .ant-modal-header {
+                    background: #facc15 !important; /* Yellow-400 */
                     padding: 24px 24px 20px !important;
-                    border-bottom: 1px solid #eab308;
-                    border-radius: 0 !important; /* Managed by content overflow */
+                    border-bottom: 2px solid #000;
+                    border-radius: 0 !important;
                     margin-bottom: 0 !important;
                 }
-                .rounded-modal .ant-modal-title {
+                .industrial-modal .ant-modal-title {
                     font-weight: 800 !important;
                     font-size: 18px !important;
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
                     color: #000 !important;
                 }
-                .rounded-modal .ant-modal-body {
+                .industrial-modal .ant-modal-body {
                     padding: 32px 32px 24px !important;
+                    background: #fff;
                 }
-                .rounded-modal .ant-modal-footer {
+                .industrial-modal .ant-modal-footer {
                     margin: 0 !important;
                     padding: 16px 32px 24px !important;
-                    border-top: 1px solid #f1f5f9;
-                    background: #fafaf9;
+                    border-top: 1px solid #e2e8f0;
+                    background: #f8fafc;
+                    border-radius: 0 !important;
                 }
-                .rounded-modal .ant-modal-close {
+                .industrial-modal .ant-modal-close {
                     top: 24px;
                     right: 24px;
                     color: rgba(0,0,0,0.5);
                 }
-                .rounded-modal .ant-modal-close:hover {
+                .industrial-modal .ant-modal-close:hover {
                     color: #000;
                     background: rgba(255,255,255,0.2);
-                    border-radius: 50%;
+                    border-radius: 0%; /* Square hover */
                 }
                 
-                /* Input Styles */
-                .rounded-modal .ant-form-item-label > label {
+                /* Input Styles - Not Rounded */
+                .industrial-modal .ant-form-item-label > label {
                     font-size: 11px !important;
                     font-weight: 700 !important;
                     text-transform: uppercase !important;
                     letter-spacing: 0.05em !important;
-                    color: #64748b !important;
+                    color: #000 !important;
                 }
-                .rounded-modal .ant-input, 
-                .rounded-modal .ant-picker,
-                .rounded-modal .ant-input-textarea {
-                    border-radius: 8px !important;
-                    background-color: #f8fafc;
-                    border: 1px solid #e2e8f0;
+                .industrial-modal .ant-input, 
+                .industrial-modal .ant-picker,
+                .industrial-modal .ant-input-textarea {
+                    border-radius: 0px !important; /* Sharp corners */
+                    background-color: #fff;
+                    border: 1px solid #cbd5e1;
                     padding: 8px 12px;
                     transition: all 0.2s;
                 }
-                .rounded-modal .ant-input:hover, 
-                .rounded-modal .ant-picker:hover,
-                .rounded-modal .ant-input-textarea:hover {
-                    background-color: #fff;
-                    border-color: #cbd5e1;
+                .industrial-modal .ant-input:hover, 
+                .industrial-modal .ant-picker:hover,
+                .industrial-modal .ant-input-textarea:hover {
+                    border-color: #94a3b8;
                 }
-                .rounded-modal .ant-input:focus, 
-                .rounded-modal .ant-picker-focused,
-                .rounded-modal .ant-input-textarea:focus {
+                .industrial-modal .ant-input:focus, 
+                .industrial-modal .ant-picker-focused,
+                .industrial-modal .ant-input-textarea:focus {
                     background-color: #fff;
-                    border-color: #facc15 !important;
-                    box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.15) !important;
+                    border-color: #facc15 !important; /* Yellow-400 */
+                    box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2) !important;
+                    outline: none;
                 }
                 /* Force Button Style Overrides */
                 .ant-btn.bg-yellow-400 {
@@ -390,7 +393,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                     <Button
                         icon={<Plus size={16} strokeWidth={3} />}
                         onClick={() => handleOpenModal(null)}
-                        className="bg-yellow-400 text-black border border-yellow-500 font-bold h-10 px-6 rounded-md hover:bg-yellow-500 hover:text-black shadow-sm transition-all"
+                        className="bg-yellow-400 text-black border border-yellow-500 font-bold h-10 px-6 rounded-none hover:bg-yellow-500 hover:text-black shadow-sm transition-all"
                         style={{ backgroundColor: '#facc15', color: '#000', borderColor: '#eab308' }}
                     >
                         {t('class.timeslot.add')}
@@ -415,13 +418,13 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                 onOk={() => form.submit()}
                 confirmLoading={submitting}
                 width={650}
-                className="rounded-modal"
+                className="industrial-modal"
                 centered
                 okButtonProps={{
-                    className: "bg-black text-white rounded-lg border-none font-bold hover:bg-slate-800 h-10 px-8 shadow-sm transition-all"
+                    className: "bg-black text-white rounded-none border-none font-bold hover:bg-slate-800 h-10 px-8 shadow-sm transition-all"
                 }}
                 cancelButtonProps={{
-                    className: "rounded-lg border-slate-200 text-slate-600 font-bold hover:border-slate-300 hover:text-slate-800 hover:bg-slate-50 h-10 px-6 transition-all"
+                    className: "rounded-none border-slate-300 text-slate-600 font-bold hover:border-black hover:text-black hover:bg-slate-50 h-10 px-6 transition-all"
                 }}
                 maskStyle={{ backdropFilter: 'blur(2px)', background: 'rgba(0,0,0,0.6)' }}
             >
@@ -449,7 +452,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
                                     placeholder={t('class.timeslot.selectStartTime')}
-                                    popupClassName="rounded-lg"
+                                    popupClassName="rounded-none"
                                     disabledDate={disabledStartDate}
                                     disabledTime={disabledStartTime}
                                 />
@@ -483,7 +486,7 @@ export default function ClassTimeslotManage({ classItem, onTimeSlotsChange, read
                                     style={{ width: '100%' }}
                                     className="h-11 w-full font-medium"
                                     placeholder={t('class.timeslot.selectEndTime')}
-                                    popupClassName="rounded-lg"
+                                    popupClassName="rounded-none"
                                     disabledDate={disabledEndDate}
                                     disabledTime={disabledEndTime}
                                 />

@@ -80,8 +80,8 @@ const ClassTable = ({
       render: (status) => {
         const s = getClassStatus(status);
         return (
-          <span className={`px-2 py-1 text-xs font-bold uppercase border ${getStatusStyle(status)}`}>
-            {s.label || t('common.na')}
+          <span className={`px-2 py-1 text-xs font-bold uppercase border ${getStatusStyle(s.key)}`}>
+            {t(`common.classStatus.${s.key}`) || s.label}
           </span>
         );
       },
