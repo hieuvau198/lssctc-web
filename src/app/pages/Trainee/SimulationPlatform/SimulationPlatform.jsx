@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Skeleton, Alert, Tabs } from 'antd';
-import { Download, Info, Laptop2, Settings, PlayCircle, ExternalLink, Monitor, Cpu, HardDrive, Gamepad2, ChevronRight, User, BookOpen, GraduationCap, Layers, CheckCircle, ArrowRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Skeleton, Alert } from 'antd';
+import { Download, Info, Laptop2, Settings, PlayCircle, ExternalLink, Monitor, Cpu, HardDrive, Gamepad2, User, BookOpen, GraduationCap, Layers, CheckCircle, ArrowRight } from 'lucide-react';
 import PageNav from '../../../components/PageNav/PageNav';
 import { useTranslation } from 'react-i18next';
+import { downloadSimSource } from '../../../apis/SimulationManager/SimSettingsApi';
 
 export default function SimulationPlatform() {
   const { t } = useTranslation();
-  const downloadUrl = import.meta.env.VITE_SIM_APP_DOWNLOAD_URL;
+  // const downloadUrl = import.meta.env.VITE_SIM_APP_DOWNLOAD_URL; // No longer used
   const backupUrl = "https://drive.google.com/drive/folders/1HkizMPbZkJCS9J9CVFIezedCAEBniH4E?usp=drive_link";
   const [downloading, setDownloading] = useState(false);
   const [metaLoading, setMetaLoading] = useState(true);
@@ -17,22 +18,38 @@ export default function SimulationPlatform() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleDownload = useCallback(() => {
-    if (!downloadUrl) {
-      setError(t('simulator.error.downloadUrlNotConfigured'));
-      return;
-    }
+  const handleDownload = async () => {
     setError('');
     setDownloading(true);
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.rel = 'noopener';
-    a.download = '';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => setDownloading(false), 1500);
-  }, [downloadUrl, t]);
+    try {
+      const response = await downloadSimSource();
+      
+      // Create a blob link to trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Try to get filename from content-disposition header if available, otherwise default
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = 'simulation-source.zip'; // Default name matching Manager page
+      if (contentDisposition) {
+        const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (fileNameMatch && fileNameMatch.length === 2)
+          fileName = fileNameMatch[1];
+      }
+      
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      setError(t('simulator.error.downloadFailed', 'Không thể tải xuống tệp. Vui lòng thử lại sau.'));
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const systemRequirements = [
     { icon: Monitor, label: 'OS', value: 'Windows 10/11 (64-bit)' },
@@ -144,11 +161,11 @@ export default function SimulationPlatform() {
           <div className="flex flex-wrap gap-4">
             <button
               onClick={handleDownload}
-              disabled={metaLoading || !downloadUrl || downloading}
+              disabled={metaLoading || downloading}
               className="h-14 inline-flex items-center justify-center px-8 bg-yellow-400 text-black font-bold uppercase tracking-wider hover:bg-white transition-colors gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="w-5 h-5" />
-              {downloadUrl ? (downloading ? t('simulator.download.preparing') : t('simulator.download.downloadButton')) : t('simulator.download.unavailable')}
+              {downloading ? t('simulator.download.preparing') : t('simulator.download.downloadButton')}
             </button>
             <a
               href={backupUrl}
@@ -195,13 +212,6 @@ export default function SimulationPlatform() {
                     </span>
                   </div>
                 </>
-              )}
-
-              {!downloadUrl && !metaLoading && (
-                <p className="mt-4 text-xs text-amber-600 flex items-center gap-1 bg-amber-50 p-3 border border-amber-200">
-                  <Info className="w-4 h-4" />
-                  {t('simulator.download.envVarNotSet')} <code className="font-mono bg-amber-100 px-1">VITE_SIM_APP_DOWNLOAD_URL</code> {t('simulator.download.notSet')}
-                </p>
               )}
             </div>
 
