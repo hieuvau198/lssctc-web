@@ -76,7 +76,7 @@ const CreateCourse = ({
 
   const handleFinishFailed = (errorInfo) => {
     const errorMessages = errorInfo.errorFields.map(field => field.errors[0]).join(". ");
-    message.error(`${t('common.reqField') || t('admin.courses.form.validationFailed')}: ${errorMessages}`);
+    // message.error(`${t('common.reqField') || t('admin.courses.form.validationFailed')}: ${errorMessages}`);
   };
 
   const handleOk = () => {
