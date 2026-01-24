@@ -7,11 +7,13 @@ import {
   App, 
   Spin, 
   Image,
-  Typography
+  Typography,
+  Upload,
+  Card
 } from 'antd';
-import { Save, RotateCcw, Settings as SettingsIcon } from 'lucide-react';
+import { Save, RotateCcw, Settings as SettingsIcon, Upload as UploadIcon, Download as DownloadIcon, FileCode } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { getSimSettings, updateSimSettings } from '../../../apis/SimulationManager/SimSettingsApi';
+import { getSimSettings, updateSimSettings, uploadSimSource, downloadSimSource } from '../../../apis/SimulationManager/SimSettingsApi';
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -22,6 +24,8 @@ export default function SimulatorSettings() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
 
   const fetchSettings = async () => {
@@ -36,11 +40,11 @@ export default function SimulatorSettings() {
         });
         setImageUrl(data.imageUrl);
       } else {
-        message.error('Failed to load settings');
+        message.error('Không thể tải cài đặt');
       }
     } catch (error) {
       console.error(error);
-      message.error('An error occurred while loading settings');
+      message.error('Đã xảy ra lỗi khi tải cài đặt');
     } finally {
       setLoading(false);
     }
@@ -61,14 +65,14 @@ export default function SimulatorSettings() {
       
       const response = await updateSimSettings(payload);
       if (response && response.success) {
-        message.success('Settings updated successfully');
+        message.success('Cập nhật cài đặt thành công');
         setImageUrl(values.imageUrl);
       } else {
-        message.error(response?.message || 'Update failed');
+        message.error(response?.message || 'Cập nhật thất bại');
       }
     } catch (error) {
       console.error(error);
-      message.error('An error occurred while updating settings');
+      message.error('Đã xảy ra lỗi khi cập nhật cài đặt');
     } finally {
       setSubmitting(false);
     }
@@ -77,6 +81,58 @@ export default function SimulatorSettings() {
   const handleReset = () => {
     form.resetFields();
     fetchSettings();
+  };
+
+  const handleUpload = async (file) => {
+    setUploading(true);
+    try {
+      const response = await uploadSimSource(file);
+      if (response && response.success) {
+        message.success('Tải lên nguồn thành công');
+        // Update the sourceUrl field with the new URL from backend
+        form.setFieldValue('sourceUrl', response.data.sourceUrl);
+      } else {
+        message.error(response?.message || 'Tải lên thất bại');
+      }
+    } catch (error) {
+      console.error(error);
+      message.error('Đã xảy ra lỗi trong quá trình tải lên');
+    } finally {
+      setUploading(false);
+    }
+    return false; // Prevent default upload behavior
+  };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const response = await downloadSimSource();
+      
+      // Create a blob link to trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Try to get filename from content-disposition header if available, otherwise default
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = 'simulation-source.zip'; // Default name
+      if (contentDisposition) {
+        const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (fileNameMatch && fileNameMatch.length === 2)
+          fileName = fileNameMatch[1];
+      }
+      
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      message.error('Không thể tải xuống tệp nguồn. Tệp có thể không tồn tại.');
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
@@ -90,19 +146,20 @@ export default function SimulatorSettings() {
           </div>
           <div>
             <h1 className="text-2xl font-black text-white uppercase tracking-tight m-0 leading-none">
-              Simulator Settings
+              Cài đặt Mô phỏng
             </h1>
             <p className="text-yellow-400 text-sm mt-1 font-medium">
-              Global configuration for the simulation environment
+              Cấu hình chung cho môi trường mô phỏng
             </p>
           </div>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 px-4 pb-6">
+      <div className="flex-1 px-4 pb-6 space-y-6">
+        
+        {/* Main Settings Form */}
         <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] relative max-w-5xl mx-auto">
-          {/* Decorative top bar for the card */}
           <div className="h-1 bg-yellow-400 absolute top-0 left-0 right-0" />
           
           <Spin spinning={loading}>
@@ -118,68 +175,70 @@ export default function SimulatorSettings() {
                 {/* Left Column: Basic Info */}
                 <div className="space-y-4">
                   <div className="bg-neutral-100 p-4 border border-neutral-200 rounded-sm">
-                    <h3 className="font-bold text-lg border-b border-neutral-300 pb-2 mb-4 uppercase">General Information</h3>
+                    <h3 className="font-bold text-lg border-b border-neutral-300 pb-2 mb-4 uppercase">Thông tin chung</h3>
                     
                     <Form.Item
-                      label={<span className="font-semibold text-neutral-700">Simulator Name</span>}
+                      label={<span className="font-semibold text-neutral-700">Tên trình mô phỏng</span>}
                       name="name"
-                      rules={[{ required: true, message: 'Please enter the simulator name' }]}
+                      rules={[{ required: true, message: 'Vui lòng nhập tên trình mô phỏng' }]}
                     >
-                      <Input placeholder="e.g. Crane Simulator 2026" size="large" className="border-neutral-400" />
+                      <Input placeholder="Vd: Mô phỏng Cần cẩu 2026" size="large" className="border-neutral-400" />
                     </Form.Item>
 
                     <Form.Item
-                      label={<span className="font-semibold text-neutral-700">Setting Code</span>}
+                      label={<span className="font-semibold text-neutral-700">Mã cài đặt</span>}
                       name="settingCode"
                     >
-                      <Input placeholder="Unique code for this configuration" className="border-neutral-400" />
+                      <Input placeholder="Mã duy nhất cho cấu hình này" className="border-neutral-400" />
                     </Form.Item>
 
                     <Form.Item
-                      label={<span className="font-semibold text-neutral-700">Description</span>}
+                      label={<span className="font-semibold text-neutral-700">Mô tả</span>}
                       name="description"
                     >
                       <TextArea 
                         rows={4} 
-                        placeholder="Describe the simulation environment..." 
+                        placeholder="Mô tả môi trường mô phỏng..." 
                         className="border-neutral-400"
                       />
                     </Form.Item>
 
-                    <Form.Item
-                      label={<span className="font-semibold text-neutral-700">System Status</span>}
+                    {/* System Status hidden as requested */}
+                    {/* <Form.Item
+                      label={<span className="font-semibold text-neutral-700">Trạng thái hệ thống</span>}
                       name="isActive"
                       valuePropName="checked"
                     >
                       <div className="flex items-center gap-3 bg-white p-3 border border-neutral-300 inline-flex">
-                        <Switch />
+                        <Switch disabled />
                         <span className="text-sm text-neutral-500">
-                          Toggle to enable/disable this configuration globally
+                          Bật tắt để kích hoạt/vô hiệu hóa cấu hình này trên toàn hệ thống
                         </span>
                       </div>
-                    </Form.Item>
+                    </Form.Item> */}
                   </div>
                 </div>
 
                 {/* Right Column: URLs and Media */}
                 <div className="space-y-4">
                   <div className="bg-neutral-100 p-4 border border-neutral-200 rounded-sm h-full">
-                    <h3 className="font-bold text-lg border-b border-neutral-300 pb-2 mb-4 uppercase">Resources & Media</h3>
+                    <h3 className="font-bold text-lg border-b border-neutral-300 pb-2 mb-4 uppercase">Tài nguyên & Hình ảnh</h3>
 
                     <Form.Item
-                      label={<span className="font-semibold text-neutral-700">Source URL (WebGL/Build)</span>}
+                      label={<span className="font-semibold text-neutral-700">URL Nguồn (Tự động tạo)</span>}
                       name="sourceUrl"
-                      extra={<span className="text-xs text-neutral-500">Direct link to the WebGL build or simulation entry point.</span>}
+                      extra={<span className="text-xs text-neutral-500">URL này được tạo tự động khi bạn tải lên tệp nguồn.</span>}
                     >
                       <Input 
+                        disabled
                         prefix={<span className="text-gray-400 mr-1">🔗</span>} 
-                        placeholder="https://..." 
-                        className="border-neutral-400"
+                        placeholder="Chưa có nguồn nào được tải lên" 
+                        className="border-neutral-400 bg-gray-50 text-gray-500 cursor-not-allowed"
                       />
                     </Form.Item>
 
                     <Form.Item
-                      label={<span className="font-semibold text-neutral-700">Preview Image URL</span>}
+                      label={<span className="font-semibold text-neutral-700">URL Hình ảnh xem trước</span>}
                       name="imageUrl"
                     >
                       <Input 
@@ -200,7 +259,7 @@ export default function SimulatorSettings() {
                       ) : (
                         <div className="text-neutral-400 flex flex-col items-center">
                           <span className="text-4xl mb-2">🖼️</span>
-                          <span>No image preview</span>
+                          <span>Không có hình ảnh xem trước</span>
                         </div>
                       )}
                     </div>
@@ -216,7 +275,7 @@ export default function SimulatorSettings() {
                   size="large"
                   className="font-semibold border-2 border-neutral-300 text-neutral-600 hover:border-neutral-800 hover:text-neutral-800"
                 >
-                  Reset Form
+                  Đặt lại
                 </Button>
                 
                 <button
@@ -230,12 +289,55 @@ export default function SimulatorSettings() {
                   ) : (
                     <Save className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   )}
-                  Save Changes
+                  Lưu thay đổi
                 </button>
               </div>
             </Form>
           </Spin>
         </div>
+
+        {/* Source File Management Section */}
+        <div className="bg-neutral-800 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] relative max-w-5xl mx-auto text-white">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-neutral-700 border border-neutral-600 rounded">
+              <FileCode className="w-8 h-8 text-yellow-400" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-bold uppercase tracking-wide text-yellow-400">Quản lý Nguồn Ứng dụng</h3>
+              <p className="text-neutral-400 text-sm mt-1 mb-4">
+                Quản lý tệp build mô phỏng cốt lõi tại đây. Việc tải lên tệp mới sẽ tự động thay thế tệp hiện có và cập nhật URL nguồn.
+              </p>
+              
+              <div className="flex flex-wrap gap-4 mt-2">
+                <Upload 
+                  beforeUpload={handleUpload} 
+                  showUploadList={false}
+                  disabled={uploading}
+                >
+                  <Button 
+                    size="large"
+                    loading={uploading}
+                    className="bg-white text-black border-none hover:bg-gray-200 font-bold flex items-center gap-2 h-12 px-6"
+                    icon={!uploading && <UploadIcon className="w-4 h-4" />}
+                  >
+                    {uploading ? 'Đang tải lên...' : 'Tải lên bản build mới'}
+                  </Button>
+                </Upload>
+
+                <Button 
+                  size="large"
+                  onClick={handleDownload}
+                  loading={downloading}
+                  className="bg-transparent text-white border-2 border-white hover:bg-white hover:text-black font-bold flex items-center gap-2 h-12 px-6"
+                  icon={!downloading && <DownloadIcon className="w-4 h-4" />}
+                >
+                  Tải xuống bản build hiện tại
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
