@@ -280,7 +280,8 @@
     "brandModel": "Thương hiệu & Model",
     "expandSidebar": "Mở rộng thanh bên",
     "collapseSidebar": "Thu gọn thanh bên",
-    "closeNavigation": "Đóng menu"
+    "closeNavigation": "Đóng menu",
+    "simulatorSettings": "Mô phỏng"
   },
   "about": {
     "title": "Về LSSCTC",

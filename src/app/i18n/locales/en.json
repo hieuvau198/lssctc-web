@@ -280,7 +280,8 @@
     "brandModel": "Brand Model",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
-    "closeNavigation": "Close navigation"
+    "closeNavigation": "Close navigation",
+    "simulatorSettings": "Simulator"
   },
   "about": {
     "title": "About LSSCTC",

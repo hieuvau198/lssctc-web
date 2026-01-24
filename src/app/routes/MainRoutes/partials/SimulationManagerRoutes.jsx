@@ -8,6 +8,7 @@ import PracticeDetail from '../../../pages/SimManager/Practices/partials/Practic
 import PracticeStepDetail from '../../../pages/SimManager/Practices/PracticeDetail/PracticeStep/PracticeStepDetail/PracticeStepDetail'
 import Practices from '../../../pages/SimManager/Practices/Practices'
 import SimSettings from '../../../pages/SimManager/Settings/Settings'
+import SimulatorSettings from '../../../pages/SimManager/SimulatorSettings/SimulatorSettings'
 import TaskPractice from '../../../pages/SimManager/TaskPractice/TaskPractice'
 import PrivateRoute from '../../PrivateRoutes/PrivateRoute'
 
@@ -30,6 +31,7 @@ export default function SimulationManagerRoutes() {
         <Route path="/tasks" element={<TaskPractice />} />
         <Route path="/brand-models" element={<BrandModel />} />
         <Route path="/settings" element={<SimSettings />} />
+        <Route path="/simulator-settings" element={<SimulatorSettings />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

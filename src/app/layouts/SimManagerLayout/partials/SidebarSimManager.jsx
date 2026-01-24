@@ -1,5 +1,5 @@
 import { App, Avatar, Dropdown, Menu, Tooltip, Switch } from 'antd';
-import { FlaskConical, LayoutDashboard, MoreVertical, PanelLeftClose, Sliders, Truck } from 'lucide-react';
+import { FlaskConical, LayoutDashboard, MoreVertical, PanelLeftClose, Sliders, Truck, Settings } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../../apis/Auth/LogoutApi';
@@ -13,6 +13,7 @@ const getItems = (t) => [
   { to: '/simulationManager/practices', label: t('sidebar.practices'), icon: <FlaskConical className="w-5 h-5" /> },
   { to: '/simulationManager/tasks', label: t('sidebar.tasks'), icon: <Sliders className="w-5 h-5" /> },
   { to: '/simulationManager/brand-models', label: t('sidebar.brandModel'), icon: <Truck className="w-5 h-5" /> },
+  { to: '/simulationManager/simulator-settings', label: t('sidebar.simulatorSettings'), icon: <Settings className="w-5 h-5" /> },
 ];
 
 export default function SidebarSimManager({ collapsed, onToggle, mobileOpen, onMobileToggle, onMobileClose }) {
