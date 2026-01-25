@@ -147,7 +147,7 @@ export default function FinalExamPartialsList({ partials, isQualified, examStatu
 
                   {examStatus === 'Completed' ? (
                     <div className={`font-bold ${partial.isPass ? "text-yellow-500" : "text-red-600"}`}>
-                      {partial.marks?.toFixed(2) || '0.00'} / {'10.00'}
+                      Hoàn thành
                     </div>
                   ) : (
                     <div className="text-neutral-400 italic font-medium">
